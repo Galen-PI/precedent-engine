@@ -440,11 +440,21 @@ def get_recent_event_titles(ticker: str, limit: int = 15) -> list[str]:
     return [row["title"] for row in events] if events else []
 
 
-def fetch_filing_text(url: str) -> str:
-    resp = requests.get(url, headers=SEC_HEADERS, timeout=30)
-    resp.raise_for_status()
+def fetch_filing_text(url: str, max_raw_bytes: int = 2_000_000) -> str:
+    # Stream and stop after max_raw_bytes. Complete-submission .txt files can be many MB
+    # (every exhibit concatenated), and the old version held 3-4 full copies per worker.
+    # Callers only use the first 15-30K characters of cleaned text, which sit at the start.
+    with requests.get(url, headers=SEC_HEADERS, timeout=30, stream=True) as resp:
+        resp.raise_for_status()
+        encoding = resp.encoding or "latin-1"
+        chunks, size = [], 0
+        for chunk in resp.iter_content(chunk_size=65536):
+            chunks.append(chunk)
+            size += len(chunk)
+            if size >= max_raw_bytes:
+                break
     import re
-    text = re.sub(r"<[^>]+>", " ", resp.text)
+    text = re.sub(r"<[^>]+>", " ", b"".join(chunks).decode(encoding, errors="replace"))
     text = re.sub(r"\s+", " ", text).strip()
     return text
 
