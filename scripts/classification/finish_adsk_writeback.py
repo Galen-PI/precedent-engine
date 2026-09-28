@@ -25,7 +25,7 @@ def sweep_row(t, d):
 
 def current_row(s):
     r = supabase.table("filing_ai_classifications").select(
-        "ticker,filing_date,accession_number,item_codes,ai_verdict,human_verdict") \
+        "ticker,filing_date,accession_number,item_codes,ai_verdict,human_verdict,ai_suggested_title") \
         .eq("ticker", s["ticker"]).eq("filing_date", s["filing_date"]) \
         .eq("accession_number", s["accession_number"]).execute().data
     return r[0] if r else None
@@ -52,14 +52,14 @@ def draft():
         if cur is None:
             print(f"{t} {d}: no filing_ai_classifications row, skipping")
             continue
-        if cur["human_verdict"] == "real_event" and cur["ai_verdict"] == "real_event":
+        if cur["human_verdict"] == "real_event" and cur["ai_verdict"] == "real_event" and cur["ai_suggested_title"]:
             print(f"{t} {d}: already written back, skipping")
             continue
         if not in_audit(s):
             sys.exit(f"STOP: {t} {d} is not in stale_url_sweep_audit_old_rows")
         row = {"ticker": t, "filing_date": str(s["filing_date"])[:10],
                "accession_number": s["accession_number"], "item_codes": cur["item_codes"]}
-        dr, err = draft_one(row, cik_by_ticker[t], allowed)
+        dr, err = draft_one(row, cik_by_ticker[t], allowed, focus=s.get("new_reasoning"))
         if dr is None:
             print(f"FAILED {t} {d}: {err}")
             continue

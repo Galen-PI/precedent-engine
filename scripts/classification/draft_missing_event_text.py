@@ -86,7 +86,7 @@ def find_targets(src):
     return sorted(groups)
 
 
-def draft_one(row, cik, allowed):
+def draft_one(row, cik, allowed, focus=None):
     try:
         text = fetch_filing_text(correct_url(cik, row["accession_number"]))
     except Exception as e:
@@ -98,6 +98,9 @@ def draft_one(row, cik, allowed):
             ' "description": "<2-3 factual sentences>",\n'
             f' "event_type": "<one of: {", ".join(allowed)}>",\n'
             ' "basis": "<the specific sentence or figures in the filing that support this>"}')
+    if focus:
+        user += ("\n\nThe human reviewer confirmed this filing as a material event. Their reading: "
+                 + str(focus)[:1500] + "\nDescribe THAT event (not routine earnings results).")
     raw = call_model(user)
     if raw is None:
         return None, "model call failed"
