@@ -140,6 +140,7 @@ def main():
     ap.add_argument("--yes", action="store_true")
     ap.add_argument("--item-code", default=None)
     ap.add_argument("--old-verdict", default=None)
+    ap.add_argument("--exclude-item-code", default=None)
     args = ap.parse_args()
     rng = random.Random(args.seed)
 
@@ -149,6 +150,8 @@ def main():
         extra.append(lambda q: q.like("item_codes", f"%{args.item_code}%"))
     if args.old_verdict:
         extra.append(lambda q: q.eq("ai_verdict", args.old_verdict))
+    if args.exclude_item_code:
+        extra.append(lambda q: q.not_.like("item_codes", f"%{args.exclude_item_code}%"))
     sampled = []
     for cohort, filters in COHORTS.items():
         uniq = sorted({(k["ticker"], k["filing_date"], k["accession_number"])
@@ -258,7 +261,7 @@ def main():
         print(f"  {d}: {k}/{n} ({100 * k / n:.0f}%)")
 
     if recs:
-        out = f"spot_check_results_{datetime.now():%Y%m%d_%H%M}.csv"
+        out = f"output/spot_check_results_{datetime.now():%Y%m%d_%H%M}.csv"
         with open(out, "w", newline="") as f:
             w = csv.DictWriter(f, fieldnames=list(recs[0].keys()))
             w.writeheader()

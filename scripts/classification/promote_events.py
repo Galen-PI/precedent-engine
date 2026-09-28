@@ -71,7 +71,15 @@ def get_confirmed_real_events(ticker_filter: str = None) -> list[dict]:
         if len(page) < TICKER_BATCH_SIZE:
             break
         offset += TICKER_BATCH_SIZE
-    return rows
+    exclude = set()
+    if "--exclude-types" in sys.argv:
+        exclude = set(sys.argv[sys.argv.index("--exclude-types") + 1].split(","))
+    only = None
+    if "--only-title-match" in sys.argv:
+        import re
+        only = re.compile(sys.argv[sys.argv.index("--only-title-match") + 1], re.I)
+    return [r for r in rows if r.get("ai_suggested_event_type") not in exclude
+            and (only is None or only.search(r.get("ai_suggested_title") or ""))]
 
 
 def get_already_promoted() -> set[tuple]:

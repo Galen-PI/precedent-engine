@@ -96,6 +96,8 @@ def valid(res):
 
 
 def write_rows(rows):
+    all_keys = set().union(*(r.keys() for r in rows)) if rows else set()
+    rows = [{k: r.get(k) for k in all_keys} for r in rows]
     for i in range(0, len(rows), 500):
         supabase.table(TABLE).upsert(
             rows[i:i + 500], on_conflict="ticker,filing_date,accession_number").execute()
@@ -144,7 +146,7 @@ def process_chunk(chunk, recent_cache):
                     "accession_number": r["accession_number"],
                     "old_ai_verdict": r["ai_verdict"], "old_human_verdict": r["human_verdict"],
                     "new_verdict": res["verdict"], "new_confidence": res["confidence"],
-                    "new_reasoning": res["reasoning"], "new_title": res.get("suggested_title"),
+                    "new_reasoning": res["reasoning"], "new_title": res.get("suggested_title"), "new_description": res.get("suggested_description"),
                     "new_event_type": res.get("suggested_event_type"),
                     "fixed_url": r["fixed_url"]})
     write_rows(out)
