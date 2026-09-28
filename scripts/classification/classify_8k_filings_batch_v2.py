@@ -488,7 +488,7 @@ def fetch_all_filing_texts_concurrently(candidates: list[dict]) -> tuple[dict, i
                 fetch_errors += 1
             else:
                 custom_id = f"{c['ticker']}__{c['filing_date']}__{c['accession_number']}"
-                results[custom_id] = (c, text)
+                results[custom_id] = (c, text[:16000])  # prompt only uses the first 15000 chars; do not hold full filings in memory
 
             if completed % 200 == 0 or completed == total:
                 print(f"  ...{completed}/{total} fetched ({fetch_errors} errors so far)")
