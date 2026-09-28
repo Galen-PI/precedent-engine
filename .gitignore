@@ -143,3 +143,6 @@ vite.config.ts.timestamp-*
 .vite/
 __pycache__/
 scripts/google_cloud.json
+
+output/
+sweep.log
