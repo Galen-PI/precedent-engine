@@ -71,7 +71,7 @@ _CLIENT_REFRESH_EVERY = 5000
 _WRITE_MAX_RETRIES = 5
 
 
-def real_write_with_retry(row: dict):
+def real_write_with_retry(row):
     """Real, resilient replacement for a bare .upsert().execute() call --
     retries on transient connection errors (reconnecting with a fresh
     client first, since the known failure is connection-level, not
@@ -300,8 +300,7 @@ def build_for_event(event: dict, entity_id: str, live: bool) -> int:
         })
 
     if live and rows_to_write:
-        for row in rows_to_write:
-            real_write_with_retry(row)
+        real_write_with_retry(rows_to_write)
 
     return len(rows_to_write)
 
