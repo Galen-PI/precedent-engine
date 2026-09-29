@@ -429,3 +429,40 @@ sentiment/reaction framing around it. The table itself doesn't move or get
 duplicated; this is purely about which phase's own completion checklist claims
 "macro data exists and is current" as one of its real items, so future work doesn't
 have to guess where to look for it.
+
+## Addendum: Government Decisions — Real Scope for a Phase 4 Sub-Track (2026-09-29)
+
+Raised while reviewing Phase 4: raw macro numbers (Fed rate levels, etc.) already exist
+in `macro_data_releases`, but a bare number isn't a Government Decisions *event* — the
+real value is the DECISION'S REASONING (why the Fed acted), because that reasoning is
+what actually connects to public opinion/sentiment, which is what plausibly shapes
+company confidence. A rate change with no narrative is just a Phase 2 fact restated with
+a label; it doesn't do Phase 4's real job.
+
+**Real, sized scope:** 31 genuine Fed rate decisions exist in `macro_data_releases`
+(DFEDTARU, `change_from_previous != 0`), 2015-2025 — not thousands of daily readings,
+real discrete policy moves. One (2020-03-16, the COVID emergency cut) is already a real
+event, hand-linked via `event_relationships`' `same_root_cause` type (see the Cascade
+Effect entry in `THEORY.md` for that precedent). **The other 30 are not yet real events.**
+
+**Real source needed, not yet built:** each decision's actual reasoning is real and
+public — the Fed publishes an FOMC statement after every rate decision, directly
+analogous to how an SEC 8-K is the real source for a company event. This needs
+fetching and reading, same discipline as every filing reviewed tonight — never
+fabricate the reasoning, trace it to the real statement text. Whether FOMC statements
+are fetchable via a stable URL pattern (parallel to SEC EDGAR's) hasn't been checked.
+
+**Why this matters more than a simple data-to-event conversion:** the real design
+intent is Decision (with real reasoning) -> Public Opinion / Sentiment -> Company
+Confidence. This should connect to `company_sentiment_timeline` (already real,
+GDELT-based) rather than exist as an isolated track — a genuine Fed-decision event with
+real reasoning is exactly the kind of Tier-0 exogenous trigger the Cascade Effect design
+(see `THEORY.md`) is built around, and could plausibly interact with the already-tested
+(currently null) `storm_x_sentiment` feature in a more targeted way than the general
+version tested tonight.
+
+**Not started.** Real next steps when picked up: (1) confirm FOMC statements are
+fetchable, (2) build the 30 real events with sourced reasoning, individually read
+before confirming, (3) link each to the existing `company_sentiment_timeline` data
+around its date as the "public opinion" layer, (4) only then consider whether this
+predicts company-level reactions better than the raw rate number alone.
