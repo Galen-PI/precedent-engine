@@ -466,3 +466,48 @@ fetchable, (2) build the 30 real events with sourced reasoning, individually rea
 before confirming, (3) link each to the existing `company_sentiment_timeline` data
 around its date as the "public opinion" layer, (4) only then consider whether this
 predicts company-level reactions better than the raw rate number alone.
+
+## Addendum: Population/Consumer Sentiment — Real Scope for Phase 4 (2026-09-29)
+
+Raised while scoping Phase 4's real sub-tracks. Real distinction from what already
+exists: `company_sentiment_timeline` (GDELT-based) measures NEWS COVERAGE TONE about
+a company directly -- it's a real, working, already-built signal, but it's not the
+same thing as genuine population/consumer sentiment, and it can't attach to a PERSON
+rather than a company.
+
+**The real concept, from the working example given (Elon Musk's public standing during
+his DOGE involvement, and the real, observed Tesla stock impact):** population
+perception of a PERSON associated with a company can drive real consumer behavior
+(purchase decisions, brand favorability) independent of the company's own news
+coverage. This is closer to "would the population buy from this company right now"
+than "how is this company being covered in the news" -- a genuinely different signal
+from what `company_sentiment_timeline` already captures.
+
+**Checked and confirmed not already built:** searched scripts for consumer confidence/
+buying confidence/executive sentiment/reputation-related work -- nothing found. This
+was real design thinking from an earlier Phase 4 scoping session, never implemented.
+
+**Real, hard sub-problem this needs, not present anywhere in the current schema:** a
+PERSON -> COMPANY link. The existing sentiment pipeline matches on organization names
+(GDELT company-name matching, `backfill_gdelt_sentiment.py`'s `TRACKED_COMPANIES`
+dict). Matching sentiment about a specific PERSON (an executive, a founder) to the
+company they're associated with is a genuinely new linking mechanism -- not a simple
+extension of the existing name-matching approach.
+
+**Real candidate data sources, not yet evaluated for feasibility:** Twitter/X (direct,
+real-time population expression, but real known complications -- rate limits, bot/
+inauthentic-account noise, cost -- these don't go away just because there's now a
+clearer purpose for them); potentially Google Trends-style purchase-intent search
+data; review-aggregator sentiment. None of these have been scoped for actual
+fetchability or cost in this project.
+
+**Connects to the Cascade Effect (see THEORY.md):** a genuine reputational event about
+a specific person is a plausible real Tier-0/Tier-1 trigger in that framework (forced/
+reactive company impact, not company-initiated) -- worth designing alongside that work
+rather than as a fully separate track.
+
+**Not started.** Real next steps when picked up: (1) evaluate real data source
+feasibility (Twitter API access/cost first, since it's the most direct fit), (2)
+design the person-to-company linking mechanism, (3) pick a real, bounded test case
+(the Musk/Tesla example itself is a genuine, well-documented candidate) to validate
+the approach on a single case before any broader build.
