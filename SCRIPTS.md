@@ -120,6 +120,13 @@ ORDER BY r.started_at DESC, s.started_at;
    - `ai_verdict = 'likely_noise' AND ai_confidence >= 0.9` (regardless of template match)
    - `ai_verdict = 'real_event' AND ai_confidence >= 0.9 AND ai_matched_known_template IS NULL`
 
+   **Correction, 2026-09-29: the real code (`compute_flag()`) only flags below 0.75, not
+   0.90 -- the >=0.9 threshold above was never what's actually running in production.**
+   A real spot-check of the true unvalidated 0.75-0.90 band found a real ~8% disagreement
+   rate (n=25), meaningfully higher than the ~1% measured for >=0.90. Treat >=0.9 as the
+   only genuinely validated safe-to-bulk-confirm bar; the 0.75-0.90 band (4,060 rows as
+   of 2026-09-29) needs either a real, larger validation pass or individual review.
+
    Everything else needs real individual attention. `flag_reason = 'random_audit_sample'`
    is a genuine 10% random QA sample, safe to spot-check — but it's drawn after other
    filters, so it's not representative of the whole pool. See `event-materiality-review.md`
@@ -437,6 +444,36 @@ inflated `systemic_shock`.
 Multi-entity tag bug's COVID-19/2008-crisis examples; `sec_filings`/`sec_8k_filings` naming
 swap; dead-column pattern; `financial_market_reactions` discovery — all incorporated into
 Current Reference and Known Gotchas above.
+
+### 2026-09-29 — Auto-confirm threshold is documented wrong; real spot-check at the real threshold
+The bulk auto-confirm policy documented earlier in this file (Part 1, step 6) says
+"ai_confidence >= 0.9" for both safe-to-bulk-confirm buckets. **This is wrong relative
+to the actual code.** `classify_8k_filings_batch_v2.py`'s real `compute_flag()` flags a
+row for human review only when confidence < 0.75 (not < 0.9) -- meaning the real
+population being bulk auto-confirmed in production reaches all the way down to 0.75
+confidence, not 0.90. The documented "~99-100% agreement, measured on thousands of
+sampled rows" was very likely only ever measured on the >=0.90 subset -- **the real
+0.75-0.90 band (4,060 rows: 4,050 likely_noise + 10 real_event) has never been
+validated at all.**
+
+Pulled a real random sample of 25 from the unvalidated 0.75-0.90 likely_noise band and
+read each one individually against the AI's own stated reasoning (same standard as
+`event-materiality-review.md`). 23/25 correct. **2 real disagreements (8% in this
+small sample, vs. the ~1% documented for the >=0.90 band):**
+- **APD 2018-05-17** (EVP departure, $2.58M severance, 0.78 confidence) -- dismissed
+  as noise purely because the departing exec wasn't literally CEO/CFO/Chairman. Per
+  our own rubric (and a real confirmed precedent from tonight's sweep review, a Chief
+  Ethics and Compliance Officer departure), the real test is Item 5.02(b) named-
+  executive-officer status, not C-suite title specifically. Looks like a genuine miss.
+- **PSA 2023-02-21** (0.85 confidence) -- filing text was truncated to boilerplate
+  cover-page only; the AI's own item-code description reads internally confused. This
+  was a low-information guess dressed up with 0.85 confidence, not a well-supported
+  call -- should have been flagged `low_confidence`, not passed through.
+
+**Real implication:** the safe-to-bulk-confirm claim should be scoped to confidence
+>=0.90 specifically, not the full 0.75+ range the code actually auto-passes. The
+0.75-0.90 band (4,060 rows) needs either a proper validation pass (a larger real
+sample, not just 25) or should be routed to individual review going forward.
 
 ### 2026-09-29 — Derived financial chain verified, one real fix, one false alarm resolved
 Checked the full Phase 2 derived chain fresh (financial_statements -> financial_metrics
