@@ -445,6 +445,15 @@ Multi-entity tag bug's COVID-19/2008-crisis examples; `sec_filings`/`sec_8k_fili
 swap; dead-column pattern; `financial_market_reactions` discovery — all incorporated into
 Current Reference and Known Gotchas above.
 
+### 2026-09-29 — Phase 4 Track B (news) is active, not "paused" as documented
+`PROJECT_PLAN.md`'s architecture section describes `news_articles` as an "early-stage
+live feed, paused." **This is stale.** Verified live: 407 total articles, latest
+timestamped TODAY (2026-09-29). Real daily cadence confirmed (mostly 28-30
+articles/day over the last two weeks, one real gap 2026-08-31 to 2026-09-16) --
+driven by an external daily automation outside this codebase, not a manual/occasional
+run. Genuinely active, just low-volume relative to the 8-K pipeline. Funnel: 407
+articles -> 60 AI-classified -> 22 candidate events -> 6 confirmed into real `events`.
+
 ### 2026-09-29 — Auto-confirm threshold is documented wrong; real spot-check at the real threshold
 The bulk auto-confirm policy documented earlier in this file (Part 1, step 6) says
 "ai_confidence >= 0.9" for both safe-to-bulk-confirm buckets. **This is wrong relative
