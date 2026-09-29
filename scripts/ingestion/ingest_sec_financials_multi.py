@@ -1266,7 +1266,7 @@ def build_annual_periods(data, concept_map):
                 periods[end] = {
                     "period_end": end,
                     "period_type": "annual",
-                    "statement_type": "income_cash_flow",
+                    "statement_type": "full_statement",  # holds income + balance sheet + cash flow combined per period; renamed 2026-09-29, was misleadingly "income_cash_flow"
                     "fiscal_year": period_end.year,
                     "fiscal_quarter": None,
                     "filed_date": None,
@@ -1498,7 +1498,7 @@ def build_quarterly_periods(data, concept_map, ticker):
             key = (fiscal_year, quarter)
             periods[key] = {
                 "period_end": fact["end"], "period_type": "quarterly",
-                "statement_type": "income_cash_flow", "start": fact["start"],
+                "statement_type": "full_statement", "start": fact["start"],  # renamed 2026-09-29, was "income_cash_flow"
                 "filed_date": fact["filed"], "fiscal_year": fiscal_year,
                 "fiscal_quarter": quarter, "revenue": fact["val"],
             }
@@ -1603,7 +1603,7 @@ def build_quarterly_periods(data, concept_map, ticker):
 
         q4 = {
             "period_end": annual_end, "period_type": "quarterly",
-            "statement_type": "income_cash_flow", "start": None,
+            "statement_type": "full_statement", "start": None,  # renamed 2026-09-29, was "income_cash_flow"
             "filed_date": annual.get("filed_date"),
             "fiscal_year": fiscal_year, "fiscal_quarter": 4,
         }
