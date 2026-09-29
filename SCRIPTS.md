@@ -438,6 +438,28 @@ Multi-entity tag bug's COVID-19/2008-crisis examples; `sec_filings`/`sec_8k_fili
 swap; dead-column pattern; `financial_market_reactions` discovery — all incorporated into
 Current Reference and Known Gotchas above.
 
+### 2026-09-29 — Derived financial chain verified, one real fix, one false alarm resolved
+Checked the full Phase 2 derived chain fresh (financial_statements -> financial_metrics
+-> financial_health_snapshot -> fundamental_signals -> financial_condition_summary),
+not just the two endpoints. `financial_health_snapshot` and `fundamental_signals` are
+real database VIEWS (not tables -- no Python script writes to them, confirmed by a
+real grep coming back empty before checking table_type).
+
+Real finding, initially looked like a bug, wasn't: only 27,528 of 35,819
+`financial_metrics` rows (76.9%) flow through to `fundamental_signals` -- a real
+8,291-row gap, concentrated at a consistent ~19-21 rows per company across MANY
+different tickers (DE, TAP, JCI, GS, YUM, TSN, GPC, CIEN, BBY, ADI, AES, AEP, AFL,
+AIG, ADBE), not a handful like the earlier MA/ADBE metrics bug. Pulled the real view
+definition (`pg_get_viewdef`) rather than guess: `fundamental_signals` has an
+explicit, deliberate `WHERE period_type = 'quarterly'` filter, using `LAG()` window
+functions to compare each quarter to the immediately PRECEDING quarter (not prior
+year) for trend detection. Annual periods are correctly, intentionally excluded --
+mixing an annual total into a quarter-over-quarter LAG sequence would be a nonsensical
+comparison. **Not a bug, not a coverage gap -- the ~77% figure is the correct ceiling,
+not something to chase toward 100%.** `revenue_momentum` and `gross_margin_trend` both
+checked for real variance (not another `size_bucket`) -- both genuinely well-distributed
+across 3 real categories each, confirmed working.
+
 ### 2026-09-29 — Dead-column scan (Phase 1 checklist item)
 `PROJECT_PLAN.md` recommended a dedicated scan for other "always-same-value" dead
 tracking columns after finding two by accident (`size_bucket`, `promoted_to_event`) --
