@@ -2,6 +2,18 @@
 
 *Rewritten to reflect actual current state. Original plan is preserved in git history for comparison — this version tracks what was actually built, including where deliberate deviations improved on the original design.*
 
+> **STALE NUMBERS WARNING (added 2026-09-29):** Sections 4-10 below describe the project
+> at a ~13-company "anchor node" universe (see the Section 9 tier table, and phase-status
+> figures like "127 real events" per company). The real current state is **499 securities,
+> 16,745 events** — see `README.md`'s Current State section for live-verified numbers, and
+> `SCRIPTS.md` for current script interfaces and a dated changelog. Sections 1-3 (project
+> philosophy, mechanical-vs-behavioral framing, what changed from the original plan) remain
+> accurate — they aren't numbers-dependent. The tail of this document (below Section 10,
+> starting with "Correction (verified this session)...") already contains later, partial
+> self-corrections to some of the numbers above — those corrections are real and current,
+> the untouched body sections above them are not. A full rewrite of Sections 4-10 against
+> current data is a real, separate task, not yet done.
+
 ---
 
 ## 1. Project Goal (unchanged)
