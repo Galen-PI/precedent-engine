@@ -438,6 +438,26 @@ Multi-entity tag bug's COVID-19/2008-crisis examples; `sec_filings`/`sec_8k_fili
 swap; dead-column pattern; `financial_market_reactions` discovery — all incorporated into
 Current Reference and Known Gotchas above.
 
+### 2026-09-29 — Dead-column scan (Phase 1 checklist item)
+`PROJECT_PLAN.md` recommended a dedicated scan for other "always-same-value" dead
+tracking columns after finding two by accident (`size_bucket`, `promoted_to_event`) --
+never actually done until now. Built `scripts/audit/scan_dead_columns.sql`: a real
+PL/pgSQL scan across 44 real pipeline tables (audit/scratch snapshot tables excluded),
+flagging any column where non-null values collapse to a single distinct value (n>10).
+
+Real result: 16 flagged. 9 genuinely benign (single data source/currency/model-version
+in use so far -- e.g. `securities.currency` always `USD`, expected for an all-US-listed
+universe). 2 already known. 1 confirms (doesn't newly reveal) the known
+`surprise_vs_consensus` gap. 2 are `stale_url_sweep_results`' own intentional filter
+criteria. 1 small-sample/likely-benign (`news_ai_classifications`, n=60, matches Track
+B's known early/paused status). **1 new, real, minor finding:**
+`financial_statements.statement_type` is stuck at `"income_cash_flow"` for all 36,001
+rows -- followed up directly rather than assumed: the real balance-sheet columns
+(`total_assets`, `total_liabilities`, `total_equity`, `cash_and_equivalents`) ARE
+present in the schema and well-populated (94-97% coverage), so this is a stale/
+misleading label, not a coverage gap -- initially worried this meant balance-sheet
+data was never ingested at all; direct query ruled that out.
+
 ### 2026-09-29 — Phase 2 spot-check: financial_metrics coverage gap
 Checked Phase 2 (financial analysis) fresh rather than trust `PROJECT_PLAN.md`'s stale
 100%-complete claim from the ~13-company era. Found 498/499 securities have
