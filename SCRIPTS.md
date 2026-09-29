@@ -370,6 +370,28 @@ a full refetch before any downstream tagging/ripple work on recent events could 
   on a downstream slice. Bit both `tag_reaction_character.py`'s (indirect, via price
   windows — not yet confirmed as a memory issue) and `sweep_stale_url_noise.py`'s fetch
   step (confirmed, fixed 2026-09-28).
+- **`financial_statements.free_cash_flow` backfill claim is stale.** The 2026-09-22 note
+  ("4,489 rows have both ingredients but the subtraction was never computed") is no longer
+  true — verified live 2026-09-29: only 36 rows remain unbackfilled. Either fixed and
+  never marked resolved, or the denominator shifted since — not re-investigated further,
+  just corrected here so it isn't repeated as current.
+- **`populate_financial_metrics.py`'s own printed summary line is unreliable — verify the
+  real count directly, don't trust it.** Found 2026-09-29: two large, fully-onboarded
+  companies (MA: 93 statement rows, ADBE: 82) had ZERO financial_metrics rows despite
+  complete real revenue history back to 2007 — the script has no CLI args and no
+  ticker-based skip logic (`fetch_financial_statements()` is an unconditional, paginated
+  `select("*")`), so this was very likely just "script last ran before these companies'
+  statements existed," not a per-company bug. Re-ran it live (safe: chunked per-security
+  upsert on `(security_id, period_type, period_end)`, isolated failure handling). The
+  script's own final printout said "Total metrics: 36001" (matching total statement
+  count exactly, implying 100% coverage) — **this was wrong.** Direct verification showed
+  the real total was 35,819, not 36,001 — the script's summary logic has a real bug of
+  its own, separate from the coverage gap it partly fixed. Real outcome: metrics coverage
+  34,662 -> 35,819 (+1,157). ADBE fully recovered (82/82). MA nearly complete (90/93, 3
+  still missing). 182 rows remain uncovered project-wide — not yet root-caused; some is
+  plausibly the `growth()` helper correctly returning NULL for each company's first
+  tracked period (no prior period to compare against), but 182 across ~499 companies is
+  lower than that alone would predict, so this isn't confirmed as the full explanation.
 
 ---
 
@@ -415,6 +437,18 @@ inflated `systemic_shock`.
 Multi-entity tag bug's COVID-19/2008-crisis examples; `sec_filings`/`sec_8k_filings` naming
 swap; dead-column pattern; `financial_market_reactions` discovery — all incorporated into
 Current Reference and Known Gotchas above.
+
+### 2026-09-29 — Phase 2 spot-check: financial_metrics coverage gap
+Checked Phase 2 (financial analysis) fresh rather than trust `PROJECT_PLAN.md`'s stale
+100%-complete claim from the ~13-company era. Found 498/499 securities have
+`financial_statements` coverage (genuinely near-complete), but 1,339 of 36,001 statement
+rows had no corresponding `financial_metrics` row, concentrated in specific tickers rather
+than scattered — AVB, VMRK, EA (all three already flagged elsewhere tonight for other
+onboarding issues) plus, unexpectedly, MA and ADBE (0/93 and 0/82 respectively, despite
+complete statement history, no known prior issues). Re-ran `populate_financial_metrics.py`
+live — see Known Gotchas for the real before/after numbers and the script's own
+unreliable summary line, caught by verifying directly rather than trusting its printout.
+Also corrected a separate stale claim (`free_cash_flow` backfill, see Known Gotchas).
 
 ### 2026-09-28/29 — Stale-URL Sweep, Price Refresh, Tagger Fix
 - Root-caused and measured the stale-`primary_document_url` issue (~1% of old-noise
