@@ -8,11 +8,11 @@ Core discipline: this platform is explicitly not trying to predict outcomes. It 
  
  
 ## Current State (see PROJECT_PLAN.md for the full breakdown)
-- **497 securities tracked** (up from an earlier ~60 — now approaching full S&P 500 coverage; sector classification for 420/421 previously-null securities was backfilled 2026-09-22 via real GICS data, not guessed)
-- **12,517 real, verified corporate events recorded**, spanning 1994–2026
-- **49,892 rows in `sec_filings`** (10-K/10-Q index) and **154,607 rows in `sec_8k_filings`** (8-K index, ~11,300 promoted to real events) — note: these two table names are swapped from what they contain; see "Known Issues" below
+- **499 securities tracked** (up from an earlier ~60 — now approaching full S&P 500 coverage; sector classification for 420/421 previously-null securities was backfilled 2026-09-22 via real GICS data, not guessed)
+- **16,745 real, verified corporate events recorded**, spanning 1994–2026
+- **49,892 rows in `sec_filings`** (10-K/10-Q index) and **155,141 rows in `sec_8k_filings`** (8-K index, 15,581 promoted to real events) — note: these two table names are swapped from what they contain; see SCRIPTS.md's Known Gotchas
 - 13-category event taxonomy (acquisitions, leadership changes, regulatory actions, capital raises, restructurings, spinoffs, and more), each backed by real filing text, never fabricated
-- **3.3M rows of daily price data**, 495/497 securities, 1994–2026 coverage — confirmed clean (no negative prices, no high<low inversions) during a full table-by-table database audit on 2026-09-22
+- **3.35M rows of daily price data**, 497/499 securities, 1994–2026 coverage — confirmed clean (no negative prices, no high<low inversions) during a full table-by-table database audit on 2026-09-22. **No incremental price updater existed until 2026-09-28** — `market_prices` had silently drifted several weeks stale with zero alerting before this was found and fixed; see SCRIPTS.md's changelog
 Every event in this database traces back to its exact source SEC filing(s) — nothing is inferred or hallucinated. Every classification decision is logged with the AI's confidence and reasoning, and every bulk auto-confirmation policy in this pipeline is backed by a real, measured accuracy check before being trusted at scale.
  
  
@@ -62,26 +62,28 @@ Promote confirmed real events into the actual database:
 python scripts/promote_events.py --live
  
  
-## Recent Findings (2026-09-22 full database audit — in progress, 34/~59 tables reviewed)
+## Recent Findings (2026-09-22 database audit, updated 2026-09-29)
  
-A systematic table-by-table review is underway to verify every table's real
-contents before trusting any further model or analysis work on top of them.
-Full findings tracked in `table_review_checklist.md`; prioritized fix list
-in `database_fixes_and_review_backlog.md`. Headline findings so far:
+A systematic table-by-table review of the database ran 2026-09-22 (34/~59 tables
+reviewed at the time). Full current findings and script interfaces are tracked in
+`SCRIPTS.md`; the filing-review judgment rubric is in `docs/event-materiality-review.md`.
+Headline findings, updated where status has changed since:
  
-- **`reaction_character` tagging only measures ONE company's price move per
-  event**, even for events linked to many companies (e.g. the COVID-19
-  market panic event links 17 companies but has a single "rewarded" tag
-  applied to all of them). This directly inflated `systemic_shock`'s
-  apparent predictive strength in earlier model testing. Real fix needed:
-  compute reaction per (event, entity) pair for multi-entity events. **Until
-  fixed, treat `systemic_shock`/`geopolitical`/`government_action` results
-  from any model or significance test as unreliable.**
+- **`reaction_character` tagging computes ONE reaction per event from the FIRST-linked
+  entity only**, even for events linked to many companies (e.g. the COVID-19 market panic
+  event links 17 companies but has a single "rewarded" tag applied to all of them). This
+  directly inflated `systemic_shock`'s apparent predictive strength in earlier model
+  testing. **Sized 2026-09-29: 49 of 15,928 currently-tagged events (0.3%) are affected** —
+  small in count, concentrated in the large macro/systemic events where it matters most.
+  Real fix still needed: compute reaction per (event, entity) pair. **Until fixed, treat
+  `systemic_shock`/`geopolitical`/`government_action` results from any model or
+  significance test as unreliable.**
 - **`financial_market_reactions` — a complete, ~99%-populated dataset of
   abnormal stock returns for nearly every financial filing (35,826 rows,
-  496/497 securities) — was sitting completely unused.** Likely the most
-  promising untested foundation for predicting market reaction, independent
-  of the `events`/`reaction_character` system.
+  496/497 securities as of 2026-09-22) — was sitting completely unused at that time.**
+  Likely the most promising untested foundation for predicting market reaction,
+  independent of the `events`/`reaction_character` system. **Status not re-checked
+  since 2026-09-22 — confirm it's still unused before repeating this claim.**
 - **Recurring pattern: "always-same-value" dead tracking columns.** Three
   found so far (`event_pre_context.surprise_vs_consensus`,
   `financial_condition_score.fcf_margin_change`,
