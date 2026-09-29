@@ -80,10 +80,13 @@ Headline findings, updated where status has changed since:
   significance test as unreliable.**
 - **`financial_market_reactions` — a complete, ~99%-populated dataset of
   abnormal stock returns for nearly every financial filing (35,826 rows,
-  496/497 securities as of 2026-09-22) — was sitting completely unused at that time.**
-  Likely the most promising untested foundation for predicting market reaction,
-  independent of the `events`/`reaction_character` system. **Status not re-checked
-  since 2026-09-22 — confirm it's still unused before repeating this claim.**
+  496/497 securities as of 2026-09-22) — was flagged as unused at that time.**
+  **Correction, verified 2026-09-29: this is no longer true.** Four scripts now use it
+  (`test_financial_market_reactions.py` — a real predictive test against it;
+  `multi_feature_model.py` — used to validate the storm/compounding finding;
+  `analyze_financial_reactions.py`; `import_10k_10q_filings.py`). Confirmed via a direct
+  grep, not assumed. Exact results of the predictive test not yet re-read — the finding
+  here is that this table is genuinely in active use, not what conclusions it produced.
 - **Recurring pattern: "always-same-value" dead tracking columns.** Three
   found so far (`event_pre_context.surprise_vs_consensus`,
   `financial_condition_score.fcf_margin_change`,
