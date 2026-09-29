@@ -413,3 +413,19 @@ A complete, ~99%-populated dataset (35,826 rows, 496/497 securities) computing r
 Given the above, two items are worth adding to the existing sequence (Finish promotion → Apply tagging → Resolve Phase 5 → Re-run Phase 6 checks at larger n):
 1. **Fix `tag_reaction_character.py` for multi-entity events before trusting any re-run of Phase 6's pattern checks** — re-running at larger n without this fix would just produce a larger, still-unreliable sample for `systemic_shock`/`geopolitical`/`government_action`.
 2. **Scope a real test against `financial_market_reactions`** as a parallel or alternative Phase 6 target, alongside continuing to refine `reaction_character`-based testing.
+## Addendum: Macro Data Placement — Phase 2 vs. Phase 4 (2026-09-29)
+
+`macro_data_releases` (real FRED data: DCOILWTICO, DGS10, DFEDTARL/DFEDTARU, PAYEMS,
+UNRATE, CPIAUCSL, PCEPI, GDPC1 — 9 series, 31,034 rows, 1994-01-01 through
+2026-09-16) has historically been described as Phase 4's "Track A," alongside Track
+B's news-narrative pipeline. **Real, current status: this data is already fully built
+and current — no ingestion gap exists.** Nothing here required new work.
+
+**Clarified split (conceptual, not a code change):** the raw macro *numbers* belong
+to Phase 2's domain — usable directly for financial analysis, comparing a company's
+performance against the macro backdrop, regardless of which pipeline physically
+ingests them. Phase 4 owns the *narrative* — how a release was covered, market
+sentiment/reaction framing around it. The table itself doesn't move or get
+duplicated; this is purely about which phase's own completion checklist claims
+"macro data exists and is current" as one of its real items, so future work doesn't
+have to guess where to look for it.
