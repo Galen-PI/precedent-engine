@@ -445,6 +445,24 @@ Multi-entity tag bug's COVID-19/2008-crisis examples; `sec_filings`/`sec_8k_fili
 swap; dead-column pattern; `financial_market_reactions` discovery — all incorporated into
 Current Reference and Known Gotchas above.
 
+### 2026-09-29 — Global Events: manual review track quietly scaled, algorithmic track still stalled
+`build_event_episodes.py`'s output table (`global_event_episodes`) confirmed still 0
+rows -- exactly as documented 2026-09-22 (four failed iterations, root cause identified,
+not implemented). No change there.
+
+**But the simpler, already-proven alternative the old notes recommended "instead of
+continuing" the algorithmic effort has real, substantial progress never documented:**
+`global_events.severity` now populated for 167 events (up from the "11 confirmed"
+figure in the stale notes -- a real ~15x increase), with genuine variance (105 major,
+53 moderate, 9 minor -- not degenerate). This looks like the recommended simpler
+approach was actually followed at real scale, just never written down. 424 total
+`global_events` rows exist, latest dated 2026-09-14.
+
+**Real recommendation:** formally retire `build_event_episodes.py` as the intended
+path (or explicitly re-scope it) given the manual-review track already works and has
+real traction -- continuing to carry it as "unresolved, in progress" undersells what's
+actually been accomplished a different way.
+
 ### 2026-09-29 — Phase 4 Track B (news) is active, not "paused" as documented
 `PROJECT_PLAN.md`'s architecture section describes `news_articles` as an "early-stage
 live feed, paused." **This is stale.** Verified live: 407 total articles, latest
