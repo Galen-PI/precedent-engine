@@ -264,10 +264,16 @@ def compute_abnormal_return(ticker: str, event_date: str, window_days: int) -> f
 
     # Take the first available trading day on/after event_date as the base,
     # and the (window_days)-th trading day after that as the endpoint.
+    # REAL FIX: require the FULL window, not just >=2 days -- a short window
+    # (e.g. 8 days when window_days=20) was silently producing a "20-day"
+    # reaction that was really an 8-day one, biasing recent events toward
+    # muted. Confirmed 2026-09-28: prices lag ~1 month behind real time, so
+    # recent events were being tagged on truncated windows with no signal
+    # this had happened. Now requires the real full window_days+1 prices.
+    if len(company_prices) < window_days + 1 or len(spy_prices) < window_days + 1:
+        return None
     company_prices = company_prices[: window_days + 1]
     spy_prices = spy_prices[: window_days + 1]
-    if len(company_prices) < 2 or len(spy_prices) < 2:
-        return None
 
     company_return = (company_prices[-1]["adjusted_close"] / company_prices[0]["adjusted_close"]) - 1
     spy_return = (spy_prices[-1]["adjusted_close"] / spy_prices[0]["adjusted_close"]) - 1
