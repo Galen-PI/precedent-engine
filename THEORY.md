@@ -142,36 +142,87 @@ for the real, still-untested version.
 
 ## Open Questions (not yet started)
 
-### The Cascade Effect -- multi-hop, cross-entity event propagation
-**Status: genuinely new hypothesis, deliberately named distinctly from this codebase's
-existing "chain" terminology to avoid the confusion above.** Raised 2026-09-29: does
-Event 1 at Company A propagate to affect Company B (a sector peer or connected entity),
-which then has its own Event 2, which propagates further to Company C -- a real,
-directional, multi-hop cascade, not a single-company narrative link and not a same-window
-magnitude correlation. This is a different, more ambitious claim than anything tested so
-far in this project.
+### The Cascade Effect -- multi-hop, event-nature-based propagation
+**Status: real design work started 2026-09-29, converged on a workable next step. Not yet
+built or tested.** Raised 2026-09-29: does Event 1 propagate to cause Event 2 at a
+DIFFERENT entity, which then causes Event 3 at a third -- a real, directional, multi-hop
+cascade. Distinct from the sector-peer ripple finding (same-WINDOW magnitude correlation,
+not directional causation) and the storm/compounding finding (a company's OWN reaction
+size, not propagation to others). Deliberately given a distinct name from this codebase's
+existing "chain" terminology (same_entity_sequence, chain_position, follow_on), which all
+turned out to mean same-company narrative continuity, not cross-entity propagation.
 
-**How it differs from what's already validated:**
-- The sector-peer ripple finding (see Validated Findings) shows peers react MORE STRONGLY
-  in the SAME time window as a company's large event -- a correlation snapshot, not a
-  directional hop-by-hop chain.
-- The storm/compounding finding shows a company's OWN reaction is bigger when OTHER
-  events (own-company or otherwise) cluster nearby -- magnitude, not propagation.
-- Neither existing finding, nor the null same_entity_sequence result above, tests whether
-  one event genuinely CAUSES a second event at a different company, which then causes a
-  third.
+**Real existing infrastructure found and reused, not reinvented:**
+- `event_relationships` (116 real rows) already has a `comparison_signal` type (39
+  instances) that is genuinely cross-entity: one shared macro root cause -> several
+  different companies' own distinct, independently-documented reactions (e.g. COVID panic
+  -> Boeing's CEO ouster, SLB's restructuring, Pfizer's vaccine-revenue turnaround). This
+  IS real Tier-1 material (macro trigger -> company reaction) and does not need to be
+  rebuilt.
+- Confirmed `events` rows CAN exist with zero entity link (the Fed's 2020-03-15 emergency
+  rate cut has no linked ticker) -- genuinely exogenous triggers are already representable
+  in this schema without new columns.
+- `follow_on`/`same_entity_sequence` (70 combined instances) are same-company only and
+  irrelevant to this hypothesis -- confirmed by reading all 15 real `follow_on` examples,
+  every one was same-ticker-to-same-ticker.
 
-**What would be needed to test this for real, not yet built:**
-1. A real, defensible criterion for "Event 2 was plausibly caused by Event 1's ripple" --
-   not just "a peer company had some event sometime after," since sector peers have
-   unrelated events constantly and that alone would produce spurious chains.
-2. A way to chain 3+ hops without the noise compounding at each step -- risk of finding
-   apparent cascades that are really just sector-wide activity.
-3. Combines pieces from three already-separate areas (storm/compounding, sector-peer
-   ripple, some new real event-linking mechanism) rather than reusing any single existing
-   tag or feature.
+**First real design attempt, and why it failed:** tried using SECTOR membership +/-40 days
+as a structured screen for candidate Company-A-event -> Company-B-event pairs (same sector,
+different ticker). Sized at three thresholds: 135,770 raw candidates (unscoped), 14,769
+(Company A restricted to |20d abnormal return| > p90 = 13.2%), 3,070 (BOTH sides restricted
+to p90+). Read a real random sample of 25 of the 3,070 "both large" pairs individually.
+**Result: essentially none were genuine A-causes-B links.** Nearly every pair was two
+DIFFERENT companies independently reacting to the SAME known systemic event (2008 crisis,
+COVID) in the same rough window -- exactly what `comparison_signal` already captures, not
+new propagation. The "require both sides large" filter inadvertently just re-selects
+crisis-clustering periods, since that's when large reactions cluster across every sector
+simultaneously.
 
-**Deliberately scoped as its own future session, not attempted tonight.**
+**Real reframing (2026-09-29), based on reading the failed sample:** the problem wasn't
+timing/sector proximity -- it was that both sides of nearly every failed pair were
+company-INITIATED, PROACTIVE decisions (an acquisition, a promotion, a strategic
+restructuring). Two companies making independent proactive choices in the same window
+looks like coincidence because it largely is one. The one real working precedent
+(`comparison_signal`'s COVID/Fed link) worked specifically because the Fed's action is
+genuinely exogenous -- no company decision involved at all.
+
+**Also confirmed: `event_pre_context.size_bucket` has ZERO real variance** (15,976 of
+15,976 populated rows all read `large_or_mega_cap_tracked_universe`) -- this project's
+tracked universe is exclusively large/mega-cap by design (GICS sector anchors). A
+company-SIZE-based tier ("large company -> medium company -> small company") is **not
+buildable with this data.** The real, correct tiering dimension is event NATURE
+(exogenous/forced vs. company-initiated/proactive), not company size.
+
+**Revised real tier structure:**
+- **Tier 0** -- genuinely exogenous, zero company decision involved (Fed/regulatory
+  actions, macro conditions, natural disasters, geopolitical events). May have no entity
+  link at all, per the confirmed Fed-cut precedent.
+- **Tier 1** -- a company's REACTIVE event, forced by a Tier 0 trigger, not a company's own
+  initiative. This is what `comparison_signal` already captures for the two big known
+  crises (2008, COVID).
+- **Tier 2** -- does Company A's Tier-1 REACTIVE event (not proactive) cause a DIFFERENT
+  Company B's own REACTIVE event? This is the genuinely untested piece. Hypothesis:
+  restricting BOTH sides to reactive/forced events (not just large-magnitude ones) should
+  perform better than the failed sector-timing attempt, which had no such restriction.
+
+**Real sizing check on the reframed approach:** a crude text-pattern search (title/
+description containing "in response to," "following," "forced," "mandated," "compelled,"
+"as a result of," "amid") matched 374 of 16,746 events (2.2%). Read a real random sample
+of 20 by hand: roughly 8-9 (40-45%) were genuinely externally-triggered (macro conditions,
+commodity prices, sanctions/geopolitical, regulatory rulings, government legal action);
+the other 10-11 were false positives -- same-company events using "following" to reference
+the COMPANY'S OWN prior action (a CEO departure following the company's own divestiture,
+an appointment following the company's own acquisition) -- structurally identical to the
+already-null same_entity_sequence pattern, just caught by different wording. At ~40-45%
+real precision, the 374 crude matches imply roughly **150-170 genuinely externally-
+triggered candidate events** -- a real, human-reviewable starting pool.
+
+**Concrete next step, not yet done:** read through the estimated ~150-170 real Tier-1
+candidates (filtering out the same-company-reference false positives first), then for each
+one, search for a DIFFERENT company's own reactive event (same reactive-language filter,
+not a magnitude filter) in the following window. This is the real, still-untested version
+of Tier 2. Deliberately scoped as a dedicated future session -- read-and-classify work
+at this scale, not a quick query.
 
 ---
 
