@@ -445,6 +445,28 @@ Multi-entity tag bug's COVID-19/2008-crisis examples; `sec_filings`/`sec_8k_fili
 swap; dead-column pattern; `financial_market_reactions` discovery — all incorporated into
 Current Reference and Known Gotchas above.
 
+### 2026-09-30 — Storm/compounding finding productionized: real event_pre_context columns
+Phase 5 checklist item: the validated storm finding (THEORY.md) previously only lived
+as an in-memory computation inside multi_feature_model.py's get_storm_lookup(),
+recomputed from scratch on every model run. Added real `storm_magnitude` (numeric) and
+`storm_tier` (text) columns to `event_pre_context` and built
+`scripts/financial_pipeline/populate_storm_tier.py`, reusing the exact same logic.
+15,050 real (event, entity) pairs written: isolated 6,647, large 3,838, medium 2,336,
+small 2,229.
+
+**Real bug found and fixed during this build, worth remembering:** a `paginated()`
+helper with `.range()` but no `.order()` first does NOT guarantee stable row ordering
+across separate paginated requests on a large table -- confirmed directly, the first
+--live attempt produced scattered duplicate (event_id, entity_id) keys across every
+single 500-row chunk (`ON CONFLICT DO UPDATE command cannot affect row a second time`),
+despite `event_ripple_timeline` itself having zero true duplicate rows (verified via a
+direct GROUP BY / HAVING COUNT(*) > 1 check before assuming the bug was upstream).
+Fixed by requiring an explicit `order_by` argument on every paginated call -- not every
+table has an `id` column (`event_component_dates` doesn't), so a hardcoded `.order("id")`
+isn't safe to assume either. Same bug CLASS as the well-known unpaginated-query-silently-
+capped-at-1000-rows issue, just the ordering variant -- worth checking for in any new
+pagination helper, not just the row-count version.
+
 ### 2026-09-29 — Global Events: manual review track quietly scaled, algorithmic track still stalled
 `build_event_episodes.py`'s output table (`global_event_episodes`) confirmed still 0
 rows -- exactly as documented 2026-09-22 (four failed iterations, root cause identified,
