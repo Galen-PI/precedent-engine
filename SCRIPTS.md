@@ -446,6 +446,34 @@ Multi-entity tag bug's COVID-19/2008-crisis examples; `sec_filings`/`sec_8k_fili
 swap; dead-column pattern; `financial_market_reactions` discovery — all incorporated into
 Current Reference and Known Gotchas above.
 
+### 2026-09-30 — Sector-peer ripple finding productionized: new sector_peer_ripple table
+Phase 5 checklist item: the validated sector-peer ripple finding (issue #21, z=17.49
+at the original small-scale test, n=1,215 -- see test_sector_peer_ripple.py and
+THEORY.md) previously existed only as a one-off validation script result, never
+productionized. Real, deliberate scope, per the original recommendation ("scoped
+build, large-reaction events only, not a full unscoped rebuild" -- unscoped would
+have been ~21M rows, 44x event_ripple_timeline's size): built a new
+`sector_peer_ripple` table and `scripts/ripple/populate_sector_peer_ripple.py`,
+reusing test_sector_peer_ripple.py's EXACT methodology (prior-trading-day baseline,
+SPY benchmark, +/-5 trading days). Scoped to trigger events with |abnormal_return_5d|
+>= 0.05 (the same threshold already established by storm_tier's "large" bucket).
+2,527 of 2,539 real trigger events covered, 124,638 real (trigger, peer) rows.
+
+**Real bug found and fixed during the first --live run, same class as the
+populate_storm_tier.py pagination bug found earlier tonight but a DIFFERENT root
+cause:** 21 chunks failed with the same `ON CONFLICT DO UPDATE cannot affect row a
+second time` error (10,500 rows). This time `paginated()` already had the `.order()`
+fix from the earlier lesson -- the real cause was different: NWS/NWSA (News Corp's
+dual-class shares, the SAME well-documented dedup issue that's bitten this project
+multiple times before) has one entity_id mapped to TWO securities. The script
+iterated over `securities` directly when building each sector's peer list, so this
+one company appeared twice in the Communication Services sector's peer set,
+producing duplicate (trigger_event_id, peer_entity_id) keys scattered across ~21
+different chunks by chance. Fixed by deduping securities by entity_id before
+grouping by sector. Confirmed zero duplicate keys remain after the fix, re-ran
+safely on top of the 114,194 already-written rows (upsert-safe, no data loss from
+the first partial run).
+
 ### 2026-09-30 — EA's price-data absence explained (real, external, not a pipeline bug)
 EA's complete absence from `market_prices` had been flagged as "genuinely
 unexplained" repeatedly across this project (2026-09-22's audit explicitly ruled
