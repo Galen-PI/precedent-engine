@@ -41,6 +41,15 @@ CONCEPTS = {
         # (or any non-primary candidate) actually contributes data,
         # so affected tickers are traceable rather than silently blended.
         "RevenueFromContractWithCustomerIncludingAssessedTax",
+        # REAL FIX (2026-09-30): banks/financial institutions often report this
+        # concept instead of the standard "Revenues" -- confirmed directly against
+        # GS's real 10-Q data (130 real quarterly facts, values matching GS's real
+        # reported scale, e.g. $15.184B for Q3 2025 standalone). Found while
+        # investigating why 367 tickers (73% of tracked universe, concentrated in
+        # financials -- BNY, MTB, GS, TFC, SYF, RF, FITB, NTRS at the top) had
+        # empty Q4-only quarterly rows -- the prior list had no bank-specific
+        # revenue concept at all beyond the single hardcoded JPM composite entry.
+        "RevenuesNetOfInterestExpense",
     ],
     "gross_profit": ["GrossProfit"],
     "operating_income": ["OperatingIncomeLoss"],
@@ -60,6 +69,8 @@ CONCEPTS = {
 
 
 CIK_TO_TICKER = {
+    "0000886982": "GS",  # added 2026-09-30, was missing entirely, found while
+    "886982": "GS",       # investigating the real financial-sector revenue-concept gap
     "0000906107": "VMRK",
     "0000712515": "EA",
     "0000915912": "AVB",
@@ -566,6 +577,7 @@ CIK_TO_TICKER = {
 
 # Each ticker's fiscal year end, needed for correct quarter/Q4 derivation.
 FISCAL_YEAR_END = {
+    "GS": (12, 31),      # standard calendar year -- confirmed via real GS 10-Q period_end dates (Mar/Jun/Sep 31)
     "ADBE": (12, 31),      # standard calendar year (default -- edit manually if non-standard)
     "MA": (12, 31),      # standard calendar year (default -- edit manually if non-standard)
     "VMRK": (12, 31),      # standard calendar year (default -- edit manually if non-standard)

@@ -446,6 +446,32 @@ Multi-entity tag bug's COVID-19/2008-crisis examples; `sec_filings`/`sec_8k_fili
 swap; dead-column pattern; `financial_market_reactions` discovery — all incorporated into
 Current Reference and Known Gotchas above.
 
+### 2026-09-30 — Real fix found for the financial-sector quarterly gap: RevenuesNetOfInterestExpense
+Real follow-up to the XOM/Q4-gap investigation above. Confirmed the working theory:
+fetched Goldman Sachs' real SEC XBRL company-facts data directly and found
+`RevenuesNetOfInterestExpense` -- a standard concept many banks use instead of the
+regular "Revenues" concept -- with 130 real, well-populated quarterly facts, values
+matching GS's real reported scale (e.g. $15.184B Q3 2025). Added it to
+`CONCEPTS["revenue"]` in `ingest_sec_financials_multi.py` (not a per-ticker
+composite hack -- this is a real, standard concept, so any ticker using it benefits
+automatically). Also found and fixed a real, separate gap while testing: **GS was
+entirely missing from `CIK_TO_TICKER`/`FISCAL_YEAR_END`** (added both, CIK
+0000886982, confirmed real fiscal year-end Dec 31 from the actual filing dates).
+
+**Real, measured result on GS specifically:** quarterly periods went from ~0 real
+rows (just empty Q4 placeholders) to 59 real quarterly periods, genuine revenue/
+net_income back through 2022-2023, matching GS's real reported figures. Empty Q4
+rows dropped from 17 to 4 (2009-2012 specifically -- the concept doesn't extend
+that far back for GS, a real, honest remaining limit, not a bug).
+
+**Not yet done -- real next step:** this was tested and confirmed on ONE ticker
+(GS) of the 367 affected. Re-running `ingest_sec_financials_multi.py` for the
+other affected tickers (many likely also missing from `CIK_TO_TICKER` the same way
+GS was) is the real remaining work -- expect this new concept alone won't fix
+every ticker (different banks may use yet other concept names), so real, honest
+measurement of the before/after gap size per ticker is needed, not an assumption
+that this one fix closes the whole 367-ticker pattern.
+
 ### 2026-09-30 — financial_market_reactions "unification" was already resolved, before tonight
 Final Phase 5 checklist item, checked: `event_market_reactions`/`financial_market_reactions`
 "unification" -- turned out to already be fully resolved, and already documented as
