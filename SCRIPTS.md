@@ -468,6 +468,46 @@ real revenue). **Genuinely couldn't pin down COF's specific cause without readin
 separate task, not attempted tonight. Real, honest state: mostly closed, small
 unexplained residual remains.
 
+### 2026-09-30 — Added confidence_trend to multi_feature_model.py; fixed a real pagination bug; corrected my own overclaim about its impact
+While adding `confidence_trend` as a new feature (same pattern as storm_tier,
+sentiment), found this file's shared `paginated()` helper had the same missing-
+`.order()` pattern already confirmed as a real bug twice tonight elsewhere
+(populate_storm_tier.py, populate_sector_peer_ripple.py) -- and every core table
+this file loads is massively over the 1000-row single-page threshold (ripple:
+654K rows, sentiment: 533K rows, events/entity_relationships/tags: 16-18K each).
+Fixed all 12 real call sites with an explicit, per-table-correct `order_by`
+(matching the id-vs-event_id pattern already established for other tables
+lacking an id column).
+
+**Real, honest correction to my own claim, not something to let stand:** after
+the fix, `build_dataset()`'s total labeled rows went from 5,580 (an earlier run
+this session) to 8,835, and I initially presented that jump as confirmation the
+ordering bug had been silently dropping real rows. **Directly tested this claim
+and it did not hold up:** ran the SAME unordered query twice in a row on `events`
+(16,766 rows, unchanged mid-test) and got byte-identical results both times --
+zero rows different. The two confirmed bugs elsewhere tonight had real, hard
+evidence (actual Postgres `ON CONFLICT` errors from duplicate keys); this one
+never did, and I shouldn't have treated the row-count jump as proof without
+testing it. **The far more honest explanation for the 5,580->8,835 jump is that
+the underlying database itself changed enormously between those two points
+tonight** (79 new events promoted, storm_tier fully rebuilt, event_entity_reactions
+92->124 rows, several financial-statement fixes) -- not the ordering fix. The
+fix itself is still correct and kept (removes a genuine theoretical risk, matches
+the project's established discipline), but its practical impact on this
+particular file's row counts was not demonstrated and should not be cited as if
+it were.
+
+**Real result on `confidence_trend` itself, cutoff 2022-01-01, corrected dataset
+(8,835 rows, 6,539 train / 2,296 test):** test accuracy 34.1% vs. 34.2% baseline
+-- still flat, still a null result when controlled for alongside every other
+known feature. `confidence_trend` does not appear in any class's top-10
+coefficients. Consistent with (not contradicted by) the standalone walk-forward
+finding: only falling->punished showed real, if modest, multi-cutoff robustness;
+once every other feature is controlled for simultaneously, it doesn't carry
+enough independent signal to show up. Real, second piece of evidence this isn't
+a strong standalone predictor, on top of the multi-cutoff correction already in
+THEORY.md.
+
 ### 2026-09-30 — BNY's real gap traced to its actual source: not our bug, a real XBRL tagging gap
 Real, precise follow-up to the entry below (which correctly found this wasn't a
 missing-concept problem, but incorrectly guessed at duration filtering and

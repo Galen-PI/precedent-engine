@@ -71,12 +71,21 @@ SUPABASE_KEY = os.environ["SUPABASE_KEY"]
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 
-def paginated(table, select, filters=None):
+def paginated(table, select, order_by, filters=None):
+    # REAL FIX (2026-09-30): no .order() before .range() does not guarantee
+    # stable row ordering across separate paginated requests -- confirmed
+    # this exact bug class twice already tonight (populate_storm_tier.py,
+    # populate_sector_peer_ripple.py), both causing silent duplicate/missing
+    # rows on large tables. This file's every core lookup (ripple: 654K rows,
+    # sentiment: 533K rows, events/entity_relationships/tags: 16-18K rows
+    # each) is WAY over the 1000-row single-page threshold where this bug
+    # can actually bite -- found while adding confidence_trend, not previously
+    # caught despite this file being used for every model run this session.
     rows = []
     offset = 0
     page_size = 1000
     while True:
-        q = supabase.table(table).select(select)
+        q = supabase.table(table).select(select).order(order_by)
         if filters:
             for f in filters:
                 q = f(q)
@@ -91,7 +100,7 @@ def paginated(table, select, filters=None):
 
 
 def get_sentiment_lookup():
-    rows = paginated("company_sentiment_timeline", "entity_id,date,avg_tone")
+    rows = paginated("company_sentiment_timeline", "entity_id,date,avg_tone", "id")
     by_entity: dict[str, list[tuple[str, float | None]]] = defaultdict(list)
     for r in rows:
         by_entity[r["entity_id"]].append((r["date"], r["avg_tone"]))
@@ -134,15 +143,15 @@ def get_storm_lookup() -> dict[tuple[str, str], str]:
     those were the real, confirmed 38.9%-of-table contamination found
     and fixed this session. Buckets into the same 4 tiers validated in
     that investigation: isolated / small / medium / large."""
-    bundled_ids = {r["event_id"] for r in paginated("event_component_dates", "event_id")}
+    bundled_ids = {r["event_id"] for r in paginated("event_component_dates", "event_id", "event_id")}
 
-    ripple_rows = paginated("event_ripple_timeline", "event_id,entity_id,abnormal_return,day_offset")
+    ripple_rows = paginated("event_ripple_timeline", "event_id,entity_id,abnormal_return,day_offset", "id")
     day5_by_entity: dict[str, list[tuple[str, float]]] = defaultdict(list)
     for r in ripple_rows:
         if r["day_offset"] == 5 and r["event_id"] not in bundled_ids and r["abnormal_return"] is not None:
             day5_by_entity[r["entity_id"]].append((r["event_id"], r["abnormal_return"]))
 
-    events_dates = {e["id"]: e["event_date"][:10] for e in paginated("events", "id,event_date")}
+    events_dates = {e["id"]: e["event_date"][:10] for e in paginated("events", "id,event_date", "id")}
 
     storm_lookup: dict[tuple[str, str], str] = {}
     for entity_id, event_returns in day5_by_entity.items():
@@ -175,35 +184,69 @@ def get_storm_lookup() -> dict[tuple[str, str], str]:
     return storm_lookup
 
 
+def get_confidence_trend_lookup() -> dict:
+    """REAL NEW FEATURE (2026-09-30): consumer confidence trend (UMCSENT,
+    this month vs prior month). Standalone walk-forward testing found a
+    real, partial signal -- falling confidence -> punished held up across
+    4/5 tested cutoffs (+1.4 to +5.0pp), while rising confidence's
+    apparent muted-beat did NOT survive multi-cutoff testing (predicted
+    label itself shifted: punished/punished/rewarded/muted/muted across
+    cutoffs, two real misses) -- see THEORY.md for the full record. Added
+    here to test whether it carries independent signal once controlled
+    for alongside every other known feature, not in isolation."""
+    rows = paginated("macro_data_releases", "release_date,value", "id",
+                      [lambda q: q.eq("series_id", "UMCSENT")])
+    by_month = {}
+    for r in rows:
+        d = date.fromisoformat(str(r["release_date"])[:10])
+        by_month[(d.year, d.month)] = r["value"]
+    return by_month
+
+
+def get_confidence_trend(event_date: str, by_month: dict) -> str | None:
+    d = date.fromisoformat(event_date)
+    this_month = by_month.get((d.year, d.month))
+    prior_year, prior_month = (d.year, d.month - 1) if d.month > 1 else (d.year - 1, 12)
+    prior = by_month.get((prior_year, prior_month))
+    if this_month is None or prior is None:
+        return None
+    delta = this_month - prior
+    if delta > 1.0:
+        return "confidence_rising"
+    if delta < -1.0:
+        return "confidence_falling"
+    return "confidence_stable"
+
+
 def build_dataset(exclude_bundled: bool = False):
     tag_names = {t["id"]: t["name"] for t in supabase.table("tags").select("id,name").execute().data}
     reaction_tags = {"rewarded", "punished", "muted"}
 
-    events = {e["id"]: e["event_date"][:10] for e in paginated("events", "id,event_date")}
+    events = {e["id"]: e["event_date"][:10] for e in paginated("events", "id,event_date", "id")}
 
     # REAL FIX (2026-09-24): keep ALL entities per event, not just the last
     # one a dict comprehension happened to keep.
     entity_map_multi: dict[str, list[str]] = defaultdict(list)
-    for r in paginated("event_entity_relationships", "event_id,entity_id"):
+    for r in paginated("event_entity_relationships", "event_id,entity_id", "id"):
         entity_map_multi[r["event_id"]].append(r["entity_id"])
 
-    type_map = {r["event_id"]: r["event_type_id"] for r in paginated("event_type_relationships", "event_id,event_type_id")}
+    type_map = {r["event_id"]: r["event_type_id"] for r in paginated("event_type_relationships", "event_id,event_type_id", "id")}
     type_names = {t["id"]: t["name"] for t in supabase.table("event_types").select("id,name").execute().data}
-    pre_context = {r["event_id"]: r for r in paginated("event_pre_context", "event_id,firm_state_label,regime_id")}
+    pre_context = {r["event_id"]: r for r in paginated("event_pre_context", "event_id,firm_state_label,regime_id", "id")}
     regime_names = {r["id"]: r["name"] for r in supabase.table("market_regimes").select("id,name").execute().data}
 
     # REAL FIX (2026-09-24): use the accurate per-(event,entity) reactions
     # from event_entity_reactions wherever they exist.
     entity_reactions = {
         (r["event_id"], r["entity_id"]): r["reaction"]
-        for r in paginated("event_entity_reactions", "event_id,entity_id,reaction")
+        for r in paginated("event_entity_reactions", "event_id,entity_id,reaction", "id")
     }
     print(f"  Loaded {len(entity_reactions)} real per-entity reactions from event_entity_reactions "
           f"(last night's reaction_character fix).")
 
     bundled_event_ids = set()
     if exclude_bundled:
-        rows = paginated("event_component_dates", "event_id")
+        rows = paginated("event_component_dates", "event_id", "event_id")
         bundled_event_ids = {r["event_id"] for r in rows}
         print(f"  Excluding {len(bundled_event_ids)} events with known bundling/date-uncertainty risk.")
 
@@ -215,8 +258,12 @@ def build_dataset(exclude_bundled: bool = False):
     storm_lookup = get_storm_lookup()
     print(f"  Loaded storm tiers for {len(storm_lookup)} real (event, entity) pairs.\n")
 
+    print("Fetching real consumer confidence data once...")
+    confidence_by_month = get_confidence_trend_lookup()
+    print(f"  Loaded {len(confidence_by_month)} real UMCSENT monthly readings.\n")
+
     reactions = {}
-    for r in paginated("event_tags", "event_id,tag_id"):
+    for r in paginated("event_tags", "event_id,tag_id", "event_id"):
         name = tag_names.get(r["tag_id"])
         if name in reaction_tags:
             reactions[r["event_id"]] = name
@@ -248,7 +295,10 @@ def build_dataset(exclude_bundled: bool = False):
             sentiment = get_sentiment_bucket(entity_id, event_date, sentiment_lookup, sentiment_cache) if entity_id else None
             storm_tier = storm_lookup.get((event_id, entity_id)) if entity_id else None
 
-            if etype is None or firm_state is None or regime is None or sentiment is None or storm_tier is None:
+            confidence_trend = get_confidence_trend(event_date, confidence_by_month)
+
+            if (etype is None or firm_state is None or regime is None or sentiment is None
+                    or storm_tier is None or confidence_trend is None):
                 skipped_missing_feature += 1
                 continue
 
@@ -269,7 +319,8 @@ def build_dataset(exclude_bundled: bool = False):
             rows.append({
                 "event_date": event_date, "event_type": etype, "firm_state": firm_state,
                 "regime": regime, "sentiment": sentiment, "storm_tier": storm_tier,
-                "storm_x_sentiment": storm_x_sentiment, "reaction": reaction,
+                "storm_x_sentiment": storm_x_sentiment, "confidence_trend": confidence_trend,
+                "reaction": reaction,
             })
     print(f"  Skipped {skipped_missing_feature} events missing at least one real feature value "
           f"(no longer filled with a fake 'unknown'/'no_data' placeholder).")
@@ -316,7 +367,7 @@ def main():
     # the honest comparison is whether adding this real interaction term
     # improves on the just-established baseline (34.9% test accuracy,
     # cutoff 2022-01-01), not whether it works in isolation.
-    feature_cols = ["event_type", "firm_state", "regime", "sentiment", "storm_tier", "storm_x_sentiment"]
+    feature_cols = ["event_type", "firm_state", "regime", "sentiment", "storm_tier", "storm_x_sentiment", "confidence_trend"]
     X_train_raw = [[r[c] for c in feature_cols] for r in train_rows]
     X_test_raw = [[r[c] for c in feature_cols] for r in test_rows]
     y_train = [r["reaction"] for r in train_rows]
