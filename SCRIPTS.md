@@ -446,6 +446,19 @@ Multi-entity tag bug's COVID-19/2008-crisis examples; `sec_filings`/`sec_8k_fili
 swap; dead-column pattern; `financial_market_reactions` discovery — all incorporated into
 Current Reference and Known Gotchas above.
 
+### 2026-09-30 — financial_market_reactions "unification" was already resolved, before tonight
+Final Phase 5 checklist item, checked: `event_market_reactions`/`financial_market_reactions`
+"unification" -- turned out to already be fully resolved, and already documented as
+such, inside `PROJECT_PLAN.md`'s own addendum ("Correction (verified this session):
+Anchor-Date Unification Is Already Resolved"). That addendum's own verification
+query (comparing `abnormal_return_20d` across every `financial_result` event in both
+tables) found exact agreement except one fully-explained case (AMD Q3 2024, a normal
+one-day filing-timing offset). **No new work needed -- the checklist item was closed
+before this session started; PROJECT_PLAN.md's summary table (line 138, "still
+pending") just contradicted its own addendum below it.** Real lesson: check a
+document's own later corrections before assuming its summary table is current, even
+within the same file.
+
 ### 2026-09-30 — The ~876-event ripple gap fully explained: not a bug, F/GE/AEP specifically
 Real Phase 5 checklist item, closed: F, GE, and AEP were specifically flagged as
 "unexplained" ripple-data gaps (unlike EA or pre-listing-date events, all three have
