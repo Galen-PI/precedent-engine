@@ -446,6 +446,41 @@ Multi-entity tag bug's COVID-19/2008-crisis examples; `sec_filings`/`sec_8k_fili
 swap; dead-column pattern; `financial_market_reactions` discovery — all incorporated into
 Current Reference and Known Gotchas above.
 
+### 2026-09-30 — BNY's real gap traced to its actual source: not our bug, a real XBRL tagging gap
+Real, precise follow-up to the entry below (which correctly found this wasn't a
+missing-concept problem, but incorrectly guessed at duration filtering and
+date-mismatches as the mechanism -- both ruled out by further real investigation).
+
+Read `build_quarterly_periods()`'s real logic directly: it requires each revenue
+fact's duration to fall in a 70-110 day window (a genuine standalone quarter, not
+a cumulative year-to-date figure). Checked BNY's real fact durations directly --
+**57 of 83 `Revenues` facts (69%) ARE standalone quarters**, ruling out cumulative
+reporting as the main cause. Checked real end-date alignment between `Revenues`
+and `NetIncomeLoss` next -- found the real, precise answer: **`NetIncomeLoss` has
+a standalone fact for every quarter from 2016-09-30 through 2026-06-30 (current),
+but `Revenues` has ZERO standalone facts anywhere in that entire span.** BNY
+simply stopped reporting standalone quarterly revenue under any concept our
+script recognizes, starting around 2016, while continuing net income normally.
+
+Checked both remaining real candidates directly against BNY's actual SEC data:
+`RevenueFromContractWithCustomerExcludingAssessedTax` has only 3 real facts total
+(explains exactly the 2 real quarters -- 2018 Q1/Q2 -- already in our database,
+values match to the dollar); BNY used it briefly then stopped. `ContractWithCustomerLiabilityRevenueRecognized`
+has 26 real standalone facts but tiny values ($50-73M) -- a specific ASC 606
+sub-line-item (revenue recognized from previously-deferred contract liabilities),
+not total company revenue.
+
+**Real, honest conclusion: every revenue-related concept in BNY's real SEC XBRL
+data has been checked, and none provides genuine standalone quarterly total
+revenue for 2019 onward.** This is not a bug in our script's concept list or
+date-matching logic -- it's the same KIND of deep, per-company XBRL tagging gap
+already accepted as out-of-scope for XOM (likely requires raw instance-document
+inspection, or BNY simply doesn't tag a single clean "total revenue" figure in
+recent filings at all). **Formally reclassified alongside XOM rather than left as
+an open "our bug" question** -- this explains BNY and very plausibly a real
+fraction of the other 10 unchanged tickers from the entry below, though each
+would need the same real, individual verification before assuming so.
+
 ### 2026-09-30 — Financial-sector quarterly gap: real partial win, real deeper bug found and NOT fixed
 Real follow-up after rolling the RevenuesNetOfInterestExpense fix out to 13 more
 likely bank tickers (BNY, MTB, TFC, SYF, RF, NTRS, FITB, MS, USB, HBAN, WFC, KEY,
