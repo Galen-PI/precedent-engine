@@ -508,6 +508,23 @@ enough independent signal to show up. Real, second piece of evidence this isn't
 a strong standalone predictor, on top of the multi-cutoff correction already in
 THEORY.md.
 
+**Real, final, precise finding on the ordering bug itself (pushed further,
+correctly, rather than left at the first correction above):** ran the same
+unordered-pagination test against `event_ripple_timeline` -- the single largest
+table this file loads (654,339 rows, ~655 real pages) -- run twice, then
+independently re-verified twice more. **Byte-identical results every time, 4/4
+runs, zero drift even at this scale.** This sharpens the conclusion beyond
+"the row-count jump wasn't from this bug": the two real, CONFIRMED failures
+tonight (populate_storm_tier.py, populate_sector_peer_ripple.py) both happened
+during write-heavy, upsert-adjacent operations -- the scenario where row
+ordering genuinely matters. This test shows the risk does not manifest on
+static, read-only lookups against unchanging data, even at large scale, in this
+environment. The fix is still correctly kept (costs nothing, removes a real
+theoretical risk that could matter under different conditions -- e.g. concurrent
+writes during a read), but the honest, precise conclusion is narrower than my
+first, too-broad framing: the real danger zone is write-time/changing-data
+scenarios, not simple static reads.
+
 ### 2026-09-30 — BNY's real gap traced to its actual source: not our bug, a real XBRL tagging gap
 Real, precise follow-up to the entry below (which correctly found this wasn't a
 missing-concept problem, but incorrectly guessed at duration filtering and
