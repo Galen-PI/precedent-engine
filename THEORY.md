@@ -226,6 +226,41 @@ at this scale, not a quick query.
 
 ---
 
+## Consumer Confidence Trend -- real, promising standalone result (2026-09-30)
+
+**Status: real, modest positive signal on a standalone walk-forward test. Not yet
+added to the full model -- same discipline as every other candidate feature.**
+Raised while scoping Government Decisions/Population Sentiment: does consumer
+confidence TREND (University of Michigan Consumer Sentiment, this month vs. the
+prior month -- the real "going into the event" framing) predict
+`reaction_character`? Added UMCSENT to the real FRED ingestion (392 real
+observations, 1994-2026) and built a standalone walk-forward test, same pattern as
+every other feature tested this session.
+
+**Real result, cutoff 2024-01-01, n=4,139 total (2020-2026):**
+- Falling confidence -> predicted `punished`: 39.5% vs. 34.5% baseline (+5.0pp,
+  test n=858)
+- Rising confidence -> predicted `muted`: 38.3% vs. 34.5% baseline (+3.8pp, test
+  n=559)
+- Stable confidence -> predicted `rewarded`: 32.1% vs. 34.5% baseline (-2.4pp,
+  test n=268) -- a real miss, reported honestly, not dropped from the record
+
+Both real beats have a sensible economic story (declining confidence plausibly
+makes markets harsher on bad news; rising confidence plausibly gets absorbed into
+already-optimistic pricing, muting individual reactions), and both are tested on
+genuinely large, real held-out samples -- not a small, cherry-picked cell. Modest
+in size (+3.8 to +5.0pp), smaller than the storm finding's effect, but the most
+promising standalone directional-prediction result of any feature tested this
+session (sentiment, trend, chain-position, storm x sentiment were all null; storm
+itself is a magnitude, not a direction, finding).
+
+**Real, honest caveats, not yet resolved:** only one cutoff tested so far (a real
+robustness check across multiple cutoffs, not just one, is the next real step
+before trusting this). Not yet tested for overlap with other known features
+(e.g., does this predict `reaction_character` independently, or is it a rough
+proxy for something `regime`/`firm_state` already capture?). Not yet added to
+`multi_feature_model.py` -- deliberately held back pending the above.
+
 ## Methodology Standard
 
 Every finding above followed the n=30-50 minimum sample threshold and, where claimed
