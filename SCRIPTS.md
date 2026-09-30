@@ -445,6 +445,31 @@ Multi-entity tag bug's COVID-19/2008-crisis examples; `sec_filings`/`sec_8k_fili
 swap; dead-column pattern; `financial_market_reactions` discovery — all incorporated into
 Current Reference and Known Gotchas above.
 
+### 2026-09-30 — Multi-entity reaction tagging gap closed (real fix backfilled, not a permanent code fix)
+Phase 5 checklist item, real gap found and closed: `event_entity_reactions` (built
+2026-09-24 by `tag_multientity_reactions.py`, the correct per-(event,entity) reaction
+fix for `tag_reaction_character.py`'s known single-company bug -- see that script's
+own docstring) only covered 33 events as of 2026-09-29. Measured 49 events actually
+affected by the underlying bug in `event_tags` -- 16 new multi-entity events had
+appeared since the original fix, with no corresponding entry.
+
+**Real, important finding: `tag_multientity_reactions.py` is fully general-purpose,
+not hardcoded to the original 33** -- it queries `event_entity_relationships` fresh
+every run and requires no changes to pick up new multi-entity events. Simply re-ran
+it. Verified: 49/49 events now covered, 124 total rows (up from 92), confirmed via
+direct query, not the script's own printed summary.
+
+**Real, still-open gap, not fixed today:** the underlying root cause in
+`tag_reaction_character.py` (`ticker = e["tickers"][0]`) is UNCHANGED --
+`event_entity_reactions` is a parallel, correct table that has to be manually
+re-run to catch up, not an automatic fix. Every future multi-entity event will
+keep getting the wrong single tag in `event_tags` until `tag_multientity_reactions.py`
+is re-run again. **Real recommendation: run `tag_multientity_reactions.py` as a
+standard paired step immediately after every `tag_reaction_character.py` run**,
+not a thing to remember separately -- or, as a more permanent fix, merge the
+per-entity logic directly into `tag_reaction_character.py`'s own main loop so this
+gap can't silently reopen again. Neither has been done yet.
+
 ### 2026-09-30 — Storm/compounding finding productionized: real event_pre_context columns
 Phase 5 checklist item: the validated storm finding (THEORY.md) previously only lived
 as an in-memory computation inside multi_feature_model.py's get_storm_lookup(),
