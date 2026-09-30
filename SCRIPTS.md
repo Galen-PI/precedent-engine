@@ -446,6 +446,40 @@ Multi-entity tag bug's COVID-19/2008-crisis examples; `sec_filings`/`sec_8k_fili
 swap; dead-column pattern; `financial_market_reactions` discovery — all incorporated into
 Current Reference and Known Gotchas above.
 
+### 2026-09-30 — Financial-sector quarterly gap: real partial win, real deeper bug found and NOT fixed
+Real follow-up after rolling the RevenuesNetOfInterestExpense fix out to 13 more
+likely bank tickers (BNY, MTB, TFC, SYF, RF, NTRS, FITB, MS, USB, HBAN, WFC, KEY,
+COF), all already correctly present in `CIK_TO_TICKER` (checked first, none needed
+a GS-style mapping fix).
+
+**Real, honest result: only 3 of 14 tickers touched today actually improved.**
+GS 17->4, WFC 7->2, MS 11->0 (fully resolved). **The other 11 are completely
+unchanged** (BNY 19, MTB 17, TFC 16, RF 14, SYF 14, FITB 12, NTRS 12, USB 9,
+HBAN 7, COF 6, KEY 5) -- the concept addition only helps companies that actually
+report under `RevenuesNetOfInterestExpense`; it doesn't generalize to every bank.
+
+**Real, deeper bug found while investigating BNY specifically, NOT fixed today:**
+fetched BNY's real SEC XBRL data directly. It has abundant real data under
+concepts the script ALREADY recognizes -- 83 real 10-Q `Revenues` facts, 200+ real
+`NetIncomeLoss` facts. Yet BNY's ingestion still reports "missing Q1/Q2/Q3" for
+nearly its entire 19-year history. **This is not a missing-concept problem at
+all** -- something in the script's real quarter-assignment/period-matching logic
+fails to pair these genuinely-present facts into Q1/Q2/Q3 periods for this
+company. Working theory, not confirmed: BNY may report cumulative year-to-date
+figures in its 10-Qs (common practice for some filers) rather than standalone
+quarterly figures, which a date-matching algorithm built around standalone
+periods would silently reject. **This needs real, dedicated time reading the full
+`build_quarterly_periods()` logic (hundreds of lines) to properly diagnose --
+deliberately not attempted rushed tonight.** Likely explains most/all of the
+remaining 11 unchanged tickers, and plausibly a real fraction of the wider
+367-ticker pattern beyond just banks.
+
+**Real, honest summary of tonight's XOM/quarterly-gap thread:** XOM itself
+formally accepted as out-of-scope (confirmed real, deep, hard). Found a real,
+working partial fix (3 tickers) for part of the broader 367-ticker pattern. Found
+and clearly scoped a second, deeper, unfixed bug affecting most of the rest.
+Genuine progress, genuinely incomplete -- not oversold as "solved."
+
 ### 2026-09-30 — Real fix found for the financial-sector quarterly gap: RevenuesNetOfInterestExpense
 Real follow-up to the XOM/Q4-gap investigation above. Confirmed the working theory:
 fetched Goldman Sachs' real SEC XBRL company-facts data directly and found
