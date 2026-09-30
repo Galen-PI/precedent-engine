@@ -226,40 +226,50 @@ at this scale, not a quick query.
 
 ---
 
-## Consumer Confidence Trend -- real, promising standalone result (2026-09-30)
+## Consumer Confidence Trend -- real, mixed result after multi-cutoff robustness testing (2026-09-30)
 
-**Status: real, modest positive signal on a standalone walk-forward test. Not yet
-added to the full model -- same discipline as every other candidate feature.**
+**Status: one real, fairly robust partial signal (falling->punished); one
+apparent signal (rising->muted) that did NOT survive robustness testing and is
+likely cutoff-specific, not a genuine effect. Not added to the full model.**
 Raised while scoping Government Decisions/Population Sentiment: does consumer
 confidence TREND (University of Michigan Consumer Sentiment, this month vs. the
-prior month -- the real "going into the event" framing) predict
-`reaction_character`? Added UMCSENT to the real FRED ingestion (392 real
-observations, 1994-2026) and built a standalone walk-forward test, same pattern as
-every other feature tested this session.
+prior month) predict `reaction_character`? Added UMCSENT to the real FRED
+ingestion (392 real observations, 1994-2026) and built a standalone walk-forward
+test, same pattern as every other feature tested this session.
 
-**Real result, cutoff 2024-01-01, n=4,139 total (2020-2026):**
-- Falling confidence -> predicted `punished`: 39.5% vs. 34.5% baseline (+5.0pp,
-  test n=858)
-- Rising confidence -> predicted `muted`: 38.3% vs. 34.5% baseline (+3.8pp, test
-  n=559)
-- Stable confidence -> predicted `rewarded`: 32.1% vs. 34.5% baseline (-2.4pp,
-  test n=268) -- a real miss, reported honestly, not dropped from the record
+**First result, single cutoff 2024-01-01, looked genuinely promising:**
+falling->punished +5.0pp (n=858), rising->muted +3.8pp (n=559), stable->rewarded
+-2.4pp (n=268). **Real, important correction after testing 4 more cutoffs
+(2021-06, 2022-06, 2023-01, 2025-01), same n=4,139 dataset throughout:**
 
-Both real beats have a sensible economic story (declining confidence plausibly
-makes markets harsher on bad news; rising confidence plausibly gets absorbed into
-already-optimistic pricing, muting individual reactions), and both are tested on
-genuinely large, real held-out samples -- not a small, cherry-picked cell. Modest
-in size (+3.8 to +5.0pp), smaller than the storm finding's effect, but the most
-promising standalone directional-prediction result of any feature tested this
-session (sentiment, trend, chain-position, storm x sentiment were all null; storm
-itself is a magnitude, not a direction, finding).
+- **Falling -> punished holds up reasonably well**: beats baseline at 4 of 5
+  cutoffs (+1.4pp, +3.8pp, +5.0pp, +5.0pp), flat/tied (not a miss) at the
+  earliest cutoff (36.4% vs 36.8%). The one part of this finding that looks
+  real, though the effect size growing at later cutoffs is itself worth more
+  investigation -- could be a genuinely strengthening relationship, or a
+  time-varying confound (e.g. the 2022+ rate environment) masquerading as one.
+- **Rising bucket is NOT robust -- real, important finding.** The training
+  data's own "most common reaction for rising confidence" changes across
+  cutoffs: punished (2021), punished (2022), rewarded (2023), muted (2024),
+  muted (2025). Two cutoffs were real misses (-4.4pp, -3.1pp), one was a large
+  miss (-6.0pp), and only the two most recent cutoffs showed a beat. This
+  pattern -- the predicted label itself shifting with the training window --
+  is a real, textbook sign of instability, not a genuine standalone effect.
+  The original "rising->muted, +3.8pp" report was real FOR THAT ONE SPLIT, but
+  does not generalize and should not be treated as a validated finding.
+- **Stable bucket confirmed as a genuine non-predictor**: underperforms
+  baseline at every single cutoff tested (31.0%, 31.0%, 32.1%, 29.2%),
+  consistently, not just in the original test.
 
-**Real, honest caveats, not yet resolved:** only one cutoff tested so far (a real
-robustness check across multiple cutoffs, not just one, is the next real step
-before trusting this). Not yet tested for overlap with other known features
-(e.g., does this predict `reaction_character` independently, or is it a rough
-proxy for something `regime`/`firm_state` already capture?). Not yet added to
-`multi_feature_model.py` -- deliberately held back pending the above.
+**Real, honest overall conclusion:** this is NOT a clean validated finding the
+way storm/sector-peer-ripple are. It's a real, partial, asymmetric result --
+falling confidence plausibly does correlate with punished reactions, with
+reasonable (not full) robustness; rising and stable confidence show no reliable
+pattern. Worth keeping as an open, partially-promising lead, not treating as
+settled. Real next steps, not done: investigate why falling->punished's effect
+size grows at later cutoffs (real strengthening vs. confound); test for overlap
+with `regime`/`firm_state` before considering any version of this for the full
+model.
 
 ## Methodology Standard
 
