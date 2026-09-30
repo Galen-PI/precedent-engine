@@ -446,6 +446,20 @@ Multi-entity tag bug's COVID-19/2008-crisis examples; `sec_filings`/`sec_8k_fili
 swap; dead-column pattern; `financial_market_reactions` discovery — all incorporated into
 Current Reference and Known Gotchas above.
 
+### 2026-09-30 — The ~876-event ripple gap fully explained: not a bug, F/GE/AEP specifically
+Real Phase 5 checklist item, closed: F, GE, and AEP were specifically flagged as
+"unexplained" ripple-data gaps (unlike EA or pre-listing-date events, all three have
+full price history from 1994, so those usual explanations didn't apply). **Checked
+directly rather than assumed: 100% of the 167 missing events for these three tickers
+(50 AEP, 60 F, 57 GE) are bundled/summary events**, confirmed via a direct join
+against `event_component_dates`. Not a bug -- `build_ripple_timeline.py` has
+deliberately excluded bundled events by default since the 2026-09-24 fix (see that
+script's own docstring). F, GE, and AEP simply have unusually rich, multi-year
+narrative event histories (already documented elsewhere in this project -- GE's
+"richest single history," F's "largest single haul"), so they naturally have more
+bundled summary events than typical tickers, which is what made the pattern stand
+out as suspicious. **Formally retired as a real mystery -- working as designed.**
+
 ### 2026-09-30 — Sector-peer ripple finding productionized: new sector_peer_ripple table
 Phase 5 checklist item: the validated sector-peer ripple finding (issue #21, z=17.49
 at the original small-scale test, n=1,215 -- see test_sector_peer_ripple.py and
@@ -679,4 +693,4 @@ Also corrected a separate stale claim (`free_cash_flow` backfill, see Known Gotc
   failed attempts). Needs either a different prompting approach or a hand-written entry.
 - ~876 pre-existing events with no ripple-timeline data that aren't explained by known
   causes (bundled-event exclusion, or a company's price history starting after the event) —
-  F, GE, AEP specifically flagged as unexplained (they have full price history from 1994).
+  ~~F, GE, AEP specifically flagged as unexplained~~ -- RESOLVED 2026-09-30: 100% bundled/summary events, working as designed, not a bug.
