@@ -425,7 +425,8 @@ inflated `systemic_shock`.
   (VMRK) needed manual entry after discovering the AvalonBay/EQR merger.
 - AVB/EQR/VMRK: confirmed a real 2026-08-17 merger of equals explains both tickers'
   disappearance from `market_prices` — not a Twelve Data limitation as previously assumed.
-  EA's absence remained genuinely unexplained (no merger applies).
+  EA's absence remained genuinely unexplained at the time (no merger applies) --
+  see the 2026-09-30 entry above: real cause is a Twelve Data paid-tier restriction.
 - `multi_feature_model.py`: fixed an N+1 query bug in `get_sentiment_bucket()` (thousands
   of sequential round-trips → one bulk fetch). Added `--exclude-bundled`; found it barely
   moved test accuracy (32.8%→32.9%), so date-bundling contamination doesn't explain that
@@ -444,6 +445,18 @@ inflated `systemic_shock`.
 Multi-entity tag bug's COVID-19/2008-crisis examples; `sec_filings`/`sec_8k_filings` naming
 swap; dead-column pattern; `financial_market_reactions` discovery — all incorporated into
 Current Reference and Known Gotchas above.
+
+### 2026-09-30 — EA's price-data absence explained (real, external, not a pipeline bug)
+EA's complete absence from `market_prices` had been flagged as "genuinely
+unexplained" repeatedly across this project (2026-09-22's audit explicitly ruled
+out the earlier "Twelve Data limitation" assumption for AVB/EQR, and left EA as the
+one real, open exception). **Real cause, confirmed directly by the project owner:**
+EA's price data specifically requires a paid tier/add-on on Twelve Data beyond the
+current plan -- a genuine data-provider access restriction, not a pipeline bug, not
+a ticker-mapping issue, not a coverage gap to keep chasing. **Formally closed as a
+known, accepted limitation** rather than an open mystery -- would require upgrading
+the Twelve Data plan to resolve, a real cost/business decision, not an engineering
+task.
 
 ### 2026-09-30 — Multi-entity reaction tagging gap closed (real fix backfilled, not a permanent code fix)
 Phase 5 checklist item, real gap found and closed: `event_entity_reactions` (built
@@ -630,7 +643,7 @@ Also corrected a separate stale claim (`free_cash_flow` backfill, see Known Gotc
 - `tag_reaction_character.py`'s multi-entity bug — 49 events currently affected, real fix
   (use `event_entity_relationships.relationship_type` to disambiguate) not yet built.
 - `build_event_episodes.py` — unresolved, status not re-checked since 2026-09-22.
-- EA's price-data gap — genuinely unexplained as of 2026-09-22, not revisited since.
+- ~~EA's price-data gap~~ -- RESOLVED 2026-09-30: Twelve Data paid-tier restriction, not a pipeline bug.
 - `financial_market_reactions` (unused modeling target) — status not re-checked since
   2026-09-22; worth confirming it's still true that nothing uses it.
 - CNC 2021-06-25 (Centene/Magellan financing) — a human-confirmed real_event with no
