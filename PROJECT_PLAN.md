@@ -511,3 +511,40 @@ feasibility (Twitter API access/cost first, since it's the most direct fit), (2)
 design the person-to-company linking mechanism, (3) pick a real, bounded test case
 (the Musk/Tesla example itself is a genuine, well-documented candidate) to validate
 the approach on a single case before any broader build.
+
+## Addendum: XOM's Quarterly Gap Confirmed, and a Much Bigger Related Finding (2026-09-30)
+
+Real Phase 1 checklist item, investigated: XOM's long-standing 2007-2016 quarterly
+gap. **Confirmed real** -- XOM has zero Q1/Q2/Q3 `financial_statements` rows for the
+entire decade, only an empty Q4 placeholder each year (revenue and net_income both
+null). This matches the old diagnosis (likely needs raw XBRL instance-document
+inspection, not the aggregated company-facts API) -- genuinely deep, slow work, not
+a quick fix. **Formally accepted as out-of-scope for now**, not silently left
+ambiguous -- a real decision, not an open question.
+
+**While checking, found a much bigger, previously undocumented pattern.** 1,223
+empty quarterly rows exist across 367 distinct securities (~73% of the tracked
+universe) -- all `fiscal_quarter=4`, no exceptions. Investigated whether this was a
+fixable Q4-derivation bug (Q4 is computed as Annual minus Q1+Q2+Q3, so a bug there
+would explain scattered failures with real Q1-Q3 data sitting unused) by checking
+BNY specifically (19 empty rows, the worst-affected ticker). **Real finding: it's
+not a derivation bug.** Most years (2010-2015, 2017, 2019-2025 -- including recent,
+modern filings) have ONLY the empty Q4 placeholder, with Q1/Q2/Q3 not present at
+all, not just unpopulated. A few scattered years (2009, 2016, 2018) have real,
+complete data. The empty-Q4-row count undercounts the true scope of the problem --
+the ingestion script apparently always writes a Q4 placeholder row even on failure,
+but genuinely skips writing any row at all for Q1/Q2/Q3 when nothing matches, so
+those failures are invisible to a null-check on existing rows.
+
+**Real working theory, not yet confirmed:** the top of the affected-ticker list is
+overwhelmingly banks/financial institutions (BNY, MTB, GS, TFC, SYF, RF, FITB,
+NTRS). Financial companies typically report revenue-equivalent figures under
+different XBRL concept names (net interest income, total interest and dividend
+income, etc.) than industrial/consumer companies' standard "Revenues" concept --
+plausible that the ingestion script's concept-matching list simply doesn't include
+the financial-sector-specific concept names, causing systematic quarterly gaps for
+that whole sector, unrelated to XOM's separate early-XBRL-era issue.
+
+**Real next step, in progress:** check `ingest_sec_financials_multi.py`'s actual
+concept-matching list against what a real affected bank's 10-Q XBRL data contains,
+to confirm or reject the financial-sector theory before attempting any fix.
