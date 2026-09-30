@@ -446,6 +446,28 @@ Multi-entity tag bug's COVID-19/2008-crisis examples; `sec_filings`/`sec_8k_fili
 swap; dead-column pattern; `financial_market_reactions` discovery — all incorporated into
 Current Reference and Known Gotchas above.
 
+### 2026-09-30 — financial_metrics gap: re-run closed most of it (842->78), real small residual remains
+Real Phase 2 checklist item, mostly closed. The gap had grown from the 182 last
+measured to 842 -- expected, since tonight's other fixes (GS, WFC, MS, MA, ADBE)
+added real new `financial_statements` rows without a metrics re-run since. Simply
+re-running `populate_financial_metrics.py` closed 764 of 842 (91%). **Its printed
+summary was wrong again** (claimed "Total metrics: 36092" = 100%, real count was
+36,014, a 78-row gap) -- same recurring bug in the script's own summary logic
+found earlier tonight with MA/ADBE, not a one-off.
+
+**Real investigation into the remaining 78:** scattered, no single clean cause.
+Several cluster around 2008-12-31 (AME, APH, ARE, BAC, CINF, CL, DHR, ETR, GLW) --
+plausibly genuine first-tracked-period cases (no real prior period for growth
+calcs), consistent with the original structural theory. But others clearly aren't
+that: AVB has 5 separate non-2008 periods missing metrics despite real revenue;
+**COF has two recent 2025 rows** that can't be a first-period issue. Checked COF
+specifically -- ruled out duplicate `financial_statements` rows (none exist) and
+ruled out missing prior-period data (2024-03-31 comparison period exists with
+real revenue). **Genuinely couldn't pin down COF's specific cause without reading
+`calculate_all_metrics()`'s real exception-handling internals** -- a real,
+separate task, not attempted tonight. Real, honest state: mostly closed, small
+unexplained residual remains.
+
 ### 2026-09-30 — BNY's real gap traced to its actual source: not our bug, a real XBRL tagging gap
 Real, precise follow-up to the entry below (which correctly found this wasn't a
 missing-concept problem, but incorrectly guessed at duration filtering and
