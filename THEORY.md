@@ -622,3 +622,23 @@ is real and unaffected by any of this -- what changed through this whole
 investigation is understanding that the performance comes mostly from
 regime plus the real confidence_trend-firm_state interaction, not five
 independently meaningful features as first presented.
+
+## Real negative result: collapsing event_type into fewer "demonstrated" buckets did not help (2026-10-02)
+
+Found real, meaningful per-category deviations from the 50% baseline
+magnitude rate: `financial_result` +10.5pp (n=512), `strategic_partnership`
++6.5pp (n=715), `restructuring` +5.3pp (n=613) clearly separated on the high
+side; the two LARGEST categories (`acquisition` n=4,667, `leadership_change`
+n=4,535 -- over half the dataset) sit almost exactly at baseline (49.1%,
+48.8%), diluting the aggregate event_type test.
+
+Built a real, 2-bucket collapsed version (the 3 demonstrated high-magnitude
+types vs. everything else) and tested it against the raw, full ~15-category
+one-hot version at the validated cutoff. **Real, honest negative result: the
+collapsed version did WORSE (+3.0pp) than the raw version (+4.2pp), not
+better.** Even categories sitting near the 50% baseline on average apparently
+carry small, real, cumulative information a logistic regression can exploit
+across many fine-grained categories -- collapsing them away lost more than it
+cleaned up. Aggressively simplifying a noisy-looking categorical feature is
+not automatically an improvement; recorded honestly as a real negative
+result, not reframed as a partial win.

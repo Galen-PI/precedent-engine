@@ -141,6 +141,37 @@ def storm_within_regime():
               f"{test_feature} alone = {acc:.1f}% vs {baseline:.1f}% baseline ({acc - baseline:+.1f}pp)")
 
 
+HIGH_MAGNITUDE_TYPES = {"financial_result", "strategic_partnership", "restructuring"}
+
+
+def test_collapsed_event_type():
+    """REAL test: is a simpler, demonstrated-behavior collapse of event_type
+    (high-magnitude types vs everything else) a better feature than the
+    noisy, full 12+ category one-hot version? Real finding that motivated
+    this: the two LARGEST categories (acquisition n=4667, leadership_change
+    n=4535 -- over half the dataset) sit almost exactly at the 50% baseline,
+    diluting real signal from smaller, more informative categories like
+    financial_result (+10.5pp from baseline) in the aggregate test."""
+    print("Building the real dataset once...")
+    rows = build_dataset(exclude_bundled=False)
+    train_rows = [r for r in rows if r["event_date"] < CUTOFF]
+    test_rows = [r for r in rows if r["event_date"] >= CUTOFF]
+
+    for r in rows:
+        r["event_type_collapsed"] = "high_magnitude" if r["event_type"] in HIGH_MAGNITUDE_TYPES else "other"
+
+    print(f"Train: {len(train_rows)}, Test: {len(test_rows)}\n")
+    print("=" * 70)
+    print("RAW event_type (12+ noisy categories) vs COLLAPSED (2 real buckets)")
+    print("=" * 70)
+    acc_raw, baseline, n_raw = score(rows, train_rows, test_rows, ["event_type"])
+    acc_collapsed, _, n_collapsed = score(rows, train_rows, test_rows, ["event_type_collapsed"])
+    print(f"  RAW event_type:       {acc_raw:5.1f}% vs {baseline:5.1f}% baseline "
+          f"({acc_raw - baseline:+5.1f}pp, {n_raw} real columns)")
+    print(f"  COLLAPSED (2 buckets): {acc_collapsed:5.1f}% vs {baseline:5.1f}% baseline "
+          f"({acc_collapsed - baseline:+5.1f}pp, {n_collapsed} real columns)")
+
+
 def find_confidence_partner():
     """REAL test: confidence_trend is 0.0pp alone but hurts (-0.6pp) when
     removed from the full model -- a real interaction effect. Find WHICH
@@ -171,5 +202,7 @@ if __name__ == "__main__":
         storm_within_regime()
     elif "--find-confidence-partner" in sys.argv:
         find_confidence_partner()
+    elif "--collapsed-event-type" in sys.argv:
+        test_collapsed_event_type()
     else:
         main()
