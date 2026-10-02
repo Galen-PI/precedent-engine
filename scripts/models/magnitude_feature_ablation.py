@@ -125,7 +125,9 @@ def storm_within_regime():
         len(sys.argv) > sys.argv.index("--storm-within-regime") + 1 and \
         not sys.argv[sys.argv.index("--storm-within-regime") + 1].startswith("--") else "storm_tier"
 
-    for target_regime in ["post_crisis_recovery_2009_2015", "rate_normalization_2016_2019"]:
+    for target_regime in ["post_crisis_recovery_2009_2015", "rate_normalization_2016_2019",
+                           "covid_recovery_stimulus_2020_2021", "rate_hiking_cycle_2022_2023",
+                           "ai_boom_2023_2026"]:
         subset = [r for r in rows if r["regime"] == target_regime]
         if len(subset) < 200:
             print(f"  {target_regime}: only {len(subset)} rows, too small, skipping")
@@ -139,10 +141,35 @@ def storm_within_regime():
               f"{test_feature} alone = {acc:.1f}% vs {baseline:.1f}% baseline ({acc - baseline:+.1f}pp)")
 
 
+def find_confidence_partner():
+    """REAL test: confidence_trend is 0.0pp alone but hurts (-0.6pp) when
+    removed from the full model -- a real interaction effect. Find WHICH
+    feature it's genuinely paired with by testing confidence_trend + each
+    other feature individually at the validated 2022-01-01 cutoff."""
+    print("Building the real dataset once...")
+    rows = build_dataset(exclude_bundled=False)
+    train_rows = [r for r in rows if r["event_date"] < CUTOFF]
+    test_rows = [r for r in rows if r["event_date"] >= CUTOFF]
+    print(f"Train: {len(train_rows)}, Test: {len(test_rows)}\n")
+
+    print("=" * 70)
+    print("FINDING confidence_trend's real partner (cutoff 2022-01-01)")
+    print("=" * 70)
+    others = ["event_type", "firm_state", "regime", "storm_tier"]
+    for other in others:
+        acc_other, baseline, _ = score(rows, train_rows, test_rows, [other])
+        acc_pair, _, _ = score(rows, train_rows, test_rows, [other, "confidence_trend"])
+        gain = acc_pair - acc_other
+        print(f"  {other:15s} alone: {acc_other:5.1f}%  |  + confidence_trend: {acc_pair:5.1f}%  "
+              f"({gain:+5.1f}pp real gain from adding confidence_trend)")
+
+
 if __name__ == "__main__":
     if "--regime-robustness" in sys.argv:
         regime_robustness()
     elif "--storm-within-regime" in sys.argv:
         storm_within_regime()
+    elif "--find-confidence-partner" in sys.argv:
+        find_confidence_partner()
     else:
         main()

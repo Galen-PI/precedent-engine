@@ -560,3 +560,65 @@ This is a real, much more complete and honest picture than "mostly regime,
 the rest is redundant" -- each feature behaves differently, and only
 `firm_state` looks like genuine redundancy rather than real, if uneven,
 independent signal.
+
+## Real correction: storm_tier's within-regime signal was overstated with only 2 of 7 regimes tested (2026-10-02)
+
+Tested storm_tier within the remaining 5 regimes (2 smallest, financial_crisis
+n=75 and covid_panic n=133, left untested -- too small for a reliable split).
+Full real picture across 5 tested regimes:
+
+| Regime | storm_tier alone | n |
+|---|---|---|
+| post_crisis_recovery_2009_2015 | -0.8pp | 3,037 |
+| rate_normalization_2016_2019 | +8.6pp | 2,251 |
+| covid_recovery_stimulus_2020_2021 | -0.0pp | 921 |
+| rate_hiking_cycle_2022_2023 | -2.4pp | 953 |
+| ai_boom_2023_2026 | -0.7pp | 1,445 |
+
+**Real, important correction to the entry above.** Only 1 of 5 regimes shows
+real signal. The earlier "storm_tier carries real, context-dependent signal"
+framing was based on just 2 regimes (1 positive, 1 null) and does not hold up
+with the fuller picture. With 5 regimes tested, getting exactly one positive
+result raises a genuine multiple-comparisons concern -- this could easily be
+noise rather than a real, regime-specific effect. **Honest, corrected
+conclusion: storm_tier mostly does NOT predict magnitude once regime is held
+fixed. One regime (rate_normalization_2016_2019) shows a real beat that may
+or may not be genuine -- not strong enough evidence either way to call it
+validated.** This meaningfully weakens (does not reverse) the original
+sector-peer-ripple validation's implied independence from regime -- that
+finding (z=17.49) still used a different, real, directly-tested methodology
+and stands on its own evidence, but storm_tier's role as a magnitude-predicting
+FEATURE in this specific model looks much more like regime-adjacent noise than
+first presented after only 2 of 7 regimes were checked.
+
+## Real correction: event_type's within-regime "consistency" also doesn't survive the full 5-regime test (2026-10-02)
+
+Same correction pattern as storm_tier above. Full real picture across all 5
+tested regimes:
+
+| Regime | event_type alone | n |
+|---|---|---|
+| post_crisis_recovery_2009_2015 | +1.1pp | 3,037 |
+| rate_normalization_2016_2019 | +2.1pp | 2,251 |
+| covid_recovery_stimulus_2020_2021 | -1.4pp | 921 |
+| rate_hiking_cycle_2022_2023 | -0.7pp | 953 |
+| ai_boom_2023_2026 | -2.1pp | 1,445 |
+
+**2 positive, 3 negative, none large.** The earlier claim that event_type was
+"the most consistent of the non-regime features" was based on only the first
+2 regimes tested, which happened to both be positive -- an accident of test
+order, not a real pattern. The fuller picture shows genuinely mixed results,
+no more consistent than storm_tier.
+
+**Real, final, honest state of the magnitude model's feature anatomy, now
+properly complete:** `regime` is the one real, substantial driver (though
+itself imperfect -- flat at one of 5 cutoffs). `confidence_trend` adds real
+value specifically combined with `firm_state`. Every other individual
+feature -- `storm_tier`, `event_type`, `firm_state` alone -- shows weak,
+inconsistent, largely non-significant results once regime is properly held
+fixed across all tested contexts, not a handful of cherry-picked ones. The
+full model's actual validated performance (+9.2 to +13.4pp across 5 cutoffs)
+is real and unaffected by any of this -- what changed through this whole
+investigation is understanding that the performance comes mostly from
+regime plus the real confidence_trend-firm_state interaction, not five
+independently meaningful features as first presented.
