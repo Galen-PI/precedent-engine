@@ -342,3 +342,26 @@ Every finding above followed the n=30-50 minimum sample threshold and, where cla
 held-out window). See `PROJECT_PLAN.md` Section 6 for the full prediction-contract
 discipline (universe, horizon, benchmark, base rate, similarity keys, magnitude/dispersion,
 out-of-sample window) this project holds every claimed pattern to.
+
+## Sentiment-free model tested across the real full 1994-2026 history (2026-10-02)
+
+Real follow-up to the correction above. Ran `multi_feature_model_no_sentiment.py`
+(event_type, firm_state, regime, storm_tier, confidence_trend -- no sentiment,
+no storm_x_sentiment) at two real cutoffs, same 8,826-row dataset both times:
+
+- **2015-01-01** (inverted split, train 2,587 / test 6,239): test accuracy
+  34.3% vs. 37.3% baseline -- a real -3.0pp gap, below baseline.
+- **2020-01-01** (balanced split, train 5,272 / test 3,554): test accuracy
+  34.4% vs. 33.3% baseline -- a real +1.1pp gap, small and not treated as a
+  validated finding.
+
+**Real, honest conclusion: the result flips sign depending on where the
+cutoff falls, which is itself the informative part.** A genuinely robust
+finding wouldn't swing from below to above baseline just from moving the
+split point. `confidence_trend` does not appear in either run's top-10
+coefficients. Testing across the real, full 1994-2026 history -- not just the
+modern era -- still does not produce a validated signal, consistent with
+every other full-model result this session (sentiment, trend, chain-position,
+storm x sentiment interior cells). Only storm/sector-peer-ripple (both
+magnitude, not direction, findings) and the partial, still-caveated
+falling-confidence->punished standalone result have cleared that bar so far.
