@@ -473,3 +473,29 @@ than their individual validations suggested once tested together. This is
 exactly the kind of thing worth knowing before citing the magnitude finding
 as "five features matter" rather than "the macro era matters most, with a
 couple of real secondary contributors."
+
+## Real correction: "regime does most of the work" was itself incomplete (2026-10-02)
+
+The ablation entry above tested single-feature performance at only ONE cutoff
+(2022-01-01, where regime alone hit +12.6pp, beating the full 5-feature
+model's +11.4pp). Tested regime alone across the same 5 cutoffs used to
+validate the full model -- it is NOT uniformly dominant:
+
+| Cutoff | Regime alone | Full 5-feature model |
+|---|---|---|
+| 2018-01-01 | +0.0pp (flat, no signal) | +9.2pp |
+| 2020-01-01 | +13.8pp | +12.3pp |
+| 2022-01-01 | +12.6pp | +11.4pp |
+| 2023-01-01 | +13.0pp | +10.8pp |
+| 2024-01-01 | +16.3pp | +13.4pp |
+
+**Real, honest correction: regime alone completely fails at the earliest
+cutoff, while the full feature set still beats baseline there (+9.2pp).** The
+other four features aren't just redundant padding around regime -- they're
+doing real, necessary work specifically in the earlier era where regime's own
+signal doesn't hold. The true shape of this finding: regime dominates from
+~2020 onward, the other features (mainly firm_state and event_type, per the
+leave-one-out results) provide real coverage for the pre-2020 period regime
+can't explain on its own. "Mostly regime" was an oversimplification based on
+checking only one cutoff -- the same mistake almost made with confidence_trend,
+caught here before it was stated as a firm conclusion rather than after.
