@@ -429,3 +429,47 @@ event" dressed up differently, or does it carry real independent signal beyond
 that one feature); consider whether this is ready to become a real, stored
 `expected_magnitude_bucket` feature (same treatment as storm_tier's
 productionization) now that it's cleared 5/5 cutoffs.
+
+## Real follow-up: feature ablation on the magnitude finding, and a genuine regime/storm confound (2026-10-02)
+
+Built `magnitude_feature_ablation.py` to test single features alone and
+leave-one-out from the validated 5-feature magnitude model (cutoff 2022-01-01,
+same real dataset throughout).
+
+**Real, humbling finding: `regime` alone (+12.6pp) outperforms the full
+5-feature model (+11.4pp).** Adding the other four features slightly diluted
+it rather than adding to it. The headline magnitude-prediction result is, more
+precisely, mostly `regime` doing the work -- "some macro eras produce bigger
+reactions than others" -- not five features meaningfully combining. Real,
+single-feature results: regime +12.6pp, firm_state +7.7pp, storm_tier +4.6pp,
+event_type +4.2pp, confidence_trend +0.0pp alone.
+
+**Leave-one-out:** removing `regime` or `confidence_trend` genuinely hurts
+accuracy (-0.9pp, -0.6pp) -- real, non-redundant contributions. Removing
+`event_type`, `firm_state`, or `storm_tier` barely changes anything (-0.3 to
+-0.5pp) -- largely redundant once regime is already in the model.
+`confidence_trend` is a real, interesting case: zero standalone power but
+genuine value in combination -- a real interaction effect, not a direct
+predictor.
+
+**Real, direct check on the storm_tier/regime overlap this implies:** queried
+the real "large" storm-tier rate by regime. Confirmed a genuine concentration
+-- the two real crisis regimes (`covid_panic_2020` 40.4%, `financial_crisis_
+2008_2009` 40.6%) show roughly DOUBLE the large-storm rate of every other
+regime (which cluster tightly at 20-26%). This means part of storm_tier's
+original validation (sector-peer ripple, z=17.49 -- never controlled for
+regime) plausibly overlaps with crisis-period clustering, not a fully
+independent mechanism. **Not a full collapse, though** -- even in crisis
+regimes "large" storms are only 40%, not near 100%, and non-crisis regimes
+still show a real, substantial 20-26% large-storm rate, not zero. Storms
+genuinely happen outside crisis periods too. A real, partial confound, not
+storm_tier being regime in disguise.
+
+**Real, honest overall takeaway:** the magnitude-prediction finding is real
+and still beats baseline consistently (confirmed above), but its true
+substance is simpler than first presented -- mostly a regime/macro-era
+effect, with storm_tier and firm_state contributing less independent value
+than their individual validations suggested once tested together. This is
+exactly the kind of thing worth knowing before citing the magnitude finding
+as "five features matter" rather than "the macro era matters most, with a
+couple of real secondary contributors."
