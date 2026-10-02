@@ -271,50 +271,69 @@ size grows at later cutoffs (real strengthening vs. confound); test for overlap
 with `regime`/`firm_state` before considering any version of this for the full
 model.
 
-## Real, Major Structural Finding: multi_feature_model.py Is Effectively 2015+ Only (2026-10-02)
+## CORRECTED 2026-10-02: the "sentiment excludes pre-2015 events" claim below was WRONG
 
-**Read this before interpreting ANY multi_feature_model.py result in this
-document, past or future.** Investigated why `firm_state` coverage improving
-(+116 real rows, verified) barely moved the model's total labeled row count --
-led to building a real, sequential waterfall of every required filter, then
-checking each one's real distribution by year rather than assuming.
+**Real, important correction, left visible rather than deleted, so the mistake
+and the fix are both on record.** The entry below claimed sentiment's 2015
+cutoff structurally excludes 53% of this project's events from
+multi_feature_model.py. **This was asserted without checking
+get_sentiment_bucket()'s real fallback behavior first, and it's wrong.** When
+no real GDELT tone data exists for a window, that function returns the string
+`"no_data"` -- not `None`. `"no_data"` passes the `sentiment is None` check
+completely and becomes just another valid one-hot category, same as
+"negative"/"neutral"/"positive". **Sentiment does NOT act as a hard exclusion
+filter at all.**
 
-**`company_sentiment_timeline` (the real GDELT-backed sentiment feature) has
-ZERO rows before 2015-02-17 -- not reduced coverage, a hard, complete cutoff.**
-8,874 of the project's 16,766 total events (53%) fall before this date.
-Because `sentiment` is a REQUIRED feature in every multi_feature_model.py run,
-**over half of this entire project's event history is structurally excluded
-from the full model, regardless of how good any other feature's coverage is
-for that period.** Every cutoff-based test run against this model -- the
-storm finding, every sentiment test, confidence_trend, everything in this
-document produced via multi_feature_model.py -- was implicitly only ever
-testing on 2015+ data, never the real 1994-2026 history, even when the stated
-train/test cutoff (e.g. 2022-01-01) suggested a broader range was in play.
-This does not invalidate those findings, but it means they describe "does
-this hold in the 2015-2026 era," not "does this hold across this project's
-full tracked history" -- a real, important distinction worth keeping in mind
-when citing any of them.
+Proven directly: built a sentiment-free variant
+(`multi_feature_model_no_sentiment.py`) and added matching pre-2015/post-2015
+debug counts to BOTH scripts, run back to back on the same real database
+state. Identical result either way: 2,639 pre-2015 rows, 6,187 post-2015
+rows, 8,826 total. Removing sentiment changed nothing -- proof the original
+claim was false, not a close call.
 
-**Real, secondary finding from the same investigation:** `firm_state`
-(financial_condition_score, built from SEC XBRL data) shows a sharp, real,
-explainable spike in missing coverage specifically in 2004-2008 (839-928
-missing events/year, vs 37-66/year before 2004 and a declining trickle after
-2009) -- confirmed directly against real `financial_metrics` row counts by
-year (2006: 1 row; 2007: 180; 2008: 593; 2009: 1,040; climbing steadily after)
-that this tracks the SEC's real XBRL mandate phase-in (2009 for large
-accelerated filers, phasing to smaller companies through 2011) -- genuine
-quarterly XBRL data barely existed industry-wide before 2007-2009. Not a bug
-in this project's pipeline -- a real, external, historical data-availability
-constraint. `storm_tier`'s missing-coverage pattern is much milder by
-comparison (a modest 2004-2009 bump, 76-112/year, settling to a steady ~30-75/
-year baseline) and doesn't need the same real-world explanation -- consistent
-with ordinary price-data edge cases, not a structural external cause.
+**What's still real and unchanged from the entry below:** the `firm_state`
+(financial_condition_score) finding -- its real, sharp 2004-2008 coverage
+gap, confirmed directly against real `financial_metrics` row counts by year,
+tracking the SEC's real XBRL mandate phase-in. That part holds. The
+"sentiment causes a 2015+ cutoff" framing around it does not, and is struck
+below rather than restated.
 
-**Real, honest implication, not yet acted on:** a genuinely clean test of
-whether any of these features matter across the FULL tracked history (not
-just 2015+) would need either a version of the model that doesn't require
-`sentiment`, or accepting that `sentiment`-inclusive tests are inherently
-scoped to the modern era. Worth deciding deliberately, not defaulting into.
+---
+
+~~## Real, Major Structural Finding: multi_feature_model.py Is Effectively 2015+ Only (2026-10-02)~~
+
+~~**Read this before interpreting ANY multi_feature_model.py result in this
+document, past or future.**~~ -- WRONG, see correction above. Sentiment's
+`"no_data"` fallback means it never actually excludes anything; the real
+dataset is shaped by `firm_state`/`storm_tier`/`reaction` availability, not
+sentiment's date coverage.
+
+~~`company_sentiment_timeline` has ZERO rows before 2015-02-17 -- not reduced
+coverage, a hard, complete cutoff.~~ -- this fact about the raw table is
+still true, but it does NOT propagate into the model as an exclusion, because
+of the `"no_data"` fallback above. Struck as a claim about the model's
+behavior; the raw table fact itself is harmless trivia, not a finding.
+
+**Real, secondary finding from the same investigation, still valid:**
+`firm_state` (financial_condition_score, built from SEC XBRL data) shows a
+sharp, real, explainable spike in missing coverage specifically in 2004-2008
+(839-928 missing events/year, vs 37-66/year before 2004 and a declining
+trickle after 2009) -- confirmed directly against real `financial_metrics`
+row counts by year (2006: 1 row; 2007: 180; 2008: 593; 2009: 1,040; climbing
+steadily after) that this tracks the SEC's real XBRL mandate phase-in (2009
+for large accelerated filers, phasing to smaller companies through 2011) --
+genuine quarterly XBRL data barely existed industry-wide before 2007-2009.
+Not a bug in this project's pipeline -- a real, external, historical
+data-availability constraint. `storm_tier`'s missing-coverage pattern is much
+milder by comparison (a modest 2004-2009 bump, 76-112/year, settling to a
+steady ~30-75/year baseline) and doesn't need the same real-world
+explanation -- consistent with ordinary price-data edge cases, not a
+structural external cause.
+
+~~**Real, honest implication, not yet acted on:** a genuinely clean test of
+whether any of these features matter across the FULL tracked history...~~ --
+moot; building the sentiment-free variant to test this is exactly what
+proved the original claim wrong (see correction above).
 
 ## Methodology Standard
 

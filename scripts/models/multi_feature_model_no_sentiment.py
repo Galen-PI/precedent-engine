@@ -1,5 +1,17 @@
 """
-multi_feature_model.py
+multi_feature_model_no_sentiment.py
+
+REAL VARIANT of multi_feature_model.py, deliberately excluding sentiment and
+storm_x_sentiment (derived from sentiment, can't exist without it). Built
+2026-10-02 after confirming company_sentiment_timeline has zero rows before
+2015-02-17 -- meaning the original model is effectively 2015+ only, silently
+excluding 53% of this project's full event history (8,874 of 16,766 events)
+from every test. This variant tests whether event_type, firm_state, regime,
+storm_tier, and confidence_trend carry real signal across the FULL 1994-2026
+history, not just the 2015+ slice.
+
+See THEORY.md's "Real, Major Structural Finding" entry for the full context.
+
 
 A real, proper multi-feature model combining event_type, sentiment_bucket,
 regime, firm_state, and (as of 2026-09-24) storm_tier to predict
@@ -250,10 +262,11 @@ def build_dataset(exclude_bundled: bool = False):
         bundled_event_ids = {r["event_id"] for r in rows}
         print(f"  Excluding {len(bundled_event_ids)} events with known bundling/date-uncertainty risk.")
 
-    print("Fetching sentiment timeline once (was: one query per event -- see PERF FIX note)...")
-    sentiment_lookup = get_sentiment_lookup()
-    print(f"  Loaded sentiment history for {len(sentiment_lookup)} entities.\n")
-
+    # REAL VARIANT (2026-10-02): sentiment deliberately NOT fetched here -- this
+    # is the sentiment-free version, testing the FULL 1994-2026 event history
+    # instead of the effective 2015+ window every sentiment-requiring run has
+    # implicitly been limited to (company_sentiment_timeline has zero rows
+    # before 2015-02-17, confirmed directly -- see THEORY.md).
     print("Fetching real storm/concurrent-event data once (validated 2026-09-24, 6 independent tests)...")
     storm_lookup = get_storm_lookup()
     print(f"  Loaded storm tiers for {len(storm_lookup)} real (event, entity) pairs.\n")
@@ -268,7 +281,6 @@ def build_dataset(exclude_bundled: bool = False):
         if name in reaction_tags:
             reactions[r["event_id"]] = name
 
-    sentiment_cache = {}
     rows = []
     skipped_missing_feature = 0
     skipped_bundled = 0
@@ -292,34 +304,18 @@ def build_dataset(exclude_bundled: bool = False):
             if reaction is None:
                 continue
 
-            sentiment = get_sentiment_bucket(entity_id, event_date, sentiment_lookup, sentiment_cache) if entity_id else None
             storm_tier = storm_lookup.get((event_id, entity_id)) if entity_id else None
 
             confidence_trend = get_confidence_trend(event_date, confidence_by_month)
 
-            if (etype is None or firm_state is None or regime is None or sentiment is None
+            if (etype is None or firm_state is None or regime is None
                     or storm_tier is None or confidence_trend is None):
                 skipped_missing_feature += 1
                 continue
 
-            # REAL NEW FEATURE (2026-09-25): storm_x_sentiment interaction term.
-            # Standalone walk-forward tests tonight found flat sentiment and
-            # flat storm_tier each independently null, but storm-condition +
-            # neutral-sentiment showed a real, convergent positive signal
-            # across all three trend sub-cells (best cell: +10.7pp vs
-            # baseline, n=61) -- a genuine interaction a model with these
-            # two features only ever encoded SEPARATELY could not represent.
-            # Collapses storm_tier to the same binary validated in that test
-            # (isolated vs any-storm) crossed with sentiment, since testing
-            # showed the binary collapse, not the 4-way tier, was where the
-            # real signal lived.
-            storm_binary = "isolated" if storm_tier == "isolated" else "storm"
-            storm_x_sentiment = f"{storm_binary}_{sentiment}"
-
             rows.append({
                 "event_date": event_date, "event_type": etype, "firm_state": firm_state,
-                "regime": regime, "sentiment": sentiment, "storm_tier": storm_tier,
-                "storm_x_sentiment": storm_x_sentiment, "confidence_trend": confidence_trend,
+                "regime": regime, "storm_tier": storm_tier, "confidence_trend": confidence_trend,
                 "reaction": reaction,
             })
     print(f"  Skipped {skipped_missing_feature} events missing at least one real feature value "
@@ -340,7 +336,7 @@ def main():
     cutoff = sys.argv[1]
     exclude_bundled = "--exclude-bundled" in sys.argv
 
-    print("Building dataset (sentiment now fetched once, not per-event)...")
+    print("Building dataset (sentiment-free variant -- see docstring)...")
     rows = build_dataset(exclude_bundled=exclude_bundled)
     print(f"Total labeled rows: {len(rows)}\n")
 
@@ -364,12 +360,9 @@ def main():
               "database_fixes_and_review_backlog.md.")
         return
 
-    # REAL NEW FEATURE (2026-09-25): added storm_x_sentiment alongside the
-    # existing sentiment and storm_tier features (not replacing them) --
-    # the honest comparison is whether adding this real interaction term
-    # improves on the just-established baseline (34.9% test accuracy,
-    # cutoff 2022-01-01), not whether it works in isolation.
-    feature_cols = ["event_type", "firm_state", "regime", "sentiment", "storm_tier", "storm_x_sentiment", "confidence_trend"]
+    # Sentiment and storm_x_sentiment deliberately excluded -- see this file's
+    # own docstring for why.
+    feature_cols = ["event_type", "firm_state", "regime", "storm_tier", "confidence_trend"]
     X_train_raw = [[r[c] for c in feature_cols] for r in train_rows]
     X_test_raw = [[r[c] for c in feature_cols] for r in test_rows]
     y_train = [r["reaction"] for r in train_rows]
