@@ -468,6 +468,51 @@ real revenue). **Genuinely couldn't pin down COF's specific cause without readin
 separate task, not attempted tonight. Real, honest state: mostly closed, small
 unexplained residual remains.
 
+### 2026-10-02 — firm_state gap investigation: real concurrency bug found and fixed, "regression" was a false alarm
+Raised while investigating the user's real instinct that something was off in
+multi_feature_model.py's filter stack. Found `firm_state` is the dominant
+bottleneck (only 9,417 of 16,766 events have one, 44% missing) -- far bigger
+than any other required feature. Traced the real mechanism: `firm_state_label`
+comes from `financial_condition_score` (a VIEW, not a table), via
+`recompute_firm_state.py`, whose hardcoded import path (`scripts/populate_pre_context.py`)
+was stale after this project's directory reorganization into subfolders --
+fixed to the real path (`scripts/financial_pipeline/populate_pre_context.py`).
+
+The sequential version was measured at ~19 rows/minute (~9-10 real hours for
+16,501 rows) -- added real thread concurrency (ThreadPoolExecutor,
+max_workers=20 initially). **First concurrent run crashed**: a real HTTP/2
+connection-sharing bug, same CLASS as build_ripple_timeline.py's documented
+2026-09-25 fix, but the threading variant -- 20 threads sharing one global
+`supabase` client raced on httpcore's internal stream bookkeeping
+(`KeyError` inside `_response_closed`). Fixed with reduced concurrency
+(max_workers=6) and real retry-on-exception logic around each row.
+
+**Real, honest dead end chased and correctly resolved, not swept under the
+rug:** after the fix, the real database fill count appeared to DECREASE
+across multiple checks (9,990 -> 9,823 -> 9,491 -> final 9,533), which looked
+like real data corruption -- genuinely alarming, treated with real seriousness
+rather than dismissed. Investigated three real hypotheses in order: (1) HTTP/2
+thread-race causing silent wrong-data writes -- the FINAL run completed with
+zero crashes, ruling this out as the explanation for the final number; (2) a
+missing tie-breaker in `get_firm_state()`'s `ORDER BY period_end DESC LIMIT 1`
+query (same bug class found 3 times elsewhere tonight) -- checked directly,
+zero duplicate (security_id, period_end) pairs exist, ruled out; (3) genuine
+non-determinism in `get_firm_state()` itself -- called it 5 times in a row for
+the same real input, byte-identical every time, ruled out.
+
+**Real, correct final explanation: the 9,990 "peak" was never trustworthy --
+it was a mid-flight snapshot from an INTERRUPTED (manually killed) run, not a
+completed, final state.** Comparing an arbitrary partial checkpoint against
+the LATEST run's complete, deterministic, crash-free result was comparing two
+different kinds of measurement, not a real regression. Verified the remaining
+null rows directly: a random sample (AXON 2007, CBRE 2005, AAPL 2005, CL 2005,
+AMP 2009) are all genuinely early events; confirmed directly for AAPL that
+zero real `financial_condition_score` rows exist before 2005-06-06 -- the
+null is correct, not a bug. **Real final, trustworthy state: 9,533/16,501
+filled (57%)**, up from the original 9,417 baseline -- a real but modest net
+gain, the rest genuinely lacking underlying data (early-history events, plus
+the same XBRL gaps already documented for XOM/BNY/the 367-ticker pattern).
+
 ### 2026-09-30 — Added confidence_trend to multi_feature_model.py; fixed a real pagination bug; corrected my own overclaim about its impact
 While adding `confidence_trend` as a new feature (same pattern as storm_tier,
 sentiment), found this file's shared `paginated()` helper had the same missing-

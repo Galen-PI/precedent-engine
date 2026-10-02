@@ -1,0 +1,10 @@
+#!/bin/bash
+TICKERS="AIG ALB ALLE AME APH ARES AVGO BBY CB CCI CINF CRM DLR DOC DPZ DTE DVN ECL ELV EXR FDX FIS GILD GPN GRMN HBAN HCA HPE ICE IFF INVH IRM JCI KDP KO KVUE LDOS LIN LRCX MDT MOS MRK MSFT MSI NVDA NXPI OMC PHM PKG PLD PSA PSKY RCL RL SPG SRE TKO TROW TRV UDR UNH VICI VRSK VST WMB WRB XEL"
+for t in $TICKERS; do
+  echo "=== $t ==="
+  python scripts/ingestion/ingest_market_prices.py "$t" 1994-01-01 2011-12-31
+  sleep 8
+  python scripts/ingestion/ingest_market_prices.py "$t" 2012-01-01 2026-09-29
+  sleep 8
+done
+echo "ALL RESTATED TICKERS REFETCHED"

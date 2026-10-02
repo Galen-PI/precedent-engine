@@ -23,7 +23,10 @@ Usage:
 """
 
 import os
+import time
+import threading
 import importlib.util
+from concurrent.futures import ThreadPoolExecutor
 from supabase import create_client
 
 SUPABASE_URL = os.environ["SUPABASE_URL"]
@@ -32,7 +35,7 @@ supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # Reuse the real, patched get_firm_state() rather than duplicate its logic
 _spec = importlib.util.spec_from_file_location(
-    "populate_pre_context", "scripts/populate_pre_context.py"
+    "populate_pre_context", "scripts/financial_pipeline/populate_pre_context.py"
 )
 _ppc = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_ppc)
@@ -86,25 +89,53 @@ def main():
 
     updated = 0
     unchanged = 0
-    for row in rows:
+    lock = threading.Lock()
+    progress = {"done": 0}
+
+    def process_row(row, attempt=1):
+        nonlocal updated, unchanged
         event_date = events.get(row["event_id"])
         if not event_date:
-            continue
+            return
+        try:
+            new_label, new_period = get_firm_state(row["entity_id"], security_id_map, event_date)
+            if new_label != row["firm_state_label"]:
+                supabase.table("event_pre_context").update({
+                    "firm_state_label": new_label,
+                    "firm_state_as_of_period": new_period,
+                }).eq("id", row["id"]).execute()
+                with lock:
+                    updated += 1
+            else:
+                with lock:
+                    unchanged += 1
+        except Exception as e:
+            # REAL FIX (2026-10-02): shared HTTP/2 connection across threads
+            # can race on httpcore's internal stream bookkeeping under real
+            # concurrent load (confirmed directly -- KeyError deep inside
+            # httpcore's _response_closed on the first concurrent run). Same
+            # bug CLASS as build_ripple_timeline.py's documented 2026-09-25
+            # HTTP/2 fix, just the threading variant. Retry instead of
+            # crashing the whole run on one row's transient connection hit.
+            if attempt < 3:
+                time.sleep(0.5 * attempt)
+                return process_row(row, attempt + 1)
+            print(f"  FAILED after 3 attempts, row {row['id']}: {e}")
+            return
+        with lock:
+            progress["done"] += 1
+            if progress["done"] % 200 == 0:
+                done = progress["done"]
+                print(f"  ...{done}/{len(rows)} processed "
+                      f"({updated} updated, {unchanged} unchanged so far)")
 
-        new_label, new_period = get_firm_state(row["entity_id"], security_id_map, event_date)
-
-        if new_label != row["firm_state_label"]:
-            supabase.table("event_pre_context").update({
-                "firm_state_label": new_label,
-                "firm_state_as_of_period": new_period,
-            }).eq("id", row["id"]).execute()
-            updated += 1
-        else:
-            unchanged += 1
-
-        if (updated + unchanged) % 200 == 0:
-            print(f"  ...{updated + unchanged}/{len(rows)} processed "
-                  f"({updated} updated, {unchanged} unchanged so far)")
+    # REAL FIX (2026-09-30): each row is fully independent (own read, own
+    # conditional write by unique id) -- I/O-bound, not CPU-bound, so this
+    # is a real, safe case for thread concurrency. Sequential version was
+    # measured at ~19 rows/minute (~9-10 real hours for the full 16,501
+    # rows) -- genuinely too slow to just wait out.
+    with ThreadPoolExecutor(max_workers=6) as executor:  # reduced from 20 -- fewer threads sharing one HTTP/2 connection means far less chance of the race above
+        list(executor.map(process_row, rows))
 
     print(f"\nDone. Updated: {updated}. Unchanged: {unchanged}. Total: {len(rows)}.")
 
