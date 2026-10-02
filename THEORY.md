@@ -499,3 +499,30 @@ leave-one-out results) provide real coverage for the pre-2020 period regime
 can't explain on its own. "Mostly regime" was an oversimplification based on
 checking only one cutoff -- the same mistake almost made with confidence_trend,
 caught here before it was stated as a firm conclusion rather than after.
+
+## Real resolution: storm_tier within a single, fixed regime (2026-10-02)
+
+Direct test of the storm_tier/regime confound raised above: does storm_tier
+still predict magnitude when regime is held completely fixed (every row the
+same macro era), or does its signal collapse once regime can't vary
+underneath it? Tested storm_tier alone within two real, large, non-crisis
+regimes separately (70/30 chronological split within each):
+
+- WITHIN `post_crisis_recovery_2009_2015` (n=3,037): storm_tier alone =
+  55.7% vs 56.5% baseline (-0.8pp) -- no real signal here.
+- WITHIN `rate_normalization_2016_2019` (n=2,251): storm_tier alone = 52.8%
+  vs 44.2% baseline (+8.6pp) -- a real, substantial beat here.
+
+**Real, honest, nuanced resolution -- not a clean yes/no.** If storm_tier's
+apparent power were PURELY a regime artifact, it should show zero signal in
+BOTH single-regime tests, since regime can't vary within either one. It
+doesn't -- it's real and substantial in one era. But it's also not a stable,
+universal effect on its own -- it goes flat/slightly negative in the other
+era. This mirrors the exact same pattern just found for regime itself (strong
+at 4/5 cutoffs, flat at the 5th): **storm_tier carries real, independent,
+context-dependent signal, not a pure regime confound, but also not a reliably
+present effect across every macro era.** The original sector-peer-ripple
+validation (z=17.49) is real and holds, but "storm matters, uniformly,
+everywhere" was never quite the right way to state it -- "storm matters, in
+some real but not all contexts" is the more honest version, now directly
+confirmed rather than assumed.

@@ -100,8 +100,45 @@ def regime_robustness():
               f"[train={len(train_rows)}, test={len(test_rows)}]")
 
 
+def storm_within_regime():
+    """REAL test to resolve the storm_tier/regime confound found above:
+    does storm_tier still predict magnitude WITHIN a single, fixed regime
+    (same macro era for every row), or does its apparent power collapse
+    once regime can't vary underneath it?"""
+    print("Building the real dataset once...")
+    rows = build_dataset(exclude_bundled=False)
+    print()
+    print("=" * 70)
+    print("STORM_TIER WITHIN A SINGLE REGIME (real test of the confound)")
+    print("=" * 70)
+
+    from collections import Counter
+    regime_counts = Counter(r["regime"] for r in rows)
+    print(f"Real regime counts in full dataset: {dict(regime_counts)}")
+    print()
+
+    # Test within the two largest non-crisis regimes separately -- real,
+    # large enough samples, and genuinely NOT crisis periods, so if storm
+    # still predicts magnitude here, that's real evidence it's not just
+    # riding on regime.
+    for target_regime in ["post_crisis_recovery_2009_2015", "rate_normalization_2016_2019"]:
+        subset = [r for r in rows if r["regime"] == target_regime]
+        if len(subset) < 200:
+            print(f"  {target_regime}: only {len(subset)} rows, too small, skipping")
+            continue
+        cutoff_idx = int(len(subset) * 0.7)
+        subset_sorted = sorted(subset, key=lambda r: r["event_date"])
+        train_sub = subset_sorted[:cutoff_idx]
+        test_sub = subset_sorted[cutoff_idx:]
+        acc, baseline, n_feat = score(rows, train_sub, test_sub, ["storm_tier"])
+        print(f"  WITHIN {target_regime} (n={len(subset)}, 70/30 chronological split): "
+              f"storm_tier alone = {acc:.1f}% vs {baseline:.1f}% baseline ({acc - baseline:+.1f}pp)")
+
+
 if __name__ == "__main__":
     if "--regime-robustness" in sys.argv:
         regime_robustness()
+    elif "--storm-within-regime" in sys.argv:
+        storm_within_regime()
     else:
         main()
