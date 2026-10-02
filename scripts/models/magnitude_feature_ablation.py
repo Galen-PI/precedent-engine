@@ -121,6 +121,10 @@ def storm_within_regime():
     # large enough samples, and genuinely NOT crisis periods, so if storm
     # still predicts magnitude here, that's real evidence it's not just
     # riding on regime.
+    test_feature = sys.argv[sys.argv.index("--storm-within-regime") + 1] if \
+        len(sys.argv) > sys.argv.index("--storm-within-regime") + 1 and \
+        not sys.argv[sys.argv.index("--storm-within-regime") + 1].startswith("--") else "storm_tier"
+
     for target_regime in ["post_crisis_recovery_2009_2015", "rate_normalization_2016_2019"]:
         subset = [r for r in rows if r["regime"] == target_regime]
         if len(subset) < 200:
@@ -130,9 +134,9 @@ def storm_within_regime():
         subset_sorted = sorted(subset, key=lambda r: r["event_date"])
         train_sub = subset_sorted[:cutoff_idx]
         test_sub = subset_sorted[cutoff_idx:]
-        acc, baseline, n_feat = score(rows, train_sub, test_sub, ["storm_tier"])
+        acc, baseline, n_feat = score(rows, train_sub, test_sub, [test_feature])
         print(f"  WITHIN {target_regime} (n={len(subset)}, 70/30 chronological split): "
-              f"storm_tier alone = {acc:.1f}% vs {baseline:.1f}% baseline ({acc - baseline:+.1f}pp)")
+              f"{test_feature} alone = {acc:.1f}% vs {baseline:.1f}% baseline ({acc - baseline:+.1f}pp)")
 
 
 if __name__ == "__main__":

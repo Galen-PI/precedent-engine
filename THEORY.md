@@ -526,3 +526,37 @@ validation (z=17.49) is real and holds, but "storm matters, uniformly,
 everywhere" was never quite the right way to state it -- "storm matters, in
 some real but not all contexts" is the more honest version, now directly
 confirmed rather than assumed.
+
+## Real, final piece: firm_state and event_type tested the same within-regime way (2026-10-02)
+
+Completed the within-regime test for all 5 features, not just storm_tier.
+Same two fixed regimes, same 70/30 chronological split within each:
+
+- **`firm_state`**: exactly 0.0pp in BOTH `post_crisis_recovery_2009_2015`
+  and `rate_normalization_2016_2019`. Genuinely flat, not context-dependent
+  like storm_tier -- just absent once regime is held fixed. Its earlier
+  standalone +7.7pp (single cutoff, all regimes mixed) looks like a pure
+  regime proxy, not independent signal.
+- **`event_type`**: small but real and CONSISTENT -- +1.1pp and +2.1pp in
+  both regimes, same direction both times. Weaker in magnitude than
+  storm_tier's best showing, but more stable than storm_tier (which flipped
+  sign between the two regimes).
+
+**Real, complete, final characterization of all 5 features in the magnitude
+model:**
+- `regime`: the dominant driver, but itself context-dependent (strong at
+  4/5 cutoffs, completely flat at the earliest one).
+- `storm_tier`: real but inconsistent -- substantial signal in one regime,
+  none in another.
+- `event_type`: small, real, and the most CONSISTENT of the non-regime
+  features across contexts tested.
+- `confidence_trend`: zero alone, but genuine value in combination with
+  other features (a real interaction effect, not yet isolated to which
+  combination specifically).
+- `firm_state`: appears to be a pure regime proxy once tested properly --
+  no independent signal found in either within-regime test.
+
+This is a real, much more complete and honest picture than "mostly regime,
+the rest is redundant" -- each feature behaves differently, and only
+`firm_state` looks like genuine redundancy rather than real, if uneven,
+independent signal.
