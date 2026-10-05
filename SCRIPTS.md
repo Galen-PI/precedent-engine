@@ -977,3 +977,30 @@ MS) and the already-accepted deep-gap cases (XOM, BNY). Real, honest
 remaining scope: roughly 60-65 of the original ~85 high-count tickers still
 untested, plus the 6 confirmed-unhelped ones above needing individual
 investigation like BNY's.
+
+### 2026-10-03 — 367-ticker gap: 5 of the 6 remaining holdouts resolved, real total now 21 tickers
+Real follow-up, investigating the 6 tickers unhelped by the first 3 concept
+additions. Found 5 more real, sector-specific pre-2018 concepts via the same
+direct-SEC-data methodology, each confirmed by the ingestion script's own
+real quarterly/annual reconciliation check passing:
+
+- `RegulatedAndUnregulatedOperatingRevenue` + `UtilityRevenue` (DTE, utility)
+- `RevenueMineralSales` (NEM, mining)
+- `OilAndGasRevenue` (EQT, upstream energy -- distinct from VLO's refining concept)
+- `HealthCareOrganizationPatientServiceRevenue` (DVA, healthcare services)
+- `FoodAndBeverageRevenue` (CMG, restaurants)
+
+**Real result: DTE, NEM, EQT, DVA, CMG all dropped to the genuine 1-3
+residual floor** (same class as GS's known pre-2008 limit). **AXP is the one
+real, confirmed exception** -- checked directly, has no revenue-related XBRL
+concept of any kind before 2017 (unlike every other ticker investigated
+today, which all had SOME real pre-2018 concept just missing from our list).
+This is the same genuine, deep XBRL gap class as XOM and BNY -- correctly
+left unresolved, not forced.
+
+**Real, complete running total: 21 tickers resolved this session** (KO, TAP,
+GPC, CHD, MNST, VLO, IRM, MRSH, FIS, TSCO, APH, HWM, AOS, ODFL, PWR, EFX,
+DTE, NEM, EQT, DVA, CMG) from 8 new concept names, plus the earlier bank fix
+(GS, WFC, MS). Real, honest remaining scope: roughly 60 of the original ~85
+high-count tickers still untested; AXP joins XOM/BNY as a confirmed,
+accepted deep-gap case.

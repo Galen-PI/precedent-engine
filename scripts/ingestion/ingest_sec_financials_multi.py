@@ -73,6 +73,31 @@ CONCEPTS = {
         # RevenueFromContractWithCustomerExcludingAssessedTax from 2017
         # onward (already in this list).
         "SalesRevenueServicesNet",
+        # REAL FIX (2026-10-03): utility-sector concepts, confirmed directly
+        # against DTE's real SEC XBRL data. RegulatedAndUnregulatedOperatingRevenue
+        # (48 real facts, 2017-2026, still active) looks like the real combined
+        # total based on its name -- being tested directly, not assumed.
+        # UtilityRevenue (18 real facts, 2008-2012) covers the earliest era.
+        "RegulatedAndUnregulatedOperatingRevenue",
+        "UtilityRevenue",
+        # REAL FIX (2026-10-03): mining-sector concept, confirmed directly
+        # against NEM's real SEC XBRL data -- same two-era handoff pattern
+        # (54 real facts, 2008-2017, handing off to
+        # RevenueFromContractWithCustomerExcludingAssessedTax from 2017 on).
+        "RevenueMineralSales",
+        # REAL FIX (2026-10-03): upstream oil & gas concept, confirmed
+        # directly against EQT's real SEC XBRL data -- same two-era handoff
+        # (54 real facts, 2008-2018, handing off to Revenues from 2017 on).
+        "OilAndGasRevenue",
+        # REAL FIX (2026-10-03): healthcare-services concept, confirmed
+        # directly against DVA's real SEC XBRL data -- longest, most
+        # complete coverage of several real candidates (54 real facts,
+        # 2008-2018), same two-era handoff pattern as the others.
+        "HealthCareOrganizationPatientServiceRevenue",
+        # REAL FIX (2026-10-03): restaurant-sector concept, confirmed
+        # directly against CMG's real SEC XBRL data -- same two-era handoff
+        # (50 real facts, 2009-2018, handing off to Revenues from 2017 on).
+        "FoodAndBeverageRevenue",
     ],
     "gross_profit": ["GrossProfit"],
     "operating_income": ["OperatingIncomeLoss"],
