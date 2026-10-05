@@ -864,3 +864,31 @@ Markets appear to process this particular kind of signal slowly, not
 immediately. A real, legitimate, counter-intuitive finding, not a failed
 test -- worth treating as a genuine result about how long this effect takes
 to materialize, not evidence the hypothesis was wrong to test.
+
+## Real correction to the multi-horizon entry above: "effect emerges slowly" was a mechanical artifact, not a real finding (2026-10-03)
+
+**Real, important retraction, pushed back on correctly rather than accepted
+at face value.** The entry above concluded confidence_trend's effect "takes
+time to emerge" (muted at short horizons, punished only at 20-30 days). This
+does not hold up.
+
+The honest baseline numbers already printed in that test ARE the overall
+"muted" rate for the WHOLE population at each horizon, independent of
+confidence_trend entirely: 71.6% (1 day) -> 61.2% (3 day) -> 53.6% (5 day) ->
+42.6% (10 day), smoothly shrinking as the window grows, for every event
+regardless of any feature. This is a real, trivial, mechanical fact: a FIXED
++/-3% threshold applied to CUMULATIVE returns of different lengths will
+naturally be crossed less often in a shorter window, simply because
+cumulative returns compound over time -- nothing to do with markets
+"processing slowly." The muted-then-punished pattern in the falling-bucket
+table was this mechanical artifact wearing a costume, not a genuine result
+about information-processing speed. Retracted.
+
+**Real, honest state: the multi-horizon question (does confidence_trend's
+effect concentrate at a particular time distance from the event) remains
+genuinely untested.** A fixed threshold confounds window length with signal;
+the first percentile-based attempt had an unrelated population bug that was
+never cleanly resolved. A properly controlled version (same real population,
+a horizon-appropriate real threshold that doesn't mechanically favor longer
+windows, and a verified day-20 sanity check that actually passes) has not
+yet been built. Real, standing to-do, not completed today.
