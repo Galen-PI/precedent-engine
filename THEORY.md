@@ -771,3 +771,14 @@ individually re-run with the honest-baseline fix. Their original "null"
 verdicts should not be fully trusted until checked -- the same flaw that
 manufactured a fake positive (magnitude model) could equally be hiding a
 real signal in any of these.
+
+## Real audit continues: event_type (standalone) confirmed null under honest baseline (2026-10-03)
+
+Fixed and re-ran `walk_forward_event_type.py` (full real scale, n=15,916,
+cutoff 2022-01-01). **Real, confirming result -- not an artifact either
+way.** Aggregate: 35.0% vs. 34.9% honest baseline, essentially flat. Most
+individual categories sit within +/-3pp of the honest baseline. Two real
+standouts -- `strategic_partnership` misses by -10.7pp, `governance_action`
+by -6.6pp -- but nothing resembling a hidden positive signal the old baseline
+was masking. The original "event_type alone is weak/null" conclusion holds
+under honest re-verification. One of 9 remaining scripts checked; 7 to go.
