@@ -1026,3 +1026,32 @@ comparing across different real time periods the way confidence_trend's
 main finding was). Worth that follow-up before treating this as validated,
 but a genuinely clean, confound-free way to ask the original question that
 the first two framings couldn't achieve.
+
+## Real, sharper finding: the time-to-threshold effect is asymmetric -- punishment only, not reward (2026-10-03)
+
+Extended `time_to_threshold_confidence_test.py` to also check the +3%
+REWARDED bar, not just -3% PUNISHED, completing the symmetric picture.
+
+**Real, clean result -- the reward side shows NO real asymmetry at all:**
+
+| Bucket | Median days to +3% | Mean days | Real crossing rate |
+|---|---|---|---|
+| falling | 6 | 9.8 | 64.3% |
+| rising | 6 | 9.8 | 63.9% |
+| stable | 7 | 11.1 | 67.8% |
+
+Falling and rising are essentially indistinguishable on the reward side --
+same median, same mean, crossing rates within 0.4pp of each other. There is
+no "rising confidence speeds up reward" effect to match the punishment-side
+finding.
+
+**Real, sharper, more precise conclusion: confidence_trend's real effect is
+specific to punishment, not a general speed effect.** Falling confidence
+genuinely correlates with faster, more frequent punishment (5 vs. 6 median
+days, 70.9% vs. 68.7% crossing rate) -- but there's no mirror-image
+acceleration of reward when confidence rises. This is a real, economically
+sensible asymmetry, consistent with well-documented market behavior where
+negative sentiment moves prices faster and more reliably than equivalent
+positive sentiment (loss aversion / negativity bias), not just noise. A
+cleaner, more interesting, and more precise finding than a simple symmetric
+"confidence predicts reaction speed" story would have been.

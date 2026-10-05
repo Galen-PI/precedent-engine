@@ -35,6 +35,7 @@ SUPABASE_KEY = os.environ["SUPABASE_KEY"]
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 PUNISHED_THRESHOLD = -0.03
+REWARDED_THRESHOLD = 0.03
 CONFIDENCE_TREND_THRESHOLD = 1.0
 
 
@@ -129,8 +130,10 @@ def main():
     for r in ripple_rows:
         series[(r["event_id"], r["entity_id"])][r["day_offset"]] = r["abnormal_return"]
 
-    results = defaultdict(list)
-    never_crossed = defaultdict(int)
+    results_punished = defaultdict(list)
+    never_punished = defaultdict(int)
+    results_rewarded = defaultdict(list)
+    never_rewarded = defaultdict(int)
     for p in population:
         key = (p["event_id"], p["entity_id"])
         day_series = series.get(key)
@@ -139,30 +142,48 @@ def main():
         ct = get_confidence_trend(p["event_date"], confidence_by_month)
         if ct is None:
             continue
-        first_cross = None
-        for day in sorted(day_series.keys()):
-            if day_series[day] <= PUNISHED_THRESHOLD:
-                first_cross = day
-                break
-        if first_cross is not None:
-            results[ct].append(first_cross)
-        else:
-            never_crossed[ct] += 1
 
-    print("=" * 70)
-    print("REAL RESULT: days until first crossing the -3% bar, by confidence_trend bucket")
-    print("=" * 70)
-    for bucket in ("falling", "rising", "stable"):
-        days = results.get(bucket, [])
-        nc = never_crossed.get(bucket, 0)
-        if not days:
-            print(f"  {bucket}: no real events crossed the bar at all (n={nc} never crossed)")
-            continue
-        days_sorted = sorted(days)
-        median = days_sorted[len(days_sorted) // 2]
-        mean = sum(days_sorted) / len(days_sorted)
-        print(f"  {bucket}: n={len(days)} crossed (median {median} days, mean {mean:.1f} days), "
-              f"{nc} never crossed within 39 days")
+        first_punish = None
+        first_reward = None
+        for day in sorted(day_series.keys()):
+            val = day_series[day]
+            if first_punish is None and val <= PUNISHED_THRESHOLD:
+                first_punish = day
+            if first_reward is None and val >= REWARDED_THRESHOLD:
+                first_reward = day
+            if first_punish is not None and first_reward is not None:
+                break
+
+        if first_punish is not None:
+            results_punished[ct].append(first_punish)
+        else:
+            never_punished[ct] += 1
+        if first_reward is not None:
+            results_rewarded[ct].append(first_reward)
+        else:
+            never_rewarded[ct] += 1
+
+    def report(label, results, never_crossed):
+        print("=" * 70)
+        print(f"REAL RESULT: days until first crossing {label}, by confidence_trend bucket")
+        print("=" * 70)
+        for bucket in ("falling", "rising", "stable"):
+            days = results.get(bucket, [])
+            nc = never_crossed.get(bucket, 0)
+            if not days:
+                print(f"  {bucket}: no real events crossed the bar at all (n={nc} never crossed)")
+                continue
+            days_sorted = sorted(days)
+            median = days_sorted[len(days_sorted) // 2]
+            mean = sum(days_sorted) / len(days_sorted)
+            total = len(days) + nc
+            rate = 100 * len(days) / total if total else 0
+            print(f"  {bucket}: n={len(days)} crossed (median {median} days, mean {mean:.1f} days, "
+                  f"real crossing rate {rate:.1f}%), {nc} never crossed within 39 days")
+        print()
+
+    report("the -3% PUNISHED bar", results_punished, never_punished)
+    report("the +3% REWARDED bar", results_rewarded, never_rewarded)
 
 
 if __name__ == "__main__":
