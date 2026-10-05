@@ -1125,3 +1125,42 @@ worth checking directly whether the crossed feature behaves differently
 within just that sub-period before treating this as the full explanation).
 Promising, partial, real lead -- not yet a complete account of the
 instability.
+
+## Real, standing design principle for Phase 6, captured before it starts (2026-10-03)
+
+A real, repeated pattern across this whole session's investigations, worth
+writing down now rather than relying on memory once Phase 6 actually
+begins: **isolated features tested alone come back weak almost every
+time** -- confidence_trend alone, event_type alone, firm_state alone,
+storm_tier alone within a fixed regime, all genuinely weak or null in
+standalone tests. **The same features, deliberately crossed with the right
+real context, sharpen every time this was tried** -- confidence_trend x
+firm_state (a real interaction, zero standalone power each), storm_tier x
+sentiment (survived honest re-verification), confidence_trend x real Fed
+policy stance (the fastest, most acute punishment cell is exactly the
+economically sensible one, two real distress signals aligning). Not a
+coincidence pattern -- markets react to a SITUATION, not an isolated
+number, and the data keeps bearing that out directly.
+
+**Real, important trap already fallen into once, worth naming so it
+doesn't recur:** "combine multiple features into one model" is NOT the
+same thing as "context-aware." The retracted magnitude-prediction finding
+looked exactly like this pattern -- five features combined -- but turned
+out to be mostly one feature (regime) riding alone under a wrong baseline,
+dressed up as something richer by the combination itself. Throwing many
+features at one model and hoping combination does the work is a different,
+weaker thing than a specific, reasoned cross between two features chosen
+because there's a real, stated reason they should interact.
+
+**Real, concrete implication for Phase 6's design, not yet built:** the
+harness should be built around deliberate, hypothesis-driven crosses --
+two features picked because there's a real, stated economic or structural
+reason to expect them to interact -- not a kitchen-sink feature set fed
+into one model and left to sort itself out. Every real success this
+session (storm x sentiment, confidence x firm_state, confidence x policy
+stance) came from a specific, reasoned pairing. Every disappointment
+(the magnitude model) came from combination without that discipline. This
+should be the standing design test before any future feature gets added
+to Phase 6's real model: not "does adding this feature help," but "what is
+the specific, reasoned context this feature should be crossed with, and
+have we tested that cross directly."
