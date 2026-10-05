@@ -132,12 +132,16 @@ def main():
         print("CANNOT RUN: one side of the split is empty. Try a different cutoff.")
         return
 
-    train_baseline = defaultdict(int)
-    for r in train:
-        train_baseline[r["reaction"]] += 1
-    baseline_reaction = max(train_baseline, key=train_baseline.get)
-    baseline_hit_rate = 100 * train_baseline[baseline_reaction] / len(train)
-    print(f"--- DUMB BASELINE ---\n  Most common: {baseline_reaction} ({baseline_hit_rate:.1f}%)\n")
+    # REAL FIX (2026-10-03): honest baseline is the TEST period's own true
+    # majority class, not the training period's -- see the magnitude-model
+    # retraction in THEORY.md for why this matters.
+    test_baseline = defaultdict(int)
+    for r in test:
+        test_baseline[r["reaction"]] += 1
+    baseline_reaction = max(test_baseline, key=test_baseline.get)
+    baseline_hit_rate = 100 * test_baseline[baseline_reaction] / len(test)
+    print(f"--- HONEST BASELINE (test period's own true majority) ---\n"
+          f"  Most common in TEST: {baseline_reaction} ({baseline_hit_rate:.1f}%)\n")
 
     train_by_bucket = defaultdict(lambda: defaultdict(int))
     for r in train:

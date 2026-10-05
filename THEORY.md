@@ -739,3 +739,35 @@ explicitly re-verified against an honest, non-drifting baseline and survive.**
 Worth treating as the most trustworthy walk-forward result in THEORY.md for
 that reason, alongside storm/sector-peer-ripple's differently-validated
 (z-score, not baseline-comparison) methodology.
+
+## Real audit continues: chain_position re-checked against honest baseline (2026-10-03)
+
+Found the identical wrong-baseline flaw in `walk_forward_chain_position.py`
+(and 8 other walk-forward scripts in this project -- `walk_forward_2feature.py`,
+`walk_forward_sentiment_by_storm.py`, `walk_forward_combined.py`,
+`walk_forward_test.py`, `walk_forward_sentiment_v2.py`,
+`walk_forward_event_type.py`, `walk_forward_sentiment_trend.py`,
+`walk_forward_sentiment_direction.py`, `walk_forward_sentiment.py` -- all
+confirmed via direct grep for the same pattern, not yet individually
+re-verified). `walk_forward_sentiment_3d.py` and
+`walk_forward_continuous_score.py` did not match the pattern -- not yet
+confirmed safe, just not yet checked for a different-looking version of the
+same issue.
+
+Fixed and re-ran `walk_forward_chain_position.py` (real, small, honestly-
+flagged sample: 393 labeled events, only one bucket -- `long_late`, n=46 --
+ever reaches the readiness threshold). **Real, more precise result with the
+honest baseline: 21.7% vs. 52.0% honest baseline, a real -30.3pp MISS.** The
+original "null" characterization undersold this -- chain position (long_late,
+specifically) isn't just uninformative, it actively predicts the wrong
+reaction more often than chance in the one bucket with enough data to judge.
+Real, honest caveat: n=46 is small, single cutoff, not yet tested for
+robustness across multiple cutoffs the way confidence_trend and the
+magnitude model were -- treat as a real, worth-noting signal, not yet a
+validated one.
+
+Real, standing to-do: the 8 other flagged scripts have not yet been
+individually re-run with the honest-baseline fix. Their original "null"
+verdicts should not be fully trusted until checked -- the same flaw that
+manufactured a fake positive (magnitude model) could equally be hiding a
+real signal in any of these.
