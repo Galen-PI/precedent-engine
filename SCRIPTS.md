@@ -954,3 +954,26 @@ the real next step is checking which OTHER untested tickers are also
 goods-sector companies (plausible additional wins: likely candidates from the
 same list worth checking directly rather than assuming) versus genuinely
 different sectors needing their own, separate investigation.
+
+### 2026-10-03 — 367-ticker gap: real, broad result -- 16 tickers resolved from 3 concept additions
+Real follow-up to the SalesRevenueGoodsNet fix above. Found two more real,
+sector-specific pre-2018 concepts via the same direct-SEC-data methodology:
+`RefiningAndMarketingRevenue` (confirmed via VLO, energy/refining sector) and
+`SalesRevenueServicesNet` (confirmed via IRM, services sector) -- both follow
+the identical two-era handoff pattern already established (old concept
+2008ish-2018, clean handoff to an existing-list concept from 2017 onward).
+
+**Real, batch-tested result across 15 more tickers, all three new concepts
+combined:** 9 fully resolved -- MRSH, FIS, TSCO, APH, HWM, AOS, ODFL, PWR, EFX
+(all dropped to a 1-4 residual, the genuine pre-2008 floor, same class as
+GS's known limit). **6 completely unchanged** -- DTE, EQT, DVA, CMG, AXP, NEM
+-- these need their own, separate investigation; none of the three concepts
+added today cover them.
+
+**Real, complete running total for this session: 16 tickers resolved**
+(KO, TAP, GPC, CHD, MNST, VLO, IRM, MRSH, FIS, TSCO, APH, HWM, AOS, ODFL,
+PWR, EFX) from 3 new concept names, on top of the earlier bank fix (GS, WFC,
+MS) and the already-accepted deep-gap cases (XOM, BNY). Real, honest
+remaining scope: roughly 60-65 of the original ~85 high-count tickers still
+untested, plus the 6 confirmed-unhelped ones above needing individual
+investigation like BNY's.

@@ -60,6 +60,19 @@ CONCEPTS = {
         # several other consumer-goods companies in that list (TAP, GPC,
         # CHD, MNST) plausibly share this same real gap.
         "SalesRevenueGoodsNet",
+        # REAL FIX (2026-10-03): refining/energy-marketing sector counterpart,
+        # same two-era handoff pattern. Confirmed directly against VLO's real
+        # SEC XBRL data: 54 real standalone 10-Q facts, 2008-2018, cleanly
+        # handing off to RevenueFromContractWithCustomerIncludingAssessedTax
+        # (already in this list) from 2017 onward.
+        "RefiningAndMarketingRevenue",
+        # REAL FIX (2026-10-03): services-sector counterpart to
+        # SalesRevenueGoodsNet, same real two-era handoff pattern. Confirmed
+        # directly against IRM's real SEC XBRL data: 50 real standalone 10-Q
+        # facts, 2009-2018, handing off to
+        # RevenueFromContractWithCustomerExcludingAssessedTax from 2017
+        # onward (already in this list).
+        "SalesRevenueServicesNet",
     ],
     "gross_profit": ["GrossProfit"],
     "operating_income": ["OperatingIncomeLoss"],
