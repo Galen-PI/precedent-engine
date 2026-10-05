@@ -943,3 +943,13 @@ information.
 
 7 of 9 flagged scripts re-verified (this script covers 3 feature tests at
 once). 2 remaining: `walk_forward_2feature.py`, `walk_forward_combined.py`.
+
+## Real audit continues: firm_state x event_type (2-feature combo) confirmed null under honest baseline (2026-10-03)
+
+Fixed and re-ran `walk_forward_2feature.py` (firm_state x event_type,
+cutoff 2022-01-01). Real, clean, confirming result: aggregate across all
+real combos (n=2,779 pooled) is 34.9% vs. 34.9% honest baseline -- exactly
+flat. Individual cells with dramatic-looking rates (58.3%, 9.1%, etc.) are
+all correctly flagged "not ready" by the script's own discipline -- tiny
+samples, noise, not real signal. 8 of 9 flagged scripts re-verified. 1
+remaining: `walk_forward_combined.py`.
