@@ -1055,3 +1055,29 @@ negative sentiment moves prices faster and more reliably than equivalent
 positive sentiment (loss aversion / negativity bias), not just noise. A
 cleaner, more interesting, and more precise finding than a simple symmetric
 "confidence predicts reaction speed" story would have been.
+
+## Real, honest robustness check: the punishment-speed asymmetry weakens over time, doesn't hold uniformly (2026-10-03)
+
+Split the time-to-threshold test across three real, distinct two-year
+sub-periods to check robustness, same discipline applied to every other
+finding tonight.
+
+| Period | falling (median/rate) | rising (median/rate) | Pattern holds? |
+|---|---|---|---|
+| 2020-2022 | 5 days / 70.7% | 6 days / 67.3% | Yes, clearly |
+| 2022-2024 | 6 days / 67.3% | 8 days / 67.1% | Speed yes, rate ~tied |
+| 2024-2026 | 6 days / 70.5% | 6 days / 73.6% | No -- speed ties, rate REVERSES |
+
+**Real, honest conclusion: the pattern is not uniform across time.** It held
+clearly in 2020-2022, partially in 2022-2024 (speed advantage survives,
+rate advantage does not), and both the speed and rate advantage disappear
+or reverse in 2024-2026 -- rising confidence actually shows a HIGHER
+crossing rate in the most recent period. The pooled, whole-period result
+(5 vs 6 median days, 70.9% vs 68.7% rate) is real as a description of the
+full 2020-2026 dataset, but it is not a stable, time-invariant effect --
+it's concentrated in the earlier part of the window and weakens or
+reverses more recently. Same pattern already seen elsewhere tonight
+(storm_tier's within-regime test, regime's own cutoff-sensitivity): a
+result that looks clean pooled or at a single reference point, more mixed
+once tested across genuinely separate real periods. Worth tracking as a
+real, partial lead, not citing as a settled, time-invariant finding.
