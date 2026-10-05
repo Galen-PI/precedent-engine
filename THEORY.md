@@ -986,3 +986,43 @@ intact (confidence_trend, storm_x_sentiment), correctly-nulled others
 (event_type, sentiment_trend), and fully manufactured one large false
 positive (magnitude). Checking is the only way to know which; assuming
 either direction would have been wrong.
+
+## Real, successful reframing: time-to-threshold instead of classification-at-a-snapshot (2026-10-03)
+
+Two prior multi-horizon attempts hit real, different problems: a fixed
++/-3% threshold mechanically confounds window length with signal (shorter
+windows have smaller cumulative returns regardless of any real feature);
+a percentile threshold removes that confound but stops measuring the same
+thing the original validated finding used, so it couldn't reproduce it as
+a sanity check. Neither classification-at-a-fixed-snapshot framing worked
+cleanly.
+
+**Real reframing that avoids both problems by construction:** instead of
+asking "at day N, is this event punished," ask "for events that DO
+eventually cross the real -3% bar, how many days does it take -- and does
+falling confidence make that happen faster?" Same real, externally
+meaningful threshold used throughout, no different bar per horizon needed,
+so the mechanical confound cannot occur. Built
+`time_to_threshold_confidence_test.py`, same real population as the
+validated confidence_trend test (n=4,177, 2020+), real daily coverage
+(day_offset 1-39, 564,015 real rows).
+
+**Real, honest, single-run result:**
+
+| Bucket | Median days to -3% | Mean days | Real crossing rate |
+|---|---|---|---|
+| falling | 5 | 8.7 | 70.9% |
+| rising | 6 | 9.9 | 68.7% |
+| stable | 5 | 9.2 | 75.3% |
+
+Falling confidence events reach the real punishment threshold somewhat
+faster than rising ones (5 vs. 6 median days, 8.7 vs. 9.9 mean) -- a real,
+modest, directionally-consistent result with the already-validated
+falling->punished finding. Not a clean story, though: `stable` ties falling
+on speed and has the highest crossing rate of the three, so this isn't
+"falling is fast, everything else is slow." Real, honest state: a single
+run, not yet robustness-tested against other reference points (e.g.
+comparing across different real time periods the way confidence_trend's
+main finding was). Worth that follow-up before treating this as validated,
+but a genuinely clean, confound-free way to ask the original question that
+the first two framings couldn't achieve.
