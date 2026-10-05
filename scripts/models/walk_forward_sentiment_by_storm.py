@@ -82,12 +82,16 @@ def main():
             print("  Insufficient real data on one side of the split -- skipping this state.\n")
             continue
 
-        train_baseline = defaultdict(int)
-        for r in train_s:
-            train_baseline[r["reaction"]] += 1
-        baseline_reaction = max(train_baseline, key=train_baseline.get)
-        baseline_hit_rate = 100 * train_baseline[baseline_reaction] / len(train_s)
-        print(f"  Dumb baseline ({storm_state} only): {baseline_reaction} ({baseline_hit_rate:.1f}%)")
+        # REAL FIX (2026-10-03): honest baseline is the TEST period's own
+        # true majority class WITHIN this storm state, not the training
+        # period's -- see the magnitude-model retraction in THEORY.md.
+        test_baseline = defaultdict(int)
+        for r in test_s:
+            test_baseline[r["reaction"]] += 1
+        baseline_reaction = max(test_baseline, key=test_baseline.get)
+        baseline_hit_rate = 100 * test_baseline[baseline_reaction] / len(test_s)
+        print(f"  HONEST baseline ({storm_state} only, test period's true majority): "
+              f"{baseline_reaction} ({baseline_hit_rate:.1f}%)")
 
         train_by_bucket = defaultdict(lambda: defaultdict(int))
         for r in train_s:

@@ -782,3 +782,39 @@ standouts -- `strategic_partnership` misses by -10.7pp, `governance_action`
 by -6.6pp -- but nothing resembling a hidden positive signal the old baseline
 was masking. The original "event_type alone is weak/null" conclusion holds
 under honest re-verification. One of 9 remaining scripts checked; 7 to go.
+
+## Real audit continues: storm_x_sentiment re-checked against honest baseline -- the finding behind multi_feature_model.py's feature (2026-10-03)
+
+This is the real, original source of `multi_feature_model.py`'s `storm_x_sentiment`
+feature, cited there as "storm-condition + neutral-sentiment ... best cell:
++10.7pp vs baseline, n=61." Fixed and re-ran at full real scale
+(cutoff 2022-01-01, n=4,207 total, far larger than the n=61 the original
+comment cited -- likely from an earlier, smaller snapshot of the data).
+
+**Real, honest result, all 6 real cells (storm state x sentiment bucket):**
+
+| Storm state | Sentiment | Hit rate | Honest baseline | Real result |
+|---|---|---|---|---|
+| isolated | negative | 44.4% | 33.9% | **+10.5pp** (n=63) |
+| isolated | positive | 37.4% | 33.9% | +3.5pp (n=337) |
+| isolated | neutral | 32.6% | 33.9% | -1.3pp (n=362) |
+| storm | neutral | 40.5% | 35.0% | +5.5pp (n=388) |
+| storm | negative | 34.8% | 35.0% | -0.2pp (n=69) |
+| storm | positive | 31.2% | 35.0% | -3.8pp (n=349) |
+
+**Real, honest conclusion: the original storm+neutral claim survives, in the
+same direction, but shrinks substantially** (+5.5pp honest vs. +10.7pp
+originally claimed on a much smaller n=61 sample) -- consistent with the
+general pattern this audit keeps finding: real effects tend to be smaller
+than first reported once measured against the test period's true baseline,
+not absent, but overstated. **A new, real candidate signal emerges that
+wasn't highlighted in the original finding: isolated events with negative
+sentiment show the single largest beat in this table (+10.5pp, n=63)** --
+worth treating as a real, promising lead for future investigation, with the
+same honest caveat as any single-cutoff result (not yet robustness-tested
+across multiple cutoffs).
+
+4 of 9 flagged scripts re-verified so far: confidence_trend (survives),
+chain_position (reclassified as a real, substantial miss), event_type
+(confirmed null), storm_x_sentiment (survives at reduced magnitude, plus a
+new candidate cell found).
