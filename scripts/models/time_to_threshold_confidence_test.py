@@ -66,6 +66,34 @@ def get_confidence_by_month():
     return by_month
 
 
+def get_real_policy_decisions():
+    """Real, structured Fed policy decisions -- every real rate CHANGE
+    (not every observation), with its real direction. Used to determine
+    the real, most recent policy stance (hiking/cutting) as of any event
+    date, rather than parsing statement text qualitatively."""
+    rows = paginated("macro_data_releases", "release_date,change_from_previous", "id",
+                      [lambda q: q.eq("series_id", "DFEDTARU").neq("change_from_previous", 0)])
+    return sorted(
+        [(date.fromisoformat(str(r["release_date"])[:10]), r["change_from_previous"]) for r in rows],
+        key=lambda x: x[0],
+    )
+
+
+def get_policy_stance(event_date_str, decisions):
+    """Real policy stance as of event_date: the direction of the most
+    recent real rate change before this date. 'none_yet' if this event
+    predates the first real decision in our data (2015-12-16)."""
+    d = date.fromisoformat(event_date_str)
+    most_recent = None
+    for dec_date, change in decisions:
+        if dec_date >= d:
+            break
+        most_recent = change
+    if most_recent is None:
+        return "none_yet"
+    return "hiking" if most_recent > 0 else "cutting"
+
+
 def get_confidence_trend(event_date_str, by_month):
     d = date.fromisoformat(event_date_str)
     this_month = by_month.get((d.year, d.month))
@@ -81,9 +109,10 @@ def get_confidence_trend(event_date_str, by_month):
     return "stable"
 
 
-def get_real_population():
+def get_real_population(start_date="2020-01-01", end_date=None):
     """Same real population as walk_forward_consumer_confidence.py: events
-    from 2020+ with a real reaction_character tag."""
+    from 2020+ with a real reaction_character tag. Real date range is now
+    configurable, to test robustness across different real sub-periods."""
     tag_ids = {t["name"]: t["id"] for t in supabase.table("tags").select("id,name")
                .in_("name", ["rewarded", "punished", "muted"]).execute().data}
     event_tags = paginated("event_tags", "event_id,tag_id", "event_id",
@@ -100,8 +129,11 @@ def get_real_population():
         if r["entity_id"] not in entity_map.get(r["event_id"], []):
             entity_map.setdefault(r["event_id"], []).append(r["entity_id"])
 
+    filters = [lambda q: q.gte("event_date", start_date)]
+    if end_date:
+        filters.append(lambda q: q.lt("event_date", end_date))
     events = {e["id"]: e["event_date"][:10] for e in paginated(
-        "events", "id,event_date", "id", [lambda q: q.gte("event_date", "2020-01-01")])}
+        "events", "id,event_date", "id", filters)}
 
     pop = []
     for event_id in tagged_event_ids:
@@ -114,9 +146,13 @@ def get_real_population():
 
 
 def main():
+    import sys
+    start_date = sys.argv[1] if len(sys.argv) > 1 else "2020-01-01"
+    end_date = sys.argv[2] if len(sys.argv) > 2 else None
+    print(f"Real date range: {start_date} to {end_date or 'present'}")
     print("Fetching real confidence data and the real, fixed population...")
     confidence_by_month = get_confidence_by_month()
-    population = get_real_population()
+    population = get_real_population(start_date, end_date)
     print(f"Real population: {len(population)} rows\n")
 
     print("Fetching real full daily ripple time series (day_offset 1-39)...")
@@ -130,10 +166,22 @@ def main():
     for r in ripple_rows:
         series[(r["event_id"], r["entity_id"])][r["day_offset"]] = r["abnormal_return"]
 
+    print("Fetching real Fed policy decisions (for the real policy-stance cross)...")
+    policy_decisions = get_real_policy_decisions()
+    print(f"  {len(policy_decisions)} real rate changes loaded.")
+    print()
+
     results_punished = defaultdict(list)
     never_punished = defaultdict(int)
     results_rewarded = defaultdict(list)
     never_rewarded = defaultdict(int)
+    # REAL EXTENSION (2026-10-03): also bucket by (confidence_trend x real
+    # policy stance) -- testing whether the same raw confidence_trend
+    # reading means something different depending on whether the Fed is
+    # actively hiking vs cutting at the time, per the real hypothesis that
+    # missing macro context explains why the pooled result isn't time-stable.
+    results_punished_crossed = defaultdict(list)
+    never_punished_crossed = defaultdict(int)
     for p in population:
         key = (p["event_id"], p["entity_id"])
         day_series = series.get(key)
@@ -142,6 +190,7 @@ def main():
         ct = get_confidence_trend(p["event_date"], confidence_by_month)
         if ct is None:
             continue
+        stance = get_policy_stance(p["event_date"], policy_decisions)
 
         first_punish = None
         first_reward = None
@@ -156,8 +205,10 @@ def main():
 
         if first_punish is not None:
             results_punished[ct].append(first_punish)
+            results_punished_crossed[(ct, stance)].append(first_punish)
         else:
             never_punished[ct] += 1
+            never_punished_crossed[(ct, stance)] += 1
         if first_reward is not None:
             results_rewarded[ct].append(first_reward)
         else:
@@ -184,6 +235,22 @@ def main():
 
     report("the -3% PUNISHED bar", results_punished, never_punished)
     report("the +3% REWARDED bar", results_rewarded, never_rewarded)
+
+    print("=" * 70)
+    print("REAL RESULT: punishment speed, confidence_trend CROSSED WITH real Fed policy stance")
+    print("=" * 70)
+    for ct_bucket in ("falling", "rising", "stable"):
+        for stance in ("hiking", "cutting", "none_yet"):
+            days = results_punished_crossed.get((ct_bucket, stance), [])
+            nc = never_punished_crossed.get((ct_bucket, stance), 0)
+            total = len(days) + nc
+            if total < 30:
+                continue
+            days_sorted = sorted(days)
+            median = days_sorted[len(days_sorted) // 2] if days else None
+            rate = 100 * len(days) / total if total else 0
+            print(f"  {ct_bucket} + {stance}: n={total} (median {median} days, "
+                  f"real crossing rate {rate:.1f}%)")
 
 
 if __name__ == "__main__":

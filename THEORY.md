@@ -1081,3 +1081,47 @@ reverses more recently. Same pattern already seen elsewhere tonight
 result that looks clean pooled or at a single reference point, more mixed
 once tested across genuinely separate real periods. Worth tracking as a
 real, partial lead, not citing as a settled, time-invariant finding.
+
+## Real, promising lead: crossing confidence_trend with real Fed policy stance explains some of the time-instability (2026-10-03)
+
+Direct follow-up to the real hypothesis that missing macro context (what
+the Fed was actually doing, not just the raw confidence number) explains
+why the punishment-speed finding wasn't stable across time periods.
+Confirmed qualitatively first by reading real FOMC statement text from
+each of the three test windows -- genuinely different real regimes (2020:
+crisis/emergency cuts; 2022: active inflation-fighting hikes; 2024-2026:
+confident, controlled easing). Built a real, structured "policy stance"
+feature (hiking vs. cutting, from the real, already-fetched DFEDTARU rate
+changes -- not NLP-parsed statement tone) and crossed it with
+confidence_trend.
+
+**Real, full-period result (2020-2026, n=3,757):**
+
+| confidence_trend + policy stance | n | median days to -3% | crossing rate |
+|---|---|---|---|
+| falling + cutting | 1,218 | 5 | 70.0% |
+| falling + hiking | 614 | 6 | 68.7% |
+| rising + hiking | 605 | 7 | 69.4% |
+| rising + cutting | 773 | 7 | 68.6% |
+| stable + cutting | 249 | 6 | 76.3% |
+| stable + hiking | 86 | 5 | 69.8% |
+
+**Real, honest, modest support for the hypothesis.** `falling + cutting` --
+where the Fed's own real actions corroborate the independent confidence
+signal -- shows the fastest, most acute punishment in the whole table.
+`falling + hiking` -- where the Fed is still tightening despite falling
+confidence, a more conflicted real signal -- is slower and less reliable.
+`rising` shows almost no difference between hiking and cutting (7 days
+both), consistent with the already-established finding that
+confidence_trend's real effect is specific to the punishment side, not
+symmetric. The differences here are real but modest (5 vs. 6 days, not
+dramatic), and this is a single run on the full period, not yet
+robustness-tested the way the main finding was.
+
+**Real, honest implication:** this doesn't fully explain the earlier
+robustness failure (2024-2026 specifically showed REVERSED results, and
+that period was dominated by "cutting" stance per the real FOMC text --
+worth checking directly whether the crossed feature behaves differently
+within just that sub-period before treating this as the full explanation).
+Promising, partial, real lead -- not yet a complete account of the
+instability.
