@@ -953,3 +953,36 @@ flat. Individual cells with dramatic-looking rates (58.3%, 9.1%, etc.) are
 all correctly flagged "not ready" by the script's own discipline -- tiny
 samples, noise, not real signal. 8 of 9 flagged scripts re-verified. 1
 remaining: `walk_forward_combined.py`.
+
+## Real audit complete: all 9 flagged walk-forward scripts re-verified against the honest baseline (2026-10-03)
+
+Fixed and re-ran `walk_forward_combined.py` (3-feature combo). Confirmed
+the script's own documented expectation: only 1 of 2,786 test events had a
+(firm_state, regime, event_type) combination ever seen in training -- too
+sparse to mean anything, the "100.0%" aggregate is a single event, not a
+real finding. This is why the project moved to the 2-feature version.
+
+**This closes the full real audit sparked by the magnitude-model retraction
+earlier today.** All 9 scripts flagged with the wrong-baseline pattern have
+now been fixed and individually re-verified. Real, complete summary:
+
+- **Survives, real signal:** `confidence_trend` (falling->punished, +1.5 to
+  +5.2pp across 5 cutoffs), `storm_x_sentiment` (storm+neutral +5.5pp,
+  isolated+negative +10.5pp -- new candidate cell found).
+- **Reclassified as a real, stronger finding than "null":** `chain_position`
+  (long_late bucket actively misses by -30.3pp, not just uninformative).
+- **Confirmed genuinely null, not hiding anything:** `event_type` alone,
+  `sentiment_trend` (early/late split), `firm_state_label` alone,
+  `firm_state x event_type` (2-feature), `firm_state x regime x event_type`
+  (3-feature, too sparse).
+- **Small, real, not-yet-robustness-tested beats:** flat sentiment (v2) --
+  negative +3.9pp, neutral +2.4pp.
+- **Retracted entirely:** the magnitude-prediction finding and everything
+  built on its premise (see the 2026-10-03 retraction above).
+
+Real, standing lesson confirmed across this whole audit: the wrong-baseline
+flaw did NOT uniformly inflate false positives -- it left some real findings
+intact (confidence_trend, storm_x_sentiment), correctly-nulled others
+(event_type, sentiment_trend), and fully manufactured one large false
+positive (magnitude). Checking is the only way to know which; assuming
+either direction would have been wrong.
