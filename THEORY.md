@@ -892,3 +892,13 @@ never cleanly resolved. A properly controlled version (same real population,
 a horizon-appropriate real threshold that doesn't mechanically favor longer
 windows, and a verified day-20 sanity check that actually passes) has not
 yet been built. Real, standing to-do, not completed today.
+
+## Real audit continues: sentiment trend (early/late split) confirmed null under honest baseline (2026-10-03)
+
+Fixed and re-ran `walk_forward_sentiment_trend.py` (real worsening/flat/
+improving split of pre-event sentiment, cutoff 2022-01-01, n=4,121). All
+three buckets land within +/-3pp of the honest baseline: worsening 0.0pp,
+flat +0.7pp, improving -2.6pp. Confirms the original null conclusion, not an
+artifact. 5 of 9 flagged scripts re-verified: confidence_trend (survives),
+chain_position (reclassified, real miss), event_type (confirmed null),
+storm_x_sentiment (survives, reduced), sentiment_trend (confirmed null).
