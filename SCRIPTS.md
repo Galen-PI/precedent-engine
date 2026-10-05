@@ -926,3 +926,31 @@ Also corrected a separate stale claim (`free_cash_flow` backfill, see Known Gotc
 - ~876 pre-existing events with no ripple-timeline data that aren't explained by known
   causes (bundled-event exclusion, or a company's price history starting after the event) —
   ~~F, GE, AEP specifically flagged as unexplained~~ -- RESOLVED 2026-09-30: 100% bundled/summary events, working as designed, not a bug.
+
+### 2026-10-03 — Real, broad fix for the 367-ticker quarterly gap: SalesRevenueGoodsNet (consumer-goods companies)
+Real follow-up to the earlier RevenuesNetOfInterestExpense (bank) fix. Confirmed
+first that none of the ~85 remaining high-count tickers (8+ empty Q4 rows) were
+missing from CIK_TO_TICKER (checked directly, zero suspects) -- ruling out the
+GS-style mapping bug as a broader pattern.
+
+Investigated KO directly, same real SEC XBRL methodology as BNY: found a clean,
+two-era pattern -- `SalesRevenueGoodsNet` (54 real standalone 10-Q facts,
+2008-2018) handing off cleanly to `Revenues` (already in our concept list, 46
+real facts, 2017-2026 and still active). Complete real coverage across KO's
+whole history, just split across two concept names -- `SalesRevenueGoodsNet`
+was simply never in our list (we had the similarly-named but different
+`SalesRevenueNet`). Added it.
+
+**Real, measured result, tested on 5 real consumer-goods tickers:** KO, TAP,
+GPC, CHD, MNST all dropped from 10-11 empty Q4 rows down to 2-3 (genuine
+residual, pre-2008-era limit, same class as GS's 2009-2012 floor -- not a
+bug). One concept fix, five real tickers resolved at once -- a broader,
+cleaner win than the bank fix, which only helped 3 of 14 tested tickers.
+
+**Real, honest remaining scope:** ~80 of the original ~85 high-count tickers
+still untested. Given this fix specifically targets consumer-GOODS companies
+(packaged goods, beverages, retail -- not services/REITs/utilities/energy),
+the real next step is checking which OTHER untested tickers are also
+goods-sector companies (plausible additional wins: likely candidates from the
+same list worth checking directly rather than assuming) versus genuinely
+different sectors needing their own, separate investigation.

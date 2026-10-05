@@ -50,6 +50,16 @@ CONCEPTS = {
         # empty Q4-only quarterly rows -- the prior list had no bank-specific
         # revenue concept at all beyond the single hardcoded JPM composite entry.
         "RevenuesNetOfInterestExpense",
+        # REAL FIX (2026-10-03): the real "goods company" counterpart to the
+        # bank-specific RevenuesNetOfInterestExpense concept above. Confirmed
+        # directly against KO's real SEC XBRL data: 54 real standalone 10-Q
+        # facts, 2008-2018, cleanly handing off to "Revenues" (already in
+        # this list) from 2017 onward -- complete real coverage across KO's
+        # whole history, just split across two concept names. Found while
+        # investigating the broader 367-ticker quarterly-gap pattern --
+        # several other consumer-goods companies in that list (TAP, GPC,
+        # CHD, MNST) plausibly share this same real gap.
+        "SalesRevenueGoodsNet",
     ],
     "gross_profit": ["GrossProfit"],
     "operating_income": ["OperatingIncomeLoss"],
