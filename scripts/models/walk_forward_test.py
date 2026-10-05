@@ -135,15 +135,26 @@ def main():
         print("required just to compute a trustworthy baseline -- cannot proceed to walk-forward test.")
         return
 
-    # Baseline: unconditional reaction distribution in training data
+    # REAL FIX (2026-10-03): honest baseline is the TEST period's own true
+    # majority class, not the training period's -- see THEORY.md's
+    # 2026-10-03 retraction for why this matters. Still print the training
+    # distribution for reference, but the real comparison point is test.
     train_baseline = defaultdict(int)
     for r in train:
         train_baseline[r["reaction"]] += 1
     total_train = len(train)
-    print("--- DUMB BASELINE (unconditional, from training data only) ---")
+    print("--- Training distribution (reference only, NOT the real comparison baseline) ---")
     for reaction, count in sorted(train_baseline.items(), key=lambda x: -x[1]):
         print(f"  {reaction}: {count}/{total_train} = {100*count/total_train:.1f}%")
-    print()
+
+    test_baseline = defaultdict(int)
+    for r in test:
+        test_baseline[r["reaction"]] += 1
+    total_test = len(test)
+    baseline_reaction = max(test_baseline, key=test_baseline.get)
+    baseline_hit_rate = 100 * test_baseline[baseline_reaction] / total_test
+    print(f"--- HONEST BASELINE (test period's own true majority) ---")
+    print(f"  Most common in TEST: {baseline_reaction} ({baseline_hit_rate:.1f}%)\n")
 
     # Conditional: P(reaction | feature value), computed on training data only
     train_by_feature = defaultdict(lambda: defaultdict(int))
@@ -177,9 +188,6 @@ def main():
             continue
         hits = test_reaction_counts.get(predicted, 0)
         hit_rate = 100 * hits / test_n if test_n > 0 else 0
-
-        baseline_reaction = max(train_baseline, key=train_baseline.get)
-        baseline_hit_rate = 100 * train_baseline[baseline_reaction] / total_train
 
         verdict = "READY" if test_n >= MIN_N_FOR_READY else f"NOT READY (test n={test_n} < {MIN_N_FOR_READY})"
         if test_n >= MIN_N_FOR_READY:

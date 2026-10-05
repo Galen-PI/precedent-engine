@@ -913,3 +913,33 @@ largest). Not dramatic, but a real, if small, improvement over the original
 modest, beat. Worth a real multi-cutoff robustness check before trusting
 further, same discipline applied to confidence_trend. 6 of 9 flagged scripts
 re-verified.
+
+## Real audit continues: walk_forward_test.py -- the script explicitly labeled "the real Phase 6 deliverable" (2026-10-03)
+
+Found and fixed the same baseline flaw in `walk_forward_test.py`, whose own
+docstring calls it "the real Phase 6 deliverable" -- a genuine walk-forward
+harness testing `firm_state_label`, `regime_id`, and `size_bucket`
+individually. Real, incidental find while reading it: `reaction_tags`
+includes a fourth real tag, `diverged_from_fundamentals`, not referenced
+anywhere else in this project's recent work -- worth knowing it exists.
+
+**firm_state_label**, honest re-test (n=9,326, cutoff 2022-01-01): every
+bucket within +/-3.3pp of the honest baseline (stable +1.4, deteriorating
++0.7, strong -3.3, improving +1.0, weakening +0.5). Genuinely null,
+reinforcing the independent finding from the magnitude-model ablation that
+firm_state is mostly a regime proxy with little real standalone signal --
+two separate tests now agree.
+
+**regime_id**: hits the exact same chronological unseen-category problem
+already found and retracted in the magnitude model (every test-set regime
+was never seen in training). Real, important difference worth learning
+from: this script handles it correctly -- reports "NOT READY" honestly
+rather than silently defaulting to a constant prediction the way the
+magnitude model's code did. Good design, not a flaw to fix here.
+
+**size_bucket**: confirms the already-known zero-variance finding (all
+rows are the same bucket) -- trivially flat result (35.0% vs 35.0%), no new
+information.
+
+7 of 9 flagged scripts re-verified (this script covers 3 feature tests at
+once). 2 remaining: `walk_forward_2feature.py`, `walk_forward_combined.py`.
