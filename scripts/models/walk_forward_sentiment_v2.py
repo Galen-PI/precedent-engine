@@ -119,13 +119,16 @@ def main():
     test = [r for r in rows if r["event_date"] >= cutoff]
     print(f"Train: {len(train)} rows, Test: {len(test)} rows\n")
 
-    train_baseline = defaultdict(int)
-    for r in train:
-        train_baseline[r["reaction"]] += 1
-    total_train = len(train)
-    baseline_reaction = max(train_baseline, key=train_baseline.get)
-    baseline_hit_rate = 100 * train_baseline[baseline_reaction] / total_train
-    print(f"--- DUMB BASELINE ---\n  Most common: {baseline_reaction} ({baseline_hit_rate:.1f}%)\n")
+    # REAL FIX (2026-10-03): honest baseline is the TEST period's own true
+    # majority class, not the training period's.
+    test_baseline = defaultdict(int)
+    for r in test:
+        test_baseline[r["reaction"]] += 1
+    total_test = len(test)
+    baseline_reaction = max(test_baseline, key=test_baseline.get)
+    baseline_hit_rate = 100 * test_baseline[baseline_reaction] / total_test
+    print(f"--- HONEST BASELINE (test period's own true majority) ---\n"
+          f"  Most common in TEST: {baseline_reaction} ({baseline_hit_rate:.1f}%)\n")
 
     train_by_bucket = defaultdict(lambda: defaultdict(int))
     for r in train:

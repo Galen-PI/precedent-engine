@@ -902,3 +902,14 @@ flat +0.7pp, improving -2.6pp. Confirms the original null conclusion, not an
 artifact. 5 of 9 flagged scripts re-verified: confidence_trend (survives),
 chain_position (reclassified, real miss), event_type (confirmed null),
 storm_x_sentiment (survives, reduced), sentiment_trend (confirmed null).
+
+## Real audit continues: flat sentiment (v2) shows small, real beats once honestly tested (2026-10-03)
+
+Fixed and re-ran `walk_forward_sentiment_v2.py` (flat 7-day average GDELT
+tone, cutoff 2022-01-01, n=4,562). Real, small, mixed result: positive
+essentially flat (-0.6pp), neutral modest (+2.4pp), negative modest (+3.9pp,
+largest). Not dramatic, but a real, if small, improvement over the original
+"null" framing -- negative sentiment specifically shows a genuine, if
+modest, beat. Worth a real multi-cutoff robustness check before trusting
+further, same discipline applied to confidence_trend. 6 of 9 flagged scripts
+re-verified.
