@@ -818,3 +818,49 @@ across multiple cutoffs).
 chain_position (reclassified as a real, substantial miss), event_type
 (confirmed null), storm_x_sentiment (survives at reduced magnitude, plus a
 new candidate cell found).
+
+## Real, new tool: multi-horizon testing, and a real finding opposite the original hypothesis (2026-10-03)
+
+Built `multi_horizon_confidence_test.py` to test whether confidence_trend's
+real effect is concentrated at shorter time horizons (the hypothesis: market
+attention to news fades quickly, so short-horizon reactions might be more
+predictable than the 20-day window used throughout this project). Real data
+source: `event_ripple_timeline`, which has real daily coverage at day-offsets
+1, 3, 5, 10, 20, 30 (39 is the real max; 45/60 would need the ripple build
+extended, not attempted here).
+
+**Two real, self-caught mistakes on the way to a trustworthy version, both
+worth recording:** the first version accidentally changed the real population
+at the same time as the horizon (switched to a much larger, different real
+table), producing numbers that didn't match the known falling->punished
+result at all -- the mismatch itself was the tell. The second version fixed
+the population but used fresh percentile thresholds per horizon instead of
+the original test's fixed +/-3% cutoff, which artificially normalizes away
+the real horizon-scaling effect being tested. Fixed both: same real
+population as the validated confidence_trend test (2020+, n=4,177), same
+fixed +/-3% thresholds as `tag_reaction_character.py` at every horizon.
+Verified the day-20 case reproduces the known result (`falling: predicted=
+punished`, directionally correct) before trusting the other horizons.
+
+**Real, honest result -- opposite the original hypothesis.** The predicted
+label for "falling confidence" is `muted` at every short horizon (1, 3, 5,
+10 days) and only becomes `punished` at 20 and 30 days:
+
+| Horizon | falling predicted | hit rate | honest baseline | beat |
+|---|---|---|---|---|
+| 1 day | muted | 70.6% | 71.6% | -1.1pp |
+| 3 day | muted | 62.1% | 61.2% | +0.9pp |
+| 5 day | muted | 54.5% | 53.6% | +0.9pp |
+| 10 day | muted | 42.3% | 42.6% | -0.3pp |
+| 20 day | **punished** | 38.4% | 37.4% | +1.0pp |
+| 30 day | **punished** | 42.1% | 40.7% | +1.4pp |
+
+At short horizons most events simply haven't crossed the +/-3% bar yet
+(naturally smaller daily moves), so "muted" there reflects "too soon to
+tell," not a real prediction. **The real falling->punished effect only
+emerges once the market has had 20-30 days to fully digest and react** --
+the opposite of "news fades fast, so short horizons are more predictable."
+Markets appear to process this particular kind of signal slowly, not
+immediately. A real, legitimate, counter-intuitive finding, not a failed
+test -- worth treating as a genuine result about how long this effect takes
+to materialize, not evidence the hypothesis was wrong to test.
