@@ -366,7 +366,74 @@ storm x sentiment interior cells). Only storm/sector-peer-ripple (both
 magnitude, not direction, findings) and the partial, still-caveated
 falling-confidence->punished standalone result have cleared that bar so far.
 
-## VALIDATED: Magnitude Prediction Beats Baseline, Consistently, Across 5 Independent Cutoffs (2026-10-02)
+## RETRACTED 2026-10-03: the "VALIDATED magnitude prediction" entry below is WRONG
+
+**Real, major, complete retraction -- read this before the entry below, which
+is left intact so the mistake is on the record, not hidden.** The entry below
+claimed the magnitude model beats baseline consistently across 5 real
+cutoffs, +9.2 to +13.4pp. **This was measured against the wrong baseline and
+does not hold.**
+
+Real chain of discovery, 2026-10-03: investigating why `regime` showed +0.0pp
+at the 2018-01-01 cutoff specifically (flagged as a real open question),
+found that 73.5-100% of the TEST set at EVERY tested cutoff belongs to a
+regime category the model never saw in TRAIN (regimes are sequential,
+non-overlapping eras -- any chronological split puts whatever era began after
+the cutoff entirely into test, unseen). Confirmed directly: at the 2022-01-01
+cutoff, literally 100% of test rows were all-zero regime vectors, and the
+"regime alone" model predicted a single constant class ("large") for every
+one of them -- not real discrimination, a fallback to the intercept.
+
+That constant guess happened to beat the reported baseline only because the
+reported baseline itself was wrong: every result in the entry below compared
+against the TRAINING period's majority class, not the TEST period's true
+majority class. The real label distribution shifted over time (more "large"
+reactions in later years) -- a real, classic non-stationarity problem.
+Measured against the HONEST baseline (the test period's own true majority,
+achievable with zero features at all), the FULL 5-feature model -- not just
+regime alone -- UNDERPERFORMS at every single one of the 5 cutoffs:
+
+| Cutoff | Model | Honest baseline | Real result |
+|---|---|---|---|
+| 2018-01-01 | 53.5% | 55.7% | -2.3pp |
+| 2020-01-01 | 54.8% | 57.5% | -2.7pp |
+| 2022-01-01 | 55.1% | 56.3% | -1.2pp |
+| 2023-01-01 | 54.3% | 56.5% | -2.2pp |
+| 2024-01-01 | 55.3% | 58.1% | -2.8pp |
+
+**Real, honest conclusion: there is no validated edge here. The magnitude
+model, as tested, does not beat an honest baseline at any cutoff tested.**
+
+**What does NOT survive this retraction:** the entry below, and everything
+built directly on its premise -- the feature ablation study, both
+within-regime tests (storm_tier and event_type), the "mostly regime" framing
+and its correction, the confidence_trend x firm_state interaction finding,
+and the event_type collapse negative result. All of that sub-analysis was
+internally consistent on its own terms, but it was explaining why a model
+performed well that, in fact, never did. None of those sub-findings should be
+cited as validated going forward -- they were diagnosing an artifact, not a
+real effect.
+
+**What DOES survive:** the original sector-peer-ripple validation (z=17.49)
+used a completely different, legitimate methodology -- direct peer
+comparison within a fixed time window, not a chronological train/test split
+with a shifting majority class. That finding is unaffected by this specific
+flaw and still stands on its own evidence. The storm/compounding finding
+(magnitude clusters near concurrent events) is a separate, differently-
+validated claim and is also unaffected.
+
+**Real, honest lesson for all future walk-forward tests in this project:**
+always compute the baseline from the TEST period's own true class
+distribution, never the training period's. When class balance can drift over
+time (as it demonstrably does here), a train-period baseline is not a fair
+comparison and can make a model with zero real skill look like it's
+beating the pack, just by drifting toward the same trend the data already
+drifted toward. This should become a standing check on every future model
+result in this project, not a one-off fix.
+
+---
+
+
 
 **Real, genuinely validated finding -- the strongest, most robust result of this
 entire session.** Raised directly from a real observation: `reaction_character`
