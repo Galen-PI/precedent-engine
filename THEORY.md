@@ -709,3 +709,33 @@ across many fine-grained categories -- collapsing them away lost more than it
 cleaned up. Aggressively simplifying a noisy-looking categorical feature is
 not automatically an improvement; recorded honestly as a real negative
 result, not reframed as a partial win.
+
+## Real audit: re-checked confidence_trend against the honest baseline -- it survives (2026-10-03)
+
+Direct follow-up to the magnitude-model retraction above: audited whether the
+same wrong-baseline flaw (comparing to the TRAINING period's majority class
+instead of the TEST period's true majority) affected other walk-forward
+tests in this project. Found the exact same flaw in
+`walk_forward_consumer_confidence.py` -- fixed it to compute baseline from
+the real test set's own true majority, then re-ran all 5 original cutoffs.
+
+**Real, good news this time: falling confidence -> punished survives the
+honest re-test.** Beats the honest baseline at all 5 cutoffs: +1.5, +1.9,
++2.1, +3.9, +5.2pp. Smaller margins than originally reported (the old,
+flawed baseline was consistently less favorable here, same underlying class-
+drift issue as the magnitude model, just not enough to erase this particular
+effect), but genuinely positive and consistent every time -- unlike the
+magnitude finding, this one does not collapse under honest scrutiny.
+
+The other two corrections already on record are reinforced, not weakened:
+`stable` misses the honest baseline at all 5 cutoffs now (even more clearly
+than before). `rising` still flips its predicted label across cutoffs
+(punished/punished/rewarded/muted/muted), 3 misses and 2 hits -- the
+"not robust" verdict from the earlier correction holds exactly as stated.
+
+**Real, standing takeaway: this specific finding (falling confidence trend
+predicting punished reactions) is the first result in this project to be
+explicitly re-verified against an honest, non-drifting baseline and survive.**
+Worth treating as the most trustworthy walk-forward result in THEORY.md for
+that reason, alongside storm/sector-peer-ripple's differently-validated
+(z-score, not baseline-comparison) methodology.
