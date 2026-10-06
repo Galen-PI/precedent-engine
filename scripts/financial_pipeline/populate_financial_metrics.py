@@ -82,11 +82,18 @@ def fetch_financial_statements():
     offset = 0
     page_size = 1000
     while True:
+        # REAL FIX (2026-10-03): period_end alone is not a unique sort key
+        # -- thousands of companies share the same quarter-end dates, so
+        # ties could be ordered differently across separate paginated
+        # requests on this large (37K+ row) table, same bug class already
+        # found and fixed elsewhere tonight. Added "id" as a real, unique
+        # secondary tiebreaker.
         page = (
             supabase
             .table("financial_statements")
             .select("*")
             .order("period_end")
+            .order("id")
             .range(offset, offset + page_size - 1)
             .execute()
         ).data

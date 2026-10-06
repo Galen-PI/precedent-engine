@@ -1031,3 +1031,25 @@ USB, HBAN, COF, KEY -- 11 tickers) plus AXP and the already-accepted XOM --
 than forced. The original 367-ticker gap is now understood essentially
 completely: the overwhelming majority were a fixable concept-coverage issue,
 a real minority are genuine, external XBRL tagging gaps.
+
+### 2026-10-03 — financial_metrics residual fully resolved: real pagination tie-break bug found and fixed
+Real follow-up to the original COF mystery (two 2025 rows with real data but
+no metrics, left unexplained). Found the gap had grown to 5,977 (from 78)
+due to tonight's XBRL concept work adding thousands of new real quarterly
+rows -- a simple re-run closed it to 120, confirming COF's original rows
+were resolved by this alone (not a special case).
+
+**Real root cause of the remaining 120 found and fixed:** 102 of 120 had
+real, populated revenue data, ruling out "can't compute from missing data."
+Checked `fetch_financial_statements()`'s real pagination directly:
+`.order("period_end")` alone is not a unique sort key -- thousands of
+companies share the same quarter-end dates, so ties could be ordered
+differently across separate paginated requests on this large (37K+ row)
+table. Same bug class already found and fixed elsewhere tonight
+(populate_storm_tier.py, populate_sector_peer_ripple.py, multi_feature_model.py),
+just a new instance via non-unique ordering rather than no ordering at all.
+
+Added a real, unique secondary tiebreaker (`.order("id")`). Re-ran: **real,
+complete result, 0 missing, down from 120.** The original "78-row residual,
+COF unexplained" question from earlier tonight is now fully, honestly
+resolved -- not a mysterious edge case, a genuine, fixable pagination bug.
