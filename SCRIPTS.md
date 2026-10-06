@@ -1053,3 +1053,44 @@ Added a real, unique secondary tiebreaker (`.order("id")`). Re-ran: **real,
 complete result, 0 missing, down from 120.** The original "78-row residual,
 COF unexplained" question from earlier tonight is now fully, honestly
 resolved -- not a mysterious edge case, a genuine, fixable pagination bug.
+
+### 2026-10-03 — 0.75-0.90 auto-confirm band spot-checked at real scale, 14 real misclassifications found and corrected
+Real follow-up to the earlier ~25-row spot check (8% disagreement, never acted
+on). Reviewed 200 real, individually-read rows across two random samples (50,
+then 150) plus one full, systematic pass over the entire 2,131-row real_event
+population in this band, searching for a specific real pattern discovered in
+the samples: AI reasoning that explicitly concludes "not material"/"routine"
+near its own ending, while the verdict still confirms real_event anyway.
+
+**Real, final result: 14 genuine misclassifications found and corrected**,
+13 of them sharing the exact same reasoning-verdict contradiction pattern
+(DUK x5, DLR x3, plus APD, BAC x2, EXE, EQIX), one a misapplied-rubric case
+(VZ's plain routine dividend). Real, notable concentration: Duke Energy
+rate-case settlements accounted for 5 of 14 -- a specific, identifiable
+pattern, not scattered noise.
+
+**All 14 had already been promoted into real `events` rows** (confirmed via
+JOIN before touching anything), with real downstream footprint discovered
+across 10 different tables, several found only via FK-constraint errors
+during the actual DELETE (event_market_reactions_corrected,
+event_tag_suggestions, sector_peer_ripple -- the last carrying 91 real rows,
+connected to the validated sector-peer-ripple z=17.49 finding). Resolved by
+querying `information_schema` for every real FK referencing `events.id`
+directly, rather than continuing to discover them one at a time.
+
+**Full, real audit-before-delete discipline followed throughout**, matching
+the project's established event_removal_audit_* pattern: every real row
+across all 10 downstream tables was copied into a matching audit table
+(3 new: event_removal_audit_tags, _precontext, plus dated
+_ripple/_market_reactions/_tag_suggestions/_sector_peer_ripple tables) before
+any DELETE, with counts verified to match exactly at each step. All 14
+corrections also logged individually in classification_corrections with
+per-row reasoning. filing_ai_classifications updated: human_verdict ->
+rejected_noise, linked_event_id -> NULL.
+
+**Real, honest residual confidence**: with 200 of 2,131 rows directly read
+(~9.4%) plus a full systematic pass for the one identified contradiction
+pattern, this band's real error rate is now reasonably well understood
+(~1.5-2% from sampling, concentrated by category) -- though a different,
+unidentified error pattern could still exist undetected in the untested
+remainder.
