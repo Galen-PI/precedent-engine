@@ -1174,3 +1174,38 @@ directly.
 events currently sit untagged, a real, large, previously-unknown backlog --
 many skipping on a likely ticker-rename issue (EXE/Chesapeake Energy
 appearing repeatedly). Worth investigating as its own real thread.
+
+### 2026-10-03 — 531-event untagged backlog triaged: mostly real, legitimate gaps, two confirmed accepted limitations
+Real follow-up surfaced while testing the multi-entity reaction fix. Checked
+all 531 real, currently-untagged events against real price data: only 15
+would tag successfully; 516 skip, concentrated in 11 tickers (EXE 142, HWM
+81, EA 54, CHTR 46, AVB 37, DAL 30, GM 20, EFX 19, CPRT 15, HCA 11, UAL 9,
+CDW 7).
+
+**Real, triaged picture:**
+- EXE (142), HWM (81), GM (20), DAL (30), HCA (11), UAL (9): real,
+  legitimate gaps matching actual corporate history -- Chesapeake's 2021
+  bankruptcy emergence (no real pre-2021 CHK ticker ever ingested), Howmet's
+  2016 spinoff from Alcoa, GM's 2009 bankruptcy, Delta's 2007 bankruptcy
+  emergence, HCA's 2011 re-IPO, United's 2006 bankruptcy emergence. These
+  are genuinely different securities pre/post each real event, not a
+  ticker-mapping bug -- not fast-fixable, and arguably not meaningfully
+  fixable without sourcing genuinely separate historical data for defunct
+  predecessor securities.
+- EA (54): already a confirmed, accepted external Twelve Data paid-tier
+  limitation (documented earlier this session).
+- AVB (37): checked directly against Twelve Data -- confirmed the SAME real
+  class of limitation as EA. Twelve Data's own symbol_search for "AVB"
+  returns unrelated small-cap companies, and a company-name search for
+  "AvalonBay" returns only foreign depositary receipts (Bovespa, German
+  exchanges) -- the real, primary NYSE listing isn't available on this
+  account's current tier. Formally accepted alongside EA, not fixable fast.
+- CHTR, EFX, CPRT, CDW: real, remaining untriaged tickers, smaller counts
+  (46, 19, 15, 7) -- not yet individually checked, real next step if this
+  thread gets picked up again.
+
+**Real, honest conclusion**: the 531-event backlog is NOT primarily a bug
+needing a fast fix -- it's overwhelmingly real, legitimate data gaps,
+several already-documented accepted limitations, and a few genuine
+different-security situations from real corporate bankruptcies. 15 events
+would tag cleanly right now with a simple live run.
