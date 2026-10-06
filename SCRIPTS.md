@@ -1094,3 +1094,42 @@ pattern, this band's real error rate is now reasonably well understood
 (~1.5-2% from sampling, concentrated by category) -- though a different,
 unidentified error pattern could still exist undetected in the untested
 remainder.
+
+### 2026-10-03 — real near-miss: checked the >=0.90 band for the same contradiction pattern, found zero genuine errors after verification
+Direct follow-up to the 0.75-0.90 band correction: applied the exact same
+reasoning-verdict contradiction search to the >=0.90 band (14,481 real rows,
+fully auto-confirmed, never once individually reviewed). 97 of 14,481
+flagged (0.67%). All 97 reviewed individually.
+
+**Real, important finding: 91 of 97 were correctly classified** -- the
+flagged "routine"/"not material" language was either a deliberate contrast
+("exceeds the routine pattern") or correctly isolated a separate minor
+element while a genuinely real event was properly confirmed alongside it in
+the same filing (e.g. HPQ's routine Controller departure vs. its real bylaw
+amendments).
+
+**6 looked like genuine errors on first read, but all 6 were cleared on
+individual verification -- a real, deliberate near-miss, not a clean
+result:**
+- EA x4: NOT contradictions. Checked the real, full reasoning text and the
+  real linked event directly -- the stored ai_reasoning is simply an
+  incomplete record (discusses only the routine earnings portion of a
+  filing that also contained a genuinely separate, real event -- e.g. the
+  2006-02-02 filing's reasoning never mentions the real JAMDAT Mobile
+  acquisition, which IS the correctly-identified, correctly-titled linked
+  event). The verdict is right; only the stored reasoning text under-
+  describes why.
+- COR, CTSH x1 each: NOT contradictions. Both are CFO appointments, and
+  the established materiality rubric (event-materiality-review.md) confirms
+  CEO/CFO/President/Chairman appointments unconditionally -- the verdict
+  (real_event) is correct per the rubric even though the stored reasoning
+  text argued, incorrectly, that this specific appointment was "routine."
+
+**Real, honest, final conclusion: zero genuine verdict errors found in the
+>=0.90 band from this specific pattern**, after individually verifying
+every flagged candidate rather than trusting the mechanical search --
+a real, deliberate near-miss worth recording as a lesson, not a quiet
+correction. The reasoning-verdict contradiction bug found in the 0.75-0.90
+band does NOT appear to extend into the >=0.90 band at a meaningful rate;
+that band's trust level appears genuinely earned. Nothing in
+filing_ai_classifications or events was altered as a result of this check.
