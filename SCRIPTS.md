@@ -1226,3 +1226,34 @@ directly: Tagged 15, 0 multi-entity among this batch. Also confirmed real
 usage quirk worth remembering: this script has no --live flag -- the
 default (no flags) IS live/write mode, --dry-run is the only flag that
 changes it; passing --live gets silently read as a ticker filter instead.
+
+### 2026-10-03 — real triage of the full review backlog: ~49,804 feared down to a real, honest 1,235 urgent items
+Real response to discovering a large, un-auto-confirmed new classification
+pull sitting in filing_ai_classifications (human_verdict NULL across the
+board, 8,805 real_event/uncertain rows -- far more than the originally-
+reported 46,209/2,117 figures suggested, because the new pull's own
+>=0.90 tier had never been run through the proven auto-confirm check.
+
+**Real, applied discipline, not a blind auto-confirm**: ran the SAME
+reasoning-contradiction + uncertainty-phrase check validated earlier
+today against this new pull's 5,620 real_event rows at >=0.90 confidence.
+61 flagged, auto-confirmed the clean 5,559. Also re-ran the identical
+check against the EXISTING, previously-reviewed 0.75-0.90 band (2,117
+rows, minus the 14 already corrected) and found 0 new genuine errors (6
+candidates surfaced, all 6 individually verified as false positives,
+same classes already seen: correctly-confirmed non-routine language,
+company's own dollar-amount framing misread as the AI's verdict).
+
+**Real, final, honest scope, not an estimate:**
+- New pull, high-conf, flagged: 61 (genuinely needs reading)
+- New pull, low-conf real_event: 950 (by design, confidence-based)
+- New pull, uncertain: 118
+- Existing 0.75-0.90 band: 2,117 (mechanically re-verified clean, lowest
+  real risk, not urgent)
+- news_ai_classifications real_event+uncertain: 106
+- event_tag_suggestions: 3,372 (lower-stakes, enrichment not new material)
+
+Real, honest urgent core: 1,235 (new, unreviewed real_event/uncertain
+candidates). Real total remaining across everything: 6,724. Down from an
+initial, unqualified ~49,804 figure that conflated already-trustworthy
+auto-confirm tiers with genuinely open items.
