@@ -119,21 +119,32 @@ def get_real_population():
     return pop
 
 
-# REAL FIX: use the EXACT SAME fixed thresholds as tag_reaction_character.py
-# (the real source of the validated reaction_character tags), not a
-# percentile split -- a percentile split normalizes away horizon-scaling,
-# which is exactly the real effect being tested. Fewer events cross a FIXED
-# +/-3% bar at short horizons (naturally smaller daily moves), and that's
-# the real, honest point: the ones that DO are genuinely big, early moves.
-REWARDED_THRESHOLD = 0.03
-PUNISHED_THRESHOLD = -0.03
+# REAL FIX, SECOND ATTEMPT (2026-10-03): the fixed +/-3% threshold was
+# ALSO wrong -- it confounds window length with real signal, since a fixed
+# bar is mechanically easier to cross with more cumulative time (confirmed
+# directly: the honest baseline's own "muted" rate shrank smoothly from
+# 71.6% at day 1 to 42.6% at day 10 for the WHOLE population, independent
+# of confidence_trend -- pure return-compounding, not a real finding).
+# Real fix: percentile-based thresholds on the SIGNED return, computed
+# independently per horizon from the real, UNCONDITIONAL population (not
+# conditioned on confidence_trend bucket, so real signal isn't normalized
+# away) -- top 30% most positive -> rewarded, bottom 30% most negative ->
+# punished, middle 40% -> muted. This makes horizons genuinely comparable
+# without the fixed-threshold confound, while preserving the real,
+# intended sign-based meaning of reaction_character.
+def real_thresholds_for_horizon(signed_values):
+    s = sorted(signed_values)
+    n = len(s)
+    punished_cut = s[int(n * 0.30)]
+    rewarded_cut = s[int(n * 0.70)]
+    return punished_cut, rewarded_cut
 
 
-def classify(ar):
-    if ar > REWARDED_THRESHOLD:
-        return "rewarded"
-    if ar < PUNISHED_THRESHOLD:
+def classify(ar, punished_cut, rewarded_cut):
+    if ar <= punished_cut:
         return "punished"
+    if ar >= rewarded_cut:
+        return "rewarded"
     return "muted"
 
 
@@ -174,8 +185,9 @@ def main():
             print(f"  Too few real matched rows ({len(real_values)}), skipping.\n")
             continue
 
+        punished_cut, rewarded_cut = real_thresholds_for_horizon(real_values)
         for r in matched:
-            r["reaction"] = classify(r["abnormal_return"])
+            r["reaction"] = classify(r["abnormal_return"], punished_cut, rewarded_cut)
 
         train = [r for r in matched if r["event_date"] < cutoff]
         test = [r for r in matched if r["event_date"] >= cutoff]

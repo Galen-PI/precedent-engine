@@ -146,3 +146,4 @@ scripts/google_cloud.json
 
 output/
 sweep.log
+.venv-3/
