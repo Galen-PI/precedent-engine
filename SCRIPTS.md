@@ -1209,3 +1209,20 @@ needing a fast fix -- it's overwhelmingly real, legitimate data gaps,
 several already-documented accepted limitations, and a few genuine
 different-security situations from real corporate bankruptcies. 15 events
 would tag cleanly right now with a simple live run.
+
+### 2026-10-03 — real, quick note: 804 vs 531 untagged-event discrepancy explained, 15 tagged live
+The 531-event count from get_untagged_events() undercounts the real, raw
+untagged total (804, confirmed via direct SQL) because it silently filters
+out events whose linked entities have no real, tradeable ticker (null or
+SPY-only) -- 286 of the 804. These aren't a bug: they're events linked only
+to non-public real entities (private companies, government bodies, etc.)
+that were never going to get a price-based reaction tag regardless. The
+real, honest remaining backlog needing attention stays at ~531, already
+triaged above.
+
+**Real, fast win taken**: the 15 events with genuinely available price data
+were tagged live (not dry-run) -- confirmed via tail output and verified
+directly: Tagged 15, 0 multi-entity among this batch. Also confirmed real
+usage quirk worth remembering: this script has no --live flag -- the
+default (no flags) IS live/write mode, --dry-run is the only flag that
+changes it; passing --live gets silently read as a ticker filter instead.
