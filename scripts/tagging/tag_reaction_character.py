@@ -147,11 +147,30 @@ def get_untagged_events(ticker_filter: str = None) -> list[dict]:
     }
     event_to_entities = {}
     for r in eer_rows:
-        event_to_entities.setdefault(r["event_id"], []).append(r["entity_id"])
+        event_to_entities.setdefault(r["event_id"], []).append(
+            {"entity_id": r["entity_id"], "relationship_type": r.get("relationship_type", "affected")}
+        )
 
     for e in events:
-        tickers = [entity_to_ticker.get(eid) for eid in event_to_entities.get(e["id"], [])]
-        e["tickers"] = [t for t in tickers if t and t != "SPY"]
+        links = event_to_entities.get(e["id"], [])
+        # REAL FIX (2026-10-03): an entity can carry more than one real
+        # relationship_type for the same event (confirmed in
+        # tag_multientity_reactions.py's own review) -- merge duplicates
+        # per entity_id so the SAME entity isn't processed twice.
+        by_entity = {}
+        for link in links:
+            eid = link["entity_id"]
+            ticker = entity_to_ticker.get(eid)
+            if not ticker or ticker == "SPY":
+                continue
+            if eid in by_entity:
+                types = set(by_entity[eid]["relationship_type"].split(","))
+                types.add(link["relationship_type"])
+                by_entity[eid]["relationship_type"] = ",".join(sorted(types))
+            else:
+                by_entity[eid] = {"entity_id": eid, "ticker": ticker, "relationship_type": link["relationship_type"]}
+        e["entity_links"] = list(by_entity.values())
+        e["tickers"] = [l["ticker"] for l in e["entity_links"]]
 
     return [e for e in events if e["tickers"] and e.get("event_date")]
 
@@ -492,9 +511,10 @@ def main():
     tagged_count = 0
     skipped_count = 0
     magnitude_saved_count = 0
+    multientity_rows_saved = 0
 
     for e in events:
-        ticker = e["tickers"][0]  # primary company for the reaction
+        ticker = e["tickers"][0]  # primary company for the event_tags reaction
         event_date = str(e["event_date"])[:10]
 
         abnormal_return = compute_abnormal_return(ticker, event_date, window_days)
@@ -519,12 +539,49 @@ def main():
             if full:
                 magnitude_saved_count += 1
 
+        # REAL FIX (2026-10-03): event_tags structurally allows only ONE
+        # reaction per event (confirmed directly -- zero events have >1 of
+        # rewarded/punished/muted), so ticker[0] above is correct for that
+        # single tag and cannot itself be "fixed" to cover every entity.
+        # The real, previously-missing piece was AUTOMATIC INTEGRATION:
+        # every multi-entity event silently needed a SEPARATE manual run
+        # of tag_multientity_reactions.py to get its other entities'
+        # reactions into event_entity_reactions at all -- a catch-up step
+        # that was easy to forget and did get forgotten (49 events needed
+        # a backfill earlier this session). Now folded in here directly,
+        # using the exact same proven logic (same compute_abnormal_return,
+        # same thresholds), so every multi-entity event's OTHER entities
+        # get a real event_entity_reactions row in the same run, with no
+        # separate catch-up step ever needed again.
+        if len(e.get("entity_links", [])) >= 2:
+            for link in e["entity_links"]:
+                ent_ticker = link["ticker"]
+                ent_abnormal_return = compute_abnormal_return(ent_ticker, event_date, DEFAULT_WINDOW_DAYS) \
+                    if ent_ticker != ticker else abnormal_return
+                if ent_abnormal_return is None:
+                    print(f"    (entity_reactions) SKIP  {ent_ticker:6s}  (insufficient price data)")
+                    continue
+                ent_reaction = classify(ent_abnormal_return)
+                print(f"    (entity_reactions) {ent_reaction.upper():9s} {ent_ticker:6s} "
+                      f"{link['relationship_type']:10s} {ent_abnormal_return * 100:+.1f}%")
+                if not dry_run:
+                    supabase.table("event_entity_reactions").upsert({
+                        "event_id": e["id"],
+                        "entity_id": link["entity_id"],
+                        "ticker": ent_ticker,
+                        "relationship_type": link["relationship_type"],
+                        "reaction": ent_reaction,
+                        "abnormal_return_20d": ent_abnormal_return,
+                    }, on_conflict="event_id,entity_id").execute()
+                    multientity_rows_saved += 1
+
         tagged_count += 1
 
     print(f"\nTagged: {tagged_count}")
     print(f"Skipped (no price data): {skipped_count}")
     if not dry_run:
         print(f"Magnitude rows saved to event_market_reactions: {magnitude_saved_count}")
+        print(f"Multi-entity reaction rows saved to event_entity_reactions: {multientity_rows_saved}")
     if dry_run:
         print("(dry run -- nothing written to event_tags)")
 

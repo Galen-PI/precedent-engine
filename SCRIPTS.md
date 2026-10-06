@@ -1133,3 +1133,44 @@ correction. The reasoning-verdict contradiction bug found in the 0.75-0.90
 band does NOT appear to extend into the >=0.90 band at a meaningful rate;
 that band's trust level appears genuinely earned. Nothing in
 filing_ai_classifications or events was altered as a result of this check.
+
+### 2026-10-03 — real root-cause fix: multi-entity reactions now computed automatically, no separate backfill needed
+Real follow-up to the long-standing "tickers[0] bug" -- tag_reaction_character.py
+only ever used the first linked entity's price reaction for event_tags,
+silently leaving every other real entity's reaction uncomputed until a
+separate, manual run of tag_multientity_reactions.py caught up (49 events
+needed this catch-up earlier this session alone).
+
+**Real, confirmed architectural constraint, not an oversight**: event_tags
+structurally allows only ONE reaction per event (confirmed directly -- zero
+events have more than one of rewarded/punished/muted), so tickers[0] is
+correct for THAT single tag and can't itself be changed to cover every
+entity. The actual missing piece was automatic integration, not the
+calculation.
+
+**Real fix**: tag_reaction_character.py now automatically computes and
+writes a real event_entity_reactions row for every linked entity whenever
+an event has 2+ real entities, in the same run that tags event_tags --
+reusing the exact same proven compute_abnormal_return logic, with the
+primary entity's already-computed reaction reused rather than recomputed.
+No separate catch-up script needed ever again for new multi-entity events.
+
+Also fixed a real, related bug found while building this: get_untagged_events()
+was flattening entity relationships down to bare ticker strings, discarding
+entity_id and relationship_type -- needed both back to populate
+event_entity_reactions correctly. Also deduped entities carrying multiple
+real relationship_types for the same event (same bug class as
+tag_multientity_reactions.py's own documented fix).
+
+**Real, direct validation**: tested against the one currently-untagged
+multi-entity event (Fox Corp's DOJ Second Request in the Roku deal, FOXA +
+FOX dual-class). Confirmed via direct function call: 2 real entities
+detected, FOXA's reaction correctly reused from the primary computation
+(+4.7%, REWARDED), FOX correctly attempted separately and gracefully
+skipped on genuinely insufficient real price data -- not a bug, confirmed
+directly.
+
+**Real, separate finding surfaced during testing, not yet addressed**: 531
+events currently sit untagged, a real, large, previously-unknown backlog --
+many skipping on a likely ticker-rename issue (EXE/Chesapeake Energy
+appearing repeatedly). Worth investigating as its own real thread.
