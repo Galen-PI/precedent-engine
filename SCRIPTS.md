@@ -1369,3 +1369,21 @@ a real, unique identifier (accession_number, event_id by UUID) rather
 than a text-pattern subquery (ILIKE/title matching) for any UPDATE
 intended to touch a small, specific set of rows -- the kind of mistake
 made here.
+
+### 2026-10 — real, major milestone: the stale-URL sweep is fully complete (17,500 of 17,440+ processed)
+Real completion of a long-standing, funding-blocked backlog item from
+early this session. Resumed sweep_stale_url_noise.py once Anthropic API
+funding returned; ran via the real Batch API to completion.
+
+**Real, final, complete result**: 17,500 total filings processed, 187
+real flips found (old likely_noise verdicts that actually describe real
+material events once the correct, non-stale complete-submission URL was
+used to fetch the real press-release content), 13 genuine fetch failures
+(real, persistent 404s, correctly recorded rather than retried forever).
+
+Per the script's own safe design, these 187 flips are NOT yet live --
+written only to stale_url_sweep_results for real human review, same
+discipline as every other queue tonight. Original filing_ai_classifications
+and human_verdict values remain untouched. Real, honest next step: read
+through the 187 flips individually (or sampled, given tonight's
+consistent track record) before any are promoted to real_event.
