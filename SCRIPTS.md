@@ -1257,3 +1257,35 @@ Real, honest urgent core: 1,235 (new, unreviewed real_event/uncertain
 candidates). Real total remaining across everything: 6,724. Down from an
 initial, unqualified ~49,804 figure that conflated already-trustworthy
 auto-confirm tiers with genuinely open items.
+
+### 2026-10 — real, systematic bug found in the uncertain queue: invalid verdict values silently discarding confident real classifications
+Real discovery while reading the 118-row `uncertain` queue individually.
+Found a genuine, systematic pipeline bug, not scattered classification
+difficulty: classify_news_candidates.py (or an earlier related script)
+sometimes let the AI respond with a more specific verdict value
+(`capital_raise`, `governance_action`, `possible_duplicate_of`) outside the
+three allowed enum values (real_event/likely_noise/uncertain). The
+mandatory-field safety check correctly caught the invalid value and forced
+the row to `uncertain` as designed -- but this silently discarded a
+genuinely confident, well-reasoned real_event classification each time,
+masking it as generic uncertainty rather than flagging the real, narrower
+problem (an enum mismatch).
+
+**Real, individually verified result: 19 of 118 uncertain rows were this
+exact bug** -- all 19 read directly. 16 were confident, genuine real_event
+candidates (capital raises funding named acquisitions, governance/bylaw
+actions) now corrected. The remaining 3 (EXE/Southwestern, FITB/Comerica,
+HBAN/Cadence -- all real M&A deals) were confirmed, on direct lookup
+against `events`, to already be captured under their original announcement
+titles -- correctly left unpromoted as real, confirmed duplicates rather
+than real_event.
+
+**Real, honest remaining breakdown of the uncertain queue (108 - 19 =
+89 genuinely left)**: 52 are `BATCH REQUEST FAILED` rows -- real API-call
+failures with no actual reasoning to read, needing a re-run through the
+classifier rather than individual review. 37 are genuinely, honestly
+unresolvable from the filing text alone -- the AI (and a human reading the
+same text) cannot determine materiality because the actual press-release
+exhibit content was never captured in the filing text itself. These would
+need someone to pull the real, original SEC exhibit to resolve, not more
+reading of what's already here.
