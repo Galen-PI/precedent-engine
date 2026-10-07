@@ -1387,3 +1387,23 @@ discipline as every other queue tonight. Original filing_ai_classifications
 and human_verdict values remain untouched. Real, honest next step: read
 through the 187 flips individually (or sampled, given tonight's
 consistent track record) before any are promoted to real_event.
+
+### 2026-10 — stale-URL sweep writeback complete: 39 new rows written, 112 total awaiting promote_events.py
+Real completion of the writeback step for the stale-URL sweep. Snapshotted
+the real, current filing_ai_classifications state for all confirmed rows
+into stale_url_sweep_audit_old_rows first (required by the script's own
+safety check), then ran writeback_confirmed_sweep_flips.py --apply.
+
+**Real, honest result**: 39 of 42 newly-confirmed rows written and
+verified successfully (real_event verdict + usable title + description +
+corrected .txt URL all present). 3 rows (ADBE 2022-09-15, COIN 2025-05-08,
+ALGN 2008-07-29) could not get a usable drafted title/description after
+3 real attempts and were correctly NOT written -- the script's own safety
+design declines to write incomplete rows rather than writing something
+unusable. These 3 need either a manual title/description or a later retry.
+
+**Real, current state**: 112 total confirmed sweep rows now have
+linked_event_id IS NULL in filing_ai_classifications, meaning they're
+real_event in the classification table but have no actual event row yet
+-- genuinely ready for promote_events.py to pick up and create real
+events from, completing the full pipeline this sweep was built to feed.
