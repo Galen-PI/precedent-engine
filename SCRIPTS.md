@@ -1341,3 +1341,31 @@ whatever script originally populated candidate_8k_events, to also fetch
 and store exhibit text, not just the main 8-K document, before these 37
 can ever be automatically resolved. A real, different, structural fix,
 not a billing one.
+
+### 2026-10 — real near-miss: an overly broad UPDATE query during tag-suggestion review, caught and fixed
+Real mistake while reviewing event_tag_suggestions: intended to reject 2
+specific, clearly-mismatched multi_stage_divestiture suggestions (Cisco/
+Splunk -- an acquisition, not a divestiture; FPL/Gulf Power -- a merger
+with the AI's own reasoning flagging low confidence). The UPDATE's
+subquery matched 12 rows instead of 2 (a real query-construction mistake,
+not a data problem). Caught immediately via a direct verification query
+showing human_reviewed_at timestamps -- 10 of the 12 were genuine,
+unintended rejections of real, well-supported suggestions (GE Plastics,
+AIG multiple, Ford multiple, Aon, Citigroup, AEP, Comcast/TWC). Reverted
+those 10 back to NULL (undecided) immediately via a precisely-scoped
+query, verified directly that only the 2 intended rows remained rejected.
+
+**Real, honest residual**: a small, unexplained discrepancy (~10 rows) in
+the overall undecided count before vs. after this incident, not traced to
+any further real anomaly despite direct checking -- most likely an
+arithmetic error in manually summing an earlier per-category breakdown,
+not ongoing data corruption. Direct, specific verification (checking
+exactly which rows are rejected and when) passed cleanly; the broader
+count discrepancy is noted honestly rather than quietly ignored, but not
+further chased given the direct check already confirms correctness.
+
+**Real, standing lesson for future similarly-scoped updates**: match on
+a real, unique identifier (accession_number, event_id by UUID) rather
+than a text-pattern subquery (ILIKE/title matching) for any UPDATE
+intended to touch a small, specific set of rows -- the kind of mistake
+made here.
