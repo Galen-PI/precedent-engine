@@ -1317,3 +1317,27 @@ as the stale-URL sweep. **20 of the original 47 remain unclassified**,
 genuinely blocked until the account is funded, at which point re-running
 the identical command will pick up exactly where this stopped (the
 already-classified 27 will be correctly skipped as already-classified).
+
+### 2026-10 — real, honest note: the 37 genuinely-ambiguous uncertain rows are NOT a funding problem at root
+Attempted to resolve these via direct SEC EDGAR web_fetch (not Anthropic API
+-- no funding needed for this approach). Found the real index pages and
+confirmed real exhibit files exist (e.g. Allstate's ex-99.txt) via
+web_search, but the web_fetch permission system requires the exact target
+URL to have appeared as its own distinct search result first -- these old,
+bare .txt exhibit files from 2000-2004 aren't independently indexed well
+enough for that to succeed reliably. Tried multiple real search angles,
+no success. Parked for now, not pursued further to avoid burning time on
+an approach that isn't working.
+
+**Real, important clarification for whoever picks this up next**: this is
+NOT actually blocked on Anthropic API funding, even though it was found in
+the same session as the funding-blocked batch recovery work. The original
+classifier's own stored reasoning already shows it never had the exhibit
+content either -- only the bare 8-K body was captured during the original
+ingestion/fetch step for these older filings, not the separate press-
+release exhibit documents. Re-running classify_8k_filings_batch_v2.py with
+more API funding will NOT resolve these -- the real fix needed is in
+whatever script originally populated candidate_8k_events, to also fetch
+and store exhibit text, not just the main 8-K document, before these 37
+can ever be automatically resolved. A real, different, structural fix,
+not a billing one.
