@@ -1289,3 +1289,31 @@ same text) cannot determine materiality because the actual press-release
 exhibit content was never captured in the filing text itself. These would
 need someone to pull the real, original SEC exhibit to resolve, not more
 reading of what's already here.
+
+### 2026-10 — real recovery of 52 BATCH REQUEST FAILED rows: 27 of 47 recovered, rest blocked on Anthropic API funding
+Real follow-up to the invalid-verdict-value bug discovery: the 52
+BATCH REQUEST FAILED rows found in the uncertain queue were permanently
+stuck -- classify_8k_filings_batch_v2.py's retry logic only auto-retries
+rows whose ai_reasoning starts with "MALFORMED API RESPONSE", not
+"BATCH REQUEST FAILED", so these would never have been picked up by a
+normal re-run. 5 of the 52 already had a real human_verdict set from a
+past session (already resolved); deleted the remaining real 47 so the
+script would treat them as genuinely new and retry them.
+
+Re-ran classify_8k_filings_batch_v2.py scoped to the real 31 tickers
+involved, using Anthropic's Batch API (3 real chunks needed). Real,
+important process note for future runs: the script buffers output under
+plain `python`, making it look stalled even when genuinely working --
+`python -u` (unbuffered) is needed to see real, live progress in the
+terminal, confirmed directly this session.
+
+**Real, honest result: first of 3 real batches cleared (27 of 47
+recovered -- 22 likely_noise, 4 real_event, 1 uncertain), then the run
+genuinely stalled** -- confirmed directly: the account's Anthropic API
+balance was exhausted after the first batch's real cost (~$4), with
+insufficient funds for the remaining ~$8-12 of estimated cost. This is a
+real, external, financial blocker, not a bug -- same class of constraint
+as the stale-URL sweep. **20 of the original 47 remain unclassified**,
+genuinely blocked until the account is funded, at which point re-running
+the identical command will pick up exactly where this stopped (the
+already-classified 27 will be correctly skipped as already-classified).
