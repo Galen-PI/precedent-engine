@@ -1812,3 +1812,47 @@ that into event_pre_context via new populate_labor_market_status.py /
 populate_housing_status.py scripts (mirroring populate_yield_curve_status.py)
 -- is not yet designed or built. This is the real remaining work to
 consider Population/Consumer Sentiment complete.
+
+### 2026-10-08 — Housing fully rounded out: supply/demand + all 50 state price indexes
+Continued the Housing category per Galen's real request for richer
+signal: how many people are buying homes, supply vs. demand, and
+state-level price comparison, not just one national index.
+
+**Real, honest scoping decision on buyer age/demographics**: researched
+directly and confirmed this data genuinely exists (NY Fed Consumer
+Credit Panel via the AEI Housing Center, median first-time buyer age),
+but is published ONLY as periodic PDF reports -- no CSV/API/FRED series
+found anywhere across multiple real searches. Discussed with Galen:
+genuinely a "nice to have, but niche" signal -- it's a slow structural
+demographic drift (33->38 over a decade) with no real shock/event to
+thread against company stock reactions, unlike the other housing series
+which move month-to-month. Decision: leave it out of this build rather
+than force a non-automatable, perpetual-manual-transcription source into
+an otherwise fully-automated pipeline. Can revisit later if a specific
+company-level question actually needs it.
+
+**Real series added and verified individually against the live FRED API**:
+- MSACSR (new home months' supply, HUD) -- confirmed genuine long history
+  back to 1963, unlike the NAR existing-home series
+- HOSSUPUSM673N (existing home months' supply, NAR) -- same real
+  13-month rolling-window limitation as EXHOSLUSM495S, included anyway
+  for current supply/demand context
+- All 50 state-level All-Transactions House Price Indexes (FHFA via
+  FRED, {STATE}STHPI naming pattern) -- confirmed the naming pattern
+  holds for all 50 states via a single batched API verification pass
+  before adding any of them, not assumed. Real history back to 1975 for
+  most states, quarterly, 130 real observations each since 1994.
+
+**Real, final totals across the whole Population/Consumer Sentiment
+raw-data build this session**: 71 new series total, 18,187 new rows --
+8 series/3,624 rows (Consumer Financial Health), 2 series/785 rows
+(Sentiment), 5 series/4,367 rows (Labor Market), 56 series/9,411 rows
+(Housing, including the 50 states).
+
+**Real, honest remainder**: raw ingestion is now fully complete for all
+4 categories. The actual composite regime classifiers (turning multiple
+raw series into one meaningful status label per category) and the
+threading mechanisms (event_pre_context columns for Labor/Housing;
+date+sector correlation for Consumer Financial Health) are the real
+next step -- not yet designed in code, though the architecture is
+agreed.
