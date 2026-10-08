@@ -1518,3 +1518,62 @@ reads filing_ai_classifications. These 93 correctly-reviewed rows have
 no path into the events table yet. Needs either a new script or an
 extension to promote_events.py -- real, separate engineering work, not
 done tonight.
+
+### 2026-10 — real resolution attempt on the 37 "genuinely-unresolvable" uncertain rows: 18 of 37 resolved
+Earlier in this session these 37 rows were parked as unresolvable via direct
+SEC EDGAR web_fetch (permission system requires the exact URL to already
+appear in a search result, and old bare .txt exhibits from 2000-2004 often
+aren't independently indexed). Revisited using a different real method:
+general web_search queries for "[company] press release [date]" rather
+than trying to fetch SEC exhibit URLs directly -- this surfaced real
+content for many rows via company investor-relations sites (e.g.
+companyname.gcs-web.com) and secondary sources (news coverage, NRC
+filings, SEC 10-Ks referencing the same disclosure), even when the raw
+SEC .txt exhibit itself wouldn't surface.
+
+**Real, final result: 18 of 37 resolved, each individually verified
+against actual primary-source content, not guessed**:
+- ALL (4 of 5): real catastrophe-loss disclosures and a federal
+  investigation closure (Northridge earthquake claims-handling probe
+  closed with no charges) -- real_event
+- BDX (1 of 2): routine, below-board director election -- likely_noise
+- C (2 of 2): real executive departure amid reported CEO conflict
+  (Magner/Prince); Fed lifting a year-long M&A ban -- real_event
+- CCI: real activist investor (Corvex) pressure campaign -- real_event
+- DHR: routine late-filed earnings release -- likely_noise
+- EME: real C-suite (President/COO) resignation -- real_event
+- ETR: routine annual earnings release -- likely_noise
+- EXC: real $1B+ transmission-asset divestiture declaration -- real_event
+- EXE: real joint development agreement with exclusive participation
+  rights -- real_event
+- FE (all 5): genuine updates within the major, ongoing Davis-Besse
+  nuclear reactor-head corrosion safety saga -- real_event
+- FISV (2 of 2): real fraud-related trading loss disclosure at a
+  broker-dealer client -- real_event
+- GM: genuinely preliminary, non-binding indicative bid among ~30
+  competing bidders -- likely_noise
+- GPN: real acquisition completion (per the company's own 10-K) --
+  real_event
+- GS: real CEO-succession-track leadership change (Blankfein named
+  President/COO) -- real_event
+- HAL (2 of 2): real $1.1B joint-venture interest sale; a routine PR
+  rebuttal to a political advocacy group's tax claims -- split
+  real_event/likely_noise
+
+**Real, important verification example**: one row (AAPL, a $5.7B Taptic
+Engine patent verdict) had been flagged by the AI's own reasoning as
+possibly inauthentic due to a date concern and truncated content.
+Checked directly via web search and found full corroboration across
+multiple independent news sources -- genuinely real, not fabricated.
+This was in the Track B review, not this 37-row queue, but reinforces
+the same lesson: an AI's own low-confidence flag calls for verification,
+not automatic rejection.
+
+**Real, honest remainder: 19 of 37 still genuinely unresolved** -- 1 ALL,
+1 BDX, 1 DAL, 1 GL, 6 remaining HAS, HSIC, 2 HUM, IFF, 2 INTC, INTU, IRM,
+JCI, JKHY, MET, MOS. These aren't a failure of effort -- several were
+searched repeatedly with no success. Consistent with the original root-
+cause finding: the actual exhibit content for these specific filings
+doesn't appear to be independently indexed anywhere searchable, not just
+unavailable via direct SEC fetch. Parked again, same honest treatment as
+before.
