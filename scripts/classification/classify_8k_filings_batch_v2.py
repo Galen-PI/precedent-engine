@@ -735,7 +735,17 @@ def fetch_batch_results(results_url: str) -> tuple[dict, dict]:
         result = row["result"]
         if result["type"] == "succeeded":
             message = result["message"]
-            raw_text = message["content"][0]["text"]
+            # Find the text block by type, not by fixed index -- models with
+            # extended/adaptive thinking (e.g. Haiku 5.5) can return a
+            # "thinking" block before the "text" block, so content[0] is not
+            # reliably the text block anymore.
+            text_blocks = [b["text"] for b in message["content"] if b.get("type") == "text"]
+            if not text_blocks:
+                raise ValueError(
+                    f"No text block found in response content for {custom_id}: "
+                    f"block types were {[b.get('type') for b in message['content']]}"
+                )
+            raw_text = text_blocks[0]
             results[custom_id] = parse_classification_result(raw_text)
             usage = message.get("usage", {})
             for key in usage_totals:

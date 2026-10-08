@@ -141,7 +141,11 @@ def main():
         ticker, filing_date, accession_number = custom_id.split("__")
         result = row["result"]
         if result["type"] == "succeeded":
-            raw_text = result["message"]["content"][0]["text"]
+            _msg = result["message"]
+            _text_blocks = [b["text"] for b in _msg["content"] if b.get("type") == "text"]
+            if not _text_blocks:
+                raise ValueError(f"No text block found: block types were {[b.get('type') for b in _msg['content']]}")
+            raw_text = _text_blocks[0]
             ai_result = parse_classification_result(raw_text)
         else:
             ai_result = {

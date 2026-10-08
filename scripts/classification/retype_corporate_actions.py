@@ -182,7 +182,11 @@ def main():
             skipped += 1
             continue
 
-        raw_text = result["message"]["content"][0]["text"].strip()
+        _msg = result["message"]
+        _text_blocks = [b["text"] for b in _msg["content"] if b.get("type") == "text"]
+        if not _text_blocks:
+            raise ValueError(f"No text block found: block types were {[b.get('type') for b in _msg['content']]}")
+        raw_text = _text_blocks[0].strip()
         if raw_text.startswith("```"):
             raw_text = raw_text.split("```")[1]
             if raw_text.startswith("json"):

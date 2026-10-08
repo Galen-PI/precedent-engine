@@ -119,7 +119,11 @@ Do not suggest reaction_character tags (rewarded/punished/muted/diverged_from_fu
     )
     resp.raise_for_status()
     data = resp.json()
-    raw_text = data["content"][0]["text"]
+    _msg = data
+    _text_blocks = [b["text"] for b in _msg["content"] if b.get("type") == "text"]
+    if not _text_blocks:
+        raise ValueError(f"No text block found: block types were {[b.get('type') for b in _msg['content']]}")
+    raw_text = _text_blocks[0]
 
     cleaned = raw_text.strip()
     if cleaned.startswith("```"):

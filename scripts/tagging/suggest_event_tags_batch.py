@@ -237,7 +237,11 @@ def fetch_batch_results(results_url: str) -> dict:
         custom_id = row["custom_id"]
         result = row["result"]
         if result["type"] == "succeeded":
-            raw_text = result["message"]["content"][0]["text"]
+            _msg = result["message"]
+            _text_blocks = [b["text"] for b in _msg["content"] if b.get("type") == "text"]
+            if not _text_blocks:
+                raise ValueError(f"No text block found: block types were {[b.get('type') for b in _msg['content']]}")
+            raw_text = _text_blocks[0]
             results[custom_id] = parse_response(raw_text)
         else:
             results[custom_id] = [{"tag": "MALFORMED", "confidence": 0.0,

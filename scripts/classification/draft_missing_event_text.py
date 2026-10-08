@@ -46,7 +46,11 @@ def call_model(user):
             time.sleep(3)
             continue
         if r.status_code == 200:
-            return r.json()["content"][0]["text"]
+            _msg = r.json()
+            _text_blocks = [b["text"] for b in _msg["content"] if b.get("type") == "text"]
+            if not _text_blocks:
+                raise ValueError(f"No text block found: block types were {[b.get('type') for b in _msg['content']]}")
+            raw_text = _text_blocks[0]
         if r.status_code in (429, 500, 502, 503, 529):
             time.sleep(5 * (attempt + 1))
             continue

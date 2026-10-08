@@ -157,7 +157,17 @@ Respond with ONLY valid JSON, no other text, in this exact shape:
     )
     resp.raise_for_status()
     data = resp.json()
-    raw_text = data["content"][0]["text"]
+    # Find the text block by type, not by fixed index -- models with
+    # extended/adaptive thinking (e.g. Haiku 5.5) can return a "thinking"
+    # block before the "text" block, so content[0] is not reliably the
+    # text block anymore.
+    text_blocks = [b["text"] for b in data["content"] if b.get("type") == "text"]
+    if not text_blocks:
+        raise ValueError(
+            f"No text block found in response content: "
+            f"block types were {[b.get('type') for b in data['content']]}"
+        )
+    raw_text = text_blocks[0]
 
     # Strip markdown code fences if present (confirmed via dry-run testing
     # that the model wraps JSON in ```json ... ``` despite instructions

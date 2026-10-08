@@ -56,7 +56,11 @@ def draft_text(s, item_codes):
             print(f"    attempt {attempt}: HTTP {r.status_code}")
             time.sleep(5)
             continue
-        parsed = parse_classification_result(r.json()["content"][0]["text"])
+        _msg = r.json()
+        _text_blocks = [b["text"] for b in _msg["content"] if b.get("type") == "text"]
+        if not _text_blocks:
+            raise ValueError(f"No text block found: block types were {[b.get('type') for b in _msg['content']]}")
+        parsed = parse_classification_result(_text_blocks[0])
         ok = (parsed.get("verdict") == "real_event" and parsed.get("suggested_title")
               and parsed.get("suggested_description") and parsed.get("suggested_event_type"))
         print(f"    attempt {attempt}: verdict={parsed.get('verdict')}, "

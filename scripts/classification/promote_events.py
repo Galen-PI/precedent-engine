@@ -198,7 +198,11 @@ Respond with ONLY valid JSON, no other text: {{"same_event": true or false}}"""
         timeout=30,
     )
     resp.raise_for_status()
-    raw_text = resp.json()["content"][0]["text"].strip()
+    _msg = resp.json()
+    _text_blocks = [b["text"] for b in _msg["content"] if b.get("type") == "text"]
+    if not _text_blocks:
+        raise ValueError(f"No text block found: block types were {[b.get('type') for b in _msg['content']]}")
+    raw_text = _text_blocks[0].strip()
     if raw_text.startswith("```"):
         raw_text = raw_text.split("```")[1]
         if raw_text.startswith("json"):
