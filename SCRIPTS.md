@@ -1784,3 +1784,31 @@ status label) is designed in concept but not yet implemented for any
 category. The new populate_X_status.py scripts (labor, housing) and the
 new date+sector correlation mechanism (consumer financial health) are
 not yet built.
+
+### 2026-10-08 — Labor Market and Housing raw series ingested (9 more)
+Same discipline as Consumer Financial Health: verified every series ID
+directly against the live FRED API before adding. Labor Market (5):
+ICSA, CCSA, CIVPART, JTSQUR, CES0500000003. Housing (4): HOUST,
+CSUSHPISA, MORTGAGE30US, EXHOSLUSM495S. All ingested successfully.
+
+**Real, genuine limitation found and confirmed, not a bug**:
+EXHOSLUSM495S (Existing Home Sales) only returned 13 real observations
+(Aug 2025 onward). Confirmed via web search this is intentional on NAR's
+part -- FRED's own current series is explicitly a rolling 13-month
+window; the longer historical series was discontinued. A full 1999-2024
+reconstruction exists only as third-party archaeology work (rebuilt from
+archived NAR release files + FRED vintages) -- a genuine side-project of
+its own, out of scope for this session. Housing's composite regime will
+just have a shorter real lookback on this one sub-series.
+
+CES0500000003 (wages) genuinely starts 2006, JTSQUR (JOLTS) genuinely
+starts 2000 -- both real series-start limitations (JOLTS data collection
+itself only began in 2000), not gaps to fix.
+
+**Real, honest remainder**: raw data for both categories is now fully
+ingested. The actual composite regime classifier -- turning multiple raw
+series into one meaningful status label per category, then threading
+that into event_pre_context via new populate_labor_market_status.py /
+populate_housing_status.py scripts (mirroring populate_yield_curve_status.py)
+-- is not yet designed or built. This is the real remaining work to
+consider Population/Consumer Sentiment complete.
