@@ -1407,3 +1407,38 @@ linked_event_id IS NULL in filing_ai_classifications, meaning they're
 real_event in the classification table but have no actual event row yet
 -- genuinely ready for promote_events.py to pick up and create real
 events from, completing the full pipeline this sweep was built to feed.
+
+### 2026-10 — real, major milestone: promote_events.py run to completion, 3,139 new real events created
+Resumed the stale-URL sweep pipeline from last session (writeback had
+already landed 39 new real_event classifications; 112 total staged and
+waiting). Before running promote_events.py, cleared two real blockers:
+
+1. Backfilled 206 confirmed real_event rows with NULL title/description
+   via backfill_title_description.py (cheap, synchronous drafting from
+   existing ai_reasoning -- does not touch verdicts). All 206 succeeded,
+   zero failures.
+2. Found and fixed a real, genuine bug in promote_events.py itself: the
+   event_source_filings write loop inserts one row per filing in a
+   collapsed "event group" without checking whether any individual filing
+   in that group was already linked to a DIFFERENT, earlier-promoted
+   event -- causing a primary-key crash whenever a new event's filing
+   group happened to include an older, already-linked filing. Hit this
+   twice (IEX, then MSI) on different runs, confirming it was a real,
+   recurring structural issue, not a one-off race condition. Patched to
+   catch this specific duplicate-key violation, skip just that one
+   already-linked row, log it, and continue -- rather than crash the
+   whole run. Original backed up as
+   promote_events.py.bak_before_dedup_fix before patching.
+
+**Real, final, verified result**: 3,139 new events created (events table:
+16,753 -> 19,892), event_source_filings grew by exactly 3,139 in lockstep
+(15,589 -> 18,728), zero orphaned events (every new event has both an
+entity relationship and a source filing). The Anthropic API dedup
+verification step also worked as designed throughout: it flagged and
+correctly skipped genuine duplicates while separately catching and
+rejecting false-positive heuristic matches (same-entity, date-proximity
+pairs that were NOT actually the same event).
+
+**Real, still open**: 61 rows skipped this run for missing/unknown
+event_type -- a separate, smaller cleanup item, same shape as the
+title/description gap, not yet addressed.

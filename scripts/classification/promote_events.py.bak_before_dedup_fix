@@ -342,18 +342,12 @@ def main():
         }).execute()
 
         for r in group_rows:
-            try:
-                supabase.table("event_source_filings").insert({
-                    "event_id": new_event_id,
-                    "ticker": r["ticker"],
-                    "filing_date": r["filing_date"],
-                    "accession_number": r["accession_number"],
-                }).execute()
-            except Exception as e:
-                if "duplicate key value violates unique constraint" in str(e) and "event_source_filings_pkey" in str(e):
-                    print(f"  [SKIP - already linked to a different event] {r['ticker']} {r['filing_date']} {r['accession_number']}")
-                    continue
-                raise
+            supabase.table("event_source_filings").insert({
+                "event_id": new_event_id,
+                "ticker": r["ticker"],
+                "filing_date": r["filing_date"],
+                "accession_number": r["accession_number"],
+            }).execute()
 
     print("\n" + "=" * 70)
     print(f"{'LIVE RUN' if live else 'DRY RUN'} SUMMARY")
