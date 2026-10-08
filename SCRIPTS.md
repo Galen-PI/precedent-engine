@@ -1685,3 +1685,24 @@ broadened pattern search remain to check under either phrasing set --
 this specific gap (duplicate-detection language contradicting a
 real_event verdict) is now closed across the entire batch, not just the
 originally-sampled subset.
+
+### 2026-10-08 — global_event_episodes formally retired; manual-review track confirmed stalled at 167/424
+Followed through on the 2026-09-29 recommendation to formally retire
+build_event_episodes.py. Added a clear RETIRED notice to the top of the
+file itself (not just a note in this changelog) so anyone opening the
+script directly sees the real status immediately, rather than needing to
+find this file first.
+
+Confirmed the real, current numbers before retiring: global_event_episodes
+is still 0 rows (unchanged since 2026-09-22/29). The manual-review
+alternative (global_events.severity/reviewer_note) has NOT progressed
+since 2026-09-29 either -- still exactly 167 of 424 events reviewed (105
+major, 53 moderate, 9 minor), with 257 events still carrying a NULL
+severity. So while the algorithmic approach is correctly retired, the
+"simpler alternative" it was retired in favor of has also stalled, just
+at a much more useful point (167 real, hand-reviewed events vs. 0).
+
+Real, honest reframing: the actual remaining work under this heading is
+not "build global_event_episodes" (that path is closed) but "manually
+review severity for the 257 NULL-severity global_events rows" -- a
+continuation of the proven manual track, not new tooling.

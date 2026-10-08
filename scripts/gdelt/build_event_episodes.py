@@ -1,6 +1,26 @@
 """
 build_event_episodes.py
 
+*** RETIRED 2026-10-08 -- DO NOT USE AS THE INTENDED PATH FORWARD ***
+Four iterations of this algorithmic approach were attempted; each fixed
+one case while breaking another previously-working one. The real root
+cause was identified (needs theme SHARE of total coverage, not absolute
+count) but never implemented. global_event_episodes, this script's
+output table, has 0 rows as of this retirement.
+
+A simpler alternative already exists and has real, proven traction:
+global_events.severity / reviewer_note, populated by hand. As of
+2026-10-08 this covers 167 of 424 global_events (105 major, 53 moderate,
+9 minor -- genuine, non-degenerate variance), with 257 events still
+needing manual severity review. That manual-review track is the real,
+intended path forward -- not this script.
+
+This file is kept for reference (the date-mismatch and no-decay problems
+it documents are real and worth remembering if episode-grouping is
+revisited later), but should not be run or extended without first
+re-reading the Changelog entries this header references and solving the
+actual root cause (theme share, not absolute count).
+
 Groups consecutive days of elevated GDELT theme coverage into a single
 ongoing "episode" instead of treating each spike-day as its own
 disconnected candidate. Built after reviewing the 2026-03-02 to
