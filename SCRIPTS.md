@@ -1892,3 +1892,52 @@ result (172 healthy, 171 stressed, 47 normal).
 
 **Real, final result**: 390 of 394 real months written (1994-1995
 through Oct 2026), confirmed clean in the live database.
+
+### 2026-10-08 — Federal executive orders ingested (1,570 rows); real duplicate-key schema fix found along the way
+Built populate_executive_orders.py, pulling the Federal Register's own
+free, keyless, official API (federalregister.gov/api/v1/documents.json,
+confirmed via a live test call before building). Real history back to
+1994-01-01, matching this project's own earliest tracked company date
+exactly -- 1,570 real executive orders fetched and written.
+
+**Real, genuine schema bug found and fixed before any data was lost**:
+the existing government_decisions table's unique constraint
+(decision_date, body, decision_type) was fine for FOMC (one decision per
+real meeting date, confirmed never duplicated) but genuinely breaks for
+executive orders -- confirmed directly via a live API check that up to
+4 real EOs can be signed on the same real date. First live run hit a
+hard constraint violation. Fixed by adding a real
+source_document_number column (UNIQUE, populated from the Federal
+Register's own document_number, a genuinely unique real identifier) and
+dropping the old compound constraint.
+
+This required updating populate_government_decisions.py too, since
+source_document_number needed to become the universal real conflict
+key across the whole table, not just for EOs -- gave FOMC rows a
+synthetic source_document_number ("fomc-{date}") for consistency.
+Re-running that script against the existing 31 FOMC rows (added AFTER
+the column existed, so their source_document_number was NULL) produced
+31 real duplicate rows instead of updating them -- Postgres treats NULL
+as non-matching in a UNIQUE constraint, so the upsert couldn't find the
+old rows to update. Caught via a row-count check (62 instead of 31,
+immediately suspicious) before this cascaded further. The 31 real OLD
+rows already had downstream data in government_decision_exposure
+referencing them (confirmed via a foreign-key violation when the first,
+wrong attempt tried to delete them) -- correctly reversed course and
+deleted the 31 NEW duplicate rows instead (safe, nothing referenced
+them yet), then set source_document_number on the original 31 via a
+direct UPDATE. Final, confirmed-clean state: 31 FOMC rows, 1,570
+executive orders, every row has a real, unique source_document_number.
+
+**Relevance scoping, deliberate, two-step (Galen 2026-10-08)**: this
+script ingests the raw, complete set with no filtering -- EOs have no
+clean policy-area tag the way Congressional bills do. Each row's
+structured_data.relevance_reviewed stays false until a separate,
+not-yet-built classification step judges which EOs actually touch
+companies/health/economic regulation vs. something like a commemorative
+proclamation.
+
+**Also found and fixed defensively**: some real EOs' agencies array
+contains entries missing a "name" key -- real data quirk in the Federal
+Register's own records, not a bug in this script. Fixed with a
+.get("name") or .get("raw_name") fallback.

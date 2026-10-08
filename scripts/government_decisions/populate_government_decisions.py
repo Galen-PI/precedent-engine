@@ -89,6 +89,7 @@ def main():
                      f"{d['value']}% (from {d['previous_value']}%)",
             "summary": summary,
             "source_url": d["real_url"],
+            "source_document_number": f"fomc-{d['real_statement_date']}",
             "structured_data": json.dumps({
                 "previous_rate": d["previous_value"],
                 "new_rate": d["value"],
@@ -108,7 +109,7 @@ def main():
         return
 
     result = supabase.table("government_decisions").upsert(
-        rows, on_conflict="decision_date,body,decision_type"
+        rows, on_conflict="source_document_number"
     ).execute()
     print(f"\nReal write complete: {len(result.data)} rows upserted.")
 
