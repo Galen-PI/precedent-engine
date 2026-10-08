@@ -1442,3 +1442,39 @@ pairs that were NOT actually the same event).
 **Real, still open**: 61 rows skipped this run for missing/unknown
 event_type -- a separate, smaller cleanup item, same shape as the
 title/description gap, not yet addressed.
+
+### 2026-10 — real, important discovery: a duplicate-detection gap in the 2026-09-24 mass auto-confirm, 67 corrected
+While clearing promote_events.py's "missing event_type" skip list, found that
+the rows missing event_type were disproportionately real errors: of 62 rows
+checked individually, 43 were genuine duplicates or routine noise that the
+AI's own reasoning explicitly contradicted (e.g. "duplicate of an already-
+recorded event," "[FORCED TO UNCERTAIN: invalid verdict value
+'possible_duplicate_of']") -- yet human_verdict was 'real_event' anyway.
+
+All 62 shared one exact millisecond human_reviewed_at timestamp
+(2026-09-24 14:19:29.599438+00), tracing this to the real, documented mass
+auto-confirm step from that day's Review Queue Triage work. Checked the
+full population sharing that timestamp (41,720 rows: 13,948 real_event,
+27,772 rejected_noise, none yet promoted into live events) for the same
+duplicate-language pattern and found 33 more affected rows -- a real,
+genuine, but narrow gap: the original mechanical contradiction check was
+built to catch "reasoning says routine/not material, verdict says
+real_event" but was never built to catch "reasoning says duplicate of an
+existing event, verdict says real_event" -- a logically different kind of
+error (double-counting, not a materiality miscall).
+
+**Real, final, individually verified result**: 19 of 62 genuinely correct
+(assigned a real event_type); 43 corrected to rejected_noise. Of the
+additional 33 found via the broader duplicate-language search, 9 were
+genuinely correct (explicitly reasoned as new/distinct despite containing
+"already recorded" language referring to a partial accounting charge, not
+a duplicate event) and 24 corrected to rejected_noise. **67 total genuine
+corrections**, all caught before promote_events.py could create duplicate
+database events from them -- real near-miss prevented, not after-the-fact
+cleanup.
+
+**Real, honest caveat**: the duplicate-language search used a fixed set of
+ILIKE patterns and is not guaranteed exhaustive -- other phrasings of the
+same error could exist in the remaining ~13,900 real_event rows from this
+batch that weren't individually read. Worth a periodic spot-check, not
+treated as fully closed tonight.
