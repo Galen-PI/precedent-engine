@@ -4,7 +4,16 @@ on:
   schedule:
     # 11:00 UTC daily -- before the ~8am local morning review session
     - cron: "0 11 * * *"
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      filing_limit:
+        description: "Max 8-K filings to classify this run (blank = default 150)"
+        required: false
+        default: "150"
+      news_limit:
+        description: "Max news candidates to classify this run (blank = default 100)"
+        required: false
+        default: "100"
 
 env:
   SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
@@ -27,12 +36,15 @@ jobs:
 
       - name: Run 8-K filing classifier (capped)
         id: filings
+        env:
+          FILING_LIMIT: ${{ github.event.inputs.filing_limit || '150' }}
         run: |
           set +e
-          OUTPUT=$(python scripts/classification/classify_8k_filings_batch_v2.py ALL --limit 150 --yes 2>&1)
+          echo "Using filing limit: $FILING_LIMIT"
+          OUTPUT=$(python scripts/classification/classify_8k_filings_batch_v2.py ALL --limit "$FILING_LIMIT" --yes 2>&1)
           EXIT_CODE=$?
           echo "$OUTPUT"
-          echo "## 8-K Filing Classifier" >> "$GITHUB_STEP_SUMMARY"
+          echo "## 8-K Filing Classifier (limit: $FILING_LIMIT)" >> "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
           echo "$OUTPUT" | tail -20 >> "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
@@ -44,12 +56,15 @@ jobs:
 
       - name: Run Track B news classifier (capped)
         id: news
+        env:
+          NEWS_LIMIT: ${{ github.event.inputs.news_limit || '100' }}
         run: |
           set +e
-          OUTPUT=$(python scripts/classification/classify_news_candidates.py --limit 100 2>&1)
+          echo "Using news limit: $NEWS_LIMIT"
+          OUTPUT=$(python scripts/classification/classify_news_candidates.py --limit "$NEWS_LIMIT" 2>&1)
           EXIT_CODE=$?
           echo "$OUTPUT"
-          echo "## Track B News Classifier" >> "$GITHUB_STEP_SUMMARY"
+          echo "## Track B News Classifier (limit: $NEWS_LIMIT)" >> "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
           echo "$OUTPUT" | tail -20 >> "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
