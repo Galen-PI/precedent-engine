@@ -1,0 +1,60 @@
+name: Nightly classification run
+
+on:
+  schedule:
+    # 11:00 UTC daily -- before the ~8am local morning review session
+    - cron: "0 11 * * *"
+  workflow_dispatch: {}
+
+env:
+  SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+  SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+  ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+jobs:
+  classify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install supabase requests
+
+      - name: Run 8-K filing classifier (capped)
+        id: filings
+        run: |
+          set +e
+          OUTPUT=$(python scripts/classification/classify_8k_filings_batch_v2.py ALL --limit 150 --yes 2>&1)
+          EXIT_CODE=$?
+          echo "$OUTPUT"
+          echo "## 8-K Filing Classifier" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          echo "$OUTPUT" | tail -20 >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          if echo "$OUTPUT" | grep -q "LIMIT_REACHED"; then
+            echo "### :warning: Limit reached -- another run is needed" >> "$GITHUB_STEP_SUMMARY"
+            echo "$OUTPUT" | grep "LIMIT_REACHED" >> "$GITHUB_STEP_SUMMARY"
+          fi
+          exit $EXIT_CODE
+
+      - name: Run Track B news classifier (capped)
+        id: news
+        run: |
+          set +e
+          OUTPUT=$(python scripts/classification/classify_news_candidates.py --limit 100 2>&1)
+          EXIT_CODE=$?
+          echo "$OUTPUT"
+          echo "## Track B News Classifier" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          echo "$OUTPUT" | tail -20 >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          if echo "$OUTPUT" | grep -q "LIMIT_REACHED"; then
+            echo "### :warning: Limit reached -- another run is needed" >> "$GITHUB_STEP_SUMMARY"
+            echo "$OUTPUT" | grep "LIMIT_REACHED" >> "$GITHUB_STEP_SUMMARY"
+          fi
+          exit $EXIT_CODE
