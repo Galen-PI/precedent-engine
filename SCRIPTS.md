@@ -1706,3 +1706,23 @@ Real, honest reframing: the actual remaining work under this heading is
 not "build global_event_episodes" (that path is closed) but "manually
 review severity for the 257 NULL-severity global_events rows" -- a
 continuation of the proven manual track, not new tooling.
+
+### 2026-10-08 — correction: the 257 NULL-severity global_events rows are NOT unreviewed
+The entry above (same date) incorrectly framed these 257 rows as
+remaining manual-review work. Checked the status column directly:
+all 257 already carry status='rejected_noise', not an unreviewed/pending
+state -- severity is NULL for them because noise rows don't get a
+severity rating by design, not because no one looked at them yet.
+
+Confirmed this triage is correct by reading 70 of the 257 directly
+(45 with no triage_priority + 25 with triage_priority='C_low'): every
+single one sampled is a broad theme-coverage spike (labor, cyber, trade,
+conflict, macro) with completely unrelated, scattered sample headlines
+-- not a coherent single news story. Exactly the kind of undifferentiated
+noise the retired build_event_episodes.py was trying (and failing) to
+separate from real events algorithmically.
+
+**Real, corrected state**: global_events is 100% reviewed, not 61%.
+424 total rows: 167 confirmed real events with severity assigned (105
+major, 53 moderate, 9 minor), 257 correctly rejected as noise. Nothing
+further needed on this table.
