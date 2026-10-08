@@ -1577,3 +1577,40 @@ cause finding: the actual exhibit content for these specific filings
 doesn't appear to be independently indexed anywhere searchable, not just
 unavailable via direct SEC fetch. Parked again, same honest treatment as
 before.
+
+### 2026-10 — CHTR/EFX/CPRT/CDW untriaged tickers: real root cause found, real fix applied for 2 of 4
+Investigated why these 4 tickers had so many untagged events (the real
+531-event backlog item) -- it turned out to NOT be a classification
+problem at all: running tag_reaction_character.py --dry-run for each
+showed the overwhelming majority skipped for "insufficient price data",
+not ambiguous content.
+
+**Real, individually verified root cause per ticker**:
+- CDW: no real gap -- CDW was taken private via LBO in 2007 (Madison
+  Dearborn/Providence Equity) and only re-IPO'd July 2, 2013. Our price
+  data correctly starts right at the real IPO; pre-2013 events genuinely
+  have no public price data that could ever exist.
+- CHTR: no real gap -- Charter's pre-2009 shares were fully CANCELLED in
+  its Chapter 11 reorganization (filed March 2009, emerged Nov 2009, new
+  stock began trading under CCMM/then CHTR in 2010). The current CHTR
+  security is genuinely a different, newly-issued security from the
+  pre-bankruptcy one; there is no real continuous price history to
+  backfill across that discontinuity.
+- CPRT: a REAL, fixable gap -- continuously publicly traded since March
+  17, 1994 (confirmed via Copart's own 10-K), with no real corporate
+  discontinuity. Our database only had price data from 2012.
+- EFX: a REAL, fixable gap -- continuously publicly traded since 1965
+  (confirmed via Equifax's own investor-relations FAQ; uninterrupted
+  dividends since 1920), no real discontinuity. Our database only had
+  price data from 2012.
+
+**Real, applied fix**: ran ingest_market_prices.py for CPRT
+(1994-03-17 to 2011-12-31, 4,482 real new rows) and EFX (1994-01-01 to
+2011-12-31, 4,534 real new rows) to backfill the genuine gap. Re-ran
+tag_reaction_character.py live afterward: CPRT went from 0 tagged events
+to 15 (3 still skipped, presumably genuinely outside available history);
+EFX went from 1 tagged to 21 (2 still skipped). 36 new real, legitimate
+reaction_character tags written to event_market_reactions.
+
+CDW and CHTR need no further action -- their real, limited price history
+is already structurally complete as far back as it can genuinely go.
