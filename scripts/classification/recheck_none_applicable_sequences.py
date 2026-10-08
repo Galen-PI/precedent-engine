@@ -35,7 +35,9 @@ ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"]
 
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-MODEL_VERSION = "claude-haiku-4-5-20251001"
+import sys as _sys, os as _os
+_sys.path.insert(0, _os.path.join(_os.path.dirname(__file__), "..", "shared"))
+from model_config import MODEL_VERSION
 PROMPT_VERSION = "v2-supplemental-sequence-recheck"
 POLL_INTERVAL_SECONDS = 30
 

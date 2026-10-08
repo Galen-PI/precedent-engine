@@ -63,7 +63,9 @@ ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"]
 
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-MODEL_VERSION = "claude-haiku-4-5-20251001"
+import sys as _sys, os as _os
+_sys.path.insert(0, _os.path.join(_os.path.dirname(__file__), "..", "shared"))
+from model_config import MODEL_VERSION
 PROMPT_VERSION = "v5"
 
 SEC_HEADERS = {"User-Agent": "stock-research1 project contact@example.com"}
@@ -783,7 +785,7 @@ def print_real_cost_report(usage_totals: dict, num_requests: int):
 # -- used for ONE honest upfront estimate before any chunk starts,
 # rather than requiring a confirmation per chunk (which would undo the
 # earlier --limit fix's goal of making this less tedious to run).
-REAL_OBSERVED_COST_PER_FILING = 0.0028
+REAL_OBSERVED_COST_PER_FILING = 0.00028  # updated for claude-haiku-5-5 (10x cheaper than 4.5: $0.10/$0.50 per MTok vs $1/$5)
 CHUNK_SIZE = 2500
 
 
@@ -881,12 +883,17 @@ def main():
     ticker_args = [a for a in raw_args if a != "--yes"]
 
     candidates = get_unclassified_candidates(ticker_args)
-    print(f"Found {len(candidates)} unclassified candidates across "
+    total_found = len(candidates)
+    print(f"Found {total_found} unclassified candidates across "
           f"{len(set(c['ticker'] for c in candidates))} companies.")
 
     if limit is not None and len(candidates) > limit:
         candidates = candidates[:limit]
         print(f"  --limit {limit} set: processing only the first {limit} of them this run.")
+        from datetime import date
+        print(f"LIMIT_REACHED: processed {limit} of {total_found} real candidates, "
+              f"{total_found - limit} more still pending as of {date.today().isoformat()}. "
+              f"Run again to continue.")
 
     if not candidates:
         return

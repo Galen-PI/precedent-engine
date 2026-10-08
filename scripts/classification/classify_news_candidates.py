@@ -51,7 +51,9 @@ ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"]
 
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-MODEL_VERSION = "claude-haiku-4-5-20251001"  # cheap, fast, well-suited to classification tasks like this one
+import sys as _sys, os as _os
+_sys.path.insert(0, _os.path.join(_os.path.dirname(__file__), "..", "shared"))
+from model_config import MODEL_VERSION  # cheap, fast, well-suited to classification tasks like this one
 PROMPT_VERSION = "v1"
 
 # Stage 1 pre-filter thresholds/patterns, confirmed via manual review this session
@@ -210,6 +212,12 @@ def compute_flag(ai_result: dict, random_audit_hit: bool) -> tuple[bool, str]:
 
 def main():
     import random
+    import sys
+
+    limit = None
+    if "--limit" in sys.argv:
+        idx = sys.argv.index("--limit")
+        limit = int(sys.argv[idx + 1])
 
     articles = supabase.table("news_articles") \
         .select("id, title, content") \
@@ -232,6 +240,9 @@ def main():
     classified_count = 0
     flagged_count = 0
 
+    limit_reached = False
+    remaining_after_limit = 0
+
     for entity in entities:
         key = (entity["article_id"], entity["ticker"])
         if key in already_classified:
@@ -239,6 +250,11 @@ def main():
 
         article = articles_by_id.get(entity["article_id"])
         if not article:
+            continue
+
+        if limit is not None and classified_count >= limit:
+            limit_reached = True
+            remaining_after_limit += 1
             continue
 
         # Stage 1: cheap pre-filter, no API call
@@ -297,6 +313,11 @@ def main():
     print(f"Flagged for human review: {flagged_count}")
     print(f"Auto-cleared (real_event/likely_noise, high confidence, no flags): "
           f"{classified_count - flagged_count}")
+    if limit_reached:
+        from datetime import date
+        print(f"LIMIT_REACHED: processed {limit} real API classifications, "
+              f"{remaining_after_limit} more still pending as of {date.today().isoformat()}. "
+              f"Run again to continue.")
 
 
 if __name__ == "__main__":
