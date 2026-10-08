@@ -157,6 +157,7 @@ def build_batch_request(event: dict, static_system_prompt: str) -> dict:
         "params": {
             "model": MODEL_VERSION,
             "max_tokens": 1000,
+            "thinking": {"type": "disabled"},
             "system": [
                 {
                     "type": "text",

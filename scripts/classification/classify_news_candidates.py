@@ -151,6 +151,7 @@ Respond with ONLY valid JSON, no other text, in this exact shape:
         json={
             "model": MODEL_VERSION,
             "max_tokens": 1000,
+            "thinking": {"type": "disabled"},
             "messages": [{"role": "user", "content": prompt}],
         },
         timeout=60,

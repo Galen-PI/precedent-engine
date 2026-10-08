@@ -537,6 +537,7 @@ Respond with ONLY valid JSON, no markdown code fences, no other text, in this ex
         "params": {
             "model": MODEL_VERSION,
             "max_tokens": 1000,
+            "thinking": {"type": "disabled"},
             "system": [
                 {
                     "type": "text",

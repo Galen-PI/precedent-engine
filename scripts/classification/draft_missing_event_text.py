@@ -40,7 +40,7 @@ def call_model(user):
     for attempt in range(4):
         try:
             r = requests.post("https://api.anthropic.com/v1/messages", headers=HEAD, timeout=120,
-                              json={"model": MODEL_VERSION, "max_tokens": 800, "system": SYSTEM,
+                              json={"model": MODEL_VERSION, "max_tokens": 800, "thinking": {"type": "disabled"}, "system": SYSTEM,
                                     "messages": [{"role": "user", "content": user}]})
         except requests.RequestException:
             time.sleep(3)

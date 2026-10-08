@@ -193,6 +193,7 @@ Respond with ONLY valid JSON, no other text: {{"same_event": true or false}}"""
         json={
             "model": MODEL_VERSION,
             "max_tokens": 50,
+            "thinking": {"type": "disabled"},
             "messages": [{"role": "user", "content": prompt}],
         },
         timeout=30,

@@ -116,6 +116,7 @@ def build_batch_request(event: dict) -> dict:
         "params": {
             "model": MODEL_VERSION,
             "max_tokens": 300,
+            "thinking": {"type": "disabled"},
             "system": [{"type": "text", "text": STATIC_PROMPT, "cache_control": {"type": "ephemeral"}}],
             "messages": [{"role": "user", "content":
                           f"EVENT TITLE: {event['title']}\nEVENT DESCRIPTION: {(event.get('description') or '')[:2000]}"}],

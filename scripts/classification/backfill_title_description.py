@@ -73,6 +73,7 @@ Respond with ONLY valid JSON, no markdown, no other text:
         "params": {
             "model": MODEL_VERSION,
             "max_tokens": 300,
+            "thinking": {"type": "disabled"},
             "messages": [{"role": "user", "content": prompt}],
         },
     }

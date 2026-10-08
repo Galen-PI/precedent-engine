@@ -113,6 +113,7 @@ Do not suggest reaction_character tags (rewarded/punished/muted/diverged_from_fu
         json={
             "model": MODEL_VERSION,
             "max_tokens": 1000,
+            "thinking": {"type": "disabled"},
             "messages": [{"role": "user", "content": prompt}],
         },
         timeout=60,
