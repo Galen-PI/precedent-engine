@@ -1478,3 +1478,43 @@ ILIKE patterns and is not guaranteed exhaustive -- other phrasings of the
 same error could exist in the remaining ~13,900 real_event rows from this
 batch that weren't individually read. Worth a periodic spot-check, not
 treated as fully closed tonight.
+
+### 2026-10 — Track B (news_ai_classifications) 101 real_event candidates reviewed; no promotion script exists yet
+Read all 101 real_event candidates individually. This source (GDELT/news-
+article-derived, not primary SEC filings) is noticeably noisier than the
+8-K filing population -- genuine duplicate clusters and at least one
+apparent stale/bad-data row surfaced within a single 101-row batch.
+
+**Real, found and corrected (8 of 101)**:
+- NVDA: 4 separate rows all describing the identical $150B->$235B share
+  buyback authorization (different titles, same underlying event) --
+  kept one, rejected 3 as duplicates. Confirmed via direct DB search that
+  no existing event already captures this.
+- PLD: 2 near-identical Dimensional Fund Advisors Form 8.3 filing rows --
+  kept one, rejected the other.
+- GS: 2 rows, same Palmer Square Capital Management bidder story --
+  kept one, rejected the other.
+- JNJ: 2 rows on Caplyta Phase 3 results ("Bipolar I Disorder" vs "Manic
+  Episodes" -- manic episodes is a symptom within bipolar I, read as the
+  same underlying trial result) -- kept one, rejected the other.
+- USB and T: one row each dated "October 3, 2023" inside an otherwise
+  entirely 2026-dated batch -- real, suspicious year mismatch consistent
+  with stale/recycled article content, not corroborated, rejected.
+
+**Real, important verification example**: the AI's own reasoning flagged
+one row (AAPL, $5.7B Taptic Engine patent verdict vs Taction) as
+possibly inauthentic due to a date concern and truncated content. Checked
+directly via web search and found full, consistent corroboration across
+multiple independent news sources (Apple vs. Taction Technology, Sept 25
+2026 jury verdict) -- genuinely real, kept as real_event. Important
+reminder: an AI's own low-confidence flag is a reason to verify, not a
+reason to default to rejecting.
+
+**Real, final result**: 93 of 101 confirmed real_event, 8 corrected to
+rejected_noise. **Real, open gap found**: no script exists to promote
+news_ai_classifications rows into actual events -- only
+classify_news_candidates.py touches this table; promote_events.py only
+reads filing_ai_classifications. These 93 correctly-reviewed rows have
+no path into the events table yet. Needs either a new script or an
+extension to promote_events.py -- real, separate engineering work, not
+done tonight.
