@@ -1,4 +1,4 @@
-# stock-research1
+# precedent-engine
 Stock Research & Market Event Analysis Platform
 A historical market research platform connecting company financials, news, real-world corporate events, and stock-price movements — built to investigate how markets have historically reacted to similar events, with calibrated, sample-size-aware confidence rather than guesswork.
  
