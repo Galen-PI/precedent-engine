@@ -1653,3 +1653,35 @@ already existed); confirmed via GitHub Actions direct gh CLI dispatch
 didn't work due to Codespace's limited auto-token scope, triggered the
 first real test run via the GitHub web UI's "Run workflow" button
 instead -- confirmed running as of this session's end.
+
+### 2026-10 — the ~13,900 unread Sept 24 real_event rows: duplicate-language sweep completed
+Earlier in this session, found 33 duplicate-detection errors within the
+62-row subset that had NULL event_type from this same 2026-09-24 mass
+auto-confirm. Flagged an honest caveat that the remaining ~13,900
+real_event rows from that batch (ones that DID have a valid event_type,
+so wouldn't have surfaced via that specific check) hadn't been swept for
+the same pattern.
+
+Revisited this directly: re-ran the original duplicate-language search
+(9 matches, all already-verified-correct from earlier) to confirm nothing
+new had slipped past that specific check, then broadened the search with
+additional real phrasings (previously recorded, same transaction/event/
+deal, administrative follow-up, already announced, downstream, no new
+material, redundant) -- 63 matches, all read individually.
+
+**Real, final result**: 13 more genuine duplicate-detection errors found
+and corrected to rejected_noise (LULU x2, LUV, LVS x2, LYV x3, MAR, MAS
+x2, MNST x2) -- each explicitly stated in its own reasoning that the
+event was already recorded/an administrative follow-up/a duplicate, yet
+was confirmed as real_event anyway. The remaining 50 of the 63 held up
+as genuinely correct (real deal amendments, acquisition completions,
+settlements, regulatory milestones -- phrases like "already announced"
+or "downstream" appearing in legitimate, non-duplicate context).
+
+Combined with the earlier 24, this brings the total genuine duplicate-
+detection corrections found across the full 2026-09-24 mass auto-confirm
+batch to 37. Confirmed via direct query that no further rows beyond this
+broadened pattern search remain to check under either phrasing set --
+this specific gap (duplicate-detection language contradicting a
+real_event verdict) is now closed across the entire batch, not just the
+originally-sampled subset.
