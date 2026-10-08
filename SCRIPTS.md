@@ -1856,3 +1856,39 @@ threading mechanisms (event_pre_context columns for Labor/Housing;
 date+sector correlation for Consumer Financial Health) are the real
 next step -- not yet designed in code, though the architecture is
 agreed.
+
+### 2026-10-08 — Consumer Financial Health composite index built, real methodology bug found and fixed
+Built populate_consumer_financial_health_index.py and a new
+consumer_financial_health_index table -- architecturally different from
+labor market/housing, which thread a status onto event_pre_context rows
+for specific company events. This is a continuous MONTHLY index instead,
+since the real question is "does the populace have money to spend this
+month", meant for later correlation against Consumer Discretionary vs
+Consumer Staples GICS sectors (that correlation test itself is a
+separate, later Phase 6 step, not built here).
+
+**Real, genuine methodology bug found on the first dry run and fixed
+before going live**: comparing every series' raw LEVEL against its own
+trailing 12-month median produced a badly degenerate result (88%
+"healthy", 391 real rows). Root cause: A229RX0, TOTALSL, RSAFS, and
+PCECC96 all have real structural upward drift over decades (nominal
+income/credit/spending grow from population growth and inflation,
+independent of actual economic health) -- a trailing median lags a
+steady uptrend, so these series read as "above baseline" almost
+permanently. Labor market and housing never hit this because claims,
+housing starts, and mortgage rates don't have that kind of persistent
+trend.
+
+**Real fix**: the 5 drift-prone series (added GASREGW too, given 30
+years of real inflation) are now transformed to year-over-year percent
+change FIRST -- via a frequency-aware bisect-on-real-dates lookup for
+the observation closest to 365 days prior, not a fixed index offset,
+since these series span weekly/monthly/quarterly -- and the same
+trailing-12-baseline deviation technique is applied to that YoY series
+instead of the raw level. PSAVERT, CDSP, and DRCCLACBS (genuinely
+stationary ratios, no structural trend) kept raw-level deviation.
+Re-ran the dry run after the fix: genuinely balanced, non-degenerate
+result (172 healthy, 171 stressed, 47 normal).
+
+**Real, final result**: 390 of 394 real months written (1994-1995
+through Oct 2026), confirmed clean in the live database.
