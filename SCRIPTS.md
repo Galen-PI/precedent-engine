@@ -1726,3 +1726,61 @@ separate from real events algorithmically.
 424 total rows: 167 confirmed real events with severity assigned (105
 major, 53 moderate, 9 minor), 257 correctly rejected as noise. Nothing
 further needed on this table.
+
+### 2026-10-08 — Population/Consumer Sentiment: real groundwork laid out, 9 new FRED series ingested
+Sketched out the full real scope of this feature with Galen: 6 candidate
+categories (labor market, household finances, consumer spending, housing,
+cost of living, sentiment/expectations), ~20 series researched and their
+real FRED codes verified directly against the live API (not guessed) --
+two needed direct verification since search results were ambiguous:
+JTSJOL (confirmed "Job Openings: Total Nonfarm") and DRCCLACBS (confirmed
+"Delinquency Rate on Credit Card Loans, All Commercial Banks").
+
+**Real design decision, made with Galen**: Household Finances + Consumer
+Spending + Cost of Living collapsed into one category ("Consumer
+Financial Health") since all three answer the same real underlying
+question (does the populace have money to spend) and splitting them
+further would triple-thread nearly the same signal into companies.
+
+**Real architectural split identified**, building on the already-proven
+event_pre_context / populate_yield_curve_status.py pattern:
+- Labor Market and Housing are "status effect" categories (persistent
+  regimes, not direct stock-price predictors) -- these will follow the
+  exact same pattern as yield curve status: new columns on
+  event_pre_context, populated via new populate_X_status.py scripts,
+  threaded by date against specific company events (e.g. layoffs for
+  labor, homebuilder/REIT events for housing).
+- Consumer Financial Health is architecturally different -- it needs to
+  correlate on an ONGOING basis with consumer-exposed companies, not
+  attach to one-off events. Real, ready-made threading mechanism found:
+  the securities.sector column already has GICS Consumer Discretionary
+  (46 companies) vs Consumer Staples (34 companies) populated from
+  earlier work (populate_sectors_gics.py) -- a genuine built-in
+  high-exposure vs. low-exposure control group, no new company tagging
+  needed. This threads by date + sector against price reaction data,
+  not through event_pre_context.
+- Sentiment is the aggregation of the other categories and likely needs
+  no separate company-threading of its own.
+
+**Real ingestion completed this session** (verified via direct FRED API
+series lookups before adding, not assumed): EXPINF5YR (Cleveland Fed
+model-based 5yr inflation expectations, added to the sentiment category
+alongside the already-ingested UMCSENT and MICH), and the 8 Consumer
+Financial Health series -- PSAVERT, A229RX0, TOTALSL, CDSP, RSAFS,
+PCECC96, GASREGW, DRCCLACBS. All ingested successfully; PSAVERT, A229RX0,
+and RSAFS were marked has_vintage=True as a best guess but correctly fell
+back to simple fetch automatically via the script's existing safety net
+(confirmed no real vintage history available for any of the three,
+despite the optimistic guess). CDSP's real history only goes back to
+2005 (vs. 1994 for the others) -- a genuine limitation of when the Fed
+started publishing that specific ratio, not a data gap to fix.
+
+**Real, honest remainder -- not yet built**: Labor Market and Housing raw
+series (ICSA, CCSA, CIVPART, JTSQUR, CES0500000003 for labor; HOUST,
+CSUSHPISA, MORTGAGE30US, EXHOSLUSM495S for housing) still need
+verification + ingestion. The composite regime/index methodology for
+each category (how to turn several raw series into one meaningful
+status label) is designed in concept but not yet implemented for any
+category. The new populate_X_status.py scripts (labor, housing) and the
+new date+sector correlation mechanism (consumer financial health) are
+not yet built.
