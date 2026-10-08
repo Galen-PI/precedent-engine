@@ -1614,3 +1614,42 @@ reaction_character tags written to event_market_reactions.
 
 CDW and CHTR need no further action -- their real, limited price history
 is already structurally complete as far back as it can genuinely go.
+
+### 2026-10 — review backlog steady-state: real, automated nightly cadence built
+Designed and built a genuine fix for letting the review queue accumulate
+unnoticed for weeks (the real root cause behind the 49,804-row backlog
+from earlier this session). Real, concrete solution:
+
+**Model switch (triggered this work)**: confirmed via Anthropic's own
+pricing page that Claude Haiku 5.5 is $0.10/$0.50 per MTok input/output --
+exactly 10x cheaper than Haiku 4.5 ($1/$5) across every tier. Audited the
+full repo and found 9 scripts still hardcoded to the old
+claude-haiku-4-5-20251001 beyond the 2 already known about. Created
+scripts/shared/model_config.py as the single source of truth for
+MODEL_VERSION; all 11 scripts now import from it rather than hardcoding
+their own string, so a future upgrade is a one-line change, not a
+repo-wide grep-and-replace (the exact drift that caused this gap).
+Retroactively confirmed with the user's real Anthropic Console billing
+data (100% Haiku 4.5 usage, Aug 24-Oct 8): the same real work would have
+cost $45.57 instead of the actual $455.67 under 5.5 pricing -- a clean
+10x since every pricing tier scaled down identically.
+
+**Real --limit support added**: classify_news_candidates.py had no limit
+flag at all before this session (unbounded real-time API calls); added
+one, capped at actual stage-2 (API-calling) classifications so the free
+stage-1 prefilter still runs unrestricted. classify_8k_filings_batch_v2.py
+already had --limit; added matching LIMIT_REACHED messaging to it.
+
+**Real GitHub Actions automation**: .github/workflows/nightly-classify.yml
+runs both classifiers daily (cron 11:00 UTC) via workflow_dispatch-capable
+schedule, capped at --limit 150 (8-K) / --limit 100 (Track B) per run.
+Each step writes to the GitHub Actions job summary and explicitly
+surfaces a visible warning when a limit was hit, rather than burying it
+in logs -- directly so a growing backlog is visible immediately rather
+than discovered weeks later.
+
+Required ANTHROPIC_API_KEY as a new repository secret (SUPABASE_URL/KEY
+already existed); confirmed via GitHub Actions direct gh CLI dispatch
+didn't work due to Codespace's limited auto-token scope, triggered the
+first real test run via the GitHub web UI's "Run workflow" button
+instead -- confirmed running as of this session's end.
