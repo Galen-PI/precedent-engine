@@ -1984,3 +1984,61 @@ Resources, 669 Commemorations, 497 Armed Forces and National Security,
 being a large real category is itself a good sign, since that's exactly
 the kind of irrelevant bill the real step-2 relevance classification
 (not yet built) should filter out.
+
+### 2026-10-09 — Government decision relevance classification built and run; real cross-script parser reuse bug found
+Built classify_decision_relevance.py (step 2 of the real, deliberate
+two-step relevance scoping): judges each non-FOMC government_decisions
+row as relevant/not_relevant to this database's stock-research purpose
+(company/economic/health regulation vs. commemorative or symbolic
+bills with no economic substance). Reused the proven batch-submission/
+polling infrastructure from classify_8k_filings_batch_v2.py via
+importlib, matching the established reuse pattern.
+
+**Real, genuine bug found the hard way**: also reused that script's
+parse_classification_result for convenience -- this was wrong. That
+function is hardcoded for the 8-K classifier's own schema (requires a
+"confidence" field, only accepts real_event/likely_noise/uncertain as
+valid verdicts). This script's schema is simpler (verdict/reasoning
+only, relevant/not_relevant) -- every real response silently got forced
+to "uncertain" by that function's own validation logic, which isn't a
+parse failure at all, just a schema mismatch. The first live run wrote
+7,992 rows, ALL incorrectly marked "relevant" with a fabricated
+"PARSE ERROR" reasoning string. Caught via a direct database spot-check
+after the run (real distribution was {relevant: 0, not_relevant: 0,
+error: 7992} -- an immediately suspicious, fully degenerate result).
+
+**Real lesson**: a shared module's helper functions are safe to reuse
+only when they're genuinely generic (as submit_batch/poll/fetch-raw-
+content are) -- a function that validates or interprets a specific
+response SCHEMA is coupled to that script's own prompt contract and
+should not be reused as-is for a different schema, even one that looks
+superficially similar.
+
+**Real fix, two parts**: (1) wrote this script's own
+parse_relevance_result, matching only its actual schema, and
+reimplemented the results-fetching loop locally instead of calling
+batch_module.fetch_batch_results (which internally called the wrong
+parser) -- real text-block-finding logic kept, parsing logic now
+correct. (2) Recovered the real batch without resubmitting -- the
+Anthropic batch itself had completed successfully before the original
+crash/bug, so a one-off recovery script re-fetched the SAME batch_id's
+already-completed results directly and overwrote the wrong write with
+correct values, at zero extra API cost.
+
+**Also fixed, in the shared fetch_batch_results function** (benefits
+classify_8k_filings_batch_v2.py too): a single response with ZERO
+content blocks (not even a thinking block) previously crashed the
+entire fetch, discarding every other already-succeeded result in the
+same real batch -- hit this live on request 7,992 of 7,992. Now handled
+the same way an actual batch-level failure already was: mark that one
+item as failed, keep every other real result.
+
+**Real, final result** (confirmed via direct spot-check of 8 random
+rows, genuinely sensible judgment throughout -- post-office-naming
+bills and foreign-policy resolutions correctly not_relevant; financial
+regulation, sanctions, transportation funding, healthcare/pharmacy
+regulation, and school nutrition correctly relevant): 3,035 relevant,
+4,957 not_relevant across the 7,992 real non-FOMC government_decisions
+rows (30 of the "relevant" count are real parse-error rows, defaulted
+to relevant on purpose so nothing silently drops out of future manual
+review scope).

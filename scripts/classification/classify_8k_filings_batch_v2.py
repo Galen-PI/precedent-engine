@@ -742,10 +742,25 @@ def fetch_batch_results(results_url: str) -> tuple[dict, dict]:
             # reliably the text block anymore.
             text_blocks = [b["text"] for b in message["content"] if b.get("type") == "text"]
             if not text_blocks:
-                raise ValueError(
-                    f"No text block found in response content for {custom_id}: "
-                    f"block types were {[b.get('type') for b in message['content']]}"
-                )
+                # REAL FIX (2026-10-09): a single empty-content response (no
+                # text block, no thinking block, block types == []) previously
+                # crashed fetch_batch_results entirely, discarding every OTHER
+                # already-succeeded result in the same real batch -- hit this
+                # live on request 7992 of 7992 in classify_decision_relevance.py.
+                # Real fix: treat this the SAME way an actual batch-level
+                # failure is already handled below (mark this ONE item as
+                # failed, keep every other real result), not a hard crash.
+                block_types = [b.get("type") for b in message["content"]]
+                print(f"    WARNING: no text block for {custom_id} (block types: "
+                      f"{block_types}) -- marking this one item as failed, "
+                      f"continuing with the rest of the batch.")
+                results[custom_id] = {
+                    "verdict": "uncertain", "confidence": 0.0,
+                    "reasoning": f"EMPTY RESPONSE CONTENT: block types were {block_types}",
+                    "matched_known_template": None, "possible_duplicate_of": None,
+                    "suggested_title": None, "suggested_description": None, "suggested_event_type": None,
+                }
+                continue
             raw_text = text_blocks[0]
             results[custom_id] = parse_classification_result(raw_text)
             usage = message.get("usage", {})
