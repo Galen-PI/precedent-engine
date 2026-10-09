@@ -2081,3 +2081,71 @@ scoped to non-FOMC.
 
 **Real, final result**: 3,035 relevant decisions processed, 151,963
 exposure rows written, confirmed correct via direct database join.
+
+### 2026-10-09 — Oil price regime status effect built; real threshold miscalibration caught before going live
+Built populate_oil_price_status.py, the last Phase 4 "status effect"
+item, mirroring populate_labor_market_status.py/populate_housing_status.py
+for DCOILWTICO (WTI crude). Deliberately framed as a volatility/shock
+regime (spike/crash/normal), not a directional health score -- oil
+price doesn't have a real "good/bad" direction the way labor market or
+housing do (a spike helps energy producers, hurts airlines/consumers;
+a crash does the reverse).
+
+**Real threshold bug caught on the first dry run, before going live**:
+reused the same +-0.5 deviation threshold as labor/housing without
+checking whether it actually fit oil's real volatility character.
+Result: {'spike': 8209, 'crash': 6665, 'normal': 1614} -- spike alone
+covered half of all 16,488 events. Investigated directly: computed the
+real deviation distribution across all 8,209 real trading days (not
+just events) and found 85.2% exceed |0.5| -- oil's real day-to-day
+volatility is far higher than labor/housing's monthly-cadence series,
+so +-0.5 made "spike" the default state, not a genuine signal.
+
+Real fix: computed the actual percentile distribution and picked a
+threshold near the real 20th/80th percentile (-2.70/+3.13) instead of
+assuming the same constant would transfer -- settled on +-3.0. Re-ran
+the dry run: genuinely balanced, non-degenerate result (8,494 normal,
+4,261 spike, 3,733 crash).
+
+**Real, final result**: 4,910 of 16,488 event_pre_context rows filled
+this run (most of the remainder already covered by earlier status
+scripts needing the same trailing-window minimum), confirmed matching
+the dry run exactly. This completes the last open Phase 4 item.
+
+### 2026-10-09 — real $4 recovery: 4 cancelled nightly-classify runs' already-completed batches recovered, zero waste
+Galen manually triggered 5 nightly-classify workflow runs that ended up
+running concurrently for 2+ hours each with zero rows written
+(confirmed via a direct classified_today query), then cancelled all 5
+after a real $4 Anthropic charge showed up with no visible database
+result -- a real, legitimate "did this actually do anything" question.
+
+Investigated directly via the Anthropic batches API rather than assume
+the spend was wasted: found 4 of the submitted batches had actually
+reached processing_status="ended" with a real results_url, meaning
+Anthropic had already finished the real, paid-for work -- it was only
+the GASHub Actions workflow (and its in-memory write step) that got
+cancelled, not the underlying batch job, which continues running
+independently on Anthropic's side regardless of what happens to the
+workflow that submitted it.
+
+Built a one-off recovery script parsing each batch's results directly
+(custom_id format ticker__filing_date__accession_number, confirmed from
+the real source), replicating the main classifier's exact
+parse_classification_result/compute_flag logic (a first attempt without
+compute_flag's exact real logic hit a NOT NULL violation on
+flag_reason, which the real function returns as the string "none", not
+NULL, when not flagged -- fixed before the real write).
+
+Real, final result: 7,842 confirmed unique real classifications
+recovered and written (9,949 total processed across the 4 batches, with
+real overlap between runs since they'd been pulling from the same
+backlog pool before being cancelled) -- confirmed via a direct count on
+the recovery's own tagged prompt_version. Nothing was wasted. 4 more
+batches were still actively processing at the time and need checking
+back on separately once they finish.
+
+**Real, important operational lesson for next time**: cancelling a
+GitHub Actions run does NOT cancel the underlying Anthropic batch job
+it submitted -- always check the real batches API before assuming a
+cancelled run's spend produced nothing, since the batch itself may have
+completed (or still be completing) independently.
