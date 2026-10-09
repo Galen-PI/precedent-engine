@@ -2230,3 +2230,41 @@ Real, honest scope note: this was a targeted audit of what changed
 tonight/today, not an exhaustive re-review of the entire database --
 reasonable given the goal was specifically "can Phase 6 proceed without
 inheriting a problem from tonight's work," not a full system audit.
+
+### 2026-10-09 — pre-Phase-6 audit, continued: core table freshness confirmed clean; one real finding deferred to Monday
+Checked every real table Phase 6's own model scripts actually touch
+(grepped scripts/models/*.py directly rather than assume): securities,
+events, event_entity_relationships, event_tags, event_type_relationships,
+event_types, event_pre_context, event_market_reactions, tags,
+financial_condition_score, financial_statements, market_prices,
+market_regimes, company_sentiment_timeline, global_events,
+pattern_significance_tests.
+
+- **financial_condition_score**: 28,533 rows, latest period_end
+  2026-08-31 -- genuinely current.
+- **market_regimes**: only 9 rows, latest end_date 2023-12-31 at first
+  glance -- investigated directly rather than assume this was stale.
+  Real, reassuring explanation: there IS a current regime
+  (ai_boom_2023_2026, start 2023-01-01, end_date NULL/ongoing) -- MAX()
+  simply excludes NULLs, making an ongoing regime invisible to a naive
+  MAX(end_date) check. Not a gap.
+- **event_market_reactions**: 320 of 19,892 real events have no
+  computed reaction. Investigated directly rather than assume this is
+  a bug: confirmed via direct sampling that ALL 320 are genuinely
+  macro/global events (Fed rate decisions, jobs/CPI/GDP reports,
+  hurricanes, 9/11, the Suez blockage, S&P's US credit downgrade,
+  WTI's negative-price day) linked to a representative macro entity
+  (BLS/BEA/Fed), not a real tradeable company -- event_market_reactions
+  computes company-vs-SPY abnormal return, which genuinely cannot apply
+  to these. Expected, by design, not a real gap.
+
+**Real, significant finding, deferred to Monday rather than tackled
+tonight given its size**: event_tag_suggestions' Tier 4 review backlog
+is much larger than previously documented -- roughly 4,660 real rows
+still unreviewed across 13 categories (same_entity_sequence alone:
+2,563 of 2,931 unreviewed). Full real breakdown logged in the master
+to-do list. Also noticed, not yet investigated: 12 MALFORMED rows and 4
+rows tagged "punished" sitting in this table, which looks like it may
+not belong there at all (that's a reaction_character tag, not a Tier 4
+suggestion category) -- worth a quick look Monday alongside the real
+review work.
