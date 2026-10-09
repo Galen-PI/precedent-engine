@@ -99,14 +99,14 @@ def main():
             "summary": eo.get("abstract"),
             "source_url": eo["html_url"],
             "source_document_number": eo["document_number"],
-            "structured_data": json.dumps({
+            "structured_data": {
                 "executive_order_number": eo.get("executive_order_number"),
                 "document_number": eo.get("document_number"),
                 "publication_date": eo.get("publication_date"),
                 "signing_date": eo.get("signing_date"),
                 "agencies": agency_names,
                 "relevance_reviewed": False,  # real step 2 (not built here) flips this
-            }),
+            },
             "direction": None,
             "had_dissent": None,
             "dissent_details": None,

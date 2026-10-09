@@ -90,11 +90,11 @@ def main():
             "summary": summary,
             "source_url": d["real_url"],
             "source_document_number": f"fomc-{d['real_statement_date']}",
-            "structured_data": json.dumps({
+            "structured_data": {
                 "previous_rate": d["previous_value"],
                 "new_rate": d["value"],
                 "change": change,
-            }),
+            },
             "direction": direction,
             "had_dissent": had_dissent,
             "dissent_details": dissent_details,
