@@ -2149,3 +2149,47 @@ GitHub Actions run does NOT cancel the underlying Anthropic batch job
 it submitted -- always check the real batches API before assuming a
 cancelled run's spend produced nothing, since the batch itself may have
 completed (or still be completing) independently.
+
+### 2026-10-09 — Phase 5 complete: diverged_from_fundamentals backfilled, company-level status built, real RPC-batching fix discovered
+**diverged_from_fundamentals** (the unused 4th reaction tag): built
+backfill_diverged_from_fundamentals.py, a one-time pass (same shape as
+recompute_firm_state.py) reviewing every already-tagged rewarded/
+punished event and upgrading it where the reaction contradicts
+firm_state_label (rewarded+weakening/deteriorating, or
+punished+strong/improving). Deliberately a separate script rather than
+editing tag_reaction_character.py's own core loop, to avoid risking its
+proven logic. Hit a real duplicate-key crash partway through a first
+run (a prior partial write had already upgraded some events before an
+unrelated transient error) -- added real resume-safety (skip events
+already tagged diverged_from_fundamentals) before completing. Final
+result: 2,307 real events upgraded, genuine non-degenerate spread
+across all 4 contradiction types.
+
+**Company-level status effect**: built populate_company_status.py --
+architecturally different from the other status scripts tonight (all
+single NATIONAL conditions applied market-wide); this one is scoped
+per-COMPANY, checking whether THIS company had a real restructuring
+event_type (805 real, entity-linked events) or activist_investor_campaign
+tag (5 real entities, a small but real population) within a 12-month
+trailing window before each event being scored. Real, genuine result:
+2,520 restructuring, 31 activist_pressure, 15 overlapping both, 13,922
+with no active condition.
+
+**Real, significant infrastructure fix discovered along the way**:
+one-row-at-a-time writes kept hitting the SAME reproducible HTTP/2
+connection-recycling limit (~20,000 requests, last_stream_id:19999)
+that's crashed multiple status scripts tonight -- and were also just
+slow regardless (one real HTTP round-trip per row). Built a genuine
+fix: a Postgres function (bulk_update_company_status) doing a real,
+safe PARTIAL UPDATE via `UPDATE ... FROM jsonb_to_recordset(updates)`,
+called through supabase.rpc() in large chunks (2,000 rows/call)
+instead of one HTTP call per row. This is a true partial update (only
+the target column touched), unlike upsert()'s full-row-replace
+semantics that caused real problems the night before. Cut the full
+16,488-row write from a many-minutes, crash-prone run down to 9 real
+RPC calls, completing cleanly in well under a minute. Worth applying
+this same pattern retroactively to the other status scripts
+(labor market, housing, oil, consumer financial health) if they're
+ever re-run at full scale again.
+
+This completes Phase 5.
