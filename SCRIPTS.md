@@ -2193,3 +2193,40 @@ this same pattern retroactively to the other status scripts
 ever re-run at full scale again.
 
 This completes Phase 5.
+
+### 2026-10-09 — pre-Phase-6 audit of Phases 1-5: one real bug found and fixed, everything else confirmed clean
+Real, systematic check across everything built this session before
+starting Phase 6, rather than assume it's all fine:
+
+1. **Known, pre-existing reaction_character limitation re-confirmed
+   still open**: 48 multi-entity events still affected (matches the
+   previously documented ~49 figure) -- not newly broken, but a real,
+   standing caveat Phase 6 should keep in mind for any
+   systemic_shock/geopolitical/government_action analysis.
+2. **Double-JSON-encoding bug pattern checked across the whole
+   codebase**: only 3 real files use json.dumps() at all, and the 2
+   from tonight's work are confirmed safe (dry-run console display
+   only, not the actual write payload); the third (regenerate_tier_file.py)
+   writes into an HTML file, unrelated. No real residue anywhere else.
+3. **Referential integrity across all new tables**: zero orphaned
+   government_decision_exposure rows, zero NULL structured_data, zero
+   unreviewed relevance_verdict rows, zero gap between labor/housing/
+   oil status coverage. All clean.
+4. **Real genuine bug found and fixed**: 3 events had BOTH a base
+   reaction tag (rewarded/punished) AND diverged_from_fundamentals
+   simultaneously -- should be mutually exclusive. Root cause: these 3
+   straddled the earlier crash boundary in
+   backfill_diverged_from_fundamentals.py's first run, where the
+   delete-old-tag step didn't complete cleanly before the process
+   crashed. Found via a direct duplicate-tag query, fixed via a direct
+   DELETE of the stale old tags, re-confirmed zero duplicates remain.
+5. **Classification table integrity**: filing_ai_classifications row
+   count exactly matches its distinct (ticker, filing_date,
+   accession_number) count (102,962 = 102,962) -- zero real duplicate
+   rows, confirming the recovered batch write-back from earlier today
+   landed cleanly.
+
+Real, honest scope note: this was a targeted audit of what changed
+tonight/today, not an exhaustive re-review of the entire database --
+reasonable given the goal was specifically "can Phase 6 proceed without
+inheriting a problem from tonight's work," not a full system audit.
