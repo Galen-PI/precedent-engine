@@ -1941,3 +1941,46 @@ proclamation.
 contains entries missing a "name" key -- real data quirk in the Federal
 Register's own records, not a bug in this script. Fixed with a
 .get("name") or .get("raw_name") fallback.
+
+### 2026-10-09 — Congressional enacted laws ingested (6,422 rows); real double-JSON-encoding bug found and fixed across ALL government_decisions
+Built populate_enacted_laws.py against the official Congress.gov API
+(api.congress.gov/v3, requires a real, free CONGRESS_API_KEY -- unlike
+the Federal Register API, not keyless). Two real calls per law by
+design: the cheap /law/{congress}/pub list endpoint for the bare bill
+ID, then /bill/{congress}/{type}/{number} for the real policyArea tag
+(not available on the list endpoint). Real scope: congresses 103-119
+(1994-present), confirmed via a live count check before building --
+6,422 total, ran overnight, completed cleanly.
+
+**Real, serious bug found this morning, affecting ALL 8,023
+government_decisions rows, not just last night's new additions**:
+checking the real policy_area distribution after the overnight run
+returned 100% NULL. Investigated directly: structured_data was stored
+as a jsonb SCALAR STRING, not a real jsonb OBJECT (confirmed via
+jsonb_typeof() returning 'string', and jsonb_object_keys() refusing to
+run with "cannot call jsonb_object_keys on a scalar"). Root cause: all
+3 government_decisions scripts called json.dumps() before handing the
+dict to the Supabase client, which serializes dicts itself --
+double-encoding the result. The raw column display looked completely
+normal (a JSON string's text representation is visually identical to a
+real object), which is exactly why this passed unnoticed through
+multiple dry runs and three separate live writes across two sessions.
+
+Repaired all 8,023 existing rows via
+`structured_data = (structured_data #>> '{}')::jsonb` (unwrap the
+scalar string's real text content, re-parse it as actual JSON).
+Verified clean: jsonb_typeof is 'object' for all rows,
+structured_data->>'policy_area' now correctly extracts real values.
+Fixed the root cause in all 3 scripts (populate_government_decisions.py,
+populate_executive_orders.py, populate_enacted_laws.py) -- pass the
+native dict directly, no json.dumps() wrapper.
+
+**Real, final government_decisions state**: 8,023 total rows -- 31 FOMC
+(2015-2025), 1,570 executive orders (1993-2026), 6,422 enacted laws
+(1993-2026). Real, genuine policy-area variety confirmed: 1,089
+Government Operations and Politics, 690 Public Lands and Natural
+Resources, 669 Commemorations, 497 Armed Forces and National Security,
+319 Economics and Public Finance, 296 Health, and more -- Commemorations
+being a large real category is itself a good sign, since that's exactly
+the kind of irrelevant bill the real step-2 relevance classification
+(not yet built) should filter out.
