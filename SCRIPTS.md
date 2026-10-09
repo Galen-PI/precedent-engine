@@ -2042,3 +2042,42 @@ regulation, and school nutrition correctly relevant): 3,035 relevant,
 rows (30 of the "relevant" count are real parse-error rows, defaulted
 to relevant on purpose so nothing silently drops out of future manual
 review scope).
+
+### 2026-10-09 — government decision exposure threading built for EOs/laws (fixed 7-day window); real field-semantics mix-up caught and fixed
+Real design decision with Galen: FOMC's existing "until the next
+decision" variable-window exposure model doesn't fit executive orders
+and enacted laws -- with 7,992 non-FOMC decisions instead of 31, a
+shared timeline would shrink most windows to 0-1 days. Built
+check_decision_exposure_fixed_window.py instead, reusing
+check_event_exposure.py's proven 7-day fixed-window template and bulk-
+loading technique. Deliberately scoped to only the 3,035 decisions
+already marked relevance_verdict='relevant' -- running this against the
+~5,000 not_relevant rows would be real wasted compute.
+
+Writes into the SAME existing government_decision_exposure table FOMC
+already uses (it stores event_window_days per row, so it already
+supports mixed window lengths).
+
+Real, genuine zero-rows pattern for the earliest ~1,800 of 3,035
+decisions, chronologically -- investigated and confirmed expected, not
+a bug: company_sentiment_timeline (GDELT-sourced) only has real
+coverage from 2015-02-17 onward, so decisions before roughly 2014 have
+no real sentiment baseline to compute against.
+
+**Real field-semantics mix-up caught after the live write** (the write
+itself was correct, only a resume-check was wrong): event_window_days
+is NOT the calendar window length -- same real semantics as the
+original check_event_exposure.py template this was copied from -- it's
+the COUNT of real sentiment data points found within the window, which
+varies per decision/company. The resume-detection logic filtered on
+event_window_days == 7 as if that were the fixed constant, which only
+coincidentally matched decisions with exactly 7 real data points (19,518
+of 151,963), not "already processed." Confirmed the actual write was
+fully correct via a direct join to government_decisions.decision_type
+(151,963, matching the script's own reported total exactly) before
+fixing the resume filter for future re-runs -- no real collision risk
+with FOMC's rows, since the caller's own decision list is already
+scoped to non-FOMC.
+
+**Real, final result**: 3,035 relevant decisions processed, 151,963
+exposure rows written, confirmed correct via direct database join.
