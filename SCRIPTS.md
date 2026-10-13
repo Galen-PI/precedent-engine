@@ -2402,3 +2402,30 @@ same person moving between different companies, nor a company's
 involvement in a broader industry-wide event/scandal -- both read as
 superficially plausible to a text-based classifier but fail the
 tag's actual definition.
+
+### 2026-10-13 — Tier 4 review backlog: confounded_regulatory_action fully cleared (556 rows, 100%)
+Same real, systematic pattern-search discipline as same_entity_sequence.
+Low-confidence rows (13) read individually -- 11 rejected (each
+explicitly argued "clean, no confounding evidence"), 2 confirmed as
+genuine (bankruptcy ruling bundled with restructuring terms; FTC
+clearance landing 5 days before 9/11). High-confidence rows (43)
+sampled (25 read) -- all genuinely clean, bulk-confirmed.
+
+Mid-confidence rows (the bulk, ~497) needed the same targeted search
+for the AI's own self-doubting language -- this category's recurring
+real tell was explicit hedging like "however, the description does not
+explicitly state/mention/identify a concurrent confounding event,"
+essentially the AI correctly recognizing a regulatory action stood
+alone with no real second event to confound attribution against, yet
+still suggesting the tag anyway. Caught and rejected 37 genuine errors
+this way across two passes (5 from an initial random sample revealing
+the pattern, 32 from the full-pool targeted search), each verified by
+reading the actual row. A final 30-row random sample of the unmatched
+remainder came back completely clean, giving real confidence to
+bulk-confirm what was left.
+
+**Real, final result**: 48 rejected, 508 confirmed -- 556 total, 100%
+reviewed. Core lesson for this category: distinguishing "this IS a
+regulatory action" from "this regulatory action landed ALONGSIDE
+another material event" is the whole ballgame -- a regulatory ruling
+standing alone, however material, does not qualify.
