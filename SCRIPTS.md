@@ -2545,3 +2545,66 @@ rows are 9 legitimate NONE_APPLICABLE conclusions, which don't require the
 same confirm/reject treatment). The entire Tier 4 backlog flagged during the
 pre-Phase-6 audit (~4,660 rows, later found to be ~5,223 once fully
 enumerated) is now closed.
+
+### 2026-10-13 (evening) — Phase 6 theory testing: overreaction null, size check, context test, storm_x_sentiment, storm leakage check
+
+**Overreaction/reversal (theory 7): null.** On event_market_reactions_corrected,
+events with |abnormal_return_0d| > 3%: mean drift after day 0 (20d minus 0d) was
++0.953% after up moves (n=1,107, SE 0.529%) and +0.964% after down moves (n=1,059,
+SE 0.390%). The between-bucket difference is ~0.01 pts against an SE of ~0.66 pts
+(z ~ 0.02). Reversal fractions 52.3% / 50.6%, indistinguishable from a coin flip.
+A shared positive offset of ~0.95% appears in both buckets; hypothesis (untested)
+is survivorship in the tracked universe. All SEs treat events as independent and
+are therefore too small (events cluster in time). Single threshold, single horizon.
+
+**Size effect (small-cap hypothesis), within this universe.** size_bucket is a
+constant label ("large_or_mega_cap_tracked_universe") and cannot be used. Revenue
+quintiles (static median revenue per company, most common period_type) gave mean
+|20d move| of 6.57 / 6.44 / 6.31 / 5.62 / 6.18% for smallest..largest quintile.
+Q1 vs Q5 gap ~0.39 pts (z ~ 2.0 naive); non-monotone (Q4 lowest). Weak support at
+most. This universe's size range is narrow, so it cannot speak to true small caps.
+market_cap_at_event is populated for 15,964 of 16,488 rows (0.047 to 4739.65; units
+unverified) and is the better size measure for a rerun.
+
+**Context test (pre-registered directions).** Raw means looked strong for labor
+stressed (9.31% vs ~5.8%), oil spike/crash, restructuring (7.58% vs 5.96%). After
+excluding 2007-10..2009-12 and 2020 and, for company status, excluding events that
+are themselves restructuring events: labor stressed 5.78% vs 5.33-5.57%, oil spike
+5.44% vs 5.55% normal (gone), restructuring 6.04% vs 5.43% (~0.6 pts, suggestive
+only). Storm tier "large" survived (6.90% vs isolated 5.45%). Yield curve inverted
+was opposite to the predicted direction (5.75% vs 6.25%) and housing was a null.
+~20 groups were examined, so isolated 2-SE results are expected by chance.
+KNOWN FLAW (not yet fixed): populate_company_status.py's trailing window is
+window_start <= d <= as_of_date, so a restructuring event labels itself
+"restructuring"; the raw restructuring gap is partly built in.
+
+**storm_x_sentiment at cutoff 2022-01-01: does not reproduce the docketed
++10.5pp isolated+negative cell.** Test n / hit rate vs baseline (every cell
+predicts "muted"): isolated-negative 37, 37.8% vs 46.2%; isolated-positive 262,
+48.1% vs 46.2%; isolated-neutral 260, 45.4% vs 46.2%; storm-negative 33, 48.5% vs
+49.0%; storm-positive 231, 47.2% vs 49.0%; storm-neutral 311, 50.5% vs 49.0%.
+No cell is more than ~1 SE from baseline (SEs hand-computed, approximate). This
+script measures the MUTED share only; if the +10.5pp came from another cutoff or a
+punished-share view, this run would not show it. Cutoffs 2020-01-01 and
+2024-01-01 NOT yet run.
+
+**Storm-feature leakage check.** get_storm_lookup() (multi_feature_model.py line
+~173) counts neighbor events within +-40 days, INCLUDING later events, so storm_tier
+is not knowable at event time and is unsafe as a walk-forward feature. Standalone
+query comparing neighbor-magnitude windows (mean |20d move|, "none" bucket vs
+">=10%" bucket): +-40d 5.84% vs 10.72%; prior 1-40d 5.96% vs 11.77%; prior 7-40d
+5.94% vs 12.57%. The effect did NOT shrink under backward-only windows, so leakage
+does not explain it. Volatility clustering (volatile companies stay volatile) is the
+leading alternative explanation and is UNTESTED; a within-volatility-tercile rerun
+is pending. Gaps across windows are not directly comparable (backward windows are
+shorter, so the top bucket is more extreme).
+
+**Performance fixes in multi_feature_model.py (shared by every script that imports
+it):** get_storm_lookup() now filters day_offset = 5 in the database (about 15K of
+654K event_ripple_timeline rows; same rows the loop already kept; storm pairs
+loaded = 15,038); get_sentiment_lookup() now uses keyset pagination on id for
+company_sentiment_timeline (~533K rows). Both previously used offset paging and
+sat idle on the network for 25+ minutes.
+
+**Process note:** piping a long run through `| tail -N` hides all progress until
+the process exits; use `| tee file.log` instead.

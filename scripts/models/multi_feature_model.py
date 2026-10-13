@@ -100,7 +100,24 @@ def paginated(table, select, order_by, filters=None):
 
 
 def get_sentiment_lookup():
-    rows = paginated("company_sentiment_timeline", "entity_id,date,avg_tone", "id")
+    # PERF FIX (2026-10-13): offset paging over ~533K rows gets slower with
+    # every page (each page makes Postgres skip all earlier rows) -- a run
+    # sat idle on the network for 25+ minutes here. Keyset pagination on the
+    # indexed id column stays fast at any depth. Never trust page size to
+    # mean "last page" -- PostgREST caps requests at 1,000 rows server-side;
+    # only an empty page ends the loop. Same rows returned as before.
+    rows = []
+    _last_id = None
+    while True:
+        _q = supabase.table("company_sentiment_timeline") \
+            .select("id,entity_id,date,avg_tone").order("id").limit(1000)
+        if _last_id is not None:
+            _q = _q.gt("id", _last_id)
+        _page = _q.execute().data
+        if not _page:
+            break
+        rows.extend(_page)
+        _last_id = _page[-1]["id"]
     by_entity: dict[str, list[tuple[str, float | None]]] = defaultdict(list)
     for r in rows:
         by_entity[r["entity_id"]].append((r["date"], r["avg_tone"]))
@@ -145,7 +162,23 @@ def get_storm_lookup() -> dict[tuple[str, str], str]:
     that investigation: isolated / small / medium / large."""
     bundled_ids = {r["event_id"] for r in paginated("event_component_dates", "event_id", "event_id")}
 
-    ripple_rows = paginated("event_ripple_timeline", "event_id,entity_id,abnormal_return,day_offset", "id")
+    # PERF FIX (2026-10-13): this loader pulled all ~654K event_ripple_timeline
+    # rows (every day_offset 1-39) and then kept only day_offset == 5 (~15K
+    # rows) in Python below -- ~43x more download than needed, via offset
+    # paging that slows as the offset grows. Filter in the database instead.
+    # Returns exactly the rows the loop below already keeps -> same results.
+    ripple_rows = []
+    _off = 0
+    while True:
+        _page = supabase.table("event_ripple_timeline") \
+            .select("event_id,entity_id,abnormal_return,day_offset") \
+            .eq("day_offset", 5).order("id").range(_off, _off + 999).execute().data
+        if not _page:
+            break
+        ripple_rows.extend(_page)
+        if len(_page) < 1000:
+            break
+        _off += 1000
     day5_by_entity: dict[str, list[tuple[str, float]]] = defaultdict(list)
     for r in ripple_rows:
         if r["day_offset"] == 5 and r["event_id"] not in bundled_ids and r["abnormal_return"] is not None:
