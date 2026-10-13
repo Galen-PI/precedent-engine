@@ -2708,3 +2708,37 @@ United default disclosure). Too few for a statistical test.
 **Operational:** restarting background jobs with `&` while the originals were still
 alive created duplicates and truncated their log files (`>`); use unique per-run log
 names and check `ps` before relaunching.
+
+### 2026-10-13 (late) — Plain-volatility range baseline and tag-specific ranges
+
+**Baseline: 80% range = +-1.2816 x (prior-90d daily vol x sqrt(20)), no events or tags,
+scored on |20d abnormal move| for events 2019-2026.** Coverage by year (n): 2019 83.4%
+(675), 2020 83.2% (668), 2021 81.0% (675), 2022 86.7% (532), 2023 78.8% (557), 2024
+78.9% (582), 2025 80.5% (691), 2026 77.3% (361); n-weighted ~81.4% (hand-computed).
+Walk-forward empirical version (80th pct of scaled moves from earlier years; multiplier
+1.16-1.21): coverage 81.4/76.1/84.4/75.9/75.9/78.6/75.3% for 2020-26, ~78.4% overall,
+undercovers in 2023-26 (hypothesis, untested: scaled moves rose over time). Caveats:
+outcome is abnormal vs SPY but vol is raw stock vol (ranges probably a bit
+conservative); sqrt(20) assumes independent daily returns; 2019+ outcomes were seen
+while exploring, so this is a baseline, not a clean test.
+
+**Tag-specific ranges (train events <= 2012, test 2013+, tags with >= 30 train events,
+80th percentile of scaled 20d move vs global):** a first attempt limited prices to
+2018-09+ and left almost no tagged events (only same_entity_sequence qualified, n_test
+41) -- my query error. Corrected run: confounded_macro_conditions width ratio 1.04,
+n_test 19, coverage tag 84.2% vs global 78.9%; multi_stage_divestiture 1.15, n_test 38,
+81.6% vs 76.3%; same_entity_sequence 1.06, n_test 192, 83.3% vs 80.7%. No tag range is
+narrower than the global one; higher coverage reflects wider ranges. Leak rate (share of
+descriptions mentioning abnormal/price reaction/stock reaction) 0-5.7%. Six of the
+nine tags had < 30 pre-2013 events and were not tested. Conclusion: volatility sets the
+size of the range; tags do not tighten it at the 80% level. Not tested: skew, tails,
+direction, or conditioning on the day-0 move. Status: negative result, with small
+samples for two of three tags.
+
+**Combination testing (next, pre-registered approach):** individual features are weak, so
+combinations are worth trying, but only with a short pre-declared list, out-of-sample
+scoring against the plain-volatility baseline, and a running count of every combination
+tried. The existing multi_feature_model scripts already combined event_type, sentiment,
+regime, firm_state and storm tier (direction stayed null). The validated magnitude model
+(+9.2 to +13.4pp) must be re-scored against a realized-volatility-only baseline and
+without the future-looking storm feature (storm_tier uses +-40-day neighbors).
