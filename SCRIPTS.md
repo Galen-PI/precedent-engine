@@ -2608,3 +2608,47 @@ sat idle on the network for 25+ minutes.
 
 **Process note:** piping a long run through `| tail -N` hides all progress until
 the process exits; use `| tee file.log` instead.
+
+### 2026-10-13 (late) — Do events carry magnitude information beyond volatility? (neighbor-magnitude result retracted; small event premium, inconclusive)
+
+Definitions: "abnormal move" = stock return minus SPY return, adjusted_close, from
+the close before the event day to 20 trading days after it. "Scaled move" =
+|20d abnormal return| / (prior-90-day daily return stddev x sqrt(20)); 1.0 = a move
+as large as the stock's own normal 20-day wobble. 2019+ events/dates only (needs
+90 prior days of prices, min 30 return observations).
+
+**Volatility terciles (static company vol, 2019+ prices):** neighbor-magnitude gap
+(>=10% bucket vs none) was 1.9 / 6.5 / 7.6 pts by tercile -- survived a static control.
+**Event-level realized volatility (prior 90d) terciles: the pre-registered survive
+rule FAILED.** Gaps -1.4 pts (n=14 in the >=10% cell), +1.7 (n=35), +7.0 (n=146).
+75% of the >=10% bucket sits in the most volatile tercile.
+**Scaled-move test:** none 0.797 (n=3,304), <5% 0.824, 5-10% 0.730, >=10% 0.725
+(n=195, SE 0.053). The >=10% bucket is ~0.07 BELOW none (z ~ -1.3). Conclusion: the
+storm / neighbor-magnitude effect does not survive a time-varying volatility control
+in this check. The original "storm/compounding validated" finding normalized each
+company against its "own baseline" (per the 09-24 transcript; code not re-read), which
+appears static. That control is weaker than prior-90d realized vol. This does NOT
+prove the original finding wrong (this test covers 2019+ only), but it is no longer
+confirmed under the stricter control.
+
+**Retraction:** I suggested the events' mean scaled move (~0.80) matching E|Z| = 0.798
+meant events look like ordinary random-walk moves. The random-date baseline is 0.753,
+so that match was a coincidence. Retracted.
+
+**Random-date baseline (n=3,998, 2019-2026, random company/date, no event):** mean
+scaled move 0.753 (SE 0.011), but it varies by year (0.63 in 2020 to 0.95 in 2026).
+**Event vs random by year** (gaps/SEs computed by hand from the two result tables):
+2019 +0.064, 2020 +0.116, 2021 +0.009, 2022 -0.035, 2023 +0.103, 2024 -0.001,
+2025 +0.044, 2026 +0.005. Inverse-variance pooled gap ~ +0.037 (SE ~0.015, ~5% more
+movement), heterogeneity p ~ 0.14. Positive in 6 of 8 years, but 2019/2020/2023 supply
+most of it. Falls in the middle band of the thresholds set in advance (noise +-0.03,
+real >= 0.05): INCONCLUSIVE. Naive SEs treat events as independent; events cluster in
+time, so true uncertainty is larger. Event sample is also selected (needs a ripple
+row, and something must have happened for an event to exist).
+
+**Takeaways:** (1) prior realized volatility explains most of how large the next
+20-day move is; (2) events plausibly add a small premium on top (few %), unproven;
+(3) direction remains null everywhere tested. **Next:** tag-level scaled-move
+comparison against the same-year random baseline (also fixes the problem that the
+6 "significant" tags were tested against an even 1/3 split instead of the base-rate
+null), with 13 tags treated as 13 comparisons.
