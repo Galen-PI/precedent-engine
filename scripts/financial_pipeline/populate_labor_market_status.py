@@ -162,6 +162,18 @@ def main():
         print("DRY RUN -- nothing written. Pass --live to write.")
         return
 
+    # REVERTED (2026-10-08): batched upsert() is NOT a safe substitute for
+    # per-row update() here -- upsert() replaces the WHOLE row, not just
+    # the listed columns, and a real production error confirmed this:
+    # Supabase returned a failing-row dump showing every other column
+    # (event_id, entity_id, firm_state_label, etc.) set to NULL except
+    # the 3 fields in the payload. The batch happened to fail atomically
+    # on a pre-existing orphaned row (NULL event_id, a genuine prior data
+    # issue, not caused by this script) before anything was written, so
+    # no real corruption occurred -- confirmed directly via SQL -- but a
+    # batch that didn't hit a NOT-NULL violation would have silently
+    # wiped out every other column on those rows. Back to safe,
+    # isolated per-row update() -- slower, but correct.
     written = 0
     for r in rows:
         supabase.table("event_pre_context").update({
