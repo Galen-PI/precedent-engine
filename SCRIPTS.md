@@ -2268,3 +2268,30 @@ rows tagged "punished" sitting in this table, which looks like it may
 not belong there at all (that's a reaction_character tag, not a Tier 4
 suggestion category) -- worth a quick look Monday alongside the real
 review work.
+
+### 2026-10-13 — two real oddities from the pre-Phase-6 audit cleaned up
+**12 MALFORMED rows**: not actually malformed in a harmful sense -- the
+AI's real response put substantive, coherent reasoning AFTER an empty
+array ([], meaning "no tag applies"), which a parsing bug mislabeled as
+the literal string "MALFORMED" instead of reading it as a legitimate
+no-tag judgment. 6 of 12 already had a correct human_decision (5
+rejected, 1 confirmed for a genuine multi_stage_divestiture case),
+confirming a human had already seen past the label and judged the real
+content correctly. Fixed: 4 of 12 were genuine duplicates (the same
+event already had a separate, correctly-labeled NONE_APPLICABLE row) --
+deleted those. Relabeled the remaining 7 to NONE_APPLICABLE (matching
+their real "[]" content) and the 1 divestiture case to
+multi_stage_divestiture. Marked the 1 still-unreviewed row (after
+dedup) as reviewed/rejected, consistent with the others.
+
+**4 "punished" rows**: confirmed these were a genuine category error --
+reaction_character tags (rewarded/punished/muted/diverged_from_fundamentals)
+are computed deterministically from real price data by
+tag_reaction_character.py, and should never be AI-suggested from text
+alone. 3 of 4 were already correctly rejected by a human; rejected the
+4th for consistency. Checked the root cause: the CURRENT
+suggest_event_tags_batch.py already has a real, structural fix for this
+(an explicit REACTION_CHARACTER_TAGS exclusion list that filters these
+out of the candidate list entirely, not just a prompt instruction) --
+these 4 rows predate that fix. Nothing further needed; this can't
+recur with the current script.
