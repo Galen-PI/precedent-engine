@@ -4,7 +4,7 @@ test_pattern_significance.py
 For every tag in the taxonomy (except reaction_character itself and
 chain_position, which is tested separately below), pulls its
 rewarded/punished/muted breakdown and runs a chi-square goodness-of-fit
-test against an even 1/3-1/3-1/3 null hypothesis. Persists the result
+test against an even 1/4-1/4-1/4-1/4 null hypothesis (4-way: rewarded/punished/muted/diverged_from_fundamentals). Persists the result
 into pattern_significance_tests so every future query can filter to
 "only genuinely significant findings" instead of re-deriving this by
 hand each time.
@@ -50,9 +50,18 @@ def get_reaction_counts(tag_name: str) -> dict:
         return {}
     tag_id = tag_row[0]["id"]
 
+    # REAL EXPANSION (2026-10-13): now a genuine 4-way split including
+    # diverged_from_fundamentals. Before this, ~2,307 real events upgraded
+    # to diverged_from_fundamentals by backfill_diverged_from_fundamentals.py
+    # fell out of every significance test entirely (this dict only counted
+    # rewarded/punished/muted), silently shrinking n and changing some
+    # results (confounded_regulatory_action flipped from significant to
+    # not-significant as a direct, confirmed consequence) -- a real loss
+    # of signal, not a clean simplification. Decided with Galen to treat
+    # diverged-from-fundamentals as a genuine 4th outcome category.
     reaction_tags = {
         r["name"]: r["id"] for r in supabase.table("tags")
-        .select("id,name").in_("name", ["rewarded", "punished", "muted"]).execute().data
+        .select("id,name").in_("name", ["rewarded", "punished", "muted", "diverged_from_fundamentals"]).execute().data
     }
 
     def all_event_ids_for_tag(t_id: str) -> set:
@@ -78,7 +87,7 @@ def get_reaction_counts(tag_name: str) -> dict:
     # For each reaction tag, fetch its full (paginated) event set and
     # intersect with tagged_event_ids -- exact, no truncation risk,
     # unlike filtering a mixed-tag page by tag_id client-side.
-    counts = {"muted": 0, "punished": 0, "rewarded": 0}
+    counts = {"muted": 0, "punished": 0, "rewarded": 0, "diverged_from_fundamentals": 0}
     for name, rid in reaction_tags.items():
         reaction_event_ids = all_event_ids_for_tag(rid)
         counts[name] = len(tagged_event_ids & reaction_event_ids)
@@ -92,8 +101,8 @@ def run_test(tag_name: str, dry_run: bool = False):
         print(f"  SKIP  {tag_name:35s} n={n} (too small to test meaningfully)")
         return
 
-    observed = [counts["muted"], counts["punished"], counts["rewarded"]]
-    expected = [n / 3] * 3
+    observed = [counts["muted"], counts["punished"], counts["rewarded"], counts["diverged_from_fundamentals"]]
+    expected = [n / 4] * 4
     chi2, p = stats.chisquare(observed, expected)
     significant = bool(p < 0.05)
     dominant = max(counts, key=counts.get)
@@ -108,6 +117,7 @@ def run_test(tag_name: str, dry_run: bool = False):
             "muted_count": int(counts["muted"]),
             "punished_count": int(counts["punished"]),
             "rewarded_count": int(counts["rewarded"]),
+            "diverged_from_fundamentals_count": int(counts["diverged_from_fundamentals"]),
             "chi2_statistic": float(chi2),
             "p_value": float(p),
             "is_significant": significant,
@@ -125,7 +135,7 @@ def main():
     else:
         tags = get_all_taggable_tags()
 
-    print(f"Testing {len(tags)} tag(s) for statistical significance vs an even 1/3-1/3-1/3 null.\n")
+    print(f"Testing {len(tags)} tag(s) for statistical significance vs an even 1/4-1/4-1/4-1/4 null.\n")
     for t in tags:
         run_test(t, dry_run)
 

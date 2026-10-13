@@ -2295,3 +2295,43 @@ suggest_event_tags_batch.py already has a real, structural fix for this
 out of the candidate list entirely, not just a prompt instruction) --
 these 4 rows predate that fix. Nothing further needed; this can't
 recur with the current script.
+
+### 2026-10-13 — Phase 6 kickoff: pattern_significance_tests refreshed, expanded to a genuine 4-way split
+Phase 6 mapping revealed pattern_significance_tests was stale (dated
+2026-09-11, a full month before the much larger current dataset).
+Re-ran test_pattern_significance.py fresh -- immediately found several
+n values had DECREASED despite the dataset growing substantially (e.g.
+high_confidence_causal_link 414->365), and confounded_regulatory_action
+had flipped from significant (p=0.026) to not-significant (p=0.069).
+
+**Real root cause investigated and confirmed, not assumed**: this
+script's reaction-bucket counts only ever included
+rewarded/punished/muted -- diverged_from_fundamentals (built earlier
+this session, 2,307 real events upgraded) was never added to its
+3-way split, so every event upgraded to that tag silently fell OUT of
+every single significance test entirely. Confirmed via direct code
+read (get_reaction_counts()'s reaction_tags dict), not guessed.
+
+**Real, deliberate fix, decided with Galen**: expanded this to a
+genuine 4-way split (rewarded/punished/muted/diverged_from_fundamentals,
+1/4 each under the null) rather than leave the 3-way test as a
+"deliberately separate question" -- a real loss of ~2,300 events' worth
+of signal from every test wasn't worth the simplicity. Added
+diverged_from_fundamentals_count to pattern_significance_tests.
+
+**Real, significant result after the fix**: n values recovered to
+match (and slightly exceed) the original pre-upgrade totals, and the
+4-way split genuinely recovered real signal:
+confounded_regulatory_action significant again (p=0.0139), and TWO
+previously not-significant categories are now significant for the
+first time: confounded_corporate_action (p=0.0027) and
+leadership_reversal (p=0.0113). Current, confirmed-fresh significant
+categories: high_confidence_causal_link, same_entity_sequence,
+multi_stage_divestiture, confounded_regulatory_action,
+confounded_corporate_action, leadership_reversal -- 6 of 13 testable
+categories, up from 2 in the original September baseline this project
+had been treating as current.
+
+This is Phase 6's real starting point -- every further Phase 6 finding
+should be checked against this fresh, correctly-scoped significance
+table, not the stale September one.
