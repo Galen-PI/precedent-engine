@@ -2335,3 +2335,36 @@ had been treating as current.
 This is Phase 6's real starting point -- every further Phase 6 finding
 should be checked against this fresh, correctly-scoped significance
 table, not the stale September one.
+
+### 2026-10-13 — Phase 6 harness gap D2 closed: real base rate computed
+Built compute_base_rate.py, closing the "what fraction of random,
+unrelated same-sector days show the same move" gap from the prediction-
+contract review. Samples genuinely random (security, date) pairs from
+the real 32-year, 497-company universe (not tied to any event),
+computes each one's forward abnormal return vs. SPY using the
+identical index-based method tag_reaction_character.py uses.
+
+**Real, significant finding**: at the 20-trading-day window (the one
+most reaction_character tags use), random chance alone produces
+rewarded=33.5%, punished=30.2%, muted=36.3% (n=5,000). This means any
+tag's own observed rewarded/punished rate must be read against this
+real floor, not in isolation -- a tag showing 40% rewarded is only
+~6.5 points of real excess signal above chance, not 40 points. Shorter
+windows show a much higher real muted rate (0d: 90.4%, 1d: 82.4%, 5d:
+61.9%), confirming price moves genuinely need time to develop before
+any signal separates from noise.
+
+**Real infrastructure bug found and fixed along the way, affecting
+both this script and populate_sector_peer_benchmark.py**: the bulk
+market_prices loader used OFFSET-based pagination (.range()) which
+does not scale against this table's real 3.37M rows -- each page
+forces a full re-sort of a growing offset, hitting a genuine statement
+timeout. Fixed with proper keyset (cursor) pagination on the table's
+own indexed id column. Then hit a SECOND real bug from the same fix:
+Supabase/PostgREST silently caps every request at 1,000 rows
+server-side regardless of a larger client-requested .limit() value --
+confirmed via a direct live test (requested 5,000, got exactly 1,000)
+-- the original loop incorrectly treated that capped page as "the last
+page" and stopped after just 1,000 of 3.37M real rows. Fixed by never
+trusting page size to signal "last page" -- only a genuinely empty
+page means pagination is done.
