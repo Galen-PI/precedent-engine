@@ -2500,3 +2500,48 @@ divestiture reputation (Ford's PAG, GE's breakup) repeatedly got
 applied to single, standalone transactions that merely happened at a
 company already known for divesting, rather than genuinely
 documented, separately-timed multi-stage sequences.
+
+### 2026-10-13 — Tier 4 review backlog: ALL REMAINING CATEGORIES CLEARED, backlog now 100% complete
+Pushed through the 8 remaining, genuinely smaller categories (confounded_earnings
+103, cross_entity_ripple 39, leadership_reversal 33, high_confidence_causal_link 33,
+plausible_unconfirmed 32, same_industry_comparison 24, explicitly_not_attributed 24,
+activist_investor_campaign 23 -- 311 rows total) by reading each category close to
+or fully in full, rather than the sample-then-search method used for the four
+much larger categories earlier. Real, category-specific findings:
+
+- confounded_earnings: near-perfect (2 of 110 rejected) -- this tag's real
+  definition (a quantified charge/event landing in the SAME real quarter as
+  earnings) is unusually clean and well-specified, leaving little room for
+  AI over-application.
+- cross_entity_ripple: near-perfect (2 of 52 rejected) -- genuine shared root
+  events (scandals, shared individuals, direct M&A counterparties) are easy
+  to verify textually.
+- leadership_reversal: 11 of 43 rejected -- recurring tell was "this is a
+  planned succession, not a reversal" (the AI repeatedly suggested the tag
+  for ordinary generational handoffs).
+- high_confidence_causal_link: near-perfect (5 of 79 rejected, pre-existing).
+- plausible_unconfirmed: 0 of 32 rejected -- real, important distinction from
+  every other category: this tag's whole DEFINITION is "plausible but not
+  independently confirmed," so honest hedging is the CORRECT application
+  here, not a reject signal like it is everywhere else.
+- same_industry_comparison: 3 of 24 rejected -- isolated verdicts/events with
+  no actual named comparison point.
+- explicitly_not_attributed: 13 of 24 rejected -- the largest real error rate
+  of these 8 (~54%), with a genuine, subtle category confusion found: several
+  rows argued the OPPOSITE of what the tag requires (the event itself IS the
+  real driver of the reaction, not something price reaction should be
+  redirected AWAY from) -- rejected those specifically as a real logic
+  inversion, not just generic uncertainty.
+- activist_investor_campaign: 4 of 23 rejected -- the tell here was simply no
+  named activist investor/fund in the event text.
+
+Also found and fixed 3 more leftover "punished" category-error rows (same
+real issue resolved earlier this session -- reaction_character tags should
+never be AI-suggested from text) that the earlier direct check had missed.
+
+**REAL, FINAL STATE**: event_tag_suggestions now has zero unreviewed rows
+across all 13 real tag-suggestion categories (the only remaining unreviewed
+rows are 9 legitimate NONE_APPLICABLE conclusions, which don't require the
+same confirm/reject treatment). The entire Tier 4 backlog flagged during the
+pre-Phase-6 audit (~4,660 rows, later found to be ~5,223 once fully
+enumerated) is now closed.
