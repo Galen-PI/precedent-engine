@@ -2474,3 +2474,29 @@ cleared so far (~1.7%), consistent with "the event is explicitly tied
 to a real, named macro/crisis period" being a genuinely easier,
 cleaner judgment than the other three categories' more subtle
 attribution-boundary questions.
+
+### 2026-10-13 — Tier 4 review backlog: multi_stage_divestiture fully cleared (448 rows, 100%)
+Same systematic method, unusually high real error rate given this
+tag's genuinely strict definition (MULTIPLE distinct, separately-timed
+divestiture events -- not a single transaction, however large or
+complex). Low-confidence (84, the largest low bucket of any category
+this session): 25-row sample came back 25/25 self-rejecting, bulk-
+rejected the entire bucket on that strength. High-confidence (115):
+25-row sample, 24 genuinely strong (real, specific, multi-year
+sequences -- GE's three-way split, Ford's PAG breakup, AIG's phased
+AIA/ALICO exits), 1 speculative miss rejected. Mid-confidence (177):
+targeted search for the category's own tell -- "however, this is a
+single coordinated transaction rather than multiple distinct events"
+-- caught 27 genuine errors across three passes, several explicitly
+admitting "this single event itself is not multi-stage." A final
+40-row sample came back 35/40 clean, 5 more subtler misses found
+before bulk-confirming the rest.
+
+**Real, final result**: 128 rejected, 320 confirmed -- 448 total, 100%
+reviewed. Highest real error rate of the four categories cleared this
+session (~29%), consistent with this tag's narrow definition inviting
+the most generous AI suggestions -- a company's own ongoing, broader
+divestiture reputation (Ford's PAG, GE's breakup) repeatedly got
+applied to single, standalone transactions that merely happened at a
+company already known for divesting, rather than genuinely
+documented, separately-timed multi-stage sequences.
