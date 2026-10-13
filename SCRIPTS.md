@@ -2452,3 +2452,25 @@ reviewed. Core lesson, distinct from confounded_regulatory_action's
 "stands alone" tell: this category's AI repeatedly conflates the
 primary corporate action itself with a confound to something else --
 same underlying category-error pattern, different tag.
+
+### 2026-10-13 — Tier 4 review backlog: confounded_macro_conditions fully cleared (598 rows, 100%)
+Same systematic method. Low-confidence (5): 4 rejected (no explicit
+macro bundling named), 1 confirmed genuine (downgrade explicitly quoted
+"market conditions already reflected in publicly available
+information" -- real textual basis despite not naming a single discrete
+event). High-confidence (325, the largest single bucket sampled this
+session): 30 read, all genuinely strong (real financial-crisis periods,
+named CPI/jobs/PCE releases, 9/11, COVID, specific geopolitical shocks)
+-- bulk-confirmed. Mid-confidence (152): a 60-row sample (the largest
+single sample this session) came back 57/60 clean -- found 3 genuine
+misses (one admitting no specific date/context to assess; one circular
+case where the company's own statement WAS directly about the macro
+event, not confounded by a separate one; one hedging both directions
+speculatively) -- rejected those, bulk-confirmed the rest.
+
+**Real, final result**: 7 rejected, 591 confirmed -- 598 total, 100%
+reviewed. This category had the lowest real error rate of the four
+cleared so far (~1.7%), consistent with "the event is explicitly tied
+to a real, named macro/crisis period" being a genuinely easier,
+cleaner judgment than the other three categories' more subtle
+attribution-boundary questions.
