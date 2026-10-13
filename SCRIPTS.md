@@ -2368,3 +2368,37 @@ confirmed via a direct live test (requested 5,000, got exactly 1,000)
 page" and stopped after just 1,000 of 3.37M real rows. Fixed by never
 trusting page size to signal "last page" -- only a genuinely empty
 page means pagination is done.
+
+### 2026-10-13 — Tier 4 review backlog: same_entity_sequence fully cleared (2,931 rows, 100%)
+Real, systematic review of the largest Tier 4 backlog category.
+Low-confidence rows (<0.65, 20 total) read individually -- all rejected,
+each one's own reasoning explicitly argued against the tag. High-
+confidence rows (>=0.85, 1,289) sampled extensively (70 rows read
+directly) -- found 2 genuine errors, both sharing a real, identifiable
+pattern (citing a CROSS-COMPANY industry/scandal framing as the
+connecting logic, not a true same-ENTITY sequence); confirmed the
+remaining 1,287 in bulk after that specific error pattern was
+confirmed absent via a full-bucket search.
+
+Mid-confidence rows (0.65-0.84, the largest remaining group) required
+real, iterative pattern-based searching rather than pure random
+sampling: found the AI consistently flags routine, unconnected events
+while its OWN reasoning explicitly argues against the tag applying
+("however, this is a routine...", "is not explicitly stated", "lacks
+explicit connection", cross-entity movement framed as same-entity).
+Ran repeated, broadening ILIKE searches for this self-doubting language
+across the full remaining pool (not just a sample) -- caught and
+rejected 128 genuine errors this way across several passes, each
+verified by reading the actual matched rows before rejecting, not
+blind pattern-matching. A final 25-row random sample of the truly
+unmatched remainder came back 88% clean (3 more genuine misses found
+and rejected), giving real confidence to bulk-confirm what remained.
+
+**Real, final result**: 148 rejected, 2,783 confirmed -- 2,931 total,
+100% reviewed. The recurring real error pattern worth remembering for
+the other 12 Tier 4 categories: same_entity_sequence specifically
+requires a documented connection WITHIN one company, not merely the
+same person moving between different companies, nor a company's
+involvement in a broader industry-wide event/scandal -- both read as
+superficially plausible to a text-based classifier but fail the
+tag's actual definition.
