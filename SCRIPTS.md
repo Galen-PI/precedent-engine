@@ -2652,3 +2652,59 @@ row, and something must have happened for an event to exist).
 comparison against the same-year random baseline (also fixes the problem that the
 6 "significant" tags were tested against an even 1/3 split instead of the base-rate
 null), with 13 tags treated as 13 comparisons.
+
+### 2026-10-13 (night) — The three old Phase 6 threads, worked and parked
+
+**Time-to-threshold (punishment-speed asymmetry): NOT time-stable.** By period, falling
+vs rising confidence_trend, mean days to first cross of -3% (events that crossed):
+2020-22 9.1 vs 11.1; 2022-24 8.4 vs 11.7; 2024-26 9.8 vs 9.2 (gap rising minus falling:
++2.0, +3.3, -0.6 days). Crossing rates (falling vs rising): 69.6/66.5, 68.1/68.3,
+70.4/71.1 -- about 1 SE (~3 pts) of noise in each period. Reward side (+3%): gaps
+-0.5, +2.1, -1.8 days, so no stable mirror asymmetry either. Policy-stance cross: the
+same "hiking" label gives opposite signs in two periods (2022-24 falling+hiking median 7
+vs rising+hiking 9; 2024-26 falling+hiking 11 vs rising+hiking 7); only 32 rate
+changes exist, and in 2020-22 every event got the single label "cutting", so there was
+nothing to cross. The confidence label is likely monthly (get_confidence_by_month, not
+re-read), so effective n is ~24 months per period; naive SEs are far too small. Day
+gaps above are hand-computed from the printed results. Status: parked, not disproven.
+Note: the 2024-26 run used end date 2026-07-01 to avoid counting events with incomplete
+39-day windows as "never crossed".
+
+**storm_x_sentiment (walk_forward_sentiment_by_storm.py), cutoffs 2020/2022/2024.**
+Muted-share hit rate vs baseline, NEGATIVE-sentiment cells: 2020 isolated 35.9% vs 45.4%
+(n=64), storm 37.0% vs 46.7% (n=100); 2022 isolated 37.8% vs 46.2% (n=37), storm 48.5%
+vs 49.0% (n=33); 2024 isolated 37.5% vs 45.5% (n=16), storm 50.0% vs 48.2% (n=14). The
+cutoffs are nested (later test sets are subsets of earlier ones), so these are not
+independent replications; 2020 is the cleanest. Every other cell is within ~1 SE of
+baseline. The docketed "+10.5pp" is probably this cell expressed as non-muted share (my
+inference; original run not seen). Storm labels use +-40-day neighbors including future
+events, so they are not knowable at event time.
+**Direct volatility-controlled test:** scaled 20d move (|20d abnormal| / (prior-90d daily
+vol x sqrt20)) by sentiment bucket (negative < -1, positive > 1 on 7-day avg tone),
+2019-2026: negative 0.836 (n=342, SE 0.042), neutral 0.809 (n=1,473, SE 0.019), positive
+0.793 (n=1,081, SE 0.023). Negative minus neutral +0.026 (SE ~0.046, z ~0.6). FAILS the
+pre-set rule (>= +0.10 and positive in >= 5 of 7 years; 8 years present, positive in 4).
+Precision-weighted within-year gap ~ -0.024 (SE ~0.039); heterogeneity p ~ 0.18 (all
+hand-computed from the printed table). Sign: negative in 2019-22 (-0.05 to -0.09),
+positive in 2023-26 (+0.16 to +0.59) but 2023+ negative cells are n=17-29. Excludes a
+scaled-move boost above ~+0.12 (naive SEs); smaller or period-specific effects are not
+excluded. Status: parked.
+
+**Cascade Effect: case studies only.** Keyword pool (title+description; "in response to",
+"following", "forced", "mandated", "compelled", "as a result of", "amid"): 1,374 of
+19,892 events (following 1,084; in response to 137; amid 119; as a result of 32; forced
+22; mandated 20; compelled 0). The original sizing was 374 of 16,746 events; reason for
+the difference is unknown (the original query was not recovered). Read the 74 non-
+"following" matches by title/short description: ~35-40 externally triggered but nearly
+all shared-cause (Hop 1: TCJA charges, TARP, bank-regulator actions, Venezuela, COVID,
+SVB) which comparison_signal already covers; ~30 self-caused; ~3-5 genuine Hop-2
+candidates. Company-name matching on entities.name (148 event-company pairs) is mostly
+noise (common-word names, exchange listing notices, one-deal counterparties); ~8-10
+plausible A->B cases judged from titles alone (UPS CEO -> Tomé leaves Cisco board; Liddy
+named AIG CEO -> leaves Boeing board; ON Semi exits joint proposal -> Microchip withdraws
+Atmel offer; Comcast/TWC collapse -> Charter terminates agreement; Avianca downgrade ->
+United default disclosure). Too few for a statistical test.
+
+**Operational:** restarting background jobs with `&` while the originals were still
+alive created duplicates and truncated their log files (`>`); use unique per-run log
+names and check `ps` before relaunching.
