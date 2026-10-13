@@ -2429,3 +2429,26 @@ reviewed. Core lesson for this category: distinguishing "this IS a
 regulatory action" from "this regulatory action landed ALONGSIDE
 another material event" is the whole ballgame -- a regulatory ruling
 standing alone, however material, does not qualify.
+
+### 2026-10-13 — Tier 4 review backlog: confounded_corporate_action fully cleared (380 rows, 100%)
+Same systematic pattern-search discipline. Low-confidence (18): 16
+rejected (each explicitly stating "this IS the corporate action itself,
+not a confound alongside something else" -- the category's own
+recurring tell), 2 confirmed genuine (CFO appointment bundled with a
+Microsoft arbitration dispute; CFO departure bundled with a segment
+reporting change). High-confidence (34): sampled 25, all genuinely
+clean, bulk-confirmed. Mid-confidence (bulk, ~325): targeted search for
+self-doubting language ("category error", "should not apply", "removing
+this") caught 13 genuine errors across two passes -- several strikingly
+explicit ("Removing this tag", "Excluding this tag", literally the
+model correcting itself mid-reasoning). A final 60-row random sample of
+the unmatched remainder found 3 more subtler misses (speculative "may
+have been bundled" language, and the offering's own internal effects
+mistaken for a second event) before coming back clean enough to
+bulk-confirm the rest.
+
+**Real, final result**: 32 rejected, 348 confirmed -- 380 total, 100%
+reviewed. Core lesson, distinct from confounded_regulatory_action's
+"stands alone" tell: this category's AI repeatedly conflates the
+primary corporate action itself with a confound to something else --
+same underlying category-error pattern, different tag.
