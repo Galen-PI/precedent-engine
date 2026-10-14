@@ -2984,3 +2984,20 @@ overlap ratio is constant; dry run JPM 1.00496, A 1.00149, AMT 1.01070, ES 1.011
 Real run started 17:37 (stale tickers 94 -> 89 at 17:40). Large-move scan since 2026-09-01 looks like
 sector-correlated real moves (CRWD/PANW 09-14, GLW/COHR 09-14); PTC +33.5% (10-05) and FICO -26.5% (09-29)
 unverified. Codespace restarted 16:54 (jobs killed); classifier is restartable.
+
+### 2026-10-14 (night) — Prices healed, forward test months 1-2, known gaps
+
+**Price refresh (--splice):** 495 of 497 securities with history current to 2026-10-13. Final tally of the
+splice run: 58 spliced, 14 ok, 424 already fresh, 1 restated (CTVA, max_dev 0.84996), 73 requests; seams
+checked (ES 09-11 -0.7%, JPM 09-29 -0.5%). KNOWN GAPS: EA (vendor needs a higher plan tier; taken private
+2026-08), AVB (vendor 404; merger closed 2026-08), WBD (last price 2026-10-06), CTVA (refetched 2019-01-01..
+2026-10-13, 1,856 rows; backup table market_prices_backup_ctva_20261014, 1,846 rows). CTVA stored vs fresh
+adjusted_close ratio ranges 6.66-11.05 across 2019-05-24..2026-09-28 with steps of 1.5-3% on dates that look
+like ex-dividend days -- not explained; CTVA excluded from analyses until a return-series comparison (corr,
+mean abs diff) is checked. HON's +40.2% one-day jump on 2026-06-29 may be a similar adjustment seam (untested).
+**Forward test (frozen method v1_6mo_recal_2026-10-14), after repairing prices and reloading vol_estimators
+from 2026-08-01 (15,297 rows, 490-493 stocks/day):** Aug 2026: n=10,363, k=1.523, recalibrated coverage 92.9%,
+static 80.4%. Sep 1-15: n=4,934, k=1.378, recalibrated 83.9%, static 71.3%. Pooled recalibrated ~90.0%, static
+~77% (hand-computed). Original pass rule (>= 6 months, pooled 76-84%, at most 1 of 6 months outside 70-90%):
+August used the one allowed miss; two months decide nothing. The earlier August figure (93.0%, n=9,833) was
+computed on incomplete prices and is superseded. Amended 12-month rule still proposed, NOT adopted.
