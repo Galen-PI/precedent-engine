@@ -2875,3 +2875,19 @@ one walk-forward path, two windows tried, monthly update granularity.
 **Current design of the range:** +- k_t * v64 * sqrt(20), k_t = trailing 6-month 80th percentile
 of scaled moves lagged >= 1 month; separate small event premium (~ +5% scaled move, ~1.4 pts of
 coverage on event days) not yet combined into the range.
+
+### 2026-10-14 (night) — Range tool built; method FROZEN as v1_6mo_recal_2026-10-14
+
+scripts/models/range_card.py TICKER [--asof DATE] [--event]: 80% range for the stock's return
+relative to SPY over 21 trading days after the last close = +- k * v64 * sqrt(20), v64 = stddev of
+the last 64 daily returns, k = range_k6(month) (scripts/sql/range_k6.sql; 80th percentile of
+past scaled moves over the 6 months before the prior month, only known outcomes). The "20d"
+outcome window is really close(day before event) -> close(20 trading days after event day) = 21
+trading days of returns; k absorbs the sqrt(20) vs 21-day mismatch. Not a direction forecast.
+The "market flat" price translation understates the real range (SPY's own move is excluded).
+Backtest coverage of the 80% label, 2023-2026: 77.1 / 78.8 / 79.6 / 77.1% (one path).
+FROZEN: no edits to the method; changes get a new METHOD_VERSION and freeze date.
+Forward test (scripts/sql/forward_test.sql): design data used origin days <= 2026-07-31; forward
+sample = origin days >= 2026-08-01, refreshed by appending resolved days to vol_estimators.
+Pre-registered rule (after >= 6 resolved months): pooled coverage 76-84%, at most 1 of 6 months
+outside 70-90%. First month alone is one market episode; read nothing into it.
