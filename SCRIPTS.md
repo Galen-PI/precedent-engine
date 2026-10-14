@@ -2891,3 +2891,24 @@ Forward test (scripts/sql/forward_test.sql): design data used origin days <= 202
 sample = origin days >= 2026-08-01, refreshed by appending resolved days to vol_estimators.
 Pre-registered rule (after >= 6 resolved months): pooled coverage 76-84%, at most 1 of 6 months
 outside 70-90%. First month alone is one market episode; read nothing into it.
+
+### 2026-10-14 (night) — First forward month, and the monthly-coverage distribution
+
+**August 2026 (first forward month, n=9,833 origin days, one market episode):** recalibrated
+(6-month window, k=1.523) coverage 93.0%, static (1.09) coverage 80.8%; interval scores 0.3709
+(recalibrated) vs 0.3276 (static). Likely cause (hypothesis): k comes from Feb-Jul, a turbulent
+stretch, and August was calm, so ranges were too wide (the lag measured in the backtest).
+**Backtest distribution of monthly coverage (recalibrated):** 2019-22: 41 months, 15 outside
+70-90%, mean 79.5%, sd 12.3, range 44.9-99.4. 2023-Jul 2026: 43 months, 10 outside (23%), mean
+78.2%, sd 8.2, range 52.8-94.0; static was outside in 12 of 43. August's 93.0% is ~1.8 sd
+above the 2023-26 mean and inside its observed range.
+**Original forward-test rule (pooled coverage 76-84% after >= 6 months, at most 1 of 6 months
+outside 70-90%): August is outside 70-90%, so it consumed the one allowed miss.** A method equal
+to the backtest passes that rule ~57% of the time before August and ~27% after (rough,
+independent-month assumption). The 23% monthly miss rate was above the pre-set 20% "rule too
+strict" line.
+**PROPOSED amendment (written AFTER seeing August and this distribution, so post-hoc; the
+original result stays on the record as failed on August):** evaluate 12 resolved months; pass if
+pooled coverage is 74-86%; single months descriptive only. Rough power: ~96% pass for a true mean
+of 78%, ~20% for a true mean of 72% (independent months, sd 8; overlap makes true error larger).
+Method remains frozen at v1_6mo_recal_2026-10-14.
