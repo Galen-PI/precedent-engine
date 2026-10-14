@@ -2814,3 +2814,31 @@ splits. List was capped at 40 rows, so not exhaustive.
 **Status:** overall premium real but small; capital_raise discount a hypothesis;
 corporate_action parked. Next: month-matched baseline (year-matching cannot handle crash
 months).
+
+### 2026-10-14 (late) — Month-matched baseline: the event premium is real but small
+
+Built daily_scaled_move (scripts/sql/create_daily_scaled_move.sql): scaled 20d abnormal
+move for every tracked stock-day 2019-01..2026-07, 920,249 rows, population mean 0.7448
+(consistent with the earlier random-date sample, 0.753 +- 0.011). The earlier year-matched
+random-date baseline was noisy (e.g. 2020: 0.633 random sample vs 0.710 population; 2021:
+0.799 vs 0.747), so population values replace it.
+**Event premium vs month-matched population mean (non-bundled events, n=4,498):** +0.0407,
+paired SE 0.0106 (z~3.8, naive). By year: 2019 +0.064, 2020 +0.034, 2021 +0.053, 2022
++0.016, 2023 +0.072, 2024 +0.023, 2025 +0.037, 2026 +0.008 -- all 8 years positive.
+**Cluster-robust check (SE across 91 months):** mean month excess +0.0364, SE 0.0112
+(z~3.2), n-weighted excess +0.0407, 57 of 91 months positive (62.6%; sign test ~2.4 SE).
+Windows overlap across adjacent months and companies recur, so true uncertainty is still a
+little larger. Passed pre-set rules (>= +0.02 with z >= 2; >= ~60% months positive).
+Survived: realized-vol scaling, bundled-event exclusion, month-matched baseline, clustering
+check. Size: ~ +0.04 on a base of ~0.75, i.e. ~5% larger moves on event days.
+**Coverage at the 1.2816 multiplier (event days vs all stock-days, by year):** 2019
+83.6/85.2, 2020 84.4/85.6, 2021 81.3/83.7, 2022 86.8/87.9, 2023 79.8/84.7, 2024 79.5/79.7,
+2025 80.7/82.1, 2026 76.7/74.0 (2026 is ~7 months). Gap -1.7/-1.2/-2.3/-1.1/-4.9/-0.2/-1.3/
++2.7 points; n-weighted ~ -1.4 pts (hand-computed), naive SE ~0.6. Pre-set rule: >= 3
+points in most years would justify an event-day multiplier; < 1.5 would not. Result sits
+just under 1.5 -> not worth a separate event-day range at this level. The year-to-year
+coverage swing for ALL days (74.0% to 87.9%) is ~10x larger than the event effect;
+hypothesis (untested): a single 64-day volatility estimate lags regime changes. Next:
+compare volatility estimators (20d, 64d, 250d, EWMA, blends) on calibration stability and
+width; rerun the event-type table on this baseline (the earlier by-type month-matched
+output was not captured).
