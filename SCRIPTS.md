@@ -2935,3 +2935,21 @@ Test run: 100 filings, 51 flagged, ~$0.067 at Haiku 5.5 rates by token counts (t
 is stale Haiku 4.5 batch pricing). NOT repaired: AI fields on rows already overwritten before the
 trigger existed; unreviewed rewritten rows may have lost review flags. Pending: recover the Oct 14
 batch with guards, rerun the full ~47,473 backlog, disable the nightly workflow in the GitHub UI.
+
+### 2026-10-14 (night) — Event types vs MONTH-matched population baseline
+Same as the year-matched event-type table but expected = mean scaled move of ALL tracked stock-days
+in the event's calendar month (daily_scaled_move). Non-bundled events, 2019-2026-07, types with >= 100
+events. n / excess (SE): corporate_action 233 / +0.128 (0.056, z~2.3); restructuring 162 / +0.061
+(0.059); strategic_partnership 162 / +0.047 (0.052); acquisition 1,172 / +0.043 (0.019, z~2.2);
+leadership_change 1,754 / +0.033 (0.017, z~1.9); legal_settlement 161 / +0.028 (0.059);
+financial_result 184 / +0.021 (0.046); regulatory 235 / +0.008 (0.042); capital_raise 229 / -0.057
+(0.043, z~-1.3). Pre-set bars: corporate_action (>= +0.10 AND ~3 SE) FAILS (best of 9 types reaching
+z 2.3 by chance ~9%); capital_raise (<= -0.08 AND z <= -2) FAILS -- it was -0.110 (z~-2.4) on the
+year-matched baseline, month-matching absorbed about half (capital raises cluster in quieter
+months). Precision-weighted common excess ~ +0.033; heterogeneity Q ~ 8.3 on 8 df, p ~ 0.4
+(hand-computed): the nine types are consistent with ONE small premium. Naive SEs (events appear under
+several types and cluster in time). Conclusion: event type adds nothing beyond the overall premium;
+capital_raise hypothesis retired; corporate_action stays parked. Plan: once the classification backlog
+(47,473 filings) and review queue are processed, rerun the overall premium, this table, and the
+tag-range test UNCHANGED on the larger event set (pre-registered replication: premium near +0.04 means
+completeness did not matter; < +0.02 or > +0.08 means it did).
