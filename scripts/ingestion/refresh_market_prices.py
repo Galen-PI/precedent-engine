@@ -34,6 +34,11 @@ API_KEY = os.environ["TWELVE_DATA_API_KEY"]
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 PACE_SECONDS = 8.0  # plan limit is 8 requests per minute
 
+# Twelve Data uses dots for dual-class tickers; our database stores dashes. Translate ONLY at the
+# API call (same map as bulk_ingest_prices.py). Added 2026-10-14: without it BRK-B and BF-B
+# returned HTTP 404 and silently stopped updating on 2026-09-10.
+TWELVE_DATA_SYMBOL_OVERRIDES = {"BRK-B": "BRK.B", "BF-B": "BF.B"}
+
 
 def api_usage():
     return requests.get("https://api.twelvedata.com/api_usage",
@@ -44,7 +49,7 @@ def fetch(ticker, start, end):
     for attempt in range(3):
         try:
             r = requests.get("https://api.twelvedata.com/time_series", timeout=60, params={
-                "symbol": ticker, "interval": "1day", "start_date": start, "end_date": end,
+                "symbol": TWELVE_DATA_SYMBOL_OVERRIDES.get(ticker, ticker), "interval": "1day", "start_date": start, "end_date": end,
                 "adjust": "all", "outputsize": 5000, "apikey": API_KEY})
         except requests.RequestException:
             time.sleep(10)
