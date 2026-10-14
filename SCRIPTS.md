@@ -2768,3 +2768,49 @@ Baseline note: M0 is 42-44% (< 50%) because the share of "large" moves shifted b
 train and test periods; hindsight majority in the test years is ~56-58%, at or above
 M1-M4 (54-57%). The original +9..+13 lift was therefore measured against a baseline
 degraded by base-rate drift, which a volatility feature absorbs automatically.
+
+### 2026-10-14 — Event types vs random dates (scaled 20d move); bundled-event correction; data flags
+
+Scaled move = |20d abnormal return| / (prior-90d daily vol x sqrt(20)), from
+event_realized_vol; expected = random-date mean for the same YEAR (0.7026, 0.6327, 0.7994,
+0.7051, 0.6995, 0.8408, 0.7762, 0.9527 for 2019-2026; ~500 random company-days per year,
+treated as fixed, so SEs are optimistic). Events with a type appear once per type.
+**Event-type table (first run, bundled events included):** corporate_action n=288, excess
++0.186 (SE 0.059, z~3.1); restructuring +0.068; strategic_partnership +0.066;
+legal_settlement +0.040; acquisition n=1,213 +0.037; leadership_change n=1,862 +0.032;
+regulatory -0.004; financial_result -0.016; capital_raise n=229 -0.110 (z~-2.4). Nine
+types tested (types with >= 100 events), so ~1 of 9 reaching z~2.4 is expected by chance.
+**corporate_action checks:** positive excess in 7 of 8 years; year-adjusted excess ~ +0.11
+(z~2.4, hand-computed); the earnings split is uninformative (only 2 of 288 events carry
+confounded_earnings). Bucket contents (random sample of 30): ~9 splits (incl. reverse),
+~6 dividend increases, ~4 buyback authorizations, ~5 tender/debt actions, ~2 spin-offs,
+~4 mixed. Tail check vs all other events: mean 0.937 vs 0.783, median 0.676 vs 0.600
+(+0.077), mean excluding top 5% 0.756 vs 0.671 (+0.085) -- borderline vs the pre-set 0.08.
+Top-15 scaled events were mostly BUNDLED SUMMARY events (e.g. "Intel's real 2026 activity",
+"Ford's South American and Indian manufacturing exit saga"), COVID-crash timing (MGM
+2020-02-13, AIG 2020-02-25, Delta 2020-03-12: vol measured in the calm before, crash inside
+the window), and two GE events sharing one price move.
+**Rerun excluding events in event_component_dates:** corporate_action n=233, excess +0.125
+(SE 0.058, z~2.2) -> FAILS the pre-set bar (>= +0.10 AND ~3 SE); parked, unconfirmed.
+restructuring +0.068 (n=162), strategic_partnership +0.049 (162), legal_settlement +0.048
+(161), acquisition +0.045 (n=1,172, z~2.2), leadership_change +0.034 (n=1,754, z~1.9),
+regulatory -0.008, financial_result -0.016, capital_raise -0.110 (n=229, unchanged, z~-2.4).
+**Overall event premium (non-bundled, 2019-2026, n=4,498): +0.0376 (SE 0.011, z~3.4)** vs
+the same-year random-date mean; essentially unchanged from +0.037 before the exclusion, so
+bundled events were not driving the average. Events cluster in time; true SE is larger.
+**Which earlier tests excluded bundled events:** excluded (population built from the
+ripple-based d5 CTE): neighbor-magnitude windows, volatility terciles, event-vs-random by
+year. NOT excluded: overreaction, size quintiles, context test, scaled-sentiment test,
+baseline-range coverage, tag-range test, magnitude model (build_dataset default).
+**Data flags:** (1) HON price_date 2026-06-29 shows a +40.2% one-day adjusted_close move
+(136->227 area; 2026-06-25 161.3 -> 227.2): implausible for a mega-cap; suspected
+adjustment/spin-off artifact, unverified. (2) Honeywell event 2025-11-03 has a stored
++50.4% abnormal 20d reaction that cannot be reproduced from market_prices (no daily move
+> 6% in that window); unresolved. (3) Dataset-wide scan of |daily return| > 25% since 2019
+(top 40): mostly recognizable real shocks (PCG Jan 2019, 2020-03-09 energy crash, CVNA, GL
+2024-04-11, BIIB, HOOD, APP, TTD, CNC, DXCM); entries dated after mid-2026 (MRNA +177%
+2026-08-19, FLEX, PSKY, HON) not independently verifiable; no sign of widespread unadjusted
+splits. List was capped at 40 rows, so not exhaustive.
+**Status:** overall premium real but small; capital_raise discount a hypothesis;
+corporate_action parked. Next: month-matched baseline (year-matching cannot handle crash
+months).
