@@ -805,7 +805,7 @@ def print_real_cost_report(usage_totals: dict, num_requests: int):
 # rather than requiring a confirmation per chunk (which would undo the
 # earlier --limit fix's goal of making this less tedious to run).
 REAL_OBSERVED_COST_PER_FILING = 0.00028  # updated for claude-haiku-5-5 (10x cheaper than 4.5: $0.10/$0.50 per MTok vs $1/$5)
-CHUNK_SIZE = 2500
+CHUNK_SIZE = 5000   # fetch dominates; MAX_BATCH_SIZE=2500 splits each chunk into 2 parallel batches
 
 
 def process_one_chunk(chunk_candidates: list[dict]) -> tuple[int, int, int, dict]:
