@@ -133,6 +133,9 @@ def main():
     ap.add_argument("--overlap-days", type=int, default=10)
     ap.add_argument("--tolerance", type=float, default=0.001)
     ap.add_argument("--max-requests", type=int, default=25)
+    ap.add_argument("--splice", action="store_true",
+                    help="append new rows rescaled onto the stored adjustment scale when the overlap ratio is constant")
+    ap.add_argument("--splice-spread", type=float, default=0.0005)
     args = ap.parse_args()
     if not args.tickers and not args.all:
         sys.exit("Give --tickers or --all")
@@ -195,9 +198,23 @@ def main():
         maxdev = max(abs(fresh[d]["adjusted_close"] / stored[d] - 1) for d in common)
         res["max_dev"] = f"{maxdev:.6f}"
         res["status"] = "ok" if maxdev <= args.tolerance else "restated"
+        if res["status"] == "restated" and args.splice:
+            # Added 2026-10-14. A dividend after the last fetch rescales every older adjusted row by a
+            # constant factor, so (stored / fresh) is constant over the overlap. Rescale the NEW rows onto
+            # the stored scale (returns are unaffected) and append. Never touches stored rows. Stock splits
+            # (ratio far from 1) and ex-dates inside the overlap (ratio not constant) stay "restated".
+            ratios = [stored[d] / fresh[d]["adjusted_close"] for d in common if fresh[d]["adjusted_close"]]
+            mean_r = sum(ratios) / len(ratios)
+            spread = (max(ratios) - min(ratios)) / mean_r
+            res["note"] = f"ratio={mean_r:.6f} spread={spread:.6f}"
+            if spread <= args.splice_spread and 0.9 < mean_r < 1.1:
+                for r in new_rows:
+                    r["adjusted_close"] = r["adjusted_close"] * mean_r
+                res["status"] = "spliced"
+                print(f"{t:6s} spliced: ratio={mean_r:.6f} spread={spread:.6f}")
         print(f"{t:6s} last={last} new={len(new_rows)} overlap_days={len(common)} "
               f"max_dev={maxdev:.5f} -> {res['status']}")
-        if res["status"] == "ok" and new_rows and args.apply:
+        if res["status"] in ("ok", "spliced") and new_rows and args.apply:
             for i in range(0, len(new_rows), 500):
                 supabase.table("market_prices").upsert(
                     new_rows[i:i + 500], on_conflict="security_id,price_date").execute()

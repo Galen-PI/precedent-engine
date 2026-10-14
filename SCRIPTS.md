@@ -2953,3 +2953,34 @@ capital_raise hypothesis retired; corporate_action stays parked. Plan: once the 
 (47,473 filings) and review queue are processed, rerun the overall premium, this table, and the
 tag-range test UNCHANGED on the larger event set (pre-registered replication: premium near +0.04 means
 completeness did not matter; < +0.02 or > +0.08 means it did).
+
+### 2026-10-14 (evening) — Audit of the unreviewed "noise" pool; price splice
+
+**Pool audited:** 50,739 unreviewed, unflagged likely_noise filings (before this run's new rows).
+**Rewrite is not the cause of the misses:** rewritten 5.5 rows (n=40): 0 confirmed real, 4 unresolved;
+original 4.5 rows (n=40): 2 real (ES 1997-01-21 loss warning + PSNH bankruptcy risk; OXY 2013-04-29 CEO
+succession + governance overhaul), 4 unresolved. **Concession-language group (40 rows = whole pool):** 4
+clear real (ES; LUV 2019-03-27 guidance cut; EG 2025-01-27 preliminary results, $1.7B reserve
+strengthening; ERIE 2026-05-21 CFO retirement), 4 lean real, 9 unsure, 23 noise. **Template a (warning /
+guidance-cut language, 79 rows read):** 8 clear + 10 lean real. **Template b ($1B+ charge in an earnings
+release, 5 rows):** C 2009-02-27 ($9.6B goodwill impairment) real. **Template c (5.02 + CEO/CFO/Chairman/
+President + departure word; random 40 of ~1,227 pattern hits):** 10 clear real (CFO changes MCO 2018, MSCI
+2019, ALL 2022, D 2018, DGX 2013, CVS 2009, CBRE 2019; Chairman BEN 2013, DG 2026; President PEP 2014) +
+MSCI 2013 COO lean; 95% range ~13-41%. Role-count queries over the 4,300 5.02 noise rows (cfo 756, ceo 824,
+chairman 567, president 810) are inflated by the AI's own boilerplate "(not CEO, CFO, or Chairman)" and
+overlap; not usable as sizes.
+**Prompt (classify_8k_filings_batch_v2.py):** the confirmed-real list already includes "CEO/CFO/Chairman
+appointments or departures", so the model contradicts its own prompt (MCO: "she is EVP, not CEO/CFO/
+Chairman" for the CFO). Differences from the materiality rubric to decide for a v6: "President" absent from
+the real list; guidance revisions via exhibit treated as routine (cuts vs raises not separated); buyback
+authorizations routine regardless of amount (rubric confirms large ones, e.g. CSX ~15% of market cap);
+2.02 in the ALWAYS_ROUTINE prior.
+**Actions:** 62 filings flagged for review with flag_reason audit_2026_10_14_possible_missed_event (flags
+only; no verdicts changed). Prompt NOT edited mid-run (would create two classification regimes). Plan:
+v6 prompt + deterministic guard on filing text for 5.02 role changes + second pass over the 5.02 noise
+rows and guidance/charge hits; snapshot table filing_ai_classifications_snapshot_20261014 keeps old fields.
+**Prices:** refresh_market_prices.py --splice (rescales new rows onto the stored adjustment scale when the
+overlap ratio is constant; dry run JPM 1.00496, A 1.00149, AMT 1.01070, ES 1.01164, all spread 0.000000).
+Real run started 17:37 (stale tickers 94 -> 89 at 17:40). Large-move scan since 2026-09-01 looks like
+sector-correlated real moves (CRWD/PANW 09-14, GLW/COHR 09-14); PTC +33.5% (10-05) and FICO -26.5% (09-29)
+unverified. Codespace restarted 16:54 (jobs killed); classifier is restartable.
