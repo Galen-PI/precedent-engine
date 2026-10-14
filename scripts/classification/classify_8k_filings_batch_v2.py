@@ -75,7 +75,9 @@ ANTHROPIC_HEADERS = {
     "content-type": "application/json",
 }
 
-MAX_BATCH_SIZE = 8000          # per Anthropic batch job, safely under their 10,000 cap
+MAX_BATCH_SIZE = 2500          # per Anthropic batch job. ~43 KB/request (measured 2026-10-14: ~10.7K tokens)
+                               # => ~107 MB per batch, under the 256 MB batch limit (docs: 100,000 requests OR 256 MB).
+                               # The old value 8000 would be ~340 MB; the '10,000 cap' comment was out of date.
 FETCH_CONCURRENCY = 3          # bounded thread pool for SEC fetches -- lowered after real 429 storms at scale
 FETCH_MIN_DELAY_SECONDS = 0.3  # minimum spacing before every request attempt, respectful of fair-access limits
 POLL_INTERVAL_SECONDS = 30
