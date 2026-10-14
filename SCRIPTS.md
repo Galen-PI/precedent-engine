@@ -2912,3 +2912,26 @@ original result stays on the record as failed on August):** evaluate 12 resolved
 pooled coverage is 74-86%; single months descriptive only. Rough power: ~96% pass for a true mean
 of 78%, ~20% for a true mean of 72% (independent months, sd 8; overlap makes true error larger).
 Method remains frozen at v1_6mo_recal_2026-10-14.
+
+### 2026-10-14 (night) — Classifier rewrote existing rows; root cause and fix
+
+Symptoms: nightly and manual runs "succeeded" but the table barely grew (102,962 -> 102,966; only
+4 rows after Oct 7); 30,731 rows labeled claude-haiku-5-5 carried September classified_at dates;
+1,656 reviewed rows labeled 5.5 contradicted their human review (vs 75 of 30,409 for 4.5);
+735 human-confirmed-real filings had ai_verdict likely_noise with no flag.
+Cause: get_unclassified_candidates() built "already classified" in Python from separately
+paginated, unordered reads and counted ~37,000 classified filings as new (script said 85,059;
+true figure 47,573 = 150,539 in candidate_8k_events - 102,966 classified; 4,602 of 155,141 total
+8-Ks are outside the view because of item codes it skips). The upsert replaced AI fields but not
+classified_at, with no guard for reviewed rows, so rewritten rows kept their old timestamps.
+Two failed runs (Oct 13, Oct 14) died on database writes (RemoteProtocolError, 502 "Network
+connection lost") AFTER Anthropic batches finished, losing paid results; batch
+msgbatch_01QBPZrFQZe95MTEWZvVNhvV (2,500 filings) is still to be recovered.
+Fix: view candidate_8k_unclassified (selection inside the database, excludes reviewed rows);
+trigger trg_protect_reviewed (reviewed rows keep AI fields); classifier patched to read from the
+view with fixed order, save each batch to classification_backup/ BEFORE writing, write in groups
+of 200 with retries, and set classified_at. Snapshot table: filing_ai_classifications_snapshot_20261014.
+Test run: 100 filings, 51 flagged, ~$0.067 at Haiku 5.5 rates by token counts (the printed $0.33
+is stale Haiku 4.5 batch pricing). NOT repaired: AI fields on rows already overwritten before the
+trigger existed; unreviewed rewritten rows may have lost review flags. Pending: recover the Oct 14
+batch with guards, rerun the full ~47,473 backlog, disable the nightly workflow in the GitHub UI.

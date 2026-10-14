@@ -387,44 +387,35 @@ any error or warning from the API.
 
 
 def get_unclassified_candidates(ticker_filters: list[str] = None) -> list[dict]:
-    """ticker_filters is a list of tickers, or None/["ALL"] for the full backlog."""
+    """PATCHED 2026-10-14. 'Unclassified' is now decided INSIDE the database by the
+    candidate_8k_unclassified view (no classification row, or only an unparseable
+    MALFORMED one, and never human-reviewed). The old version subtracted two separately
+    paginated, unordered reads in Python and counted ~37,000 already-classified filings
+    as unclassified (85,059 vs the true 47,573), so existing rows were re-sent and
+    rewritten. ticker_filters is a list of tickers, or None/["ALL"] for everything."""
     is_all = not ticker_filters or ticker_filters == ["ALL"]
-
     candidates = []
     page_size = 1000
     offset = 0
     while True:
-        query = supabase.table("candidate_8k_events").select("*")
+        query = supabase.table("candidate_8k_unclassified").select("*") \
+            .order("ticker").order("filing_date").order("accession_number")
         if not is_all:
             query = query.in_("ticker", ticker_filters)
         page = query.range(offset, offset + page_size - 1).execute().data
         if not page:
             break
         candidates.extend(page)
-        if len(page) < page_size:
-            break
         offset += page_size
-
-    already_classified = set()
-    page_size = 1000
-    offset = 0
-    while True:
-        query_already = supabase.table("filing_ai_classifications") \
-            .select("ticker,filing_date,accession_number,ai_reasoning")
-        if not is_all:
-            query_already = query_already.in_("ticker", ticker_filters)
-        page = query_already.range(offset, offset + page_size - 1).execute().data
-        if not page:
-            break
-        for row in page:
-            if row["ai_reasoning"] is None or not row["ai_reasoning"].startswith("MALFORMED API RESPONSE"):
-                already_classified.add((row["ticker"], row["filing_date"], row["accession_number"]))
-        if len(page) < page_size:
-            break
-        offset += page_size
-
-    return [c for c in candidates
-            if (c["ticker"], c["filing_date"], c["accession_number"]) not in already_classified]
+    seen, unique = set(), []
+    for c in candidates:
+        k = (c["ticker"], c["filing_date"], c["accession_number"])
+        if k not in seen:
+            seen.add(k)
+            unique.append(c)
+    if len(unique) != len(candidates):
+        print(f"  WARNING: removed {len(candidates) - len(unique)} duplicate candidate rows.")
+    return unique
 
 
 def get_recent_event_titles(ticker: str, limit: int = 15) -> list[str]:
@@ -860,16 +851,17 @@ def process_one_chunk(chunk_candidates: list[dict]) -> tuple[int, int, int, dict
         for key in combined_usage:
             combined_usage[key] += usage[key]
 
-    classified_count = 0
-    flagged_count = 0
+    import time as _time
+    from datetime import datetime, timezone
+    _now_iso = datetime.now(timezone.utc).isoformat()
+    payload = {}
     for custom_id, ai_result in all_results.items():
         c = candidate_by_id[custom_id]
-        ticker = c["ticker"]
         random_audit_hit = random.random() < 0.10
         flagged, flag_reason = compute_flag(ai_result, random_audit_hit)
-
-        supabase.table("filing_ai_classifications").upsert({
-            "ticker": ticker,
+        key = (c["ticker"], c["filing_date"], c["accession_number"])
+        payload[key] = {
+            "ticker": c["ticker"],
             "filing_date": c["filing_date"],
             "accession_number": c["accession_number"],
             "item_codes": c["item_codes"],
@@ -885,11 +877,46 @@ def process_one_chunk(chunk_candidates: list[dict]) -> tuple[int, int, int, dict
             "prompt_version": PROMPT_VERSION,
             "flagged_for_review": flagged,
             "flag_reason": flag_reason,
-        }, on_conflict="ticker,filing_date,accession_number").execute()
+            "classified_at": _now_iso,
+        }
+    rows = list(payload.values())
 
-        classified_count += 1
-        if flagged:
-            flagged_count += 1
+    # PATCHED 2026-10-14: save paid results to disk BEFORE any database write, so a failed
+    # write can never lose them; write in groups with retries instead of one row at a time.
+    os.makedirs("classification_backup", exist_ok=True)
+    backup_path = os.path.join(
+        "classification_backup",
+        f"results_{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S')}_{len(rows)}.json")
+    with open(backup_path, "w") as _fh:
+        json.dump(rows, _fh)
+    print(f"  Saved {len(rows)} results to {backup_path} BEFORE writing to the database.")
+
+    GROUP = 200
+    classified_count = 0
+    flagged_count = 0
+    failed_rows = []
+    for gi in range(0, len(rows), GROUP):
+        group = rows[gi:gi + GROUP]
+        for attempt in range(1, 6):
+            try:
+                supabase.table("filing_ai_classifications").upsert(
+                    group, on_conflict="ticker,filing_date,accession_number").execute()
+                classified_count += len(group)
+                flagged_count += sum(1 for r in group if r["flagged_for_review"])
+                break
+            except Exception as e:
+                if attempt == 5:
+                    print(f"    GIVING UP on rows {gi}-{gi + len(group) - 1}: {str(e)[:150]}")
+                    failed_rows.extend(group)
+                else:
+                    wait = 2 ** attempt
+                    print(f"    write failed (attempt {attempt}): {str(e)[:120]} -- retrying in {wait}s")
+                    _time.sleep(wait)
+    if failed_rows:
+        failed_path = backup_path.replace("results_", "FAILED_")
+        with open(failed_path, "w") as _fh:
+            json.dump(failed_rows, _fh)
+        print(f"  WARNING: {len(failed_rows)} rows were NOT written; saved to {failed_path}")
 
     print(f"  Chunk done: {classified_count} classified, {flagged_count} flagged.")
     return classified_count, flagged_count, fetch_errors, combined_usage
