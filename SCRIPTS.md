@@ -2842,3 +2842,36 @@ hypothesis (untested): a single 64-day volatility estimate lags regime changes. 
 compare volatility estimators (20d, 64d, 250d, EWMA, blends) on calibration stability and
 width; rerun the event-type table on this baseline (the earlier by-type month-matched
 output was not captured).
+
+### 2026-10-14 (night) — Volatility estimators, then monthly recalibration of the 80% range
+
+vol_estimators (scripts/sql/create_vol_estimators.sql): 915,215 stock-days 2019-2026 with
+trailing 20/64/250-trading-day daily-return stddevs (v20, v64, v250) and the 20d abnormal
+move `a` (|20d return - SPY 20d return|); each year must be loaded ONCE (repeat loads
+doubled 2020-2026 and were deduplicated; unique index vol_estimators_uq now blocks repeats).
+Running-sum stddevs match window STDDEV (max diff 1.2e-13 v64, 7e-16 v20, 6e-17 v250).
+**Estimator comparison** (multiplier per estimator fit to 80% coverage on 2019-2022, scored on
+2023-2026; interval score = width + 10*overshoot, lower is better). Test coverage / test score /
+test-year coverage min..max: v64 74.2% / 0.3132 / 66.6..78.5; v250 73.1% / 0.3138 / 62.2..81.5;
+blend3 (equal-variance mean of the three) 73.1% / 0.3139 / 64.7..78.8; max3 72.2% / 0.3176 /
+62.9..78.5; v20 74.5% / 0.3245 / 69.2..78.2. Train (2019-22, in-sample): v250 and blend3 beat
+v64 by 2.2% on score (4.5% and 3.0% narrower at equal coverage); out of sample v64 is ahead by
+0.2%. Pre-set bar (>= 3% lower test score AND >= 2 pts narrower test-year coverage range):
+NO estimator beats v64. All lose 6-8 points of coverage out of sample (2026 at 62-69%), so
+the lever is recalibration over time, not the estimator. Predictions: v250 "most stable"
+WRONG (least stable, 19.4-pt range), v20 best in 2026 right, blend3 best overall WRONG.
+Yearly coverage noise is several points (stocks move together in shocks).
+**Rolling recalibration** (scripts/sql/adaptive_multiplier_backtest.sql): k = 80th percentile of
+past scaled moves over the previous 6 or 12 months (lagged >= 1 month) vs static 1.09023.
+Test 2023-26 coverage static 74.2% / w6 78.3% / w12 77.4%; by year (2023/24/25/26) static
+78.5/72.9/75.7/66.6, w6 77.1/78.8/79.6/77.1, w12 76.2/77.3/81.2/73.3; coverage range across
+test years 11.9 / 2.5 / 7.9 pts; test interval score 0.3132 / 0.3131 / 0.3127 (no meaningful
+gain). Mean |coverage - 80| over 2020-2026: 4.7 / 2.5 / 3.7 pts (hand-computed). Cost: 2020
+crash year score static 0.4060 vs w6 0.4432 (+9.2%) vs w12 0.4263 (+5.0%) -- the lag; over all
+2020-2026 w6 scores ~2% worse than static (static is partly in-sample for 2020-22). Pre-set
+bar (coverage 78-82%, range <= ~7 pts, score >= 2% lower): w6 passes the first two (78.3%,
+2.5 pts) but not the score condition. Adopted for calibration honesty, not accuracy. Caveats:
+one walk-forward path, two windows tried, monthly update granularity.
+**Current design of the range:** +- k_t * v64 * sqrt(20), k_t = trailing 6-month 80th percentile
+of scaled moves lagged >= 1 month; separate small event premium (~ +5% scaled move, ~1.4 pts of
+coverage on event days) not yet combined into the range.
