@@ -169,7 +169,18 @@ def get_storm_lookup() -> dict[tuple[str, str], str]:
     that investigation: isolated / small / medium / large."""
     bundled_ids = {r["event_id"] for r in paginated("event_component_dates", "event_id", "event_id")}
 
-    ripple_rows = paginated("event_ripple_timeline", "event_id,entity_id,abnormal_return,day_offset", "id")
+    ripple_rows = []
+    _off = 0
+    while True:
+        _page = supabase.table("event_ripple_timeline") \
+            .select("event_id,entity_id,abnormal_return,day_offset") \
+            .eq("day_offset", 5).order("id").range(_off, _off + 999).execute().data
+        if not _page:
+            break
+        ripple_rows.extend(_page)
+        if len(_page) < 1000:
+            break
+        _off += 1000
     day5_by_entity: dict[str, list[tuple[str, float]]] = defaultdict(list)
     for r in ripple_rows:
         if r["day_offset"] == 5 and r["event_id"] not in bundled_ids and r["abnormal_return"] is not None:
@@ -336,7 +347,7 @@ def build_dataset(exclude_bundled: bool = False):
             rows.append({
                 "event_date": event_date, "event_type": etype, "firm_state": firm_state,
                 "regime": regime, "storm_tier": storm_tier, "confidence_trend": confidence_trend,
-                "reaction": reaction,
+                "reaction": reaction, "event_id": event_id, "entity_id": entity_id, "event_id": event_id, "entity_id": entity_id,
             })
     print(f"  Skipped {skipped_missing_feature} events missing at least one real feature value "
           f"(no longer filled with a fake 'unknown'/'no_data' placeholder).")

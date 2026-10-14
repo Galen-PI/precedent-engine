@@ -2742,3 +2742,29 @@ tried. The existing multi_feature_model scripts already combined event_type, sen
 regime, firm_state and storm tier (direction stayed null). The validated magnitude model
 (+9.2 to +13.4pp) must be re-scored against a realized-volatility-only baseline and
 without the future-looking storm feature (storm_tier uses +-40-day neighbors).
+
+### 2026-10-14 — Magnitude model re-scored against a realized-volatility baseline
+
+magnitude_vol_baseline.py (new) re-scores multi_feature_model_magnitude.py (target:
+|abnormal_return_20d| >= 4.21% = "large", fixed cutoff) using event_realized_vol
+(prior-90d daily-return stddev; table built by scripts/sql/create_event_realized_vol.sql,
+71,801 rows; 8,779 rows have vol and every feature; 7,167 events dropped for a
+missing feature, so results apply to the storm-tier/confidence-trend subset,
+2,631 pre-2015 / 6,179 post-2015 rows). Vol is binned into deciles from TRAIN
+quantiles only. build_dataset() rows now carry event_id and entity_id; this file's
+storm loader now filters day_offset = 5 in the database (same rows, much faster).
+Models (test accuracy by cutoff 2018/2020/2022/2023/2024): M0 majority 44.4/42.7/
+43.8/43.6/42.0; M1 vol-only 55.4/54.7/53.8/53.7/56.3; M2 original five features
+53.5/54.9/55.2/54.4/55.1; M3 five+vol 56.6/56.5/55.4/57.0/56.8; M4 four non-storm
+features+vol 56.1/56.1/54.6/56.3/55.9.
+M2-M0 = +9.1/+12.2/+11.4/+10.8/+13.1 (reproduces the validated +9.2..+13.4) but
+M1-M0 = +11.0/+12.0/+10.0/+10.1/+14.3 and M2-M1 = -1.9/+0.2/+1.4/+0.7/-1.2: volatility
+alone equals or beats the original model. Pre-set rules: "lift was mostly volatility"
+(M1 within ~3 pts of M2 at >=3 of 5) HOLDS at 5 of 5; "event features add something
+real" (M4 beats M1 by >=3 pts at >=4 of 5) FAILS (M4-M1 = +0.7/+1.4/+0.8/+2.6/-0.3).
+Leftover: M4-M1 is positive at 4 of 5 cutoffs (~ +1 pt on average); test sets are nested
+and events cluster in time, so naive SEs overstate it; below the threshold, not built on.
+Baseline note: M0 is 42-44% (< 50%) because the share of "large" moves shifted between
+train and test periods; hindsight majority in the test years is ~56-58%, at or above
+M1-M4 (54-57%). The original +9..+13 lift was therefore measured against a baseline
+degraded by base-rate drift, which a volatility feature absorbs automatically.
