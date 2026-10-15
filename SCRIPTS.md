@@ -3160,3 +3160,15 @@ not a 20-day state (rough arithmetic: ~+4-5% on a 20-day std). First formal test
 upward (E[X/Y] > E[X]/E[Y]): the control window 21-24 read +0.07..+0.13 with z up to 7.8, and its literal pre-set output
 ('lasting', 'leaks early') was rejected. Replaced by ratio-of-means with delta-method SE (rules unchanged). Limits: 15,013 of ~23,550
 events have tracks; older events are mass-confirmed promotions; current-index survivorship; magnitude only, no direction.
+
+### 2026-10-16 — Zoom-out: corrected test and by-type bursts
+Corrected estimator (ratio of means with delta-method SE) on isolated events, relative to days 25-39: 2004-2018: pre -4..-1 +0.062
+(z 4.4), days 0-1 +0.305 (z 14.3), days 2-5 -0.013, days 6-20 -0.014 (z -1.9), days 21-24 -0.009; 2019-2026: pre +0.028 (z 1.8),
+days 0-1 +0.296 (z 11.8), days 2-5 +0.013, days 6-20 -0.019 (z -2.0), days 21-24 +0.003. Pre-set: 'lasting' no; 'leaks early' no (new era
+z 1.8); the earlier 'short burst' wording that included days 2-5 is not met: the burst is days 0-1 only (~+30%). By type (days 0-1
+ratio, isolated, 2004-18 / 2019-26): acquisition 1.277/1.271, leadership_change 1.226/1.220, strategic_partnership 1.202/1.336,
+legal_settlement 1.194/-, governance 1.306/-, restructuring 1.721/1.576, corporate_action 1.588/1.446, regulatory 1.545/1.066 (flips),
+capital_raise 0.957/1.041 (no burst), financial_result 0.960/- (surprising), ipo_spinoff 1.945/- (probably spin-off price artifact; seam
+titles not yet excluded in this table). Type rule (differs from pooled ~1.30, z>2.5 in BOTH eras): only capital_raise qualifies;
+corporate_action (z 3.7/1.2) and restructuring (4.0/1.8) lean higher but fail in 2019-2026. Limits: ripple tracks cover 15,013 of ~23,550
+events; older events are mass-confirmed promotions; current-index survivorship; magnitude only.
