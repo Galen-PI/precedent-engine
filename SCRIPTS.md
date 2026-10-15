@@ -3172,3 +3172,20 @@ capital_raise 0.957/1.041 (no burst), financial_result 0.960/- (surprising), ipo
 titles not yet excluded in this table). Type rule (differs from pooled ~1.30, z>2.5 in BOTH eras): only capital_raise qualifies;
 corporate_action (z 3.7/1.2) and restructuring (4.0/1.8) lean higher but fail in 2019-2026. Limits: ripple tracks cover 15,013 of ~23,550
 events; older events are mass-confirmed promotions; current-index survivorship; magnitude only.
+
+### 2026-10-16 — Zoom-out type fix, macro-release lane, ripple fill
+Type fix (seam titles excluded, isolated events, days 0-1 ratio, 2004-18 / 2019-26): corporate_action_other 1.568 / 1.394,
+corporate_action_split 1.645 (n=81, 2004-18 only), financial_result 0.961 / 1.280 (unstable across eras), restructuring 1.724 / 1.573;
+ipo_spinoff has < 40 clean events per era (its 1.95 was the spin-off price artifact). Macro-release lane: macro_data_releases mixes
+real release dates (PAYEMS jobs reports, CPIAUCSL; likely UNRATE, HOUST) with non-release dates (ICSA = week-ending Saturdays; UMCSENT and
+many monthly series = period start dates), so only real-release series can feed a known-on-dated flag. SPY release-day |move| vs the
+trailing 64-day mean |move| (ratio of means, delta-method SE; control non-release days 0.956-1.008; the gap ratio reads ~0.96 in two
+eras because the baseline contains release days): PAYEMS close-to-close 1.285 (z 2.8) / 1.101 (z 1.4) / 1.125 (z 1.1) for 1995-03 /
+2004-18 / 2019-26, gap 1.594 / 1.183 / 1.233, intraday 1.271 / 1.093 / 1.013; CPIAUCSL 1.084 / 1.042 / 1.096, gap 1.171 / 1.059 / 1.315,
+intraday ~1.0; HOUST 1.029 / 1.019 / 0.962. Pre-set rule (close-to-close ratio > 1.10 with z > 2.5 in all three eras): FAILED for all.
+The jobs report is positive in every era (pooled ~+16%, SE ~5%): a lead only (one of ~27 numbers looked at). If any effect exists it
+sits in the opening gap (8:30 a.m. releases). Ripple: sec_8k_filings has only filing_date (no acceptance time), so day 0 cannot depend
+on filing time without an EDGAR fetch (possible later project). View ripple_todo = 7,362 trackable events without a track (older 3,700 +
+wave 1 2,106 + wave 2 1,556); 859 bundled and 320 entity-less events can never get one. build_ripple_timeline.py started 2026-10-16
+(PID 21518, log /tmp/ripple_*.log): append-only upsert, skips events already in event_ripple_timeline, excludes bundled by default,
+unordered paging, caches all price history in memory.
