@@ -3079,3 +3079,21 @@ ctid. Final, month x v64/v250-band matched baseline, events 2019-2026-07: all ot
 These supersede the 2019-2025-only figures in the entry above (+0.0344 / -0.0610). Naive SEs; clustering
 by month would widen them ~10%. Scratch tables kept for the post-promotion rerun: reactions_view_only,
 mm_matched, events_ratio (rebuild per-year; run each INSERT exactly once, check counts after each).
+
+### 2026-10-15 (evening) — Promotion run, concurrent-process incident, cleanup
+promote_events.py --exclude-types capital_raise,corporate_action,governance_action --live: events 19,892 -> 21,998
+(+2,106). Final clean run: 583 filing groups, 299 created, 100 confirmed duplicates, 32 heuristic matches rejected
+by the verifier, 30 skipped for no event type, 154 skipped for no title/description (these confirmed rows still need
+titles/types before they can be promoted). A first run with governance_action allowed (PID 10841) survived a kill
+and ran at the same time as a second run: 136 orphan duplicate events (no event_source_filings row) were created
+and removed. Removals were single DO-block transactions with audit-copy-then-delete, row-count guards and rollback on
+mismatch: 27 routine governance events (rights plans, majority-voting/proxy-access/special-meeting bylaws,
+reincorporations, FedEx fiscal-year change), 20 deal admin steps (HSR/FTC/FERC/SEC approvals, tender extensions,
+disclosure statements), 136 orphan duplicates; audit tables event_removal_audit_20261015_{events,sources,types,
+entities} (183 events). Source filings of removed events set to rejected_noise so the script cannot re-create them.
+Governance sample read: 9 real of 39 (rubric: rights plans/bylaw/reincorporation are routine, activist
+responses are real). Admin-title search over today's events: ~20 of 29 candidates removed; 9 held. Lessons: check
+`ps` and kill the parent shell before starting a second promotion run; an orphan check must be rerun after any
+concurrent run; scripts/sql/refresh_event_scratch_tables.sql refreshes the Phase 6 scratch tables for the new events.
+Unaddressed: 30 older duplicate pairs (pre-2026-10-15), 9 admin-step holds, 154+30 skipped groups, 12 governance
+events kept (3 are judgment calls: ACE redomicile, Domino's 203 waiver, Aptiv scheme).
