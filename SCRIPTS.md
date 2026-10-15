@@ -3135,3 +3135,16 @@ Proposed next: extend vol_estimators, daily_scaled_move and mm_matched back to ~
 event_realized_vol already spans all events) for an out-of-time test on ~10K older events, reported by era;
 pre-set: consistent if the 2000-2018 ordinary interval contains +0.0295; replicated at a lower level if positive
 with z > 2 but excluding +0.0295; not replicated if its upper end < +0.02. Caveat: current index members only.
+
+### 2026-10-16 — Out-of-time replication of the event premium (2004-2018)
+vol_estimators extended back via extend_year_safe(y) (1995-2018 only; wrapper refuses 2019+; loaded 1995-1997 and 2004-2018,
+mm_matched built from vol_estimators using a/(v64*sqrt(20)), identity verified against daily_scaled_move: max diff 6e-13
+over 194,407 rows); events_ratio extended with ratio_period(lo, hi). The SQL editor times out above about one year per
+statement. 1995-2003 not used (unloaded years would give stale ratios). Sanity gate passed (2019-2026 rows reproduce).
+Pre-set rules applied to 2004-2018 pooled. Ordinary types: n=9,412, +0.0470 (SE 0.0091, z~5.2, interval +0.0289..+0.0652)
+-> consistent (interval contains +0.0295, barely); eras +0.020/+0.045/+0.069 for 2004-07/2008-12/2013-18 and +0.025 for
+2019-26; all 2004-2026 n=14,592 +0.0393 (SE 0.0067). capital_raise: n=878, -0.0252 (SE 0.0190, z~-1.3) -> FAILS (needed
+<= -0.05 and z <= -2); eras +0.027/-0.058/-0.018/-0.067; all years -0.0412 (z~-2.8): not robust across eras; hypothesis only,
+no range multiplier. corporate_action: 2004-2018 +0.0725 (SE 0.0358), all years +0.0538 (SE 0.0273): exploratory, parked.
+Caveats: current-index survivorship; older events are mass-confirmed promotions with weak events mixed in; band cut points
+from 2019-2026; naive SEs; many looks overall.
