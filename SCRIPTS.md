@@ -3148,3 +3148,15 @@ Pre-set rules applied to 2004-2018 pooled. Ordinary types: n=9,412, +0.0470 (SE 
 no range multiplier. corporate_action: 2004-2018 +0.0725 (SE 0.0358), all years +0.0538 (SE 0.0273): exploratory, parked.
 Caveats: current-index survivorship; older events are mass-confirmed promotions with weak events mixed in; band cut points
 from 2019-2026; naive SEs; many looks overall.
+
+### 2026-10-16 — Event-time zoom-out (event_ripple_timeline)
+event_ripple_timeline: 653,815 rows, 15,013 events, day_offset -5..39, CUMULATIVE raw/spy/abnormal returns from the day -1 close
+(daily move = difference of consecutive rows); concurrent_event_count is NULL for ~38% of rows (not used). Views created:
+event_daily_abn (daily |stock - SPY| move per event/day) and event_profile_base (window means per event; base = mean of days 25-39;
+era = pre-2004 / 2004-2018 / 2019-2026; isolated = no other event for the entity within -5..+39 days). Curve on isolated events, ratio
+of means vs days 25-39 (=1.0): 2004-2018 day 0 = 1.357, day 1 = 1.256; 2019-2026 day 0 = 1.294, day 1 = 1.299; days 2-5 ~1.00;
+days 6-24 ~0.98; days -4..-1 ~1.01-1.11. Reading: the ~5% 20-day event premium is a two-day burst (~+30% daily move size),
+not a 20-day state (rough arithmetic: ~+4-5% on a 20-day std). First formal test (mean of per-event ratios window/base) was BIASED
+upward (E[X/Y] > E[X]/E[Y]): the control window 21-24 read +0.07..+0.13 with z up to 7.8, and its literal pre-set output
+('lasting', 'leaks early') was rejected. Replaced by ratio-of-means with delta-method SE (rules unchanged). Limits: 15,013 of ~23,550
+events have tracks; older events are mass-confirmed promotions; current-index survivorship; magnitude only, no direction.
