@@ -3108,3 +3108,15 @@ but the test is uninformative: it cannot distinguish +0.03 from zero; difference
 (z~1.1). Pooled ordinary premium ~+0.026 (SE ~0.0097, z~2.7; hand-computed). The premium has shrunk with each
 broadening of the event set (+0.041 -> +0.031 -> +0.0295 -> new cohort -0.006); promoted events are milder
 (selection), so a smaller value is expected. Treat as small, unstable, 0 to ~3%. Range product unaffected.
+
+### 2026-10-15 (night) — Promotion wave 2
+After the top-band review (see the entry above): promote_events.py --exclude-types capital_raise,corporate_action,
+governance_action --live: events 21,998 -> 23,554 (+1,556). Live run: 1,868 groups, 144 confirmed duplicates, 89
+verifier-rejected heuristic matches, 233 verification calls, 43 skipped for no event type, 125 skipped for no
+title/description. The dry run had predicted 1,664 creates and 98 duplicates; a live run also catches
+announcement/completion duplicates within the batch (probable cause of the difference; not proven). Integrity after the
+run: 0 orphans, 0 capital_raise/corporate_action/governance events, 0 same-entity/date/title duplicate pairs.
+Dry-run sample of 40: 37 real, 3 weak (PSE&G internal asset transfer, PepsiCo forward-looking-statement filing, SCE
+subsidiary president) -> ~100-150 weak events expected among the 1,556. None of the 950 bulk-confirmed rows lacked
+a title or description. Unpromoted confirmed rows (~168 missing title/description/type) need a separate fix.
+Cohort for the replication: new_events_wave2 (newest 1,556 events by age(xmin)).
