@@ -3001,3 +3001,28 @@ static 80.4%. Sep 1-15: n=4,934, k=1.378, recalibrated 83.9%, static 71.3%. Pool
 ~77% (hand-computed). Original pass rule (>= 6 months, pooled 76-84%, at most 1 of 6 months outside 70-90%):
 August used the one allowed miss; two months decide nothing. The earlier August figure (93.0%, n=9,833) was
 computed on incomplete prices and is superseded. Amended 12-month rule still proposed, NOT adopted.
+
+### 2026-10-14 (night) — Prompt v6.x experiments and the role-change guard: stopped
+Goal: stop the classifier clearing real events (CEO/CFO/President/Chair changes, guidance cuts, large
+charges, large buybacks). Copy script: classify_8k_filings_v6_reclass.py (reads view candidate_8k_reclass over
+reclass_targets = 6,913 filings + audit_flagged_20261014 = 62 rows; old AI fields in
+filing_ai_classifications_snapshot_20261014). v6 (100 A-ticker filings): 23 flagged, 8 real_event flips (4
+correct: CFO changes ADBE 2005, ABBV 2018, ABNB 2023, ADBE $25B buyback; 4 broke carve-outs: CEO retention
+amendment, division presidents, CAO, Chief Strategy Officer); the 25 known misses all came back real/flagged
+(circular). v6.1 (314 filings, 27 tickers): uncertain 23, noise 271, real 20, flagged 85; random 40 non-noise:
+11 clear real; failures: ordinary directors marked uncertain, exhibit-only earnings releases marked uncertain,
+'recent events' used to upgrade carve-out roles. v6.2 (same 314): noise 281, real 18, uncertain 15, flagged 69;
+46 of 314 verdicts (15%) changed vs v6.1; all 33 non-noise rows read: 8 clear real (24%), 14 (42%) counting
+reasonable uncertain; uncertain 15 of 33 (45%, 9 pure hedging); the model states the carve-outs (QCOM CTO,
+RTX division president, HD director) and still returns real_event. Pre-set bars (>= 60% real, uncertain <= 20%)
+FAILED -> prompt tuning stopped. Temperature setting not checked.
+Guard (scripts/classification/test_role_guard.py, regex on filing text near Item 5.02, 20 labeled real vs 40
+labeled routine; labels are my judgments): v1 recall 11/20, false alarms 5/40; v2 (initials/abbreviations
+allowed, more verbs, committee-chair normalized) recall 15/20, false alarms 13/40; bars (recall >= 18/20,
+false alarms <= 15/40) FAILED on recall -> not deployed. Rough cost if deployed: ~1,800 extra review rows on
+~4,300 unflagged 5.02 rows for ~800 real catches (assumes ~25% real; weak estimate).
+DB state: v6 103 rows, v6.2 1,752 rows (noise unflagged 1,268, noise flagged 202, real flagged 186, real
+unflagged 7, uncertain flagged 89); kept; the 7 unflagged real_event rows sent to review with
+flag_reason v6_real_event_needs_review. Known limitation: some CEO/CFO/Chair changes and guidance cuts remain
+cleared as noise in the v5 pool (estimated 2-5% of events, weak estimate); checked later by rerunning the
+leadership_change premium on the larger event set.
