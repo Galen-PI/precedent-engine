@@ -3189,3 +3189,13 @@ on filing time without an EDGAR fetch (possible later project). View ripple_todo
 wave 1 2,106 + wave 2 1,556); 859 bundled and 320 entity-less events can never get one. build_ripple_timeline.py started 2026-10-16
 (PID 21518, log /tmp/ripple_*.log): append-only upsert, skips events already in event_ripple_timeline, excludes bundled by default,
 unordered paging, caches all price history in memory.
+
+### 2026-10-16 — Flag ledger
+Tables flag_ledger (flag_key, family, description, known_on, window_desc, multiplier, pass_rule, status in proven/lead/null/retired/
+untested, tested_on, notes) and flag_ledger_evidence (flag_key, era, n, estimate, se, unit). Loaded: 34 flags (6 proven, 5 lead, 15 null, 2
+retired, 6 untested), 41 evidence rows. Proven: event_premium_20d, event_burst_day0_1, event_type_capital_raise_no_burst, and the shared
+burst number for acquisitions, leadership changes and strategic partnerships. Leads: restructuring, corporate_action (day 0-1 and 20-day),
+macro jobs report, storm_tier_large. Retired: ipo_spinoff burst (price artifact) and the capital_raise 20-day discount (failed out of time).
+Rules: a stack of filters is judged by calibration on data the filters never saw, not by how well it explains history; failures stay as
+'no documented effect'; overlapping flags are combined by measurement, not by multiplying; every filter shows n and eras; a new test adds
+a row and never overwrites an old one. The card reads only 'proven' rows.
