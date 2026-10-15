@@ -3026,3 +3026,23 @@ unflagged 7, uncertain flagged 89); kept; the 7 unflagged real_event rows sent t
 flag_reason v6_real_event_needs_review. Known limitation: some CEO/CFO/Chair changes and guidance cuts remain
 cleared as noise in the v5 pool (estimated 2-5% of events, weak estimate); checked later by rerunning the
 leadership_change premium on the larger event set.
+
+### 2026-10-15 — Replication of the event premium on events the earlier tests never saw
+Finding: event_market_reactions_corrected holds 15,897 events; events has 19,892; the view
+event_market_reactions covers 19,572 (the other 320 are macro/global events). All Phase 6 event
+tests read the corrected table, so ~3,675 events with reactions were excluded. The view is too slow
+for one query (upstream timeout), so view-only reactions were copied by year into reactions_view_only
+(911 rows 2019-2026, 87-172 per year). Same filters as before (non-bundled, no spin/separation/split-off
+titles, HON after 2026-06 excluded), month-matched baseline daily_scaled_move.
+Results: in-corrected n=4,404 excess +0.0311 (SE 0.0104) -- reproduces the earlier figure exactly;
+view-only n=858 excess -0.0409 (SE 0.0196; 95% interval -0.079..-0.003); gap 0.072 (SE ~0.022, z~3.3,
+naive). By year view-only: 2019 -0.081, 2020 -0.007, 2021 -0.025, 2022 -0.010, 2023 -0.121, 2024
+-0.012, 2025 -0.069, 2026 -0.010 (8 of 8 negative; cells n=61-159); corrected: 7 of 8 positive.
+Pooled n=5,262 excess ~ +0.019 (SE ~0.009, z~2.1; hand-computed). Pre-set rules: view-only
+"failing" (upper end < +0.02); pooled premium < +0.02 = completeness mattered (barely). Trajectory of the
+overall premium: +0.041 -> +0.031 (seam events removed) -> +0.019 (events outside the corrected table
+added). Hypotheses (untested): the corrected table holds older curated, eventful events while the
+view-only events are milder 8-K promotions (selection); type mix; measurement differences (view vs
+corrected). Event-premium claims downgraded to "small and unstable, 0 to ~3%". Range product unaffected
+(prices only). Next: split by from_8k_promotion (event_source_filings) and by type; after the
+review/promotion, repeat on the newly promoted events.
