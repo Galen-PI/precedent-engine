@@ -3066,3 +3066,16 @@ robust to vol-ratio matching, NOT tested on future data (events after 2026-07-31
 >= ~150 outcomes). No capital_raise multiplier added to the range tool (a coverage test with ~500 events
 cannot see a ~2 point shift; SE ~1.8). Naive SEs, no clustering. Earlier "types consistent with one
 premium" no longer holds with capital_raise included.
+
+### 2026-10-15 (afternoon) — Final matched results incl. 2026; scratch-table duplicate incident
+events_ratio first loaded 2019-2025 only (n=4,832); the 2026 insert was then run twice by mistake (790
+rows instead of ~395; 5,622 total vs 5,227 distinct event/ticker), removed with a self-join DELETE on
+ctid. Final, month x v64/v250-band matched baseline, events 2019-2026-07: all other types n=4,371 excess
++0.0295 (SE 0.0102, z~2.9; month-only +0.0308); capital_raise n=545 -0.0671 (SE 0.0242, z~-2.8; month-only
+-0.0698); corporate_action n=311 +0.0135 (SE 0.0385; month-only +0.0108). Both pre-set rules pass
+(ordinary >= +0.02 with z >= 2; capital_raise <= -0.05 with z <= -2). Ordinary-event excess by year (SE
+~0.025-0.043): 2019 +0.048, 2020 +0.000, 2021 +0.043, 2022 +0.012, 2023 +0.074, 2024 +0.026, 2025 +0.037,
+2026 -0.030 (n=332; 1.4 SE below the pooled mean; no evidence of decay, watch as 2026 data grow).
+These supersede the 2019-2025-only figures in the entry above (+0.0344 / -0.0610). Naive SEs; clustering
+by month would widen them ~10%. Scratch tables kept for the post-promotion rerun: reactions_view_only,
+mm_matched, events_ratio (rebuild per-year; run each INSERT exactly once, check counts after each).
