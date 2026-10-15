@@ -3120,3 +3120,18 @@ Dry-run sample of 40: 37 real, 3 weak (PSE&G internal asset transfer, PepsiCo fo
 subsidiary president) -> ~100-150 weak events expected among the 1,556. None of the 950 bulk-confirmed rows lacked
 a title or description. Unpromoted confirmed rows (~168 missing title/description/type) need a separate fix.
 Cohort for the replication: new_events_wave2 (newest 1,556 events by age(xmin)).
+
+### 2026-10-15 (late night) — Replication on promotion wave 2
+Cohort new_events_wave2 (newest 1,556 events by age(xmin), overlap with wave 1 checked). Only 337 are dated 2019+ (baseline
+tables cover 2019-2026); 331 reactions loaded; 310 usable ordinary-type rows. NOTE: the 'realized_vol_rows_for_wave2'
+query returned 1,556 because it counted the cohort through a LEFT JOIN; ignore it. Old rows reproduced exactly (ordinary
++0.0295 n=4,371; capital_raise -0.0671 n=545; corporate_action +0.0135 n=311; wave 1 -0.0063 n=499). Wave 2 ordinary
++0.0160 (SE 0.0366, interval -0.057..+0.089); new events pooled (waves 1+2) n=809 +0.0022 (SE 0.0231, interval
+-0.044..+0.048); difference vs old events 0.027 (SE ~0.025, z~1.1); all ordinary events pooled ~+0.025 (SE ~0.0094,
+z~2.7; hand-computed). Pre-set rule (consistent if the interval contains +0.0295, failing if the upper end is below
++0.02): consistent but uninformative. Both groups contain weak events (new: ~100-150 of 1,556; old: ~1/3 of old
+governance events looked routine), so neither is clean. Power is limited by the 2019 start of the baseline tables.
+Proposed next: extend vol_estimators, daily_scaled_move and mm_matched back to ~2000 (prices cover ~27 years;
+event_realized_vol already spans all events) for an out-of-time test on ~10K older events, reported by era;
+pre-set: consistent if the 2000-2018 ordinary interval contains +0.0295; replicated at a lower level if positive
+with z > 2 but excluding +0.0295; not replicated if its upper end < +0.02. Caveat: current index members only.
