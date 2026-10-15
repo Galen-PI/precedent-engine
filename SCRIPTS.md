@@ -3097,3 +3097,14 @@ responses are real). Admin-title search over today's events: ~20 of 29 candidate
 concurrent run; scripts/sql/refresh_event_scratch_tables.sql refreshes the Phase 6 scratch tables for the new events.
 Unaddressed: 30 older duplicate pairs (pre-2026-10-15), 9 admin-step holds, 154+30 skipped groups, 12 governance
 events kept (3 are judgment calls: ACE redomicile, Domino's 203 waiver, Aptiv scheme).
+
+### 2026-10-15 (afternoon) — Replication on the newly promoted events
+Scratch tables refreshed for the 2026-10-15 cohort (new_events_20261015, 2,106 events; 535 event_realized_vol rows,
+532 reactions in reactions_view_only, events_ratio extended). Old rows reproduced exactly (ordinary +0.0295 n=4,371;
+capital_raise -0.0671 n=545; corporate_action +0.0135 n=311). New cohort, ordinary types (capital_raise,
+corporate_action, governance were excluded from promotion): n=499, matched excess -0.0063, SE 0.0298 (interval -0.065
+to +0.053). Pre-set rule (consistent if the interval contains +0.0295; failing if the upper end < +0.02): consistent,
+but the test is uninformative: it cannot distinguish +0.03 from zero; difference from old events 0.036, SE ~0.032
+(z~1.1). Pooled ordinary premium ~+0.026 (SE ~0.0097, z~2.7; hand-computed). The premium has shrunk with each
+broadening of the event set (+0.041 -> +0.031 -> +0.0295 -> new cohort -0.006); promoted events are milder
+(selection), so a smaller value is expected. Treat as small, unstable, 0 to ~3%. Range product unaffected.
