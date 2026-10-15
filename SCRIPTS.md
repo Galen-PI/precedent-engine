@@ -3046,3 +3046,23 @@ view-only events are milder 8-K promotions (selection); type mix; measurement di
 corrected). Event-premium claims downgraded to "small and unstable, 0 to ~3%". Range product unaffected
 (prices only). Next: split by from_8k_promotion (event_source_filings) and by type; after the
 review/promotion, repeat on the newly promoted events.
+
+### 2026-10-15 — Volatility-ratio matched baseline (artifact check) for the event premium and capital_raise
+Scratch tables (derived, safe to drop/rebuild): reactions_view_only (911 view-only reactions, 2019-2026-07),
+mm_matched (month x vol-ratio band baseline: band 1 = v64/v250 < 0.775, 2 < 0.950, 3 < 1.162, 4 above;
+cut points are the population 20th/50th/80th percentiles 0.775/0.950/1.162; mean 0.979; built from
+daily_scaled_move joined to vol_estimators with v250 > 0; 48 cells/year, 2020 has 44 and 2022 has 47
+because some bands are empty in some months), events_ratio (event, ticker, bucket, month, scaled move,
+v64/v250 on the last day BEFORE the event). Population vol ratio 0.979; ordinary events 0.978 (median
+0.947); capital raises 1.042 (median 0.981): capital raises follow slightly elevated volatility.
+Results (events 2019-2025 only; 2026 events were missing from this run, n 4,832 vs 5,262 earlier, 396
+2026 events expected to be the gap): all other types n=4,039 excess +0.0357 (month only) -> +0.0344
+(matched, SE 0.0105, z~3.3); capital_raise n=500 -0.0627 -> -0.0610 (SE 0.0255, z~-2.4); corporate_action
+n=293 +0.00002 -> +0.0049 (SE 0.0394). Pre-set rules: capital_raise survives (<= -0.05 and z >= 2), ordinary
+premium survives (>= +0.02 and z >= 2). My prior estimate that mean reversion could explain 1/3 to 2/3 of
+the capital_raise effect was wrong: matching moved it by 0.0017 (~3%). Capital_raise effect = ~8% smaller
+moves (-0.061 on a ~0.75 base), formed on one sample, retired, replicated on 317 new events (-0.081),
+robust to vol-ratio matching, NOT tested on future data (events after 2026-07-31 are the holdout; need
+>= ~150 outcomes). No capital_raise multiplier added to the range tool (a coverage test with ~500 events
+cannot see a ~2 point shift; SE ~1.8). Naive SEs, no clustering. Earlier "types consistent with one
+premium" no longer holds with capital_raise included.
