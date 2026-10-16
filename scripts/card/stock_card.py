@@ -295,7 +295,7 @@ input[type=range]{width:100%}h2{margin:0 0 4px}h3{margin:16px 0 4px}
 <input id="slider" type="range" min="0" value="0">
 <div id="panel"></div>
 <div id="summary" class="mut"></div>
-<h3>Zoom-out: how big moves run around company-event filings (1.0 = ordinary)</h3>
+<h3>Zoom-out: how big moves run around company-event filings (1.0 = ordinary; the last days are hidden where fewer than 80% of events have data)</h3>
 <svg id="curve"></svg>
 <div id="evidence"></div>
 <div id="noeffect"></div>
@@ -389,7 +389,9 @@ const CY = v => CT + (CH - CT - CB) * (1 - (v - 0.8) / 0.8);
   const t = el("text", {x: CL - 4, y: CY(v) + 4, "text-anchor": "end"}, cv); t.textContent = v.toFixed(1); });
 [-4, 0, 5, 10, 20, 30, 39].forEach(o => { const t = el("text", {x: CX(o), y: CH - 6, "text-anchor": "middle"}, cv); t.textContent = o; });
 [["A_2004_2018", "#2563eb", "2004-2018"], ["B_2019_2026", "#dc2626", "2019-2026"]].forEach((a, k) => {
-  const pts = D.curve.filter(r => r.era === a[0]).sort((u, v) => u.day - v.day);
+  const allp = D.curve.filter(r => r.era === a[0]).sort((u, v) => u.day - v.day);
+  const nmax = allp.reduce((m, r) => Math.max(m, r.n), 0);
+  const pts = allp.filter(r => r.n >= 0.8 * nmax);
   if (pts.length) el("polyline", {points: pts.map(r => CX(r.day) + "," + CY(Math.min(1.6, Math.max(0.8, r.rel)))).join(" "), fill: "none", stroke:a[1], "stroke-width": 1.6}, cv);
   const t = el("text", {x: CL + 10, y: CT + 14 + k * 14, fill: a[1]}, cv); t.style.fill = a[1]; t.textContent = a[2] + (pts.length ? " (n=" + pts[0].n + ")" : ""); });
 let cg = null;
