@@ -149,3 +149,4 @@ sweep.log
 .venv-3/
 classification_backup/
 scripts/card/out/
+data_cache/
