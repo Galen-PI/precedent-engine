@@ -3199,3 +3199,10 @@ macro jobs report, storm_tier_large. Retired: ipo_spinoff burst (price artifact)
 Rules: a stack of filters is judged by calibration on data the filters never saw, not by how well it explains history; failures stay as
 'no documented effect'; overlapping flags are combined by measurement, not by multiplying; every filter shows n and eras; a new test adds
 a row and never overwrites an old one. The card reads only 'proven' rows.
+
+### 2026-10-16 — Ripple fill complete
+build_ripple_timeline.py --live filled 6,586 events (events with tracks 15,013 -> 21,599; wave 1 2,035 of 2,106, wave 2 1,509 of 1,556) before a
+Codespace restart killed it at 10:45. The second pass processed 1,061 event-entity pairs, wrote 0 rows, and skipped every one for
+insufficient price data (needs >= 5 company and SPY price rows in the window and a prior-day baseline), plus 34 events with no linked entity.
+The remaining 776 trackable events are unfillable by this script (view ripple_todo); not worth rerunning. Coverage: 21,599 of 22,375
+trackable events (96.5%); 859 bundled and 320 entity-less events never get tracks. The zoom-out views read the table directly and can be rerun.
