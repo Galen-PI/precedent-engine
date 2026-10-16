@@ -172,8 +172,12 @@ def main():
     )
     decisions = [d for d in decisions if d["structured_data"].get("relevance_verdict") == "relevant"]
     print(f"  {len(decisions)} real relevant decisions found.\n")
+    if "--since" in sys.argv:
+        since = sys.argv[sys.argv.index("--since") + 1]
+        decisions = [d for d in decisions if str(d["decision_date"])[:10] >= since]
+        print(f"  --since {since}: {len(decisions)} relevant decisions on or after that date.\n")
 
-    already_done = get_already_processed_decision_ids() if live else set()
+    already_done = get_already_processed_decision_ids() if (live or "--resume" in sys.argv) else set()
     if already_done:
         before = len(decisions)
         decisions = [d for d in decisions if d["id"] not in already_done]
