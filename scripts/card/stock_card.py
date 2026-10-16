@@ -148,8 +148,15 @@ def main():
     except Exception as ex:
         print("NOTE: event_curve_pooled not available (%s); the zoom-out chart will be empty" % type(ex).__name__)
 
+    dist = []
+    try:
+        dist = sb.table("event_move_dist").select("era,etype,off,n,p50,p80,p95").execute().data
+        dist = [{"era": r["era"], "etype": r["etype"], "off": int(r["off"]), "n": r["n"],
+                 "p50": fl(r["p50"]), "p80": fl(r["p80"]), "p95": fl(r["p95"])} for r in dist]
+    except Exception as ex:
+        print("NOTE: event_move_dist not available (%s); no past-events section will be drawn" % type(ex).__name__)
     data = {"ticker": ticker, "year": year, "mult": mult, "k_ref": K_REF, "days": days, "events": events,
-            "ledger": ledger, "evidence": evid, "curve": curve}
+            "ledger": ledger, "evidence": evid, "curve": curve, "dist": dist}
     html = TEMPLATE.replace("__DATA__", json.dumps(data).replace("</", "<\\/"))
     os.makedirs("scripts/card/out", exist_ok=True)
     out = "scripts/card/out/card_%s_%d.html" % (ticker, year)
@@ -235,7 +242,7 @@ const CY = v => CT + (CH - CT - CB) * (1 - (v - 0.8) / 0.8);
 [["A_2004_2018", "#2563eb", "2004-2018"], ["B_2019_2026", "#dc2626", "2019-2026"]].forEach((a, k) => {
   const pts = D.curve.filter(r => r.era === a[0]).sort((u, v) => u.day - v.day);
   if (pts.length) el("polyline", {points: pts.map(r => CX(r.day) + "," + CY(Math.min(1.6, Math.max(0.8, r.rel)))).join(" "), fill: "none", stroke: a[1], "stroke-width": 1.6}, cv);
-  const t = el("text", {x: CL + 10 + k * 90, y: CT + 12, fill: a[1]}, cv); t.style.fill = a[1]; t.textContent = a[2] + (pts.length ? " (n=" + pts[0].n + ")" : ""); });
+  const t = el("text", {x: CL + 10, y: CT + 14 + k * 14, fill: a[1]}, cv); t.style.fill = a[1]; t.textContent = a[2] + (pts.length ? " (n=" + pts[0].n + ")" : ""); });
 let cg = null;
 
 function select(i) {
@@ -268,6 +275,18 @@ function select(i) {
       else note = "outside the window: no documented effect";
       p.push("<span style='color:" + col(e.type) + "'>&#9679;</span> " + e.date + " [" + e.type + "] " + esc(e.title) + " &mdash; day " + (off > 0 ? "+" + off : off) + ": " + note); }); }
   else p.push("<span class='mut'>No events within 5 trading days.</span>");
+  const act2 = events.filter(e => e.i != null && (i - e.i === 0 || i - e.i === 1));
+  if (act2.length && d.v64) {
+    const e = act2[act2.length - 1], off = i - e.i;
+    let row = D.dist.find(r => r.era === "ALL" && r.etype === e.type && r.off === off), basis = e.type;
+    if (!row || row.n < 150) { row = D.dist.find(r => r.era === "ALL" && r.etype === "ALL_TYPES" && r.off === off); basis = "all event types (too few past " + e.type + " cases)"; }
+    if (row) {
+      const b = v => "&plusmn;" + (v * d.v64 * 100).toFixed(1) + "%";
+      const zt = d.z;
+      const band = zt == null ? "n/a" : zt <= row.p50 ? "below the median" : zt <= row.p80 ? "between the median and the 80th percentile" : zt <= row.p95 ? "between the 80th and 95th percentile" : "above the 95th percentile";
+      p.push("<span class='hl'>What past events like this did (" + esc(basis) + ", day " + (off > 0 ? "+" : "") + off + ", n=" + row.n + "):</span> the move stayed within " + b(row.p50) + " half the time, " + b(row.p80) + " four times in five, and " + b(row.p95) + " 19 times in 20, scaled to this stock's typical daily move. This day's move was " + pct(Math.abs(d.ret)) + ": " + band + " of past cases. <span class='mut'>Size only, not direction.</span>");
+    }
+  }
   document.getElementById("panel").innerHTML = p.join("<br>");
 
   if (cg) cv.removeChild(cg);
@@ -275,7 +294,7 @@ function select(i) {
   const act = events.filter(e => e.i != null && e.i <= i && i - e.i <= 39 && e.type !== "capital_raise");
   if (act.length) { const e = act[act.length - 1], off = i - e.i;
     el("line", {x1: CX(off), x2: CX(off), y1: CT, y2: CH - CB, stroke: "#f59e0b", "stroke-width": 2}, cg);
-    const t = el("text", {x: Math.min(CX(off) + 4, CW - 170), y: CT + 24}, cg); t.textContent = "selected day = day " + (off > 0 ? "+" : "") + off + " after the latest event"; }
+    const t = el("text", {x: CX(off) > CW / 2 ? CX(off) - 4 : CX(off) + 4, y: CT + 44, "text-anchor": CX(off) > CW / 2 ? "end" : "start"}, cg); t.textContent = "selected day = day " + (off > 0 ? "+" : "") + off + " after the latest event"; }
 }
 
 svg.addEventListener("mousemove", ev => { const r = svg.getBoundingClientRect();
@@ -296,7 +315,7 @@ document.getElementById("summary").innerHTML =
 let html = "<h3>What this card is allowed to use (ledger status: proven)</h3><ul>";
 D.ledger.filter(r => r.status === "proven").forEach(r => {
   const evs = D.evidence.filter(e => e.flag_key === r.flag_key).map(e => e.era + ": n=" + e.n + ", " + (e.estimate == null ? "n/a" : Number(e.estimate).toFixed(3)) + " (se " + (e.se == null ? "n/a" : Number(e.se).toFixed(3)) + ")").join("; ");
-  html += "<li><b>" + esc(r.flag_key) + "</b>" + (r.multiplier ? " &times;" + r.multiplier : "") + " &mdash; " + esc(r.description) + "<br><span class='mut'>" + esc(evs) + "</span></li>"; });
+  html += "<li><b>" + esc(r.flag_key) + "</b>" + (r.multiplier ? (r.flag_key === "event_daily_range_coverage" ? " [one-day range widened x" : r.flag_key === "event_premium_20d" ? " [20-day range x" : " [typical size vs ordinary x") + r.multiplier + "]" : "") + " &mdash; " + esc(r.description) + "<br><span class='mut'>" + esc(evs) + "</span></li>"; });
 document.getElementById("evidence").innerHTML = html + "</ul>";
 const ne = D.ledger.filter(r => ["null", "retired", "untested", "lead"].includes(r.status));
 document.getElementById("noeffect").innerHTML = "<details><summary>Everything else tested or not yet tested (" + ne.length + ") &mdash; none of it changes the numbers above</summary><ul>" +
