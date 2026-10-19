@@ -18,12 +18,15 @@ PRE-REGISTERED PASS LINE (set before any label existed): in BOTH eras, at least 
   gets no verdict ('too thin').
 Also reported, descriptive only: mean and median abnormal return by label, hit rate by timing (new / previously_announced), by size hint,
   and by event type. THE LABELER'S PROMPT IS FROZEN: no result here may be used to change it.
+INPUT: the reaction rows come from the frozen table event_market_reactions_v2_snapshot_20261019 (a copy of the repaired view taken at the swap), so the
+  once-only run cannot change with later price updates or view timeouts. Override with the REACTIONS_TABLE environment variable.
 EXCLUDED BEFORE ANY REAL RESULT (2026-10-19): event type systemic_shock (sector-wide narrative rows are not company news); the count is printed.
 """
 import os, sys, math, random, datetime
 from collections import defaultdict
 
 ERA_SPLIT = "2019-01-01"
+REACTIONS_TABLE = os.environ.get("REACTIONS_TABLE", "event_market_reactions_v2_snapshot_20261019")   # a FROZEN copy of the repaired view: a fixed input for a once-only test
 EXCLUDED_TYPES = ("systemic_shock",)      # sector-wide narrative rows (for example the Enron/WorldCom wave), not company news; excluded BEFORE any real result
 MIN_N = 800
 B = 2000
@@ -74,7 +77,7 @@ def load_events(sb):
     ids = [i for i, r in labels.items() if r["label"] in ("good", "bad")]
     react = {}
     for i in range(0, len(ids), 100):
-        rows = sb.table("event_market_reactions").select(
+        rows = sb.table(REACTIONS_TABLE).select(
             "event_id,ticker,event_date,event_price_date,prior_close,event_close,day_1_close,day_5_close,spy_prior_close,spy_event_close,spy_day1_close,spy_day5_close,abnormal_return_1d,date_was_corrected"
         ).in_("event_id", ids[i:i + 100]).execute().data
         for r in rows:
