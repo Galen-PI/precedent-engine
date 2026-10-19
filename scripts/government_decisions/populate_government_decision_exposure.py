@@ -99,7 +99,7 @@ def main():
 
     print("Fetching real government decisions, sorted by date...")
     decisions = sorted(
-        supabase.table("government_decisions").select("id,decision_date").execute().data,
+        supabase.table("government_decisions").select("id,decision_date").eq("decision_type", "interest_rate").execute().data,
         key=lambda r: r["decision_date"],
     )
     print(f"  {len(decisions)} real decisions found.\n")
