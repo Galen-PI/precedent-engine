@@ -18,11 +18,13 @@ PRE-REGISTERED PASS LINE (set before any label existed): in BOTH eras, at least 
   gets no verdict ('too thin').
 Also reported, descriptive only: mean and median abnormal return by label, hit rate by timing (new / previously_announced), by size hint,
   and by event type. THE LABELER'S PROMPT IS FROZEN: no result here may be used to change it.
+EXCLUDED BEFORE ANY REAL RESULT (2026-10-19): event type systemic_shock (sector-wide narrative rows are not company news); the count is printed.
 """
 import os, sys, math, random, datetime
 from collections import defaultdict
 
 ERA_SPLIT = "2019-01-01"
+EXCLUDED_TYPES = ("systemic_shock",)      # sector-wide narrative rows (for example the Enron/WorldCom wave), not company news; excluded BEFORE any real result
 MIN_N = 800
 B = 2000
 
@@ -84,9 +86,12 @@ def build_sample(labels, react):
     counts = defaultdict(int)
     for r in labels.values():
         counts[r["label"]] += 1
-    rows, no_react, bad_px, off_day = [], 0, 0, 0
+    rows, no_react, bad_px, off_day, narrative = [], 0, 0, 0, 0
     for eid, lab in labels.items():
         if lab["label"] not in ("good", "bad"):
+            continue
+        if lab.get("ptype") in EXCLUDED_TYPES:
+            narrative += 1
             continue
         r = react.get((eid, lab.get("ticker")))      # this label's own company: a multi-ticker event has one reaction row per ticker
         if not r:
@@ -111,6 +116,7 @@ def build_sample(labels, react):
             continue
         seen.add(k)
         thin.append(x)
+    counts["narrative_excluded"] = narrative
     return counts, rows, thin, no_react, bad_px, off_day
 
 

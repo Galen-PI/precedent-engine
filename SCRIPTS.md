@@ -3206,3 +3206,38 @@ Codespace restart killed it at 10:45. The second pass processed 1,061 event-enti
 insufficient price data (needs >= 5 company and SPY price rows in the window and a prior-day baseline), plus 34 events with no linked entity.
 The remaining 776 trackable events are unfillable by this script (view ripple_todo); not worth rerunning. Coverage: 21,599 of 22,375
 trackable events (96.5%); 859 bundled and 320 entity-less events never get tracks. The zoom-out views read the table directly and can be rerun.
+
+## event_market_reactions view repair (2026-10-19)
+
+**What was wrong.** event_market_reactions is a VIEW (live computation from market_prices) that overrode its numbers with the table
+event_market_reactions_corrected (one row per event, primary key event_id; written by tag_reaction_character.py with the cumulative-from-prior-close
+convention; 15,897 events, 564 date-corrected). For events not in the corrected table (about 31% of rows) the live branch:
+(A) skipped the event date's own session (price_date < event_date for the prior close, price_date > event_date for the reaction day), so return_0d
+spanned two sessions, and measured 1d/5d/20d from the reaction-day close instead of the prior close; (B) had no limit on how far after the event the
+first price could be (HWM: event 2008, first price 2016); (C) joined the corrected table on event_id alone, stamping one ticker's numbers onto every
+ticker of a multi-ticker event (114 rows; BAC/JPM/WFC for Lehman had identical returns); (D) fanned out on duplicate relationship links (3 rows).
+It also compared a date with a timestamptz (time-zone dependent). Found because the direction test's self-check against the stored abnormal_return_1d
+agreed on only 68% of rows.
+
+**Fix.** sql/views/event_market_reactions_v2.sql: reaction day = first session on or after the event day within 7 days; prior = the session before it;
+every horizon cumulative from that prior close; the corrected table supplies only corrected EVENT DATES; UTC pinned; one row per event and ticker.
+event_market_reactions is now `SELECT * FROM event_market_reactions_v2` (sql/views/event_market_reactions.sql). Old definition kept in
+sql/views/event_market_reactions_OLD_before_repair_20261019.sql (rollback: run that file). Old output kept in table
+event_market_reactions_snapshot_20261019; new output at swap time in emr_v2_check.
+
+**Validation.** On 15,812 single-ticker events the new view matched the corrected table: reaction day 100%, prior day 100%, return_0d/1d 100%,
+return_5d 99.97%, return_20d 99.94%, abnormal 1d 99.90%, abnormal 20d 98.8% (the 188 mismatches are benchmark-side; probably SPY alignment when a
+stock has a missing session; not resolved). Rows 23,351 -> 23,348 (the 3 duplicates). Old gap-1/3/4 rows: the sign of the 1-day return flipped in
+about 50% (the old value was the day AFTER the reaction day). New NULL 1-day returns: 626 reaction day more than 7 days out, 29 no prior session,
+31 cross-ticker stamping (NWS had no prices while NWSA's numbers were stamped on it; CEG/EXC). Post-swap: 22,513 rows at gap 0, 86 at gap 1-7, 749 NULL.
+
+**Not affected (read the corrected table or compute from prices):** reaction-character tags, multi_feature_model_magnitude.py,
+populate_sector_peer_benchmark.py, suggest_bundled_event_dates.py. 15-18 tagged events per tag were not in the corrected table.
+**Affected / rerun:** pattern_card.py (read the view; also had two scale bugs, see below), refresh_event_scratch_tables.sql (2019 events: view rows
+for events not in the corrected table), classifier_confidence_calibration (recomputes automatically), direction_test.py.
+
+**pattern_card.py (patched 2026-10-19).** (1) get_tagged_event_ids read event_tags without paging (API caps at 1,000 rows); (2) get_reactions sent all
+ids in one in_() (400 Bad Request). Now pages the links, chunks ids by 100, and reads the corrected table (one row per event). The tag is selected on
+days +1..+20 from the reaction-day close (day 0 excluded), so the 1d/5d/20d rows contain selected days; the 0d row is clean and is flat for both tags.
+
+**Open.** The 188 abnormal-20d mismatches; the 2019 scratch-table refresh and what was built on it.

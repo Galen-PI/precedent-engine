@@ -6,7 +6,8 @@ The Phase 6 evaluation harness. Takes one tag and produces an honest
 and an explicit READY/NOT READY verdict against the n=30-50 threshold.
 
 HONEST SCOPE OF THIS v1 (read before trusting output):
-  - Benchmark: SPY only (event_market_reactions.abnormal_return_*).
+  - Benchmark: SPY only (event_market_reactions_corrected.abnormal_return_*;
+    patched 2026-10-19: one row per event, the tagged company's own windows).
     A sector/peer benchmark does NOT exist yet -- a broad-sector move
     could still masquerade as company-specific here. This is a known,
     documented limitation, not an oversight.
@@ -45,18 +46,32 @@ def get_tagged_event_ids(tag_name: str) -> list[str]:
         sys.exit(1)
     tag_id = tag[0]["id"]
 
-    links = supabase.table("event_tags").select("event_id").eq("tag_id", tag_id).execute().data
+    # read EVERY page: one call returns at most 1,000 rows, so a tag with more events was silently cut off
+    links, off = [], 0
+    while True:
+        page = supabase.table("event_tags").select("event_id").eq("tag_id", tag_id).order("event_id").range(off, off + 999).execute().data
+        if not page:
+            break
+        links.extend(page)
+        if len(page) < 1000:
+            break
+        off += 1000
     return [row["event_id"] for row in links]
 
 
 def get_reactions(event_ids: list[str]) -> list[dict]:
     if not event_ids:
         return []
-    result = supabase.table("event_market_reactions") \
-        .select("event_id,title,ticker," + ",".join(HORIZONS)) \
-        .in_("event_id", event_ids) \
-        .execute()
-    return result.data
+    # One row per event from event_market_reactions_corrected (primary key event_id: the table tag_reaction_character.py writes, holding the tagged
+    # company's own windows). The view has one row per event AND ticker, so a multi-ticker event would count several times and pull in companies
+    # the tag was not assigned to. Ids go in chunks: one in_() of thousands of ids exceeds the request URL limit (the 400 'Bad Request').
+    rows = []
+    for i in range(0, len(event_ids), 100):
+        rows.extend(supabase.table("event_market_reactions_corrected")
+                    .select("event_id,title,ticker," + ",".join(HORIZONS))
+                    .in_("event_id", event_ids[i:i + 100])
+                    .execute().data)
+    return rows
 
 
 def mean_ci_95(values: list[float]) -> tuple[float, float, float, float]:
@@ -144,6 +159,8 @@ def main():
     print("  - No random-date base rate comparison yet")
     print("  - No walk-forward in-sample/out-of-sample split yet")
     print("  - CI uses a normal approximation, rough at small n")
+    print("  - The tag is SELECTED on an abnormal return over its tagging window (tag_reaction_character.py, DEFAULT_WINDOW_DAYS): a row above equal to")
+    print("    that window is circular (a 'rewarded' tag is positive there by construction); read the other horizons.")
 
 
 if __name__ == "__main__":
