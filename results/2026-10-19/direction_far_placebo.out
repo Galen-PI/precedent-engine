@@ -1,0 +1,17 @@
+same sample as the main test: 5523 events | with a full days 26-39 window from the cache: 5510 | not in the cache or too recent: 13
+
+HIT RATE (good = up, bad = down); the within-type null absorbs the type mix
+  primary: days 0 and +1             2004-2018  n=4212  hit rate  57.7% [ 56.2% -  59.2%] | within-type null  53.9% | excess +3.8 pts | permutation p = 0.000
+  primary: days 0 and +1             2019-2026  n=1311  hit rate  57.8% [ 55.1% -  60.5%] | within-type null  53.7% | excess +4.1 pts | permutation p = 0.001
+  primary: days 0 and +1             all        n=5523  hit rate  57.7% [ 56.4% -  59.0%] | within-type null  53.8% | excess +3.9 pts | permutation p = 0.000
+  P1 post-reaction: days 2-20        2004-2018  n=4212  hit rate  49.1% [ 47.6% -  50.6%] | within-type null  49.9% | excess -0.8 pts | permutation p = 0.941
+  P1 post-reaction: days 2-20        2019-2026  n=1311  hit rate  50.8% [ 48.1% -  53.5%] | within-type null  50.2% | excess +0.6 pts | permutation p = 0.304
+  P1 post-reaction: days 2-20        all        n=5523  hit rate  49.5% [ 48.2% -  50.8%] | within-type null  50.0% | excess -0.5 pts | permutation p = 0.846
+  P2 FAR PLACEBO: days 26-39         2004-2018  n=4212  hit rate  50.3% [ 48.8% -  51.8%] | within-type null  50.4% | excess -0.1 pts | permutation p = 0.578
+  P2 FAR PLACEBO: days 26-39         2019-2026  n=1298  hit rate  48.2% [ 45.4% -  50.9%] | within-type null  49.3% | excess -1.2 pts | permutation p = 0.898
+  P2 FAR PLACEBO: days 26-39         all        n=5510  hit rate  49.8% [ 48.5% -  51.1%] | within-type null  50.2% | excess -0.3 pts | permutation p = 0.790
+  P3 second far window: days 40-59   2004-2018  n=4212  hit rate  50.3% [ 48.8% -  51.8%] | within-type null  50.4% | excess -0.1 pts | permutation p = 0.605
+  P3 second far window: days 40-59   2019-2026  n=1287  hit rate  51.6% [ 48.9% -  54.3%] | within-type null  51.8% | excess -0.2 pts | permutation p = 0.615
+  P3 second far window: days 40-59   all        n=5499  hit rate  50.6% [ 49.3% -  51.9%] | within-type null  50.7% | excess -0.1 pts | permutation p = 0.613
+
+VERDICT under the pre-set rule (P2 beats its null with p <= 0.025 in either era = FLAGGED): CLEAN
