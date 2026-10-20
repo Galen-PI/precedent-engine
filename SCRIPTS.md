@@ -3332,3 +3332,10 @@ Scaling by the MEDIAN squared miss (sqrt(median(z^2)/0.45494)) with ONE edge pas
 against 87.95-94.37% for the current mean-based scale with one edge and 89.23-92.97% with per-bin edges (which also drift by era); interval score 0.983-0.986 of today's. Ledger row band_stress_scale_median
 (proven). NOT adopted: the card, map and calibration still use the mean-based scale. Open: an adoption check on the event / earnings / Regulation FD groups (existing multipliers, edges refit under the median
 scale, 88-92% per group per era, interval score within 1% of today's), the previous-day variant, and then changing day_card / day_map / band_calibrate / band_coverage_test / band_tail_share together.
+
+### 2026-10-20 (late) -- Median-scale adoption check (median_scale_adoption_check.py, rule committed before the run)
+NOT ADOPTED. Under the pre-set rule the median scale (one edge per group, existing multipliers) passed 15 of 17 judged group-era cells and all 12 ordinary stress-bin cells but failed earnings day 0 and day +1
+in 2013-2019 (coverage 87.30% and 87.19% on about 12,000 days each; today's band 88.53% and 88.14%). Today's band (column B) reproduced the earlier calibration numbers exactly. On a 90%-quantile basis the earnings
+window is wider under the median scale (3.24x / 2.70x vs 2.86x / 2.39x): hypothesis, untested, that the mean scale is partly inflated by the earnings stocks themselves on busy reporting days (a check would be the
+ratio of the mean scale to the median scale against the share of stocks in earnings windows). Ledger row band_median_scale_all_groups (null). The card, map and calibration keep the mean-based scale with per-bin
+edges for ordinary days. models/band_median_calibration.json records the edges and adoptable = false.

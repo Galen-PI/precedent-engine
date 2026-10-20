@@ -1,0 +1,25 @@
+{
+ "what": "Edges for the median-scale band (90% coverage), one per group; band = edge x SD x sqrt(median(z^2)/0.45494) x multiplier (existing multipliers unchanged).",
+ "scale": {
+  "type": "median_squared_miss",
+  "const": 0.45494
+ },
+ "edge_90": {
+  "ordinary": 1.775626808177303,
+  "recorded event, no earnings": 1.6565747509581907,
+  "earnings window, day 0 (no event)": 2.116599152509883,
+  "earnings window, day +1 (no event)": 1.9388434549138829,
+  "earnings window + recorded event": 1.9679349938539437,
+  "Regulation FD (7.01) only": 1.6341267450945864
+ },
+ "verdict_adoptable": false,
+ "failing_cells": [
+  "earnings window, day 0 (no event), 2013-2019: coverage 87.30% outside 90% +- 2.00",
+  "earnings window, day +1 (no event), 2013-2019: coverage 87.19% outside 90% +- 2.00"
+ ],
+ "caveats": [
+  "Fitted on all years; the walk-forward table is the honest check.",
+  "An explanation band: it uses the same day's cross-section.",
+  "Not used by the card until a separate switch."
+ ]
+}

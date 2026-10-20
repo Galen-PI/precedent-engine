@@ -1,0 +1,50 @@
+matrices: 496 stocks x 8250 days | 44s
+
+OUT-OF-SAMPLE, BY GROUP AND ERA (target coverage 90%; tolerance = max(2 points, 3 standard errors) for C)
+  group                                  era             days    tol |    B cov    C cov   Cp cov |   C/B IS  verdict
+  ordinary                               2009-2012     389831   2.0% |   90.58%   89.96%   89.98% |   0.9862  ok
+  ordinary                               2013-2019     747578   2.0% |   90.53%   89.85%   89.80% |   0.9857  ok
+  ordinary                               2020-2026     774789   2.0% |   89.72%   90.46%   90.12% |   0.9834  ok
+  recorded event, no earnings            2009-2012       5914   2.0% |   89.65%   89.40%   89.31% |   0.9945  ok
+  recorded event, no earnings            2013-2019      10122   2.0% |   88.72%   88.49%   88.23% |   0.9919  ok
+  recorded event, no earnings            2020-2026       9449   2.0% |   89.29%   89.92%   89.42% |   0.9971  ok
+  earnings window, day 0 (no event)      2009-2012       6579   2.0% |   89.60%   89.19%   88.92% |   0.9874  ok
+  earnings window, day 0 (no event)      2013-2019      12300   2.0% |   88.53%   87.30%   87.02% |   0.9901  FAILS
+  earnings window, day 0 (no event)      2020-2026      12887   2.0% |   90.35%   89.95%   89.74% |   1.0049  ok
+  earnings window, day +1 (no event)     2009-2012       6491   2.0% |   89.03%   88.60%   88.46% |   0.9976  ok
+  earnings window, day +1 (no event)     2013-2019      12197   2.0% |   88.14%   87.19%   87.05% |   0.9950  FAILS
+  earnings window, day +1 (no event)     2020-2026      12883   2.0% |   89.06%   89.23%   89.12% |   1.0006  ok
+  earnings window + recorded event       2009-2012  572 (<1000: not judged)
+  earnings window + recorded event       2013-2019       1181   2.6% |   88.57%   88.31%   88.15% |   0.9841  ok
+  earnings window + recorded event       2020-2026       1291   2.5% |   88.46%   88.38%   87.99% |   1.0184  ok
+  Regulation FD (7.01) only              2009-2012       6451   2.0% |   89.85%   90.00%   89.40% |   0.9925  ok
+  Regulation FD (7.01) only              2013-2019      11698   2.0% |   90.36%   89.81%   89.97% |   0.9842  ok
+  Regulation FD (7.01) only              2020-2026      10426   2.0% |   89.22%   90.12%   89.74% |   0.9919  ok
+
+ORDINARY DAYS BY STRESS BIN (condition 3; B = today's per-bin edges, C = one edge under the median scale)
+  stress bin           era             days    tol |    B cov    C cov  verdict
+  calm (<0.8)          2009-2012     124078   2.0% |   90.34%   89.76%  ok
+  calm (<0.8)          2013-2019     128082   2.0% |   89.68%   89.63%  ok
+  calm (<0.8)          2020-2026     187165   2.0% |   89.87%   90.35%  ok
+  normal (0.8-1.2)     2009-2012     219124   2.0% |   90.47%   89.97%  ok
+  normal (0.8-1.2)     2013-2019     467755   2.0% |   90.41%   89.73%  ok
+  normal (0.8-1.2)     2020-2026     422658   2.0% |   89.81%   90.40%  ok
+  elevated (1.2-1.5)   2009-2012      37779   2.0% |   91.51%   90.40%  ok
+  elevated (1.2-1.5)   2013-2019     111921   2.0% |   91.11%   90.36%  ok
+  elevated (1.2-1.5)   2020-2026     111292   2.0% |   89.37%   90.63%  ok
+  high (>=1.5)         2009-2012       8850   2.0% |   92.72%   90.90%  ok
+  high (>=1.5)         2013-2019      39820   2.0% |   92.97%   90.63%  ok
+  high (>=1.5)         2020-2026      53674   2.0% |   89.23%   91.08%  ok
+
+EDGES UNDER THE MEDIAN SCALE, fitted on all years (one number per group; band = edge x SD x median-scale x multiplier):
+  ordinary                               1.776
+  recorded event, no earnings            1.657
+  earnings window, day 0 (no event)      2.117
+  earnings window, day +1 (no event)     1.939
+  earnings window + recorded event       1.968
+  Regulation FD (7.01) only              1.634
+
+VERDICT under the pre-set rule: the median scale is NOT adopted. Failing cells:
+  - earnings window, day 0 (no event), 2013-2019: coverage 87.30% outside 90% +- 2.00
+  - earnings window, day +1 (no event), 2013-2019: coverage 87.19% outside 90% +- 2.00
+saved /workspaces/stock-research1/models/band_median_calibration.json | total 47s
