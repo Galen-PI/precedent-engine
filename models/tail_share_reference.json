@@ -1,0 +1,26 @@
+{
+ "what": "Share of stocks beyond 2.0 band units on a day (the day map's 'big miss' threshold), measured over all days since 2006 with >= 150 scored stocks; band units as the day map computes them.",
+ "edge": 2.0,
+ "n_days": 5227,
+ "pooled_share_all": 0.035857888400303524,
+ "pooled_share_by_group": {
+  "all stock-days": 0.035857888400303524,
+  "ordinary (no event, earnings or 7.01)": 0.03536390673040403,
+  "recorded event, no earnings": 0.03772109840711424,
+  "earnings window (day 0 or +1, with or without an event)": 0.049435603621598184,
+  "Regulation FD (7.01) only": 0.03556209571108863
+ },
+ "daily_share": {
+  "p05": 0.0125,
+  "p25": 0.025974025974025976,
+  "median": 0.03731343283582089,
+  "p75": 0.045871559633027525,
+  "p95": 0.05531914893617021,
+  "mean": 0.03589611359595018
+ },
+ "caveats": [
+  "Descriptive reference, not a test.",
+  "Same-day market stress is used in the band units, so the share is conditional on knowing the day's stress.",
+  "Fitted on the same years it describes."
+ ]
+}
