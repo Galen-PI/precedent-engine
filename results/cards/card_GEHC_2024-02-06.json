@@ -1,0 +1,43 @@
+{
+ "ticker": "GEHC",
+ "date": "2024-02-06",
+ "sector": "Health Care",
+ "day": {
+  "return": 0.11646911491016398,
+  "prev_close": 73.099156,
+  "close": 81.61295
+ },
+ "chapter1": {
+  "ret": 0.11646911491016398,
+  "market_move": 0.0029032985071966166,
+  "sector_excess": 0.01057716754170614,
+  "beta_market": 1.2249040193810252,
+  "beta_sector": 0.7563976667763942,
+  "market_part": 0.0035562620109280663,
+  "sector_part": 0.008000544849649533,
+  "hyp": 0.0115568068605776,
+  "e1": 0.10491230804958639,
+  "sd": 0.014520964856064375,
+  "fit_days": 250
+ },
+ "hypothetical_price": 73.94394882756322,
+ "q": 1.3633867357501448,
+ "event_multiplier": 2.72,
+ "band_multiplier_source": "earnings window (8-K item 2.02 filed 2024-02-06, day 0): measured on all stocks since 2006, relative to an ordinary day",
+ "filing_flags": {
+  "earn_off": 0,
+  "earn_date": "2024-02-06",
+  "f701": false
+ },
+ "band_return": [
+  -0.06430790503711782,
+  0.08742151875827302
+ ],
+ "band_units_of_miss": 2.274848772566316,
+ "events": [],
+ "macro": {
+  "oil": 0.008468788416883033,
+  "yield": -0.08000000000000007,
+  "credit": 0.019999999999999574
+ }
+}

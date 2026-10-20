@@ -1,0 +1,33 @@
+statements: 28396 quarterly rows | matched to an item 2.02 filing: 27803 (98%) | with a usable two-day outcome and no recorded event: 26016 | 25s
+  events with a revenue surprise: 21041
+  events with a operating_income surprise: 15934
+  events with a net_income surprise: 21004
+
+SIGN TEST: does the sign of the surprise predict the sign of the two-day miss? (chance-adjusted by shuffling surprises within each calendar quarter)
+  measure            era         events  hit rate         95% interval  null mean         p
+  revenue *          2009-2018     9107     53.4%      52.4% -  54.4%      50.0%     0.000
+  revenue *          2019-2026    11933     52.9%      52.0% -  53.8%      50.0%     0.000
+  operating_income   2009-2018     6874     55.2%      54.0% -  56.4%      50.0%     0.000
+  operating_income   2019-2026     9058     54.3%      53.3% -  55.4%      49.9%     0.000
+  net_income         2009-2018     9065     55.4%      54.4% -  56.4%      50.0%     0.000
+  net_income         2019-2026    11936     53.0%      52.1% -  53.9%      49.8%     0.000
+VERDICT, sign test under the pre-set rule (revenue surprise; both eras: >= 800 events, hit rate >= 54%, interval lower end > 50%, p <= 0.05): does not pass
+  CONTROL, like with like: all three surprises scored on the SAME events (those that have all three); post-hoc, no verdict
+  same events: revenue 2009-2018     6849     53.7%      52.5% -  54.9%      50.0%     0.002
+  same events: operating 2009-2018     6849     55.1%      54.0% -  56.3%      50.0%     0.002
+  same events: net_incom 2009-2018     6849     54.7%      53.5% -  55.8%      50.0%     0.002
+  same events: revenue 2019-2026     9055     53.0%      51.9% -  54.0%      50.2%     0.002
+  same events: operating 2019-2026     9055     54.4%      53.3% -  55.4%      49.9%     0.002
+  same events: net_incom 2019-2026     9055     53.1%      52.1% -  54.1%      49.9%     0.002
+  mean two-day miss when the revenue surprise is positive: +0.59% (n=11349); negative: -0.25% (n=9691)
+
+SIZE TEST: terciles of |revenue surprise| within each calendar quarter (low / middle / high)
+  calibrated band multiplier vs an ordinary day (all years):  low 2.54x (14064 days)   middle 2.53x (14026 days)   high 2.59x (13980 days)
+  high / low ratio: 1.02x
+                                      2010-2014  2015-2019  2020-2026 | years positive
+  PRIMARY three scales vs one pooled    -0.0030    +0.0001    -0.0003 | 6 of 15
+VERDICT, size test under the pre-set rule (>= 0.005 nats in each era and >= 70% of years): does not earn a place
+
+NOTE: a revenue trend surprise is a crude stand-in for the surprise against analyst consensus, which is not in the database; a weak result here does not rule out a consensus surprise.
+      Net income and operating income are reported for shape only (they carry one-off items). The filing time is unknown, which is why the outcome is the two-day sum.
+total 31s

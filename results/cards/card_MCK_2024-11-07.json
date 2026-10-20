@@ -1,0 +1,43 @@
+{
+ "ticker": "MCK",
+ "date": "2024-11-07",
+ "sector": "Health Care",
+ "day": {
+  "return": 0.10595113421674496,
+  "prev_close": 544.74641,
+  "close": 602.46291
+ },
+ "chapter1": {
+  "ret": 0.10595113421674496,
+  "market_move": 0.00773214242164566,
+  "sector_excess": -0.0029652569008815416,
+  "beta_market": 0.026863595675195896,
+  "beta_sector": 0.1377931000366263,
+  "market_part": 0.0002077131477181191,
+  "sector_part": -0.0004085919407774667,
+  "hyp": -0.00020087879305934761,
+  "e1": 0.1061520130098043,
+  "sd": 0.015338942890973213,
+  "fit_days": 250
+ },
+ "hypothetical_price": 544.6369819986357,
+ "q": 2.4352048161083775,
+ "event_multiplier": 2.47,
+ "band_multiplier_source": "earnings window (8-K item 2.02 filed 2024-11-06, day 1): measured on all stocks since 2006, relative to an ordinary day",
+ "filing_flags": {
+  "earn_off": 1,
+  "earn_date": "2024-11-06",
+  "f701": false
+ },
+ "band_return": [
+  -0.09745903521894783,
+  0.09705727763282915
+ ],
+ "band_units_of_miss": 1.7954284536967342,
+ "events": [],
+ "macro": {
+  "oil": 0.009863851069741525,
+  "yield": -0.11000000000000032,
+  "credit": -0.009999999999999787
+ }
+}
