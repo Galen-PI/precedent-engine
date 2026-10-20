@@ -1,0 +1,39 @@
+  residuals: 100/496 stocks, 13s
+  residuals: 200/496 stocks, 22s
+  residuals: 300/496 stocks, 30s
+  residuals: 400/496 stocks, 38s
+  residuals: 496/496 stocks, 46s
+matrices: 496 stocks x 8250 days | stress days (>= 1.5): 355 of 5479 since 2005 | 48s
+  K=5 done, 50s
+  K=2 done, 52s
+  K=10 done, 55s
+
+BASELINE: chapter 1 R-squared against predicting zero, by era (all scored days)
+  2005-2012  0.499
+  2013-2019  0.369
+  2020-2026  0.451
+
+GAIN IN R-SQUARED FROM K STATISTICAL FACTORS (walk-forward, leave-one-out; the bar is +0.02 in each era)
+                                      2005-2012  2013-2019  2020-2026 | years positive
+  PRIMARY ALL DAYS     K=5      +0.0100    +0.0201    +0.0395 | 22 of 22
+           ALL DAYS     K=2      +0.0054    +0.0126    +0.0247 | 22 of 22
+           ALL DAYS     K=10     +0.0111    +0.0238    +0.0515 | 22 of 22
+  PRIMARY STRESS DAYS  K=5      +0.0095    +0.0259    +0.0271 | 17 of 18
+           STRESS DAYS  K=2      +0.0063    +0.0189    +0.0187 | 16 of 18
+           STRESS DAYS  K=10     +0.0096    +0.0279    +0.0354 | 16 of 18
+  PRIMARY ORDINARY DAYS K=5      +0.0102    +0.0192    +0.0446 | 22 of 22
+           ORDINARY DAYS K=2      +0.0051    +0.0117    +0.0271 | 22 of 22
+           ORDINARY DAYS K=10     +0.0115    +0.0232    +0.0581 | 22 of 22
+
+VERDICTS under the pre-set rules (K = 5):
+  all days:      does not earn its place
+  stress days:   does not earn its place
+  ordinary days: does not earn its place
+
+COMPOSITION of the unexplained squared miss (test years 2005 on; K = 5 factors; shares of the regime's total)
+  regime              days   own events  big, no event     the rest removed by factors
+  stress days          355         5.0%          43.1%        51.8%       4.3%
+  ordinary days       5124         4.0%          42.1%        53.9%       4.3%
+  (own events cover only about 1.3% of stock-days; 'big' = more than 2 stress-units with no recorded event)
+
+total 63s
