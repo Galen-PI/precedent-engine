@@ -1,0 +1,46 @@
+{
+ "ticker": "AWK",
+ "date": "2026-10-08",
+ "sector": "Utilities",
+ "day": {
+  "return": 0.006280342282932949,
+  "prev_close": 127.38,
+  "close": 128.17999
+ },
+ "chapter1": {
+  "ret": 0.006280342282932949,
+  "market_move": -0.004233010121960756,
+  "sector_excess": 0.0031471535519910776,
+  "beta_market": 0.13975347882849543,
+  "beta_sector": 0.6573961334437549,
+  "market_part": -0.0005915778904602494,
+  "sector_part": 0.0020689265764327136,
+  "hyp": 0.0014773486859724642,
+  "e1": 0.004802993596960485,
+  "sd": 0.012122459414658943,
+  "fit_days": 250
+ },
+ "hypothetical_price": 127.56818467561916,
+ "q": 0.6306833479674312,
+ "event_multiplier": 1.0,
+ "band_multiplier_source": "no own event, earnings filing or item 7.01 filing on day 0 or +1",
+ "band_group": "ordinary",
+ "band_edge": 1.5272606625475662,
+ "band_edge_source": "calibrated 90% edge for ordinary days with calm market stress",
+ "filing_flags": {
+  "earn_off": null,
+  "earn_date": null,
+  "f701": false
+ },
+ "band_return": [
+  -0.013225774194233784,
+  0.016180471566178713
+ ],
+ "band_units_of_miss": 0.49890239256455765,
+ "events": [],
+ "macro": {
+  "oil": 0.03409808461376551,
+  "yield": -0.0600000000000005,
+  "credit": -0.03000000000000025
+ }
+}

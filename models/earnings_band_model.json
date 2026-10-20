@@ -1,0 +1,20 @@
+{
+ "what": "Measured band multipliers on stock-days with an 8-K filing, relative to an ordinary day (the ratio of root-mean-square stress-adjusted misses). These are GROUP values: use one of them, never a product with the event multiplier.",
+ "multipliers_vs_ordinary_day": {
+  "earnings_day0": 2.72,
+  "earnings_day1": 2.47,
+  "event_and_earnings": 2.87,
+  "item_7_01": 1.36
+ },
+ "by_era": {
+  "earnings_day0": {"2006-2012": 2.61, "2013-2019": 2.89, "2020-2026": 2.69},
+  "earnings_day1": {"2006-2012": 2.25, "2013-2019": 2.68, "2020-2026": 2.54},
+  "event_and_earnings": {"2006-2012": 2.59, "2013-2019": 2.93, "2020-2026": 3.07}
+ },
+ "source": "scripts/card/earnings_thread_test.py (results/2026-10-19/earnings_thread_full.out): 41,046 distinct stock-dates, pre-set rule PASSED (21 of 21 years positive). Item 7.01 from scripts/card/eightk_item_scan.py (results/2026-10-19/eightk_item_scan.out): 34,283 flagged days, passed its pre-set rule (20 of 21 years); a weak lead.",
+ "caveats": [
+  "The 8-K table stores only the filing DATE: day 0 = the first trading day on or after it, day +1 = the next. A pre-market release reacts on day 0, an after-close release on day +1. If the time were known, the reaction-day multiplier would be about 3.5x (an inference from the two averages).",
+  "The ordinary-day group these were measured against still contained days with other 8-Ks and some unflagged pre-2004 earnings days, which pushes the ordinary scale up: the multipliers are conservative.",
+  "WIDTH ONLY. No sign is known for earnings days (the EPS-surprise test has not been run)."
+ ]
+}

@@ -1,0 +1,58 @@
+{
+ "ticker": "MLM",
+ "date": "2026-08-14",
+ "sector": "Materials",
+ "day": {
+  "return": 0.005819051041901391,
+  "prev_close": 543.87923,
+  "close": 547.044091
+ },
+ "chapter1": {
+  "ret": 0.005819051041901391,
+  "market_move": -0.0019797207559913987,
+  "sector_excess": 0.006654735685279007,
+  "beta_market": 1.0193307677837242,
+  "beta_sector": 0.797287303290589,
+  "market_part": -0.0020179902782020876,
+  "sector_part": 0.0053057362686277495,
+  "hyp": 0.003287745990425662,
+  "e1": 0.002531305051475729,
+  "sd": 0.01415364847671077,
+  "fit_days": 250
+ },
+ "hypothetical_price": 545.6673667577084,
+ "q": 0.6346410566905426,
+ "event_multiplier": 1.0988578587966489,
+ "band_multiplier_source": "recorded event (joint event-day model, floored at 1.0)",
+ "band_group": "recorded event, no earnings",
+ "band_edge": 1.336819977848079,
+ "band_edge_source": "calibrated 90% edge for: recorded event, no earnings",
+ "filing_flags": {
+  "earn_off": null,
+  "earn_date": null,
+  "f701": false
+ },
+ "band_return": [
+  -0.01327555648910715,
+  0.019851048469958475
+ ],
+ "band_units_of_miss": 0.20430099414183742,
+ "events": [
+  {
+   "event_id": "5223911f-0ff4-4b04-a06e-73549b5510fa",
+   "ptype": "capital_raise",
+   "off": 0,
+   "date": "2026-08-14",
+   "title": "Martin Marietta Issues $5.5 Billion in Senior Notes to Finance Lhoist North America Acquisition",
+   "label": "unclear",
+   "size": "unknown",
+   "timing": "previously_announced",
+   "reasoning": "The text describes a $5.5 billion note issuance plus a $1.5 billion term loan to fund a previously announced acquisition of Lhoist North America; the financing terms (coupons up to 6.375%) are not clearly favorable or unfavorable and the acquisition's value to shareholders is not assessed in the text, so the direction cannot be told."
+  }
+ ],
+ "macro": {
+  "oil": 0.014739639966171225,
+  "yield": 0.04999999999999982,
+  "credit": 0.0
+ }
+}

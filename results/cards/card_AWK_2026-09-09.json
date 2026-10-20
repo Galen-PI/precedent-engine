@@ -1,0 +1,58 @@
+{
+ "ticker": "AWK",
+ "date": "2026-09-09",
+ "sector": "Utilities",
+ "day": {
+  "return": -0.00035617609346050294,
+  "prev_close": 140.38,
+  "close": 140.33
+ },
+ "chapter1": {
+  "ret": -0.00035617609346050294,
+  "market_move": -0.0046477536673084074,
+  "sector_excess": -0.007247644613825465,
+  "beta_market": 0.1437824820276281,
+  "beta_sector": 0.6687352989233273,
+  "market_part": -0.0006682655581386137,
+  "sector_part": -0.004846755787316616,
+  "hyp": -0.00551502134545523,
+  "e1": 0.005158845251994727,
+  "sd": 0.012195220160989699,
+  "fit_days": 250
+ },
+ "hypothetical_price": 139.605801303525,
+ "q": 0.7357297449263742,
+ "event_multiplier": 1.349740039289347,
+ "band_multiplier_source": "recorded event (joint event-day model, floored at 1.0)",
+ "band_group": "recorded event, no earnings",
+ "band_edge": 1.336819977848079,
+ "band_edge_source": "calibrated 90% edge for: recorded event, no earnings",
+ "filing_flags": {
+  "earn_off": null,
+  "earn_date": null,
+  "f701": false
+ },
+ "band_return": [
+  -0.0243893651079915,
+  0.013359322417081043
+ ],
+ "band_units_of_miss": 0.3653874000738522,
+ "events": [
+  {
+   "event_id": "57f89d11-b54f-451d-8752-7f63fa39385e",
+   "ptype": "regulatory",
+   "off": 0,
+   "date": "2026-09-09",
+   "title": "NJBPU Approves $68 Million Annualized Rate Increase for New Jersey American Water",
+   "label": "good",
+   "size": "moderate",
+   "timing": "previously_announced",
+   "reasoning": "A regulator approved a $68 million annualized rate increase with a 9.5% ROE and recognition of $1.4 billion in incremental capital investment, which raises expected earnings for the utility. The text describes the final order following a stipulated settlement in a rate case already filed, so it is a scheduled step in a previously announced proceeding."
+  }
+ ],
+ "macro": {
+  "oil": 0.03237448253900865,
+  "yield": 0.03000000000000025,
+  "credit": -0.010000000000000675
+ }
+}
