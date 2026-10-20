@@ -3241,3 +3241,34 @@ ids in one in_() (400 Bad Request). Now pages the links, chunks ids by 100, and 
 days +1..+20 from the reaction-day close (day 0 excluded), so the 1d/5d/20d rows contain selected days; the 0d row is clean and is flat for both tags.
 
 **Open.** The 188 abnormal-20d mismatches; the 2019 scratch-table refresh and what was built on it.
+
+## Phase 7 engine, chapter results (2026-10-19 / 2026-10-20)
+
+**Structure.** Chapter 1 = market + sector (per-stock 250-day fit on SPY and the same-day mean of the other stocks in the sector). Chapter 2 = macro and
+policy flags. Chapter 3 = the stock's own events. Everything is scored walk-forward (fit on prior years only) against a rule written before the run;
+failures stay on the record. Scripts in scripts/card/ and scripts/macro/ (decomp_validation, chapter2_test, event_width_test, direction_test,
+direction_placebo, event_center_test, timing_profile, masking_test, oil_size_test, build_return_cache, label_event_direction in scripts/classification).
+
+**Chapter 1** (2.35M stock-days, 2005-2026): R2 vs zero 0.452 (eras 0.493 / 0.364 / 0.448), mean z^2 1.14, |z|>3 misses 1.6%. Adding oil, yield and credit
+(layer 2) gives -0.007: does not earn a place (rule: +0.02 and positive in all eras). On own-event days: mean z^2 2.96 vs 1.11, 5.6% vs 1.6% big misses, R2 0.29.
+
+**Chapter 2** (full run; flag days 552 / 351 / 531): per-sector, all-stock and per-stock macro pulls do not earn a place; flags do not widen the spread beyond
+recent volatility (+0.000 / +0.001 / +0.002 nats). Flags widening the slow spread: +0.004 / +0.011 / +0.056, 13 of 22 years: does not (the 40-stock trial's
+pass did not hold at full scale). Timing profile: macro links act on the flag day only. Masking/compounding between oil, yield and credit days: not seen
+(power: differences under about 0.2 not detectable).
+
+**Chapter 3, width** (event_width_test.py; ledger event_day_width_own_events, proven): own-event days are about 1.6x wider than ordinary days after removing
+market-wide stress (day 0 1.78x, day +1 1.40x; large 2.17x, small 1.25x; new 1.71x, previously announced 1.32x; capital_raise 1.03x). All pre-set predictions held.
+
+**Chapter 3, sign** (labeler dir_v1, claude-haiku-5-5, 22,283 events; 65% unclear). direction_test.py PASSED its pre-set line in both eras (57.7% and 57.8% vs
+within-type nulls 53.9% and 53.7%; ledger event_label_direction_sign, held at lead). Post-hoc: days 2-20 at chance; far placebo underpowered (n=538).
+event_center_test.py (pre-set, label beyond type): DOES NOT (+0.029 / +0.028 / +0.223%, 14 of 22 years). The sign is real and tiny against event-day
+noise. Decision: no signed pull in the hypothetical price; the label is shown as an annotation.
+
+**Event-premium rebuild** (after the event_market_reactions repair above): the view-only reactions had skipped days 0 and +1; repaired, ordinary-type
+excess is +0.0292 / +0.0490 / +0.0794 (2004-07 / 2008-12 / 2013-18), +0.0367 older 2019-26 events, +0.0877 wave 1, +0.1243 wave 2. The earlier
+"premium shrinks as the event set broadens" reading was mostly the defect. Backups: events_ratio_backup_20261019, reactions_view_only_backup_20261019.
+
+**Open.** Baseline logs for chapter 2, validation, width, direction and placebo were not saved before a Codespace restart cleared /tmp; only event_center_full.out
+is in results/2026-10-19/. Regenerate them (about ten minutes) and compare with the numbers above. Far placebo from the price cache for all events. Joint model
+for the width multipliers. Gap audit after the engine is assembled.
