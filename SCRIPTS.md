@@ -3326,3 +3326,9 @@ vol_estimators was built once (CREATE TABLE AS, 2026-10-14/15) for an estimator 
 last price minus 20 trading days (2026-09-15 for prices to 2026-10-13; prices_last and vol_estimators_last were checked). The older-years extension function extend_year_safe(y) refuses 2019+, and the statement that
 added August-September 2026 was not found. The sector builders inner-join it, so sector_day_z / sector_day_tail also end 2026-09-15. day_web.py computes v64 from prices when the table has no row (same
 definition: sample sd of the 64 returns before the day, at least 50). Option not taken: rewrite the sector builders to compute v64 inline, which would extend them to the last price.
+
+### 2026-10-20 (late) -- Robust stress scale (robust_stress_test.py, rule committed 97eb587 before the run)
+Scaling by the MEDIAN squared miss (sqrt(median(z^2)/0.45494)) with ONE edge passed its pre-set rule on ordinary days: coverage 89.63-91.08% in all 12 era-by-stress-bin cells (spread 0.7-1.1 points)
+against 87.95-94.37% for the current mean-based scale with one edge and 89.23-92.97% with per-bin edges (which also drift by era); interval score 0.983-0.986 of today's. Ledger row band_stress_scale_median
+(proven). NOT adopted: the card, map and calibration still use the mean-based scale. Open: an adoption check on the event / earnings / Regulation FD groups (existing multipliers, edges refit under the median
+scale, 88-92% per group per era, interval score within 1% of today's), the previous-day variant, and then changing day_card / day_map / band_calibrate / band_coverage_test / band_tail_share together.
