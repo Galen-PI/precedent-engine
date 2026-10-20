@@ -1,4 +1,4 @@
-matrices: 496 stocks x 8250 days | 43s
+matrices: 496 stocks x 8250 days | 42s
 
 POOLED SHARE OF STOCK-DAYS BEYOND EACH EDGE (band units; the map uses 2.0)
   group                                                          days | > 1.645      > 2  > 2.576      > 3
@@ -21,4 +21,4 @@ DAILY SHARE OF STOCKS BEYOND 2.0 BAND UNITS (5227 days with >= 150 scored stocks
     high (>=1.5)         mean  2.69% | 5%  0.62% | median  2.26% | 95%  5.57%  (348 days)
   for scale: pure sampling noise for a day of about 453 stocks would give a standard deviation of 0.89 points; the observed standard deviation across days is 1.32 points (1.48x: above 1.0 means misses cluster on some days; below 1.0 is possible because the same-day stress scaling fixes each day's average squared miss)
 
-saved /workspaces/stock-research1/models/tail_share_reference.json | total 43s
+saved /workspaces/stock-research1/models/tail_share_reference.json | total 42s

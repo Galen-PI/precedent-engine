@@ -147,9 +147,11 @@ def main():
         if m.sum() > 20:
             print("  %-10s mean %s | 5%% %s | median %s | 95%% %s  (%d days)" % (lab, pct_line(sh[m].mean()), pct_line(np.quantile(sh[m], 0.05)), pct_line(np.quantile(sh[m], 0.5)), pct_line(np.quantile(sh[m], 0.95)), int(m.sum())))
     print("  by the day's market-wide stress:")
+    by_stress = []
     for lab, lo, hi in STRESS_BINS:
         m = (stress_day[days] >= lo) & (stress_day[days] < hi)
         if m.sum() > 20:
+            by_stress.append(dict({"name": lab, "from": lo, "to": hi, "n_days": int(m.sum())}, **{k: float(np.quantile(sh[m], pp)) for k, pp in (("p05", 0.05), ("p25", 0.25), ("median", 0.5), ("p75", 0.75), ("p95", 0.95))}))
             print("    %-20s mean %s | 5%% %s | median %s | 95%% %s  (%d days)" % (lab, pct_line(sh[m].mean()), pct_line(np.quantile(sh[m], 0.05)), pct_line(np.quantile(sh[m], 0.5)), pct_line(np.quantile(sh[m], 0.95)), int(m.sum())))
     # how much of a one-day share is just sampling noise for a day of about 490 stocks?
     binom = float(np.sqrt(q["median"] * (1 - q["median"]) / np.median(n_t[days])))
@@ -161,7 +163,7 @@ def main():
     with open(OUT_FILE, "w") as fh:
         json.dump({"what": "Share of stocks beyond %.1f band units on a day (the day map's 'big miss' threshold), measured over all days since %d with >= %d scored stocks; band units as the day map computes them." % (MAP_EDGE, TEST_START, MIN_STOCKS),
                    "edge": MAP_EDGE, "n_days": int(days.size), "pooled_share_all": pooled["all stock-days"][EDGES.index(MAP_EDGE)],
-                   "pooled_share_by_group": {k: v[EDGES.index(MAP_EDGE)] for k, v in pooled.items()}, "daily_share": q,
+                   "pooled_share_by_group": {k: v[EDGES.index(MAP_EDGE)] for k, v in pooled.items()}, "daily_share": q, "daily_share_by_stress": by_stress,
                    "caveats": ["Descriptive reference, not a test.", "Same-day market stress is used in the band units, so the share is conditional on knowing the day's stress.", "Fitted on the same years it describes."]}, fh, indent=1)
     print("\nsaved %s | total %.0fs" % (OUT_FILE, time.time() - t0))
 

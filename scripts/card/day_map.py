@@ -191,7 +191,17 @@ def main():
     # 4. where the missing information is
     big = [r for r in rows if abs(r["zb"]) > 2.0]
     noev = [r for r in big if not r["event"] and r["earn_off"] is None]
-    L.append("4. WHERE THE MISSING INFORMATION IS   stocks beyond 2 band units: %d (%.1f%% of stocks; about 4.6%% expected if misses were normal)" % (len(big), 100.0 * len(big) / n))
+    _ref = dc.load_json("tail_share_reference.json")
+    _typ = None
+    if _ref:
+        _st = math.sqrt(sum(r["q_others"] for r in rows) / len(rows)) if rows else 1.0
+        _bin = next((b for b in _ref.get("daily_share_by_stress", []) if b["from"] <= _st < b["to"]), None)
+        _d, _lab = (_bin, "with %s market stress, %.2f" % (_bin["name"], _st)) if _bin else (_ref["daily_share"], "(all days pooled)")
+        _typ = "typical day since 2006 %s: median %.1f%%, middle half %.1f%%-%.1f%%, 5th-95th percentile %.1f%%-%.1f%%" % (
+            _lab, 100 * _d["median"], 100 * _d["p25"], 100 * _d["p75"], 100 * _d["p05"], 100 * _d["p95"])
+    if not _typ:
+        _typ = "a Gaussian reference would be 4.6%; the measured typical share is not loaded (run band_tail_share.py)"
+    L.append("4. WHERE THE MISSING INFORMATION IS   stocks beyond 2 band units: %d (%.1f%% of stocks; %s)" % (len(big), 100.0 * len(big) / n, _typ))
     if big:
         L.append("                %d of them (%.0f%%) have NO recorded event and no earnings filing on day 0 or +1: the candidates for news, analyst or other information we have not recorded" % (len(noev), 100.0 * len(noev) / len(big)))
     L.append("                %-7s %-24s %9s %9s %9s %9s  %s" % ("ticker", "sector", "actual", "explained", "miss", "band units", "recorded event"))
