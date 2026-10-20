@@ -3295,3 +3295,12 @@ width model's day-only line was wrong (a dictionary kept one cell per day) and w
 
 **Open**: band coverage test (does the 90% band contain about 90% of misses on ordinary days, event days and earnings windows?); the five day-one baseline logs (chapter 2, validation,
 event width, direction, placebo) are not in results/; an ex-jump version of the fast-spread test; earnings-day filing times from EDGAR (would sharpen the band to about 3.5x on the reaction day).
+
+### 2026-10-20 (late) -- Band coverage and calibration
+band_coverage_test.py (pre-set: calibrated if 87-93% in each era): the card's band (fixed edge 1.645) OVER-covered every group: ordinary 93.3% (mean squared band unit 0.84), recorded
+event 93.8%, earnings day 0 91.8% (calibrated), day +1 92.7%, event + earnings 92.9%, Regulation FD 94.3%; earnings windows put 2.3-2.7% of misses beyond the 99% edge (1% nominal).
+Stress scaling over-corrects (elevated / high stress 95%). The slow spread includes each stock's own earnings and event jumps (inflated by about 20%). All four under-coverage
+predictions were wrong. Scoring with the previous day's stress changed coverage little (ordinary 93.3 -> 92.8). band_calibrate.py (pre-set: 88-92% per era, walk-forward): every group
+CALIBRATED; edges fitted on all years are ordinary 1.527 / 1.441 / 1.289 / 1.290 (calm / normal / elevated / high stress), event 1.337, earnings day 0 1.506, day +1 1.384,
+earnings + event 1.433, Regulation FD 1.319; models/band_calibration.json; some earnings and event eras sit at 88.1-89.1% (mild drift: refit periodically). day_card.py now uses the
+calibrated edge for the day's group. Cleaner fix, not done: a slow spread computed without the stock's own earnings and event days.

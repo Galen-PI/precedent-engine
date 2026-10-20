@@ -1,0 +1,27 @@
+matrices: 496 stocks x 8250 days | 8-K rows read: 155141 | event stock-days 41579 | earnings day 0 38248, day +1 37994 | event+earnings 3787 | 7.01 only 34283 | 42s
+
+REALIZED COVERAGE OF THE CARD'S BAND (target 90%; 'beyond 99%' target 1%; mean squared band unit target 1.0)
+  group                                        days  coverage | 2006-2012 2013-2019 2020-2026 |  beyond99  mean b^2 | verdict
+  ordinary (no event, earnings or 7.01)     2187937     93.3% |   93.1%     93.6%     93.2%   |     1.34%      0.84 | OVER-COVERS
+  recorded event, no earnings                 30699     93.8% |   94.6%     93.1%     93.7%   |     1.97%      1.03 | OVER-COVERS
+  earnings window, day 0 (no event)           36374     91.8% |   92.4%     90.7%     92.3%   |     2.31%      0.86 | CALIBRATED
+  earnings window, day +1 (no event)          36148     92.7% |   94.0%     92.0%     92.3%   |     2.69%      0.88 | OVER-COVERS
+  earnings window + recorded event             3577     92.9% |   94.1%     92.8%     92.0%   |     2.07%      0.86 | OVER-COVERS
+  Regulation FD (7.01) only                   32619     94.3% |   94.2%     94.4%     94.2%   |     1.82%      0.86 | OVER-COVERS
+
+BY MARKET-WIDE STRESS (the day's root-mean-square standardized miss), ordinary days
+  stress                       days  coverage  mean b^2
+  calm (< 0.8)               459275     91.9%      0.94
+  normal (0.8-1.2)          1280228     93.2%      0.85
+  elevated (1.2-1.5)         310974     95.1%      0.71
+  high (1.5-2.5)             128508     95.2%      0.71
+  extreme (> 2.5)              8952     91.0%      0.94
+
+SENSITIVITY: the same band scored with the PREVIOUS day's market-wide stress (what could be known in advance)
+  ordinary (no event, earnings or 7.01)  same-day stress  93.3% | previous-day stress  92.8%  (2187937 days)
+  earnings window, day 0 (no event)      same-day stress  91.8% | previous-day stress  90.4%  (36374 days)
+  earnings window, day +1 (no event)     same-day stress  92.7% | previous-day stress  92.6%  (36148 days)
+
+READING: coverage above 93% means the band is wider than it needs to be; below 87% it misses too often. The band is an explanation line built with the same day's stress,
+         not a forecast range; the previous-day rows show how much of the coverage depends on knowing the day's stress.
+total 42s

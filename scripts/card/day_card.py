@@ -15,7 +15,8 @@ WHAT THE CARD IS. An EXPLANATION of the day using same-day market and sector mov
      (the stock's own, or its sector peers') are listed on the card so a real crash or a split/spin-off artifact can be told apart by eye.
   3. THE BAND (and the SECTOR PEERS that day: typical miss size, this stock's rank by miss size, and the largest positive and negative peer misses):
      1.645 x spread x sqrt(q) x event multiplier, where q = the mean squared standardized miss of ALL OTHER stocks that day (market-wide stress), and
-     the event multiplier comes from the joint event-day model (floored at 1.0) when the stock has its own event on day 0 or +1. Whether the actual price
+     the multiplier is a MEASURED GROUP value, never a product: the joint event-day model for a recorded event, 2.72x / 2.47x for an earnings window (8-K item 2.02, day 0 / +1),
+     2.87x for both together, 1.36x for a Regulation FD filing (item 7.01), else 1.0. Whether the actual price
      fell inside. The band's realized coverage has NOT been measured (tails are fatter than normal), so read it as a reference line.
   4. OWN EVENT(S) on this day (day 0 or +1): title, type, the labeler's label / size / timing, and what similar-labeled events averaged. ANNOTATION ONLY:
      the label's pull did not earn a place in the price (event_center_test, pre-set: DOES NOT).
@@ -151,6 +152,50 @@ def band_multiplier(model, ptype, size, timing, off):
     return max(1.0, math.sqrt(math.exp(lm) / model["ordinary_day_mean_z5sq"])), None
 
 
+def parse_items(s):
+    out = set()
+    for part in str(s or "").replace(";", ",").replace(" ", ",").split(","):
+        p = part.strip().lower().replace("item", "").strip()
+        if p and p[0].isdigit():
+            out.add(p)
+    return out
+
+
+def filing_flags(filings, master, t):
+    """From a stock's 8-K rows near day t: an earnings window (item 2.02; day 0 = the first trading day on or after the filing date, day +1 = the next)
+    and a Regulation FD flag (item 7.01). The table has no filing time, so both days are flagged."""
+    earn_off, earn_date, f701 = None, None, False
+    for f in filings:
+        d = str(f["filing_date"])[:10]
+        i = bisect.bisect_left(master, d)
+        if i != t and i + 1 != t:
+            continue
+        off = 0 if i == t else 1
+        its = parse_items(f.get("item_codes"))
+        if "2.02" in its:
+            if earn_off is None or off < earn_off:
+                earn_off, earn_date = off, d
+        elif "7.01" in its:
+            f701 = True
+    return {"earn_off": earn_off, "earn_date": earn_date, "f701": f701}
+
+
+def combine_multiplier(ev_mult, fl, earn_model, ev_note=None, has_event=False):
+    """The band multiplier and where it came from. Measured GROUP values are used as they are; they are never multiplied together."""
+    mm = earn_model["multipliers_vs_ordinary_day"] if earn_model else None
+    if mm and fl["earn_off"] is not None:
+        if has_event:
+            return mm["event_and_earnings"], "earnings window (8-K item 2.02 filed %s, day %d) together with a recorded event: the measured group value, not a product" % (fl["earn_date"], fl["earn_off"])
+        return mm["earnings_day0" if fl["earn_off"] == 0 else "earnings_day1"], "earnings window (8-K item 2.02 filed %s, day %d): measured on all stocks since 2006, relative to an ordinary day" % (fl["earn_date"], fl["earn_off"])
+    if has_event:
+        if ev_mult is None:
+            return 1.0, ev_note or "recorded event with no multiplier available"
+        return ev_mult, "recorded event (joint event-day model, floored at 1.0)"
+    if mm and fl["f701"]:
+        return mm["item_7_01"], "Regulation FD filing (8-K item 7.01) on day 0 or +1: measured about 1.36x on all such days; a weak lead, not a proven link"
+    return 1.0, "no own event, earnings filing or item 7.01 filing on day 0 or +1"
+
+
 def own_events(sb, ticker_sec, master, t, date):
     ent = ticker_sec.get("entity_id")
     if not ent:
@@ -225,12 +270,18 @@ def main():
     label_ann = load_json("label_annotation.json")
     val = load_json("decomp_validation_20261020.json")
 
-    mult, mult_note = 1.0, None
+    earn_model = load_json("earnings_band_model.json")
+    lo8 = (datetime.date.fromisoformat(date) - datetime.timedelta(days=7)).isoformat()
+    filings = []
+    if sec_row.get("id"):
+        try:
+            filings = sb.table("sec_8k_filings").select("filing_date,item_codes").eq("security_id", sec_row["id"]).gte("filing_date", lo8).lte("filing_date", date).execute().data or []
+        except Exception:
+            filings = []
+    fl = filing_flags(filings, U["master"], t)
     lead = events[0] if events else None
-    if lead:
-        mult, mult_note = band_multiplier(band_model, lead["ptype"], lead["size"], lead["timing"], lead["off"])
-        if mult is None:
-            mult = 1.0
+    ev_mult, ev_note = (band_multiplier(band_model, lead["ptype"], lead["size"], lead["timing"], lead["off"]) if lead else (None, None))
+    mult, mult_src = combine_multiplier(ev_mult, fl, earn_model, ev_note, bool(lead))
     sd_eff = c1["sd"] * (math.sqrt(q) if q else 1.0)
     half = 1.645 * sd_eff * mult
     lo_ret, hi_ret = c1["hyp"] - half, c1["hyp"] + half
@@ -259,10 +310,7 @@ def main():
         L.append("   market-wide stress today (q): other stocks missed %.2fx their usual size (sqrt of the mean squared miss; %d stocks)" % (math.sqrt(q), len(z2s)))
     else:
         L.append("   market-wide stress: not available (too few other stocks)")
-    if lead:
-        L.append("   event multiplier %.2fx (joint event-day model, floored at 1.0)%s" % (mult, "" if not mult_note else " -- " + mult_note))
-    else:
-        L.append("   event multiplier 1.00x (no own event on day 0 or +1)")
+    L.append("   band multiplier %.2fx -- %s" % (mult, mult_src))
     if prev_close:
         L.append("   band on the move %s to %s -> price %.2f to %.2f | actual %.2f is %s" % (
             pct(lo_ret), pct(hi_ret), prev_close * (1 + lo_ret), prev_close * (1 + hi_ret), close, "INSIDE" if abs(z_miss) <= 1.645 else "OUTSIDE"))
@@ -291,6 +339,11 @@ def main():
             L.append("         similar '%s' events averaged %+.2f%% beyond market and sector on this day. A tilt, not part of the price: beyond the event type it" % (e["label"], m))
             L.append("         cut event-day squared miss by only +0.029 / +0.028 / +0.223% (2005-12 / 2013-19 / 2020-26; pre-set test: does not earn a place). It points the")
             L.append("         right way about 58% of the time vs 54% from type alone (direction test, passed; far placebo clean).")
+    if fl["earn_off"] is not None:
+        L.append("   EARNINGS WINDOW  8-K item 2.02 filed %s: today is day %d of the window (the table has no filing time, so the reaction may fall on either day)." % (fl["earn_date"], fl["earn_off"]))
+        L.append("         Earnings days hold about 19.5% of all unexplained squared miss on about 3% of stock-days. The band is widened; the SIGN is not known (no surprise data tested yet).")
+    elif fl["f701"]:
+        L.append("   REGULATION FD FILING  8-K item 7.01 on day 0 or +1 (a weak lead: about 1.36x on average; mostly routine investor materials).")
     L.append("")
     L.append("5. MACRO LINKS  registered, magnitude-only (no signed pull earned a place); armed every day")
     for nm, key, unit in (("oil move", "oil", 1.0), ("10-year yield change", "yld", 1.0), ("credit spread change", "crd", 1.0)):
@@ -327,7 +380,7 @@ def main():
     print("\n".join(L))
 
     card.update({"day": {"return": c1["ret"], "prev_close": prev_close, "close": close}, "chapter1": c1, "hypothetical_price": hyp_price,
-                 "q": q, "event_multiplier": mult, "band_return": [lo_ret, hi_ret], "band_units_of_miss": z_miss, "events": events,
+                 "q": q, "event_multiplier": mult, "band_multiplier_source": mult_src, "filing_flags": fl, "band_return": [lo_ret, hi_ret], "band_units_of_miss": z_miss, "events": events,
                  "macro": {"oil": U["oil"][t], "yield": U["yld"][t], "credit": U["crd"][t]}})
     outdir = os.path.join(ROOT, "results", "cards")
     os.makedirs(outdir, exist_ok=True)
