@@ -135,6 +135,8 @@ def main():
     for r in sd:
         if r["n"] is None or r["mean_z"] is None:
             continue
+        if str(r["day"])[:10] > "2026-07-31":      # the pre-registered window ends 2026-07-31; sector_day_z was extended past it on 2026-10-20
+            continue
         a = agg.setdefault(str(r["day"])[:10], [0.0, 0])
         a[0] += r["n"] * r["mean_z"]
         a[1] += r["n"]

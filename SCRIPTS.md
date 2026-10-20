@@ -3312,3 +3312,11 @@ Forward test of the operating-income earnings surprise: scripts/card/earnings_fo
 database (2026-10-20): matrices end 2026-10-13, no item 2.02 filings in the window yet. Before evaluating (planned January 2027): refresh prices, raw 8-K filings and quarterly statements (the onboarding
 scripts in SCRIPTS notes are for new companies; the incremental refresh interface needs checking against the real script), rebuild the matrices, run the readiness check, then --evaluate ONCE.
 Ledger row earnings_surprise_sign_operating_income_forward (freeze commit recorded in its notes).
+
+### 2026-10-20 (late) -- sector_day_z and sector_day_tail refreshed past 2026-07-31
+Both tables are built by Postgres functions (build_sector_day_z(y), build_sector_day_tail(y)), run one year at a time in the SQL editor; they delete and rebuild their year and inner-join vol_estimators.
+The functions carried a hard-coded cap LEAST(make_date(y,12,31), '2026-07-31'); the cap was removed on 2026-10-20 (live definitions edited with pg_get_functiondef + replace) and 2026 was rebuilt.
+Backups: sector_day_z_backup_20261020, sector_day_tail_backup_20261020 (the January-July 2026 rows). Check: January-July rows identical to the backups (1,740 rows, 0 changed); both tables now end
+2026-09-15 (372 new rows = 31 trading days x 12 sector labels), apparently where vol_estimators ends (to be confirmed). scripts/macro/eo_market_test.py reads sector_day_z with no date bound and its
+baselines run +63..+252 trading days past an event, so it was pinned to its pre-registered window (rows after 2026-07-31 skipped); rerun it and compare with the ledger row
+eo_relevant_signing_market_wide_amplification. Open: what refreshes vol_estimators; the builder statements are not in the repo (save pg_get_functiondef output as sql/build_sector_tables.sql).
