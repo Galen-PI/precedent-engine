@@ -1,0 +1,68 @@
+cache: 498 securities | stride 1 | labels: 22283 | securities with event days: 491
+  pass 1/2: 100/498 securities, 0 day-records, 18s
+  pass 1/2: 200/498 securities, 0 day-records, 26s
+  pass 1/2: 300/498 securities, 0 day-records, 34s
+  pass 1/2: 400/498 securities, 0 day-records, 42s
+  pass 1/2: 498/498 securities, 0 day-records, 49s
+  pass 2/2: 100/498 securities, 644475 day-records, 58s
+  pass 2/2: 200/498 securities, 1309267 day-records, 66s
+  pass 2/2: 300/498 securities, 1967146 day-records, 75s
+  pass 2/2: 400/498 securities, 2623432 day-records, 83s
+  pass 2/2: 498/498 securities, 3250088 day-records, 91s
+
+GAIN IN LOG SCORE PER EVENT STOCK-DAY (nats; positive = better)
+                                            2005-2012  2013-2019  2020-2026
+  M1 size vs M0 (one all-events scale)        +0.0218    +0.0674    +0.0307
+  M2 type vs M0 (one all-events scale)        +0.0206    +0.0342    +0.0329
+  M3 timing vs M0 (one all-events scale)      +0.0025    +0.0122    +0.0099
+  M4 day vs M0 (one all-events scale)         +0.0058    +0.0267    +0.0014
+  MJ joint vs M0 (one all-events scale)       +0.0587    +0.1132    +0.0682
+  PRIMARY  MJ vs the best single factor       +0.0202    +0.0437    +0.0234
+  years where MJ beats that year's best single factor: 20 of 22
+
+VERDICT under the pre-set rule: MJ EARNS ITS PLACE
+
+JOINT MODEL, all years: main effects as a band ratio against the reference level (exp(beta/2); reference = the most common level of each factor)
+  references: type = acquisition, size = small, timing = new, day = 0
+   type: leadership_change              0.93
+   type: capital_raise                  0.76
+   type: legal_settlement               0.93
+   type: regulatory                     1.04
+   type: corporate_action               1.16
+   type: restructuring                  1.21
+   type: strategic_partnership          0.97
+   type: financial_result               0.97
+   type: ipo_spinoff                    1.99
+   type: governance_action              1.02
+   type: accounting_investigation       1.23
+   type: cybersecurity_incident         1.02
+   type: systemic_shock                 0.92
+   type: geopolitical                   0.74
+   type: natural_disaster               0.92
+   size: unknown                        1.32
+   size: moderate                       1.18
+   size: large                          1.54
+   timing: previously_announced         0.72
+   timing: unknown                      0.76
+   day: +1                              0.84
+
+IMPLIED BAND MULTIPLIER against an ordinary day (sqrt of the joint prediction over the ordinary-day mean of z5^2, 1.015)
+  type                       size       timing                 day   multiplier
+  acquisition                small      new                    0          1.52x
+  regulatory                 large      new                    0          2.44x
+  regulatory                 small      new                    0          1.58x
+  restructuring              large      new                    0          2.83x
+  restructuring              small      new                    0          1.84x
+  accounting_investigation   large      new                    0          2.88x
+  accounting_investigation   small      new                    0          1.87x
+  legal_settlement           large      new                    0          2.18x
+  legal_settlement           small      new                    0          1.41x
+  capital_raise              large      new                    0          1.78x
+  capital_raise              small      new                    0          1.15x
+  leadership_change          large      new                    0          2.17x
+  leadership_change          small      new                    0          1.41x
+  capital_raise              small      previously_announced   +1         0.70x
+
+saved /workspaces/stock-research1/scripts/card/out/event_band_model.json
+
+total 92s

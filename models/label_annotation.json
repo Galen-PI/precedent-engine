@@ -1,0 +1,10 @@
+{
+ "what": "Mean chapter-1 miss (return beyond market and sector, in percent) on days 0 and +1 of a stock's own event, by the labeler's label. From event_center_test.py, all years, 22,283 labeled events.",
+ "mean_miss_percent": {
+  "good":    {"day0": 0.46,  "day1": 0.19,  "n_day0": 2969,  "n_day1": 2913},
+  "bad":     {"day0": -0.54, "day1": -0.27, "n_day0": 2536,  "n_day1": 2492},
+  "mixed":   {"day0": 0.17,  "day1": -0.03, "n_day0": 1708,  "n_day1": 1660},
+  "unclear": {"day0": -0.01, "day1": -0.05, "n_day0": 13781, "n_day1": 13451}
+ },
+ "status": "annotation only: the center test (pre-set) found the label adds +0.029% / +0.028% / +0.223% to squared-miss reduction beyond type (14 of 22 years): DOES NOT earn a place in the hypothetical price. The direction test (hit rate +4 points over type) passed; far placebo clean."
+}

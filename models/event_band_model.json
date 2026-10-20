@@ -1,0 +1,37 @@
+{
+ "model": "joint additive log-variance of z5^2 = (miss / (slow spread x sqrt(same-day cross-section)))^2 on own-event days",
+ "references": {
+  "type": "acquisition",
+  "size": "small",
+  "timing": "new",
+  "day": 0
+ },
+ "coef": {
+  "intercept": 0.8510756065558693,
+  "type: leadership_change": -0.15446083756960152,
+  "type: capital_raise": -0.550391112809948,
+  "type: legal_settlement": -0.14727992874775495,
+  "type: regulatory": 0.08455104158161696,
+  "type: corporate_action": 0.3038932751426318,
+  "type: restructuring": 0.3797157502287025,
+  "type: strategic_partnership": -0.06661312363274773,
+  "type: financial_result": -0.05475204705317292,
+  "type: ipo_spinoff": 1.3807682525766547,
+  "type: governance_action": 0.040571062269504334,
+  "type: accounting_investigation": 0.4146374445331,
+  "type: cybersecurity_incident": 0.04146318028677074,
+  "type: systemic_shock": -0.17048427598013738,
+  "type: geopolitical": -0.611340499731041,
+  "type: natural_disaster": -0.157280593699852,
+  "size: unknown": 0.5522235688856858,
+  "size: moderate": 0.3285627749265545,
+  "size: large": 0.8658786024116875,
+  "timing: previously_announced": -0.6493483238608969,
+  "timing: unknown": -0.5502117234332379,
+  "day: +1": -0.35180597503845323
+ },
+ "ordinary_day_mean_z5sq": 1.0151304012368894,
+ "multiplier_rule": "max(1.0, sqrt(exp(intercept + sum of the matching coefficients) / ordinary_day_mean_z5sq)); do not use for ipo_spinoff, systemic_shock, geopolitical, natural_disaster",
+ "event_days_fit": 41573,
+ "fit_years": "all years in the cache"
+}
