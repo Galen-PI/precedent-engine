@@ -1,0 +1,21 @@
+matrices: 496 stocks x 8250 days | 8-K rows read: 155141 (distinct stock-date-item sets: 153107) | distinct item codes seen: 40 | 38s
+
+8-K ITEM SCAN: 10 item codes with >= 3000 scored flagged stock-days (day 0 + day +1 pooled; no recorded event; no earnings filing; overlapping groups)
+  item        days    mult | gain 2006-12 / 13-19 / 20-26 | years +  | % big mass  % all mass  | verdict
+  7          14023   1.74x | n/a / n/a / n/a             |  0 of 0   |       0.0%        0.0% | does not
+  9           5794   1.62x | n/a / n/a / n/a             |  0 of 0   |       0.0%        0.0% | does not
+  7.01       34283   1.36x | +0.098 / +0.082 / +0.093    | 20 of 21  |       4.7%        2.0% | EARNS A PLACE
+  5          13769   1.32x | n/a / n/a / n/a             |  0 of 0   |       0.0%        0.0% | does not
+  8.01       40231   1.17x | +0.040 / +0.007 / +0.002    | 16 of 21  |       3.5%        1.8% | does not
+  1.01       21015   1.06x | -0.001 / +0.003 / +0.003    | 12 of 21  |       1.2%        0.8% | does not
+  2.03       11801   1.02x | +0.000 / -0.002 / -0.000    |  7 of 21  |       0.7%        0.5% | does not
+  5.02       32988   1.01x | +0.000 / -0.000 / -0.000    | 10 of 21  |       1.8%        1.3% | does not
+  5.03        7381   1.00x | +0.000 / +0.002 / -0.002    | 12 of 21  |       0.4%        0.3% | does not
+  5.07       13862   0.97x | +0.008 / +0.002 / -0.000    | 10 of 16  |       0.5%        0.4% | does not
+
+items that pass the pre-set rule: 7.01
+(the earnings days held 16.6 points of the big no-event mass; the 'big mass' column is the share of the big no-event, no-earnings mass on that item's days; groups overlap)
+ordinary-day group: 2974530 scored stock-days with no 8-K at all on day 0 or +1
+
+NOTE: a screen of 10 items; a pass is a lead to confirm (e.g. by reading a sample, as with earnings). The filing time is unknown, so days 0 and +1 are pooled.
+total 38s

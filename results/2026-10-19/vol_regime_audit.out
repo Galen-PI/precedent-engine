@@ -1,0 +1,25 @@
+matrices: 496 stocks x 8250 days | stock-days with both a slow and a fast spread (test years): 2326195 | 1s
+
+GAIN IN LOG SCORE PER STOCK-DAY vs today's slow spread (nats; positive = better)
+                              2006-2012  2013-2019  2020-2026 | years positive
+  w = 0.75                      +0.0223    +0.0016    +0.0275 | 15 of 21
+  w = 0.50 (PRIMARY)            +0.0253    -0.0106    +0.0254 | 9 of 21
+  w = 0.25                      +0.0118    -0.0419    +0.0033 | 5 of 21
+  w = 0.00 (fast only)          -0.0502    -0.1534    -0.0670 | 3 of 21
+
+VERDICT under the pre-set rule (w = 0.50, the equal blend of slow and fast variance): does not earn its place
+
+TAIL SHARE OF THE UNEXPLAINED SQUARED MISS: stock-days whose miss is beyond 2 market-stress units (stress = that day's root-mean-square standardized miss)
+  base spread                    all stock-days no event, no earnings days
+  w = 1.00 (today: slow)                  45.0%                      33.3%
+  w = 0.50 (blend)                        43.3%                      31.2%
+  w = 0.00 (fast only)                    41.1%                      29.0%
+  (a Gaussian benchmark would put 26.1%% of the squared miss beyond 2 units)
+
+REGIME SHARE among the big misses (measured against the slow spread, no event, no earnings)
+  stock-days whose recent variance is already more than 2x the slow variance: 10.5% of all stock-days
+  big misses that fall on such days: 13.9% by count (1.3x more often than chance) and 26.3% of the big-miss mass
+
+NOTE: the fast spread uses the previous 20 days' misses, which include any earlier event or earnings reaction; a stock 'in a regime' may be in one BECAUSE of news
+      a few days ago (an aftershock). The audit separates the band's job (width after a regime shift) from the search for information; it cannot say which came first.
+total 21s
