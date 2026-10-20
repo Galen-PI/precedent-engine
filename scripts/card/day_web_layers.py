@@ -141,3 +141,69 @@ def band_html(b):
             "day's market stress, not a forecast range.</p>") % (
         _pct(b.get("hyp_return")), (" (price %.2f)" % b["hyp_price"]) if b.get("hyp_price") else "", _pct(br[0]), _pct(br[1]), pc * (1 + br[0]), pc * (1 + br[1]), close,
         "INSIDE" if b.get("inside") else "OUTSIDE", abs(b.get("units") or 0.0), b.get("edge") or 0.0, html.escape(b.get("edge_source") or ""), b.get("multiplier") or 1.0)
+
+
+# ---------------------------------------------------------------- per-event lines and edge style (added after the first day_web patch)
+def _short(s, n):
+    s = (s or "").strip()
+    return s if len(s) <= n else s[:n - 1] + "\u2026"
+
+
+def ledger_blurb(led, key):
+    """' -- what this row tested: <description>' so a type row (written for an earlier test) is read for what it measured, not as a verdict on today."""
+    r = (led or {}).get(key) if key else None
+    d, pr = (r or {}).get("description"), (r or {}).get("pass_rule")
+    out = (" -- what this row tested: " + _short(d, 150)) if d else ""
+    if pr:
+        out += " -- its pass rule: " + _short(pr, 240)
+    return out
+
+
+def _event(card, event_id):
+    if not card:
+        return None
+    return next((e for e in (card.get("events") or []) if str(e.get("event_id")) == str(event_id)), None)
+
+
+def _event_mult(ev):
+    """(multiplier or None, note) from the joint event-day model, exactly as the card computes it."""
+    try:
+        import day_card as dc
+        return dc.band_multiplier(dc.load_json("event_band_model.json"), ev.get("ptype"), ev.get("size"), ev.get("timing"), ev.get("off"))
+    except Exception as e:      # the page must never fail because of this line
+        return None, "joint model not available (%s)" % type(e).__name__
+
+
+def event_lines(card, event_id):
+    """The labeler's size and timing for this event and the joint event-day model's multiplier (the one the card uses), as detail lines."""
+    ev = _event(card, event_id)
+    if not ev:
+        return []
+    out = []
+    bits = [str(x) for x in (ev.get("size"), ev.get("timing")) if x]
+    if bits:
+        out.append("labeler fields: %s" % ", ".join(bits))
+    m, note = _event_mult(ev)
+    if m is not None:
+        line = "joint event-day model: %.2fx for %s / %s / %s, day %s (floored at 1.0; a measured average for events like this)" % (
+            m, ev.get("ptype"), ev.get("size") or "size n/a", ev.get("timing") or "timing n/a", ev.get("off"))
+        if str(card.get("band_group") or "").startswith("earnings window"):
+            line += "; the day's band uses the measured earnings + event group value %.2fx instead" % (card.get("event_multiplier") or 1.0)
+        out.append(line)
+    elif note:
+        out.append("joint event-day model: no multiplier (%s)" % note)
+    return out
+
+
+def event_edge(card, event_id, gstatus, gtext):
+    """(status, text) for the line from an event to the stock. The line follows what was measured for THIS kind of event: the proven own-event width row when the joint model gives a
+    multiplier above 1.0; a dashed line when it floors at 1.0 (for example capital raises: no widening); dotted when the type has no multiplier."""
+    ev = _event(card, event_id)
+    if not ev:
+        return gstatus, gtext
+    m, note = _event_mult(ev)
+    if m is None:
+        return None, "%s; no multiplier for this kind of event (%s)" % (gtext, note)
+    if m <= 1.0 + 1e-9:
+        return "null", "%s; but the joint model gives this kind of event no widening (multiplier floored at 1.0)" % gtext
+    return gstatus, "%s; joint model %.2fx for this kind of event" % (gtext, m)

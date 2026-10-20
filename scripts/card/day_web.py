@@ -106,7 +106,7 @@ def as_dict(sd):
 
 
 def load_ledger(sb):
-    led = {r["flag_key"]: r for r in fetch(sb, "flag_ledger", "flag_key,status,description,notes")}
+    led = {r["flag_key"]: r for r in fetch(sb, "flag_ledger", "flag_key,status,description,pass_rule,notes")}
     ev = defaultdict(list)
     for r in fetch(sb, "flag_ledger_evidence", "flag_key,era,n,estimate,se,unit"):
         ev[r["flag_key"]].append(r)
@@ -376,16 +376,18 @@ def build_web(sb, ticker, ds):
             titles[r["id"]] = r
         for r in fetch(sb, "event_source_filings", "event_id,ticker,filing_date,accession_number", [lambda q: q.in_("event_id", pick)]):
             filings[r["event_id"]].append(r)
-    gstatus, gtext = led_info(led, evid, "event_burst_day0_1")
+    gstatus, gtext = led_info(led, evid, "event_day_width_own_events")      # the proven, market-adjusted width row; falls back to the older burst row
+    if gstatus is None:
+        gstatus, gtext = led_info(led, evid, "event_burst_day0_1")
     active_own = [(o, r) for o, r in own if o in (0, 1)]
     for k, (o, r) in enumerate(sorted(active_own, key=lambda t: t[0])):
         t = titles.get(r["event_id"], {}).get("title") or "(title not found)"
         tkey = find_key(led, "event_type", r["ptype"])
         st, tx = led_info(led, evid, tkey) if tkey else (None, None)
-        use_status, use_text = (st, tx) if tkey else (gstatus, gtext)
+        use_status, use_text = dwl.event_edge(card, r["event_id"], gstatus, gtext)      # solid only where the joint model measures widening for this kind of event; type rows are shown as details
         nid = "c_ev_%d" % k
         add_node(nid, 4, short(r["ptype"], 22), "day %s: %s" % ("0" if o == 0 else "+1", short(t, 20)), "new" if o == 0 else "persist",
-                 [t, "ledger (type): " + (tx or "no type-specific row"), "ledger (general burst): " + gtext, "gov-direct flag: %s" % r.get("gov")],
+                 [t] + dwl.event_lines(card, r["event_id"]) + ["ledger (type): " + (tx or "no type-specific row") + dwl.ledger_blurb(led, tkey), "ledger (own-event width): " + gtext, "gov-direct flag: %s" % r.get("gov")],
                  ["events id=%s" % r["event_id"]] + ["filing %s %s %s" % (f["ticker"], f["filing_date"], f["accession_number"]) for f in filings.get(r["event_id"], [])])
         add_edge(nid, "c_stock", edge_kind(use_status), use_text, "burst window: day 0 and day +1 only")
     older = [(o, r) for o, r in own if o >= 2]
@@ -528,7 +530,7 @@ def render_html(web):
             "<h1>%s on %s (%s)</h1>" % (html.escape(f["ticker"]), f["date"], html.escape(f["sector"]))]
     mv = "no return" if f["return"] is None else "%+.2f%%" % (100 * f["return"])
     zz = "n/a" if f["z"] is None else "%.2f" % f["z"]
-    page.append("<p>Move %s, z %s (|move| / prior 64-day volatility). Daily markers active: %d of 3 (oil, yield, credit)%s. Counted as facts; nothing is added or multiplied. Magnitude only.</p>"
+    page.append("<p>Move %s, z %s (|move| / prior 64-day volatility). Daily markers active: %d of 3 (oil, yield, credit)%s. Counted as facts; nothing is added or multiplied. Magnitude only for the threads (no direction claims about them); the chapter-1 line below is signed because it is plain arithmetic from the market and sector.</p>"
                 % (mv, zz, f["daily_markers_active"], (" plus " + ", ".join(f["extra_active"])) if f["extra_active"] else ""))
     page.append('<div class="legend"><span>solid line: ledger supports a link</span><span>dashed: tested, no detectable average effect</span><span>dotted: untested</span>'
                 '<span>solid box: new that day</span><span>dashed box: still in force or expired</span><span>faded: not active</span></div>')
