@@ -148,6 +148,7 @@ def main():
         enr = share_z2 / share_n
         ev_out.update({"share_of_unexplained": share_z2, "share_of_stocks": share_n, "enrichment": enr})
         L.append("                share of the day's unexplained squared miss: %.1f%% from %.1f%% of the stocks -> enrichment %.2fx (1.00 = events make no difference)" % (100 * share_z2, 100 * share_n, enr))
+        L.append("                context: on own-event days overall the mean squared miss is about 2.7x other days (2.96 vs 1.11, the full validation); with only %d event stocks, one day swings widely and says little" % len(evs))
         agree = [(r["event"]["label"], r["e1"]) for r in evs if r["event"]["label"] in ("good", "bad")]
         if agree:
             k = sum(1 for lab, e in agree if (lab == "good" and e > 0) or (lab == "bad" and e < 0))
