@@ -24,6 +24,8 @@ sector_peer_ripple, company_sentiment_timeline.
 import os, sys, json, math, html, bisect
 from collections import defaultdict
 from datetime import date, timedelta
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import day_web_layers as dwl      # the card's numbers and the earnings / Regulation FD layers (see day_web_layers.py)
 
 ORDINARY_PCT = (0.56, 1.17, 2.06)     # ordinary-day |move|/v64 p50/p80/p95 (event_move_dist, 2004+, all eras)
 K_REF = 1.18                          # ordinary one-day range half-width in units of v64
@@ -168,6 +170,7 @@ def build_web(sb, ticker, ds):
     z = abs(ret) / v64 if (ret is not None and v64) else None
 
     nodes, edges, facts = [], [], {}
+    card, card_note = dwl.load_card(ticker, ds)     # runs day_card.py when its JSON is missing or stale
     sourcerows = defaultdict(list)
     checked = []
 
@@ -351,6 +354,7 @@ def build_web(sb, ticker, ds):
         det.append("z %.2f is %s (ordinary-day percentiles %.2f / %.2f / %.2f)" % (z, pos, p50, p80, p95))
     if z is not None and today_row and fl(today_row["mean_z"]):
         det.append("this stock's z is %.2fx the average z of its sector's stocks today (%.3f)" % (z / fl(today_row["mean_z"]), fl(today_row["mean_z"])))
+    det.extend(dwl.stock_details(card, card_note))
     add_node("c_stock", 3, ticker, stock_sub, "stock", det, ["market_prices %s %s; vol_estimators v64 %s" % (ticker, ds, v64)])
     add_edge("s_sector", "c_stock", "member", "belongs to the %s sector" % sector, "belongs to")
     if need_all:
@@ -398,6 +402,7 @@ def build_web(sb, ticker, ds):
             add_node("c_ev_none", 4, "Company events", "none in the last 200 days", "expired", [], ["ev_ent entity=%s" % eid])
             add_edge("c_ev_none", "c_stock", "dotted", "no company events found", "none found")
 
+    dwl.add_filing_layers(card, card_note, led, evid, led_info, edge_kind, add_node, add_edge, checked)
     peers = fetch(sb, "ev_ent", "event_id,entity_id,sector,d,ptype", [lambda q: q.eq("sector", sector), lambda q: q.eq("d", ds), lambda q: q.neq("entity_id", eid)], limit=300)
     if peers:
         pids = [p["event_id"] for p in peers][:40]
@@ -437,6 +442,7 @@ def build_web(sb, ticker, ds):
     facts.update({"ticker": ticker, "date": ds, "sector": sector, "return": ret, "v64": v64, "z": z,
                   "daily_markers_active": sum(1 for f in ("oil", "yield", "credit") if flags[f]["active"]),
                   "extra_active": [f for f in ("fed_day", "eo", "law") if flags[f]["active"]], "checked": checked})
+    facts["band"] = dwl.band_summary(card, card_note)
     return {"facts": facts, "nodes": nodes, "edges": edges}
 
 
@@ -526,6 +532,7 @@ def render_html(web):
                 % (mv, zz, f["daily_markers_active"], (" plus " + ", ".join(f["extra_active"])) if f["extra_active"] else ""))
     page.append('<div class="legend"><span>solid line: ledger supports a link</span><span>dashed: tested, no detectable average effect</span><span>dotted: untested</span>'
                 '<span>solid box: new that day</span><span>dashed box: still in force or expired</span><span>faded: not active</span></div>')
+    page.append(dwl.band_html(f.get("band")))
     page.append(render_svg(web))
     page.append("<h2>Where the threads end</h2><table><tr><th>From</th><th>To</th><th>Line</th><th>End</th><th>Ledger or fact</th></tr>")
     for e in edges:
