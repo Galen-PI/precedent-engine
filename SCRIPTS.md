@@ -3339,3 +3339,8 @@ in 2013-2019 (coverage 87.30% and 87.19% on about 12,000 days each; today's band
 window is wider under the median scale (3.24x / 2.70x vs 2.86x / 2.39x): hypothesis, untested, that the mean scale is partly inflated by the earnings stocks themselves on busy reporting days (a check would be the
 ratio of the mean scale to the median scale against the share of stocks in earnings windows). Ledger row band_median_scale_all_groups (null). The card, map and calibration keep the mean-based scale with per-bin
 edges for ordinary days. models/band_median_calibration.json records the edges and adoptable = false.
+
+Intended use of the median scale (2026-10-20): VALIDATED for ordinary stock-days only (no recorded event, earnings window or Regulation FD filing): one edge holds 89.6-91.1% coverage in every stress bin and
+era, and the share beyond a fixed threshold is flat across stress. NOT validated for earnings windows (failed 2013-2019), NOT adopted in the card, and NOT tested as a news filter (it proves calibration, not that
+flagged stocks are more newsworthy). Any threshold must be re-derived (2.0 units flags about 7% of ordinary stock-days under it vs 3.6% under the mean scale), and a filter should use the previous-day variant
+if it must be known in advance (ordinary coverage 89.8-90.1%). A candidate first use: an extra column in the day map's missing-information list, behind its own pre-set check.
