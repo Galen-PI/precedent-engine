@@ -17,7 +17,8 @@ WHAT THE CARD IS. An EXPLANATION of the day using same-day market and sector mov
      1.645 x spread x sqrt(q) x event multiplier, where q = the mean squared standardized miss of ALL OTHER stocks that day (market-wide stress), and
      the multiplier is a MEASURED GROUP value, never a product: the joint event-day model for a recorded event, 2.72x / 2.47x for an earnings window (8-K item 2.02, day 0 / +1),
      2.87x for both together, 1.36x for a Regulation FD filing (item 7.01), else 1.0. Whether the actual price
-     fell inside. The band's realized coverage has NOT been measured (tails are fatter than normal), so read it as a reference line.
+     fell inside. The edge is calibrated per kind of day (models/band_calibration.json; walk-forward coverage 88-91% by era), not the fixed 1.645, and the band is an
+     explanation line using the same day's stress, not a forecast range.
   4. OWN EVENT(S) on this day (day 0 or +1): title, type, the labeler's label / size / timing, and what similar-labeled events averaged. ANNOTATION ONLY:
      the label's pull did not earn a place in the price (event_center_test, pre-set: DOES NOT).
   5. REGISTERED MACRO LINKS: oil, yield and credit flag states (magnitude-only links; no signed pull earned a place).
@@ -196,6 +197,34 @@ def combine_multiplier(ev_mult, fl, earn_model, ev_note=None, has_event=False):
     return 1.0, "no own event, earnings filing or item 7.01 filing on day 0 or +1"
 
 
+def band_group(fl, has_event):
+    """The coverage group of this stock-day (the names band_calibrate.py uses)."""
+    if fl["earn_off"] is not None:
+        if has_event:
+            return "earnings window + recorded event"
+        return "earnings window, day 0 (no event)" if fl["earn_off"] == 0 else "earnings window, day +1 (no event)"
+    if has_event:
+        return "recorded event, no earnings"
+    if fl["f701"]:
+        return "Regulation FD (7.01) only"
+    return "ordinary"
+
+
+def band_edge(calib, group, stress):
+    """The 90% edge in band units for this kind of day: the walk-forward-verified empirical edge (models/band_calibration.json), else the nominal 1.645."""
+    if not calib:
+        return 1.645, "nominal 1.645 (no calibration file)"
+    if group == "ordinary":
+        for b in calib.get("stress_bins", []):
+            if b["from"] <= (stress or 1.0) < b["to"] and b["name"] in calib.get("ordinary_by_stress_bin", {}):
+                return calib["ordinary_by_stress_bin"][b["name"]], "calibrated 90%% edge for ordinary days with %s market stress" % b["name"]
+        if "ordinary_all" in calib.get("edge_90", {}):
+            return calib["edge_90"]["ordinary_all"], "calibrated 90% edge for ordinary days"
+    elif group in calib.get("edge_90", {}):
+        return calib["edge_90"][group], "calibrated 90%% edge for: %s" % group
+    return 1.645, "nominal 1.645 (no calibrated edge for this group)"
+
+
 def own_events(sb, ticker_sec, master, t, date):
     ent = ticker_sec.get("entity_id")
     if not ent:
@@ -282,8 +311,11 @@ def main():
     lead = events[0] if events else None
     ev_mult, ev_note = (band_multiplier(band_model, lead["ptype"], lead["size"], lead["timing"], lead["off"]) if lead else (None, None))
     mult, mult_src = combine_multiplier(ev_mult, fl, earn_model, ev_note, bool(lead))
+    calib = load_json("band_calibration.json")
+    group = band_group(fl, bool(lead))
+    edge, edge_src = band_edge(calib, group, math.sqrt(q) if q else None)
     sd_eff = c1["sd"] * (math.sqrt(q) if q else 1.0)
-    half = 1.645 * sd_eff * mult
+    half = edge * sd_eff * mult
     lo_ret, hi_ret = c1["hyp"] - half, c1["hyp"] + half
     z_miss = c1["e1"] / (c1["sd"] * (math.sqrt(q) if q else 1.0) * mult)
 
@@ -305,7 +337,7 @@ def main():
     L.append("   hypothetical move %s -> price %.2f | actual price %.2f" % (pct(c1["hyp"]), hyp_price or float("nan"), close or float("nan")))
     L.append("   UNEXPLAINED (actual - hypothetical): %s = %.1f of this stock's usual spread (%s)" % (pct(c1["e1"]), c1["e1"] / c1["sd"], pct(c1["sd"])))
     L.append("")
-    L.append("3. THE BAND     reference line, 1.645 x spread x market-stress x event multiplier")
+    L.append("3. THE BAND     %.3f x spread x market-stress x multiplier  (%s; it was a fixed 1.645 before calibration)" % (edge, edge_src))
     if q:
         L.append("   market-wide stress today (q): other stocks missed %.2fx their usual size (sqrt of the mean squared miss; %d stocks)" % (math.sqrt(q), len(z2s)))
     else:
@@ -313,8 +345,9 @@ def main():
     L.append("   band multiplier %.2fx -- %s" % (mult, mult_src))
     if prev_close:
         L.append("   band on the move %s to %s -> price %.2f to %.2f | actual %.2f is %s" % (
-            pct(lo_ret), pct(hi_ret), prev_close * (1 + lo_ret), prev_close * (1 + hi_ret), close, "INSIDE" if abs(z_miss) <= 1.645 else "OUTSIDE"))
-    L.append("   the miss is %.2f band-units (1.645 = the edge). Realized coverage of this band is NOT measured; tails are fatter than normal." % z_miss)
+            pct(lo_ret), pct(hi_ret), prev_close * (1 + lo_ret), prev_close * (1 + hi_ret), close, "INSIDE" if abs(z_miss) <= edge else "OUTSIDE"))
+    L.append("   the miss is %.2f band-units (%.3f = the 90%% edge). Calibrated to hold about 90%% of misses of this kind (walk-forward check on 2009-2026: 88-91%% by era); beyond 2.58 units the tails are" % (z_miss, edge))
+    L.append("   heavier than normal (about 1.3% of ordinary days, 2.3-2.7% of earnings windows). An explanation line built with the same day's stress, not a forecast range.")
     L.append("")
     peers = [(tk, cy) for tk, sc_, cy in others if sc_ == x.get("sector")]
     if len(peers) >= 3:
@@ -380,7 +413,7 @@ def main():
     print("\n".join(L))
 
     card.update({"day": {"return": c1["ret"], "prev_close": prev_close, "close": close}, "chapter1": c1, "hypothetical_price": hyp_price,
-                 "q": q, "event_multiplier": mult, "band_multiplier_source": mult_src, "filing_flags": fl, "band_return": [lo_ret, hi_ret], "band_units_of_miss": z_miss, "events": events,
+                 "q": q, "event_multiplier": mult, "band_multiplier_source": mult_src, "band_group": group, "band_edge": edge, "band_edge_source": edge_src, "filing_flags": fl, "band_return": [lo_ret, hi_ret], "band_units_of_miss": z_miss, "events": events,
                  "macro": {"oil": U["oil"][t], "yield": U["yld"][t], "credit": U["crd"][t]}})
     outdir = os.path.join(ROOT, "results", "cards")
     os.makedirs(outdir, exist_ok=True)

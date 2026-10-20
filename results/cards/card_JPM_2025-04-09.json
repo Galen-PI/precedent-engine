@@ -23,9 +23,18 @@
  "hypothetical_price": 231.2794530005415,
  "q": 2.6144963663223906,
  "event_multiplier": 1.0,
+ "band_multiplier_source": "no own event, earnings filing or item 7.01 filing on day 0 or +1",
+ "band_group": "ordinary",
+ "band_edge": 1.2900419229513127,
+ "band_edge_source": "calibrated 90% edge for ordinary days with high market stress",
+ "filing_flags": {
+  "earn_off": null,
+  "earn_date": null,
+  "f701": false
+ },
  "band_return": [
-  0.06453625048316645,
-  0.11937910126128827
+  0.07045324527102975,
+  0.11346210647342497
  ],
  "band_units_of_miss": -0.6840324285887036,
  "events": [],
