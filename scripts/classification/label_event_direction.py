@@ -29,6 +29,7 @@ Usage:
     python3 label_event_direction.py                        dry run: counts, leakage check, cost estimate, one sample request
     python3 label_event_direction.py --pilot 300 --live     stratified pilot (by event type and era), then hand-read about 100 labels
     python3 label_event_direction.py --all --live           every event not yet labeled with this prompt version
+    python3 label_event_direction.py --all --live --resume-batches ID1,ID2,...   collect the results of batches already submitted (no new submission)
 """
 import os, sys, json, re, random, importlib.util
 
@@ -157,6 +158,7 @@ def main():
     live = "--live" in sys.argv
     pilot = int(sys.argv[sys.argv.index("--pilot") + 1]) if "--pilot" in sys.argv else None
     do_all = "--all" in sys.argv
+    resume_ids = sys.argv[sys.argv.index("--resume-batches") + 1].split(",") if "--resume-batches" in sys.argv else None
     sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "shared"))
     from model_config import MODEL_VERSION
     sb = get_sb()
@@ -216,9 +218,15 @@ def main():
     bm = load_batch()
     hdr = {"x-api-key": os.environ["ANTHROPIC_API_KEY"], "anthropic-version": "2023-06-01", "content-type": "application/json"}
     bm.ANTHROPIC_HEADERS = hdr
-    chunks = bm.chunk_list(reqs, bm.MAX_BATCH_SIZE)
-    print("Submitting %d batch job(s)..." % len(chunks), flush=True)
-    batch_ids = [bm.submit_batch(c) for c in chunks]
+    if resume_ids:
+        # RECOVERY: submit nothing; read the results of batches that already exist at Anthropic (same --pilot/--all selection as the original run)
+        print("RESUMING: submitting nothing; reading the results of %d existing batch(es)." % len(resume_ids), flush=True)
+        batch_ids = resume_ids
+    else:
+        chunks = bm.chunk_list(reqs, bm.MAX_BATCH_SIZE)
+        print("Submitting %d batch job(s)..." % len(chunks), flush=True)
+        batch_ids = [bm.submit_batch(c) for c in chunks]
+        print("BATCH IDS (the recovery handle; save them): " + ",".join(batch_ids), flush=True)
     final = bm.poll_batches_until_all_done(batch_ids)
 
     results = {}
