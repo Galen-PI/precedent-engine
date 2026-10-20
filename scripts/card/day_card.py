@@ -13,7 +13,8 @@ WHAT THE CARD IS. An EXPLANATION of the day using same-day market and sector mov
      fit that never uses the day itself. Hypothetical move and price; what is left over (the residual) in units of this stock's spread.
      The 250-day fit skips one-day returns beyond +/-50% (price-adjustment artifacts); the DAY BEING EXPLAINED uses every return, and moves beyond 50%
      (the stock's own, or its sector peers') are listed on the card so a real crash or a split/spin-off artifact can be told apart by eye.
-  3. THE BAND: 1.645 x spread x sqrt(q) x event multiplier, where q = the mean squared standardized miss of ALL OTHER stocks that day (market-wide stress), and
+  3. THE BAND (and the SECTOR PEERS that day: typical miss size, this stock's rank by miss size, and the largest positive and negative peer misses):
+     1.645 x spread x sqrt(q) x event multiplier, where q = the mean squared standardized miss of ALL OTHER stocks that day (market-wide stress), and
      the event multiplier comes from the joint event-day model (floored at 1.0) when the stock has its own event on day 0 or +1. Whether the actual price
      fell inside. The band's realized coverage has NOT been measured (tails are fatter than normal), so read it as a reference line.
   4. OWN EVENT(S) on this day (day 0 or +1): title, type, the labeler's label / size / timing, and what similar-labeled events averaged. ANNOTATION ONLY:
@@ -207,13 +208,14 @@ def main():
             big_peers.append((next(s["ticker"] for s in U["stocks"] if s["id"] == sid), v))
 
     # q: the same day's cross-section of OTHER stocks (market-wide stress)
-    z2s = []
+    z2s, others = [], []
     for y in U["stocks"]:
         if y["id"] == x["id"]:
             continue
         cy = chapter1(U, y, t)
         if cy:
             z2s.append((cy["e1"] / cy["sd"]) ** 2)
+            others.append((y["ticker"], y.get("sector"), cy))
     q = sum(z2s) / len(z2s) if len(z2s) > 20 else None
 
     sb = dv.get_sb()
@@ -266,6 +268,18 @@ def main():
             pct(lo_ret), pct(hi_ret), prev_close * (1 + lo_ret), prev_close * (1 + hi_ret), close, "INSIDE" if abs(z_miss) <= 1.645 else "OUTSIDE"))
     L.append("   the miss is %.2f band-units (1.645 = the edge). Realized coverage of this band is NOT measured; tails are fatter than normal." % z_miss)
     L.append("")
+    peers = [(tk, cy) for tk, sc_, cy in others if sc_ == x.get("sector")]
+    if len(peers) >= 3:
+        own_z = abs(c1["e1"] / c1["sd"])
+        typ = math.sqrt(sum((cy["e1"] / cy["sd"]) ** 2 for tk, cy in peers + [(ticker, c1)]) / (len(peers) + 1))
+        rank = 1 + sum(1 for tk, cy in peers if abs(cy["e1"] / cy["sd"]) > own_z)
+        L.append("   SECTOR PEERS today (%s, %d others): typical miss %.1f spreads; this stock's miss ranks %d of %d by size" % (x.get("sector"), len(peers), typ, rank, len(peers) + 1))
+        up_ = sorted(peers, key=lambda p_: -p_[1]["e1"])[:3]
+        dn_ = sorted(peers, key=lambda p_: p_[1]["e1"])[:3]
+        L.append("      largest positive misses: " + ", ".join("%s %s (%.1f spreads)" % (tk, pct(cy["e1"]), cy["e1"] / cy["sd"]) for tk, cy in up_))
+        L.append("      largest negative misses: " + ", ".join("%s %s (%.1f spreads)" % (tk, pct(cy["e1"]), cy["e1"] / cy["sd"]) for tk, cy in dn_))
+        L.append("      (misses of both signs inside one sector point to structure within the sector, not to one missing piece for all of it)")
+        L.append("")
     L.append("4. OWN EVENTS   day 0 or +1 (annotation only)")
     if not events:
         L.append("   none recorded for this stock on this day.")
