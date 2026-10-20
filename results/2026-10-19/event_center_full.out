@@ -1,0 +1,38 @@
+cache: 498 securities | stride 1 | labeled events: 22283 | securities with event days: 491
+labeled event-days scored: 41510 | 28s
+
+GAIN IN SQUARED MISS ON LABELED EVENT-DAYS, walk-forward (positive = better)
+                                      2005-2012  2013-2019  2020-2026 | years positive
+  PRIMARY  C2 vs T0 (label beyond type)    +0.029%    +0.028%    +0.223% | 14 of 22
+  T0 vs zero (type alone)               -0.065%    +0.289%    +0.299% | 18 of 22
+  C2 vs zero (type + label)             -0.036%    +0.317%    +0.522% | 18 of 22
+  C2 vs T0, good/bad days only          +0.262%    +0.327%    +0.974% | 16 of 22
+
+CALIBRATED PULLS on all years: mean chapter-1 miss on event days, by label and day (percent; n)
+  label                       day 0                 day +1
+  good             +0.46%  (n=2969)       +0.19%  (n=2913)
+  bad              -0.54%  (n=2536)       -0.27%  (n=2492)
+  mixed            +0.17%  (n=1708)       -0.03%  (n=1660)
+  unclear         -0.01%  (n=13781)      -0.05%  (n=13451)
+
+  by type and label (days 0 and +1 pooled; types and labels with >= 100 event-days)
+  type                       label        days    mean miss
+  accounting_investigation   bad           431       -0.30%
+  acquisition                bad           149       -0.33%
+  acquisition                good         2546       +0.18%
+  capital_raise              good          161       +0.75%
+  corporate_action           good         1126       +0.59%
+  cybersecurity_incident     bad           145       -0.81%
+  financial_result           bad           573       -0.63%
+  leadership_change          bad           166       -0.49%
+  legal_settlement           bad          1371       -0.15%
+  legal_settlement           good          552       +0.40%
+  regulatory                 bad          1218       -0.64%
+  regulatory                 good          677       +0.19%
+  restructuring              bad           802       -0.21%
+  strategic_partnership      good          567       +0.37%
+
+VERDICT under the pre-set classification (primary comparison C2 vs T0, label beyond type): DOES NOT
+  (type alone, T0 vs zero: DOES NOT | type + label vs zero: DOES NOT)
+
+total 28s
