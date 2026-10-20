@@ -1,0 +1,7 @@
+flagged days kept out of the estimation window: 156592 of 3348864 stock-days with a return (4.68%); 8-K filings used: 64355 | 50s
+  residuals: 100/496 stocks, 58s
+  residuals: 200/496 stocks, 67s
+  residuals: 300/496 stocks, 75s
+  residuals: 400/496 stocks, 84s
+  residuals: 496/496 stocks, 92s
+saved /workspaces/stock-research1/data_cache/audit_matrices_exjump.npz | total 94s

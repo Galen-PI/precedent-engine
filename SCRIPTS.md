@@ -3344,3 +3344,9 @@ Intended use of the median scale (2026-10-20): VALIDATED for ordinary stock-days
 era, and the share beyond a fixed threshold is flat across stress. NOT validated for earnings windows (failed 2013-2019), NOT adopted in the card, and NOT tested as a news filter (it proves calibration, not that
 flagged stocks are more newsworthy). Any threshold must be re-derived (2.0 units flags about 7% of ordinary stock-days under it vs 3.6% under the mean scale), and a filter should use the previous-day variant
 if it must be known in advance (ordinary coverage 89.8-90.1%). A candidate first use: an extra column in the day map's missing-information list, behind its own pre-set check.
+
+### 2026-10-20 (late) -- Ex-jump spread (build_matrices_exjump.py, exjump_spread_test.py; rule committed d24ce99 before the run)
+NOT ADOPTED. Estimating each stock's spread without its own event, earnings and Regulation FD days (4.68% of stock-days kept out of the 250-day window) gave log-score gains of +0.0030 / +0.0176 / -0.0065 by
+era (bar +0.005 in each, 14 of 21 years positive vs 70% needed); it loses in volatility spikes (2008, 2020, 2026). Today's spread is about 21% too high in variance (median ratio 0.909) but calibration absorbs the level.
+The unscaled mean squared miss is 0.895 today and 1.133 ex-jump: 1.0 is not the target. Group multipliers move only +0.8 to +3.1%. Ledger row spread_exjump_window (null). The matrices are in
+data_cache/audit_matrices_exjump.npz (gitignored). The card keeps today's spread.

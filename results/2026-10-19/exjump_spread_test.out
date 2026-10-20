@@ -1,0 +1,25 @@
+matrices: 496 stocks x 8250 days | stock-days scored by both: 2326436 | ordinary: 2187080 | 44s
+
+LOG-SCORE GAIN OF THE EX-JUMP SPREAD OVER TODAY'S, ordinary stock-days (nats per stock-day; the bar is +0.005 in each era and positive in >= 70% of years)
+  2006-2012  gain +0.0030 over    665223 stock-days (BELOW the bar)
+  2013-2019  gain +0.0176 over    747253 stock-days (clears the bar)
+  2020-2026  gain -0.0065 over    774604 stock-days (BELOW the bar)
+  years positive: 14 of 21 (67%)  | by year: 2006:+0.015 2007:-0.007 2008:-0.067 2009:+0.029 2010:+0.024 2011:-0.000 2012:+0.027 2013:+0.029 2014:+0.025 2015:+0.004 2016:+0.016 2017:+0.027 2018:-0.010 2019:+0.032 2020:-0.092 2021:+0.017 2022:-0.000 2023:+0.030 2024:+0.015 2025:+0.007 2026:-0.028
+
+DESCRIPTIVE (no verdict)
+  ordinary days, mean squared band unit (z^2 / q_others; 1.0 = the spread is right): today 0.843 | ex-jump 0.837
+  ordinary days, mean z^2 NOT rescaled by the day's cross-section (1.0 = the spread is exactly right; this is the direct measure of spread inflation): today 0.895 | ex-jump 1.133
+  flagged stocks (event, earnings, Regulation FD windows), today matrices: 6.0% of stock-days hold 26.8% of the total squared miss (4.5x)
+  flagged stocks (event, earnings, Regulation FD windows), ex-jump matrices: 6.0% of stock-days hold 27.8% of the total squared miss (4.6x)
+  spread ratio ex-jump / today on ordinary stock-days: median 0.9088 | 5th 0.6982 | 95th 1.0016
+  per-stock median ratio (491 stocks): 5th 0.802 | 25th 0.867 | median 0.901 | 75th 0.940 | 95th 0.984  (the lower end = stocks whose spread was most inflated by their own jump days)
+  approximate group multipliers, sqrt(mean band unit^2 of the group / of ordinary days) (a rough replication of the card's measured 2.72 / 2.47 / event model / 1.36, not identical to them):
+    group                              today   ex-jump   change
+    earnings day 0 (no event)          2.750     2.790    +1.4%
+    earnings day +1 (no event)         2.517     2.596    +3.1%
+    recorded event, no earnings        1.614     1.634    +1.2%
+    Regulation FD (7.01) only          1.374     1.384    +0.8%
+  FLAGGED stock-days (no verdict): log-score gain of the ex-jump spread -0.7362 over 139356 stock-days (expected negative: their spread got smaller and their bands rely on multipliers)
+
+VERDICT under the pre-set rule: the ex-jump spread does NOT earn its place. era gains below +0.005: 2006-2012 +0.0030, 2020-2026 -0.0065; positive in 14 of 21 years (< 70%)
+total 45s
