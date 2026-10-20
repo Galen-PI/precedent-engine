@@ -3304,3 +3304,11 @@ predictions were wrong. Scoring with the previous day's stress changed coverage 
 CALIBRATED; edges fitted on all years are ordinary 1.527 / 1.441 / 1.289 / 1.290 (calm / normal / elevated / high stress), event 1.337, earnings day 0 1.506, day +1 1.384,
 earnings + event 1.433, Regulation FD 1.319; models/band_calibration.json; some earnings and event eras sit at 88.1-89.1% (mild drift: refit periodically). day_card.py now uses the
 calibrated edge for the day's group. Cleaner fix, not done: a slow spread computed without the stock's own earnings and event days.
+
+Card check after the calibrated edge (2026-10-20): GEHC 2024-02-06 (earnings day 0) used edge 1.506 and the miss was 2.27 band units, OUTSIDE; JPM 2025-04-09 (ordinary day, high market stress)
+used edge 1.290 and the miss was -0.68, INSIDE. Band limits and misses were cross-checked by hand against the printed prices.
+
+Forward test of the operating-income earnings surprise: scripts/card/earnings_forward_test.py, rule frozen at commit 914d857 (2026-10-20) before any window data existed. Readiness check on the real
+database (2026-10-20): matrices end 2026-10-13, no item 2.02 filings in the window yet. Before evaluating (planned January 2027): refresh prices, raw 8-K filings and quarterly statements (the onboarding
+scripts in SCRIPTS notes are for new companies; the incremental refresh interface needs checking against the real script), rebuild the matrices, run the readiness check, then --evaluate ONCE.
+Ledger row earnings_surprise_sign_operating_income_forward (freeze commit recorded in its notes).
