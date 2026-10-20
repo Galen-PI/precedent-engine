@@ -3272,3 +3272,26 @@ excess is +0.0292 / +0.0490 / +0.0794 (2004-07 / 2008-12 / 2013-18), +0.0367 old
 **Open.** Baseline logs for chapter 2, validation, width, direction and placebo were not saved before a Codespace restart cleared /tmp; only event_center_full.out
 is in results/2026-10-19/. Regenerate them (about ten minutes) and compare with the numbers above. Far placebo from the price cache for all events. Joint model
 for the width multipliers. Gap audit after the engine is assembled.
+
+## Phase 7 engine, additions (2026-10-20)
+
+**Where the unexplained squared miss sits** (market and sector explain about 45% of squared daily moves; of the other ~55 points, by this session's runs, approximate): earnings
+days about 19.5% of the unexplained (3.2% of stock-days), recorded event days about 4-5%, an excess tail on other days at most about 5 points, and about 70% looks like ordinary
+heavy-tailed noise (the clean-day tail, 33.3% of the clean mass, matches a Student-t with ~9-10 degrees of freedom; Gaussian 26.1%). Shape cannot prove noise.
+
+**Scripts added** (scripts/card/): gap_audit.py (statistical factors, stress split, composition; builds data_cache/audit_matrices.npz), gap_sample.py (random sample of big no-event
+misses; `noearn` option), earnings_thread_test.py, eightk_item_scan.py, vol_regime_audit.py, earnings_surprise_test.py, day_card.py (assembled stock-day card), day_map.py (market-wide
+day map). models/ holds the fitted files the card reads (event_band_model.json, earnings_band_model.json, label_annotation.json, decomp_validation_20261020.json).
+
+**Results** (pre-set rules; ledger rows event_earnings_window_width, eightk_item_*, shared_structure_statistical_factors, vol_regime_blend_base_spread, earnings_surprise_*):
+earnings windows widen the band 2.72x / 2.47x (day 0 / +1), 2.87x with a recorded event (PROVEN, 21 of 21 years); 8-K item 7.01 1.36x (lead); items 8.01, 5.02, 1.01, 2.03, 5.03,
+5.07 add nothing; statistical factors real but small (+0.010 / +0.020 / +0.040 R-squared, 22 of 22 years, does not clear +0.02 in every era); a recent-volatility blend does not earn
+its place (+0.025 / -0.011 / +0.025); earnings-surprise proxy: sign 53.4% / 52.9% (does not clear 54%), size nothing. Post-hoc: operating income leads revenue by ~1.4 points on identical
+events; a forward test on the Q3 2026 season is frozen in the ledger (earnings_surprise_sign_operating_income_forward).
+
+**Corrections made during the work**: the day card used the 50%-return filter on the day being explained and dropped three real energy crashes on 2020-03-09 (APA, OXY, TRGP); it now uses
+every return for the day being explained and lists moves beyond 50%. The card showed a 1.00x band multiplier on earnings days; it now uses the measured group values. The joint
+width model's day-only line was wrong (a dictionary kept one cell per day) and was fixed. Item codes 5, 7, 9 are pre-Aug-2004 formats and are ignored by the scan.
+
+**Open**: band coverage test (does the 90% band contain about 90% of misses on ordinary days, event days and earnings windows?); the five day-one baseline logs (chapter 2, validation,
+event width, direction, placebo) are not in results/; an ex-jump version of the fast-spread test; earnings-day filing times from EDGAR (would sharpen the band to about 3.5x on the reaction day).
