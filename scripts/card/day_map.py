@@ -94,6 +94,11 @@ def main():
             labs[l["event_id"]] = l
     band_model = dc.load_json("event_band_model.json")
     label_ann = dc.load_json("label_annotation.json")
+    earn_model = dc.load_json("earnings_band_model.json")
+    flag_rows = defaultdict(list)
+    for f in paged(lambda: sb.table("sec_8k_filings").select("security_id,filing_date,item_codes").gte("filing_date", lo).lte("filing_date", date).order("id")):
+        if f["security_id"] in cache_ids:
+            flag_rows[f["security_id"]].append(f)
     for r in rows:
         lst = cand.get(r["id"])
         r["event"], r["mult"] = None, 1.0
@@ -105,6 +110,9 @@ def main():
             r["event"], r["mult"] = ev, (m if m else 1.0)
             if ev["label"] in ("good", "bad", "mixed", "unclear") and label_ann:
                 ev["tilt"] = label_ann["mean_miss_percent"][ev["label"]]["day0" if ev["off"] == 0 else "day1"] / 100.0
+        fl = dc.filing_flags(flag_rows.get(r["id"], []), U["master"], t)
+        r["earn_off"], r["f701"] = fl["earn_off"], fl["f701"]
+        r["mult"], r["mult_src"] = dc.combine_multiplier((r["mult"] if r["event"] else None), fl, earn_model, None, bool(r["event"]))
         r["zb"] = r["e1"] / (r["sd"] * math.sqrt(r["q_others"]) * r["mult"])
 
     # 1. the day
@@ -164,12 +172,28 @@ def main():
         L.append("                none recorded.")
     L.append("")
 
+    # 3b. earnings windows and Regulation FD filings
+    earn = [r for r in rows if r["earn_off"] is not None]
+    n701 = sum(1 for r in rows if r["f701"] and r["earn_off"] is None and not r["event"])
+    L.append("3b. EARNINGS      stocks in an earnings window (8-K item 2.02 filed today or the previous trading day): %d of %d (%.1f%%)" % (len(earn), n, 100.0 * len(earn) / n))
+    ev_out["earnings_windows"] = len(earn)
+    if earn:
+        sh_z = sum(r["z2"] for r in earn) / S
+        sh_n = len(earn) / n
+        ev_out["earnings_enrichment"] = sh_z / sh_n
+        L.append("                share of the day's unexplained squared miss: %.1f%% from %.1f%% of the stocks -> enrichment %.2fx (all days: about 6x; the band uses 2.72x on day 0, 2.47x on day +1)" % (100 * sh_z, 100 * sh_n, sh_z / sh_n))
+        L.append("                %-7s %-22s %9s %9s %9s %6s %9s" % ("ticker", "window day", "actual", "miss", "", "band x", "band units"))
+        for r in sorted(earn, key=lambda r: -abs(r["zb"]))[:topn]:
+            L.append("                %-7s %-22s %9s %9s %9s %5.2fx %9.2f" % (r["ticker"], "day %d%s" % (r["earn_off"], " (+ event)" if r["event"] else ""), pct(r["ret"]), pct(r["e1"]), "", r["mult"], r["zb"]))
+    L.append("                Regulation FD filings (item 7.01) with no event or earnings filing: %d stocks (a weak lead, about 1.36x)" % n701)
+    L.append("")
+
     # 4. where the missing information is
     big = [r for r in rows if abs(r["zb"]) > 2.0]
-    noev = [r for r in big if not r["event"]]
+    noev = [r for r in big if not r["event"] and r["earn_off"] is None]
     L.append("4. WHERE THE MISSING INFORMATION IS   stocks beyond 2 band units: %d (%.1f%% of stocks; about 4.6%% expected if misses were normal)" % (len(big), 100.0 * len(big) / n))
     if big:
-        L.append("                %d of them (%.0f%%) have NO recorded event on day 0 or +1: the candidates for news, analyst or earnings information we have not recorded" % (len(noev), 100.0 * len(noev) / len(big)))
+        L.append("                %d of them (%.0f%%) have NO recorded event and no earnings filing on day 0 or +1: the candidates for news, analyst or other information we have not recorded" % (len(noev), 100.0 * len(noev) / len(big)))
     L.append("                %-7s %-24s %9s %9s %9s %9s  %s" % ("ticker", "sector", "actual", "explained", "miss", "band units", "recorded event"))
     for r in sorted(rows, key=lambda r: -abs(r["zb"]))[:topn]:
         L.append("                %-7s %-24s %9s %9s %9s %9.2f  %s" % (r["ticker"], r["sector"][:24], pct(r["ret"]), pct(r["hyp"]), pct(r["e1"]), r["zb"],
