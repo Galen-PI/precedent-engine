@@ -167,6 +167,13 @@ def build_web(sb, ticker, ds):
     ret = fl(prices[i_t]["adjusted_close"]) / fl(prices[i_t - 1]["adjusted_close"]) - 1 if i_t >= 1 else None
     ve = fetch(sb, "vol_estimators", "d,v64", [lambda q: q.eq("security_id", sid), lambda q: q.eq("d", ds)], limit=1)
     v64 = fl(ve[0]["v64"]) if ve else None
+    v64_note = None
+    if v64 is None and i_t >= 51:      # vol_estimators ends 20 trading days before the last price (its outcome column needs a 20-day forward close); compute the same estimate here
+        _r = [fl(prices[k]["adjusted_close"]) / fl(prices[k - 1]["adjusted_close"]) - 1 for k in range(max(1, i_t - 64), i_t)]
+        if len(_r) >= 50:
+            _m = sum(_r) / len(_r)
+            v64 = math.sqrt(sum((x - _m) ** 2 for x in _r) / (len(_r) - 1))
+            v64_note = "v64 computed here from the %d returns before %s (vol_estimators has no row for this date): the same sample standard deviation the table holds" % (len(_r), ds)
     z = abs(ret) / v64 if (ret is not None and v64) else None
 
     nodes, edges, facts = [], [], {}
@@ -349,6 +356,8 @@ def build_web(sb, ticker, ds):
     # ---- the stock (column 3)
     stock_sub = "no return" if ret is None else "%+.1f%%, z %s" % (100 * ret, "n/a" if z is None else "%.2f" % z)
     det = []
+    if v64_note:
+        det.append(v64_note)
     if v64:
         det.append("ordinary one-day range: +-%.1f%% (%.2f x v64 %.4f)" % (100 * K_REF * v64, K_REF, v64))
         if ret is not None:

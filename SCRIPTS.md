@@ -3320,3 +3320,9 @@ Backups: sector_day_z_backup_20261020, sector_day_tail_backup_20261020 (the Janu
 2026-09-15 (372 new rows = 31 trading days x 12 sector labels), apparently where vol_estimators ends (to be confirmed). scripts/macro/eo_market_test.py reads sector_day_z with no date bound and its
 baselines run +63..+252 trading days past an event, so it was pinned to its pre-registered window (rows after 2026-07-31 skipped); rerun it and compare with the ledger row
 eo_relevant_signing_market_wide_amplification. Open: what refreshes vol_estimators; the builder statements are not in the repo (save pg_get_functiondef output as sql/build_sector_tables.sql).
+
+Follow-up 2026-10-20: the pinned eo_market_test.py reproduces its ledger evidence exactly (2004-2012 0.964 n=144; 2013-2026 1.007 n=324; pooled 0.994 n=468; verdict not passed).
+vol_estimators was built once (CREATE TABLE AS, 2026-10-14/15) for an estimator comparison and carries a 20-day FORWARD outcome column (a), so a row needs a close 20 trading days ahead: its last day is the
+last price minus 20 trading days (2026-09-15 for prices to 2026-10-13; prices_last and vol_estimators_last were checked). The older-years extension function extend_year_safe(y) refuses 2019+, and the statement that
+added August-September 2026 was not found. The sector builders inner-join it, so sector_day_z / sector_day_tail also end 2026-09-15. day_web.py computes v64 from prices when the table has no row (same
+definition: sample sd of the 64 returns before the day, at least 50). Option not taken: rewrite the sector builders to compute v64 inline, which would extend them to the last price.
