@@ -332,6 +332,11 @@ def build_web(sb, ticker, ds):
     today_row = next((r for r in sd_rows if r["day"] == ds), None)
     prior = [fl(r["mean_z"]) for r in sd_rows if r["day"] < ds and fl(r["mean_z"]) is not None]
     sec_sub, sec_det = "no sector data", []
+    if not today_row:      # say WHY there is no reading: the table may simply end before this date
+        _last = fetch(sb, "sector_day_z", "day", [lambda q: q.eq("sector", sector)], order="day", desc=True, limit=1)
+        if _last and str(_last[0]["day"])[:10] < ds:
+            sec_sub = "table ends %s" % str(_last[0]["day"])[:10]
+            sec_det = ["sector_day_z has no rows after %s, so there is no sector reading for %s: a refresh gap, not an empty sector" % (str(_last[0]["day"])[:10], ds)]
     if today_row and prior:
         ratio = fl(today_row["mean_z"]) / _median(prior)
         sec_sub = "%.2fx its usual move" % ratio
