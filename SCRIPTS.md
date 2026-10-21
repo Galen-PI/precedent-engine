@@ -3391,3 +3391,9 @@ Habit agreement by the event's own gap: 77.9 / 84.1 / 89.6% (2-3, 3-5, 5+ own-sd
 (placebo 32.9%): about 61% of earnings events have a gap-dominated reaction (post-hoc model). NOT a dating problem as defined (13 stocks below 50% aligned vs the rule's 15); the least aligned are mostly utilities and REITs
 (small reactions) plus STLD, OXY, FCX, BRK-B. TSLA's largest gap is on day i 38% and i+1 38% (its 8-K timing relative to the release flips; not misdated). Pre-set reading: NOISE AT WEAK GAPS does not hold (5+ tier 89.6%),
 DATING PROBLEM does not hold, UNSTABLE HABITS holds (every tier below 92%). Next: forward-looking habit rules from earlier quarters only (earnings_timing_recency.py).
+
+### 2026-10-21 -- Earnings timing: forward habit rules (earnings_timing_recency.py, 9f18cf7; rule and predictions committed before the run)
+On the 17,428 events with at least 8 earlier classifiable quarters: last quarter 85.1%, majority of the last 3 / 4 / 8 quarters 88.7 / 88.8 / 88.7%, all earlier quarters 85.1%, pooled leave-one-out 86.6% (the pooled rule also sees later
+quarters). Where the event's own gap is at least 5 sd: last 4 reads 93.1%. Pre-set: HABIT DRIFT NOT supported (best forward rule +2.2 points over pooled, threshold 3: a conservative test, since pooled sees the future); FORWARD HABITS
+USABLE: yes (93.1% vs 90%). Descriptive (post hoc): last 4 beats all-earlier by 3.7 points; clean-pair switch rate 11.7% (2006-12), 7.3% (2013-19), 5.9% (2020-26); highest flippers BLDR, BRO, TSLA (44%, only 9 pairs), UHS, PLTR,
+KHC (small counts). Next: earnings_role_band_test.py, the walk-forward test of role-specific bands against the pooled day-0 / day +1 bands, with a shuffled-habit placebo.

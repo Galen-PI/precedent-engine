@@ -1,0 +1,22 @@
+stocks with classifiable earnings events: 492 | classifiable events 21325 | 36s
+
+AGREEMENT ON THE SAME 17428 EVENTS (those with at least 8 earlier classifiable quarters); a forward rule uses earlier quarters only, POOLED also uses later ones
+  rule       overall |    2-3 sd    3-5 sd     5+ sd | by era: 2006-2012  2013-2019  2020-2026
+  LAST1        85.1% |     77.3%     84.8%     89.4% |  82.8%   85.1%   86.0%
+  LAST3        88.7% |     80.8%     88.6%     92.9% |  86.6%   88.7%   89.5%
+  LAST4        88.8% |     80.7%     88.6%     93.1% |  87.0%   88.6%   89.6%
+  LAST8        88.7% |     80.9%     88.4%     93.1% |  87.0%   88.3%   89.8%
+  ALLPAST      85.1% |     78.4%     84.2%     89.2% |  86.5%   85.6%   84.1%
+  POOLED       86.6% |     79.4%     86.1%     90.7% |  83.3%   88.1%   86.3%
+
+SWITCH RATE between consecutive classifiable quarters when BOTH have a gap of at least 5 own-sd (clean pairs): the share where the timing flips
+  all   7.7% (4769 pairs) | 2006-2012  11.7% (993 pairs) | 2013-2019   7.3% (1914 pairs) | 2020-2026   5.9% (1862 pairs)
+  the twelve stocks with the highest switch rate (at least 8 clean pairs): BLDR 50% (12) | BRO 45% (11) | TSLA 44% (9) | UHS 40% (15) | PLTR 40% (10) | ACGL 38% (8) | KHC 33% (12) | STX 32% (22) | A 29% (21) | CVS 27% (11) | CDW 27% (11) | CTAS 27% (11)
+  TSLA: 44% of 9 clean pairs
+
+READING (pre-set rules)
+  HABIT DRIFT: NOT supported (best forward rule LAST4  88.8% vs pooled  86.6% = +2.2 points, threshold 3)
+  (descriptive: switch rate between clean pairs 2006-2012  11.7% vs 2013-2019   7.3% = +4.4 points)
+  FORWARD HABITS USABLE: YES (best forward rule LAST4 reads  93.1% among events whose own gap is at least 5 sd; threshold 90%)
+
+total 36s
