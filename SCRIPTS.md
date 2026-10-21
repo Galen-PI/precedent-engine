@@ -3431,3 +3431,8 @@ Per-company coverage 2016-2025: 139 entities appear in nearly every month (118+ 
 month, dominated by Feb-May 2015 (about 400), and is misleading; the earlier 184/497 figure was closer to the truth for most months. Table spans 2015-02-17 to 2026-09-21 (532,815 rows). Upsert conflict key entity_id,date,source (matches the
 unique constraint). BigQuery works from the Codespace (project stock-project-508016). The backfill sent one request per row; patched to 500-row batches with duplicate entity-days merged (tested on mocks). Plan: backup table, company-list check,
 one-month dry run, one real month (2022-01) with the old-vs-new comparison rule (mean ratio 0.95-1.25, under 20% lower), then 2015-05 to 2026-09.
+
+### 2026-10-21 -- Sentiment backfill: first real month (2022-01) with the fixed IF()/UNNEST query
+Ran cleanly (no 'Array cannot have a null element' error; batched upserts worked): 8,726 (company, day) rows processed vs 3,477 rows (164 entities) in the table before. 8,726 rows cannot come from 199 tickers (max about 6,200), so the earlier regex
+count of 199 tickers in TRACKED_COMPANIES was wrong; the authoritative count is len(TRACKED_COMPANIES) from importing the module. Pending: old-vs-new ratio, entities now, per-letter coverage for 2022-01 (rule: mean ratio 0.95-1.25 and under 20% of days
+lower before any wider overwrite). entities has columns id, name, entity_type, description, ticker; securities has entity_id, ticker, sector (names for extending the company list live in entities.name).
