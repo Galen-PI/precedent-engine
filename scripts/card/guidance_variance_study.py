@@ -16,7 +16,7 @@ MATERIAL with probability about 40%. The keyword classes are crude: they are che
 Usage:   export SEC_USER_AGENT="stock-research1 you@yourdomain.com"      then      python3 -u scripts/card/guidance_variance_study.py        (the first run fetches about 1,500 exhibits: roughly 10 minutes; later runs use the cache)
 """
 import os, sys, re, csv, time, bisect, random, warnings
-from collections import defaultdict
+from collections import defaultdict, Counter
 import numpy as np
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)
@@ -155,16 +155,16 @@ def main():
             nfail += 1
         g = classify(res["excerpt"]) if res["excerpt"] else "N"
         m = (bu2[k, i] + bu2[k, i + 1]) / 2.0
-        rows.append((g, float(m), int(months[i]), dl[i], ids[k], res["excerpt"][:160]))
+        rows.append((g, float(m), int(months[i]), dl[i], ids[k], res["excerpt"][:160], acc))
         if (j + 1) % 250 == 0:
             print("  %d/%d | %.0fs" % (j + 1, len(smp), time.time() - t0), flush=True)
     print("fetched: %d filings | fetch failures (not 'no exhibit') %d" % (len(rows), nfail))
     os.makedirs(RESULTS, exist_ok=True)
     with open(os.path.join(RESULTS, "guidance_variance_sample.csv"), "w", newline="") as fh:
         w = csv.writer(fh)
-        w.writerow(["group", "two_day_mean_bu2", "date", "security_id", "excerpt_start"])
-        for g, m, mo, dt, sid, ex in rows:
-            w.writerow([g, "%.3f" % m, dt, sid, ex])
+        w.writerow(["group", "two_day_mean_bu2", "date", "security_id", "excerpt_start", "accession_number"])
+        for g, m, mo, dt, sid, ex, acc_ in rows:
+            w.writerow([g, "%.3f" % m, dt, sid, ex, acc_])
 
     # reference: item 2.02 filings measured the same way
     ref = [(bu2[k, i] + bu2[k, i + 1]) / 2.0 for k, i, items, url, acc in filings if "2.02" in items and years[i] >= TEST_START and i + 1 < n and fin[k, i] and fin[k, i + 1]]
@@ -210,6 +210,18 @@ def main():
         print("CONTRIBUTION of %s filings to the ordinary pool's total squared miss: %.2f%% [%.2f%%, %.2f%%]  (population %d filings x share x 2 days x extra squared miss / pool total)" % (g, 100 * pt, 100 * bs[0], 100 * bs[1], len(pop)))
     material = (r_pt >= 1.5 and r_lo > 1.2) and out["G"][0] >= 0.01
     print("\nVERDICT (pre-set: ratio >= 1.5 with the lower end above 1.2, AND G accounts for >= 1.0%% of the pool's squared miss): GUIDANCE-TYPE FILINGS ARE %s" % ("A MATERIAL VARIANCE SOURCE" if material else "NOT shown to be a material variance source"))
+    try:                                                           # descriptive only (added after the first run; nothing above depends on it)
+        labs, accs = {}, sorted({r[6] for r in rows if r[6]})
+        for i0 in range(0, len(accs), 100):
+            for q in sb.table("filing_ai_classifications").select("accession_number,ai_verdict").in_("accession_number", accs[i0:i0 + 100]).execute().data:
+                labs[q["accession_number"]] = q["ai_verdict"]
+        print("\nCLASSIFIER VERDICT BY GROUP (the sample's accession numbers joined to filing_ai_classifications; descriptive):")
+        for g in GROUPS:
+            vs_ = [labs.get(r[6], "(no label)") for r in rows if r[0] == g]
+            c = Counter(vs_)
+            print("  %s n %3d: %s" % (g, len(vs_), ", ".join("%s %d (%.0f%%)" % (k_, v_, 100.0 * v_ / max(len(vs_), 1)) for k_, v_ in c.most_common())))
+    except Exception as e:
+        print("classifier labels not available: %s" % str(e)[:100])
     rr = random.Random(SEED + 1)
     for g in ("G", "E", "O"):
         ex = [r for r in rows if r[0] == g]

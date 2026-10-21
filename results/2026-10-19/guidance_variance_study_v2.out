@@ -1,0 +1,51 @@
+quiet-day mean squared band unit 0.834 (median 0.270) | ordinary pool 2220556 stock-days | eligible isolated 8.01/7.01 filings 26689 | sample 1500 | 43s
+  250/1500 | 43s
+  500/1500 | 43s
+  750/1500 | 43s
+  1000/1500 | 43s
+  1250/1500 | 43s
+  1500/1500 | 43s
+fetched: 1500 filings | fetch failures (not 'no exhibit') 0
+reference (all Item 2.02 filings, same 2-day method): n 38396, multiplier 2.67x
+
+GROUP       n     share      95% interval | multiplier      95% interval | median-based multiplier
+E         15      1.0% [  0.6%,   1.6%] |      1.27x [ 0.81,  1.73] | 1.33x
+G         50      3.3% [  2.5%,   4.4%] |      2.37x [ 1.83,  2.86] | 2.47x
+O        821     54.7% [ 52.2%,  57.2%] |      1.30x [ 1.20,  1.40] | 1.42x
+N        614     40.9% [ 38.5%,  43.4%] |      1.10x [ 1.02,  1.19] | 1.34x
+O + N  1435     95.7%                   |      1.22x
+
+G multiplier / (O + N) multiplier = 1.94 [1.48, 2.37]
+CONTRIBUTION of G filings to the ordinary pool's total squared miss: 0.36% [0.17%, 0.62%]  (population 26689 filings x share x 2 days x extra squared miss / pool total)
+CONTRIBUTION of E filings to the ordinary pool's total squared miss: 0.01% [-0.01%, 0.05%]  (population 26689 filings x share x 2 days x extra squared miss / pool total)
+
+VERDICT (pre-set: ratio >= 1.5 with the lower end above 1.2, AND G accounts for >= 1.0% of the pool's squared miss): GUIDANCE-TYPE FILINGS ARE NOT shown to be a material variance source
+
+CLASSIFIER VERDICT BY GROUP (the sample's accession numbers joined to filing_ai_classifications; descriptive):
+  E n  15: likely_noise 14 (93%), real_event 1 (7%)
+  G n  50: likely_noise 42 (84%), real_event 8 (16%)
+  O n 821: likely_noise 703 (86%), real_event 104 (13%), uncertain 14 (2%)
+  N n 614: likely_noise 540 (88%), real_event 67 (11%), uncertain 7 (1%)
+
+five random G excerpts (the classes are crude; read them):
+  2008-09-09 0.0 | exhibit.htm Exhibit 99 TI updates third-quarter 2008 business outlook Conference call on TI web site at 4 p.m. Central time today www.ti.com
+  2008-12-03 0.8 | Press Release dated December 3, 2008. Exhibit 99.1 Schlumberger Comments on Outlook for 2008 Results HOUSTON , December 3, 2008 &#150; Schlu
+  2012-05-22 5.2 | ex99-1.htm Generac Adjusts Proposed Refinancing and Dividend Recapitalization WAUKESHA, Wis., May 21, 2012 (BUSINESS WIRE) &#8211; Generac H
+  2020-12-16 2.5 | Document QUEST DIAGNOSTICS RAISES OUTLOOK FOR FULL YEAR 2020 &#8226; Revenues for full year 2020 expected to be at least $9.35 billion versu
+  2015-07-09 0.6 | News Release The Procter & Gamble Company One P&G Plaza Cincinnati, OH 45202 P&G ACCEPTS COTY'S OFFER OF $12.5 BILLION TO MERGE 43 P&G BEAUT
+
+five random E excerpts (the classes are crude; read them):
+  2024-12-17 1.7 | Exhibit 99.1 Press Release December 16, 2024 7575 W. Jefferson Blvd. Fort Wayne, IN 46804 Steel Dynamics Provides Fourth Quarter 2024 Earnin
+  2021-07-28 1.9 | Document July 28, 2021 FOR IMMEDIATE RELEASE Media Contact&#58; Steve Hollister, 727.567.2824 Investor Contact&#58; Kristina Waugh, 727.567.
+  2015-01-02 0.0 | ORLY-2015.01.02-Exhibit99.1 Exhibit 99.1 FOR IMMEDIATE RELEASE O'REILLY AUTOMOTIVE, INC. ANNOUNCES DATES FOR ITS &#32; FOURTH QUARTER AND FU
+  2021-12-09 2.5 | Document Exhibit 99.1 4 Parkway North, Suite 400 Deerfield, IL 60015 www.cfindustries.com For additional information&#58; Media Investors Ch
+  2015-04-15 0.5 | Exhibit 99.1 For Further Information Contact Harry J. Cynkus (404) 888-2922 FOR IMMEDIATE RELEASE ROLLINS, INC. SCHEDULES DATE FOR RELEASE O
+
+five random O excerpts (the classes are crude; read them):
+  2009-10-14 0.8 | Charts used in senior executive presentations Management Presentations Exhibit 99.1 Welcome and Introduction Stuart Davis SVP, Investor Rela
+  2008-09-24 0.0 | exhibit991.htm Exhibit 99.1 September 24, 2008 For 7:00 a.m. EDT release Contacts: Shareholders&#8217;/Analysts&#8217; Inquiries: Media Inqu
+  2018-06-12 0.6 | Exhibit NOTICE TO HOLDERS OF ANY AND ALL OUTSTANDING 2.625% SENIOR CONVERTIBLE NOTES DUE 2041 OF NOVELLUS SYSTEMS, INC. WITH CUSIP NUMBER 67
+  2017-04-05 0.0 | Exhibit EXHIBIT 99.1 News Release First Solar to Review Alternatives for the Sale of its Interests in 8point3 Energy Partners &#8226; Seeks 
+  2021-12-10 0.5 | Document Exhibit 99.1 December 10, 2021 Analysts&#58; Tim Sedabres (timothy.sedabres&#64;huntington.com), 952.745.2766 Media&#58; Allison Ga
+
+total 47s
