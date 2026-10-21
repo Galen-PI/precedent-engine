@@ -115,7 +115,9 @@ def main():
         out.append(r)
         if (i + 1) % 25 == 0:
             print("  %d/%d | excerpts %d, none %d | %.0fs" % (i + 1, len(todo), n_ok, n_fail, time.time() - t0), flush=True)
-    path = os.path.join(RESULTS, "human_review_queue_with_excerpts.csv")
+    # a run with a row limit is a TRIAL: it must never overwrite the full file
+    name = "human_review_queue_with_excerpts.csv" if len(sys.argv) <= 2 else "human_review_queue_with_excerpts_trial.csv"
+    path = os.path.join(RESULTS, name)
     with open(path, "w", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=list(todo[0].keys()) + ["exhibit_excerpt", "keyword_hint"] if todo else ["tier"])
         w.writeheader()
