@@ -3363,3 +3363,11 @@ misses (12,704, non-aftershock) 53.0%. p / s = 0.65 (informative). pi_upper 0.75
 looks like information by volume is between 0.31 (extrapolated noise rate) and 0.62 (mid-size noise rate), about 3,900-7,900 of the 12,704 (17-33% of the 23,554 recorded events). At least about 13% show no volume
 elevation at all (under 1.3x; information gives that 1.9% of the time). pi_upper by era 0.66 / 0.62 / 0.56 (s roughly stable 82.7 / 82.6 / 78.4). The 5 readings so far (1 of 5 found) are in the working notes.
 Limit: company-filed information may have a different volume signature from analyst notes, activist stakes, rumours and sector news.
+
+### 2026-10-21 -- Joins and market-adjusted calibration (unrecorded_joins.py, volume_calibration_adj.py; predictions committed 9d401d0 before the runs)
+Other 8-Ks (not 2.02 / 7.01) are attached to 5.6% of big ordinary misses vs 3.8% of calm days (1.48x [1.37, 1.59]); item 8.01 2.15x, 1.01 1.35x; about 230 big misses (1.8%) explained; 6,297 of 6,730 big misses with a
+volume spike (93.6%) have no filing at all. Flow days inflate volume spikes on calm stock-days (monthly expiry 6.6x, quarterly 16x, Russell 9x) without changing the big-miss rate (1.00 / 1.13 / 1.00x). Big misses are
+more frequent just BEFORE a recorded-event window (1 day 2.41x, 5 days 1.68x) and a Regulation FD window (1 day 1.71x): probably event dates that lag the news (an 8-K may be filed up to four business days after
+an event; untested), about 200-400 big misses (2-3%); less frequent in the 5 days before earnings (0.77x). Market-adjusted volume ratio: calm 1.5% / mid 5.9% / big 53.5% / known information 84.8% at 2.0x; pi_upper
+0.80 / 0.66 / 0.55 (spread 0.26, still NOT CONSISTENT); range at 2.0x [0.32, 0.66]; by era 0.70 / 0.66 / 0.59. Conclusion unchanged by flow-day contamination. Together the joins explain about 4-5% of the big ordinary
+misses: the information-like pool is mostly outside the database. build_ohlc_cache.py (open/high/low/close) pulled for the earnings-timing check.

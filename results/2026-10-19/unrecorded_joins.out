@@ -1,0 +1,48 @@
+securities with volume: 494 of 496 | filings other than 2.02 / 7.01: 87605 | 46s
+
+POPULATIONS: CALM 1451149 | MID 395339 | BIG 12704 (ordinary, non-aftershock, with a volume ratio)
+
+1. OWN 8-K FILINGS OTHER THAN 2.02 / 7.01, on the stock-day or attached to it (filing day and the next trading day)
+  any other 8-K:   CALM   3.8% | MID   4.1% | BIG   5.6% | enrichment BIG / CALM 1.48x [1.37, 1.59] NOTABLE
+  BIG with a volume spike  with another 8-K:   6.4%  (433 of 6730)
+  BIG quiet (no spike)     with another 8-K:   4.8%  (284 of 5974)
+  item          CALM       MID       BIG | enrichment BIG / CALM        n BIG
+  8.01          1.4%      1.7%      3.1% |  2.15x [ 1.94,  2.39] NOTABLE      392
+  1.01          0.7%      0.7%      0.9% |  1.35x [ 1.10,  1.59] NOTABLE      120
+  5.02          1.3%      1.3%      1.3% |  1.02x [ 0.87,  1.19]              165
+  5             0.0%      0.0%      0.0% |   nanx [  nan,   nan]                0
+  7             0.0%      0.0%      0.0% |   nanx [  nan,   nan]                0
+  2.03          0.4%      0.5%      0.5% |  1.20x [ 0.86,  1.57]               68
+  5.03          0.3%      0.3%      0.3% |  1.14x [ 0.80,  1.49]               41
+  9             0.0%      0.0%      0.0% |   nanx [  nan,   nan]                0
+  1.02          0.1%      0.1%      0.1% |  1.06x [ 0.54,  1.65]               13
+  12            0.0%      0.0%      0.0% |   nanx [  nan,   nan]                0
+  2.01          0.0%      0.0%      0.1% | 15.53x [ 7.91, 25.77] NOTABLE       14
+  3.03          0.0%      0.0%      0.1% |  1.41x [ 0.56,  2.60]                7
+  5.07          0.6%      0.5%      0.6% |  0.99x [ 0.75,  1.26]               70
+  2             0.0%      0.0%      0.0% |   nanx [  nan,   nan]                0
+  BIG misses with a volume spike: 6730 | of those with NO other 8-K on the day: 6297 ( 93.6%) -> still unexplained by anything we hold
+
+2. CALENDAR AND FLOW DAYS (among ordinary non-aftershock stock-days)
+  (each day type is compared with ordinary days of NONE of these types: 7413 days)
+  day type                                               days | big-miss rate vs clean days        | spike rate on CALM stock-days      | spike rate among BIG
+  third Friday (monthly options expiry)                   385 |   0.7% vs   0.7% = 1.00x [0.91, 1.08]          |  12.4% vs   1.9% = 6.61x [5.32, 7.96] NOTABLE  |  71.3% vs  52.0%
+  quarterly expiry (third Friday of Mar/Jun/Sep/Dec)      129 |   0.8% vs   0.7% = 1.13x [1.00, 1.27]          |  30.5% vs   1.9% = 16.25x [13.73, 19.69] NOTABLE  |  84.4% vs  52.0%
+  last trading day of the month                           393 |   0.6% vs   0.7% = 0.88x [0.80, 0.96]          |   5.3% vs   1.9% = 2.84x [2.19, 3.60] NOTABLE  |  58.8% vs  52.0%
+  quarter-end (last trading day of Mar/Jun/Sep/Dec)       131 |   0.7% vs   0.7% = 0.98x [0.86, 1.11]          |   2.6% vs   1.9% = 1.40x [0.90, 2.07]          |  52.7% vs  52.0%
+  Russell reconstitution (last Friday of June)             33 |   0.7% vs   0.7% = 1.00x [0.78, 1.23]          |  16.9% vs   1.9% = 8.97x [6.00, 12.00] NOTABLE  |  86.0% vs  52.0%
+  day after Thanksgiving                                   32 |   0.9% vs   0.7% = 1.38x [1.07, 1.71] NOTABLE  |   0.1% vs   1.9% = 0.07x [0.01, 0.14] NOTABLE  |  11.0% vs  52.0%
+  December 24                                              18 |   0.9% vs   0.7% = 1.34x [0.91, 1.72]          |   0.0% vs   1.9% = 0.02x [0.00, 0.05] NOTABLE  |   4.7% vs  52.0%
+
+3. PRE-EVENT WINDOWS (ordinary non-aftershock stock-days shortly BEFORE the first flagged day of a window)
+  window about to start          within         days | big-miss rate vs other days          | spike rate among those BIG
+  earnings (2.02) window         1 day         34421 |   0.8% vs   0.7% = 1.10x [0.95, 1.26]          |  78.0% (n 259)
+  earnings (2.02) window         5 days       170854 |   0.5% vs   0.7% = 0.77x [0.71, 0.82] NOTABLE  |  64.3% (n 916)
+  recorded-event window          1 day         12273 |   1.6% vs   0.7% = 2.41x [2.10, 2.78] NOTABLE  |  72.0% (n 200)
+  recorded-event window          5 days        59461 |   1.1% vs   0.7% = 1.68x [1.56, 1.81] NOTABLE  |  64.0% (n 669)
+  Regulation FD (7.01) window    1 day         14989 |   1.2% vs   0.7% = 1.71x [1.46, 1.99] NOTABLE  |  62.1% (n 174)
+  Regulation FD (7.01) window    5 days        71618 |   0.9% vs   0.7% = 1.28x [1.18, 1.38]          |  55.3% (n 622)
+  any of the three               1 day         57204 |   1.0% vs   0.7% = 1.47x [1.35, 1.60] NOTABLE  |  71.1% (n 568)
+  any of the three               5 days       271324 |   0.7% vs   0.7% = 1.04x [0.99, 1.10]          |  61.4% (n 1919)
+
+total 49s

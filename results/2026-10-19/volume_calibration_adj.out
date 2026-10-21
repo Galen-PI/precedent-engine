@@ -1,0 +1,40 @@
+market adjustment: days with at least 100 volume ratios: 8230 of 8250; median of the daily cross-sectional medians 0.986 (1.0 = a typical day); 95th percentile 1.319; maximum 2.573
+securities with volume: 494 of 496 | 49s
+
+POPULATIONS (stock-days from 2006 with a volume ratio, split-masked)
+  ordinary non-aftershock: CALM 1451149 | MID 395339 | BIG 12704
+  KNOWN-INFORMATION days with a big miss: 13316  (earnings day 0 (no event) 6259; earnings day +1 (no event) 4483; recorded event, no earnings 1061; Regulation FD (7.01) only 905; event + earnings 608)
+
+SPIKE RATE BY VOLUME THRESHOLD (share of stock-days with volume >= T x the median of the previous 20 days)
+  group                                  days | >= 1.3x  >= 1.5x  >= 2.0x  >= 3.0x
+  CALM ordinary (< 1 band unit)       1451149 |  13.5%    6.6%    1.5%    0.3%
+  MID ordinary (1-3)                   395339 |  32.8%   19.6%    5.9%    1.1%
+  BIG ordinary, non-aftershock          12704 |  88.8%   79.4%   53.5%   24.3%
+  KNOWN INFORMATION, big (raw)          13316 |  98.4%   96.1%   84.8%   54.9%
+  earnings day 0 (no event)              6259 |  99.2%   97.5%   86.7%   53.0%
+  earnings day +1 (no event)             4483 |  99.0%   96.9%   87.1%   61.5%
+  recorded event, no earnings            1061 |  94.8%   90.4%   77.9%   50.9%
+  Regulation FD (7.01) only               905 |  94.6%   87.6%   66.0%   35.1%
+  event + earnings                        608 |  99.2%   97.7%   89.1%   61.8%
+
+TWO-COMPONENT ESTIMATE BY THRESHOLD  (pi = (p - f) / (s - f); p = observed rate on BIG ordinary non-aftershock misses)
+  T             p   s (std)   s raw     f_mid |  pi_upper |  f_extrap   pi_lower | discrimination s - f_mid
+  >= 1.3x   88.8%     97.6%   98.4%     32.8% |      0.86 |     79.8%       0.50 | +0.648
+  >= 1.5x   79.4%     94.1%   96.1%     19.6% |      0.80 |     69.3%       0.41 | +0.745
+  >= 2.0x   53.5%     78.6%   84.8%      5.9% |      0.66 |     41.9%       0.32 | +0.727
+  >= 3.0x   24.3%     43.6%   54.9%      1.1% |      0.55 |     13.6%       0.36 | +0.425
+
+POINT ESTIMATE AND 95% INTERVAL (month-block bootstrap) at 2.0x: pi_upper 0.66 [0.64, 0.68]
+
+BY ERA at 2.0x (known-information spike rate s is reweighted; pi_upper with a 95%% interval):
+  era                p  s (std)     f_mid  pi_upper | 95% interval
+  2006-2012      58.4%    79.8%      7.2%      0.70 | [0.67, 0.74]
+  2013-2019      55.6%    80.8%      6.5%      0.66 | [0.63, 0.69]
+  2020-2026      46.2%    75.4%      4.2%      0.59 | [0.56, 0.62]
+
+SENSITIVITY to f at 2.0x (p  53.5%, s  78.6%): pi for f = 5.9% -> 0.66, 10.9% -> 0.63, 15.9% -> 0.60, 20.9% -> 0.57, 25.9% -> 0.52
+
+DEGENERACY CHECK (pre-set): p / s at 2.0x = 0.68 (the estimate is informative only below 0.90)
+CONSISTENCY CHECK (pre-set): pi_upper at 1.5x / 2.0x / 3.0x = 0.80 / 0.66 / 0.55; spread 0.26 (allowed 0.10)
+VERDICT: NOT CONSISTENT. Information does not give a clean spike-or-no-spike signature here, so pi is NOT quoted as a share. Range at 2.0x: [0.32 (extrapolated noise rate), 0.66 (mid-size noise rate)].
+total 49s
