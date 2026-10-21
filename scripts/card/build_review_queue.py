@@ -78,24 +78,47 @@ def main():
         if sector_theme:
             why.append("sector theme (%s)" % (s[1].get("participants", "")[:80]))
         vr = float(c["volume_ratio"]) if c["volume_ratio"] else 0.0
-        queue.append((tier, -vr * float(c["band_units"]), c, "; ".join(why)))
+        queue.append((tier, -vr * float(c["band_units"]), c, "; ".join(why), fil))
     queue.sort(key=lambda x: (x[0], x[1]))
     out = []
     counts = Counter(q[0] for q in queue)
     seen = Counter()
-    for tier, _, c, why in queue:
+    kept = []
+    for tier, _, c, why, fil in queue:
         seen[tier] += 1
         if seen[tier] <= cap:
-            out.append([tier, c["date"], c["ticker"], c["return_pct"], c["miss_pct"], c["band_units"], c["volume_ratio"], c["article_count"], c["category"], why, "", ""])
+            kept.append((tier, c, why, fil))
+    # the classifier's own verdict for each attached filing (filing_ai_classifications, keyed by accession number)
+    labels = {}
+    need = sorted({f[2] for _, _, _, fil in kept for f in fil if f[2]})
+    try:
+        for i in range(0, len(need), 100):
+            chunk = need[i:i + 100]
+            for r in sb.table("filing_ai_classifications").select("accession_number,ai_verdict,ai_confidence,ai_reasoning,flagged_for_review").in_("accession_number", chunk).execute().data:
+                labels[r["accession_number"]] = r
+    except Exception as e:
+        print("classifier labels not available (%s): the label columns stay empty" % str(e)[:100])
+    for tier, c, why, fil in kept:
+        lab = [labels[f[2]] for f in fil if f[2] in labels]
+        verdict = " | ".join(str(x.get("ai_verdict")) for x in lab)
+        conf = " | ".join(str(x.get("ai_confidence")) for x in lab)
+        reason = " | ".join((x.get("ai_reasoning") or "")[:260] for x in lab)
+        out.append([tier, c["date"], c["ticker"], c["return_pct"], c["miss_pct"], c["band_units"], c["volume_ratio"], c["article_count"], c["category"], why, verdict, conf, reason, "", ""])
     path = os.path.join(RESULTS, "human_review_queue.csv")
     with open(path, "w", newline="") as fh:
         w = csv.writer(fh)
-        w.writerow(["tier", "date", "ticker", "return_pct", "miss_pct", "band_units", "volume_ratio", "article_count", "category", "evidence", "reviewer_decision (event / not an event / need more)", "notes"])
+        w.writerow(["tier", "date", "ticker", "return_pct", "miss_pct", "band_units", "volume_ratio", "article_count", "category", "evidence", "classifier_verdict", "classifier_confidence", "classifier_reasoning", "reviewer_decision (event / not an event / need more)", "notes"])
         w.writerows(out)
     print("queue: %s | up to %d per tier written to results/human_review_queue.csv (%d rows)" % (", ".join("tier %s %d" % (k, counts[k]) for k in sorted(counts)), cap, len(out)))
     print("not queued: stock-specific big volume-spike misses with no filing and no group evidence: %d (they need an outside source)" % no_evidence)
+    for tier_ in ("A", "C"):
+        rows_ = [r for r in out if r[0] == tier_]
+        if rows_:
+            vc = Counter(r[10] or "(no label found)" for r in rows_)
+            stub = sum(1 for r in rows_ if any(w in r[12].lower() for w in ("press release", "exhibit")))
+            print("tier %s classifier verdicts: %s | reasoning mentions a press release or exhibit: %d of %d" % (tier_, ", ".join("%s %d" % kv for kv in vc.most_common(6)), stub, len(rows_)))
     for r in out[:8]:
-        print("  %s %s %-6s %6s%% miss %s bu %s vr | %s" % (r[0], r[1], r[2], r[3], r[5], r[6], r[9][:150]))
+        print("  %s %s %-6s %6s%% miss %s bu %s vr | %s" % (r[0], r[1], r[2], r[3], r[5], r[6], r[9][:110] + " || " + (r[10] or "-")))
 
 
 if __name__ == "__main__":
