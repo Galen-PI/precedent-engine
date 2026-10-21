@@ -3424,3 +3424,10 @@ CASE/WHEN dispatch in backfill_gdelt_sentiment.py (an article counts only for th
 from an earlier method. June 2025 has rows only for Jun 1-14 (Jun 15-30 missing); Sep 2026 partial (month running); Oct-Nov 2020 have about 40% fewer articles with normal row counts (not investigated).
 Affected so far: unrecorded_candidates.py (the article-spike signature and the 'volume + article spike' stratum); volume-based results, group moves and role bands do not read this table. The product ('Public Opinion Pull') and earlier tests may.
 Plan: confirm the upsert conflict key (rest of the script), dry-run one month in an environment with BigQuery (Cloud Shell likely), run one real month and verify entities / A-E counts / duplicates, then backfill 2015-06 onward and 2025-06-15..30, then rerun the detector.
+
+### 2026-10-21 -- Sentiment coverage: it is a fixed company list, not the matching bug (correction to the entry above)
+Per-company coverage 2016-2025: 139 entities appear in nearly every month (118+ of 120), 27 in some months, 16 in few, 182 in any month; 317 of 499 universe companies have no rows after May 2015. That is a fixed list of roughly 180 companies
+(docs/phase6 says 199 tracked), NOT the exclusive CASE/WHEN dispatch (which would give sporadic appearances, not total absence). The 'Coverage as of 2026-09-29: 445 distinct entities (verified live)' note counts entities with a row in ANY
+month, dominated by Feb-May 2015 (about 400), and is misleading; the earlier 184/497 figure was closer to the truth for most months. Table spans 2015-02-17 to 2026-09-21 (532,815 rows). Upsert conflict key entity_id,date,source (matches the
+unique constraint). BigQuery works from the Codespace (project stock-project-508016). The backfill sent one request per row; patched to 500-row batches with duplicate entity-days merged (tested on mocks). Plan: backup table, company-list check,
+one-month dry run, one real month (2022-01) with the old-vs-new comparison rule (mean ratio 0.95-1.25, under 20% lower), then 2015-05 to 2026-09.
