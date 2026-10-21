@@ -3385,3 +3385,9 @@ method (76.8%) passed (+8.3), recalled tickers 12 of 14 (TSLA 51%, JPM 85%). Rol
 other day 1.35x, ratio 2.73 = TIMING MATTERS; pooled day 0 / +1 2.75x / 2.53x (card 2.72 / 2.47). The failed identity check (8.65 vs 9.68) implies after-close reaction days (about 4.1x) are bigger than before-open (about 3.5x):
 four parameters, not two (post-hoc inference). Selection caution: the strong-habit group favours stocks with big gaps (its day 0 is 2.94x vs 2.75x for all events), so population multipliers are probably 5-8% lower.
 BMO share among classifiable 61.6 / 58.5 / 56.1% by era. Diagnostics (earnings_timing_diagnostics.py) written to explain the 85%.
+
+### 2026-10-21 -- Earnings timing diagnostics (earnings_timing_diagnostics.py, 29d5c66; reading rules and predictions committed before the run)
+Habit agreement by the event's own gap: 77.9 / 84.1 / 89.6% (2-3, 3-5, 5+ own-sd); by year 76-79% in 2006-08 rising to 90% in 2019, 82% in 2020. The largest overnight gap falls on day i or i+1 in 73.7% of earnings events
+(placebo 32.9%): about 61% of earnings events have a gap-dominated reaction (post-hoc model). NOT a dating problem as defined (13 stocks below 50% aligned vs the rule's 15); the least aligned are mostly utilities and REITs
+(small reactions) plus STLD, OXY, FCX, BRK-B. TSLA's largest gap is on day i 38% and i+1 38% (its 8-K timing relative to the release flips; not misdated). Pre-set reading: NOISE AT WEAK GAPS does not hold (5+ tier 89.6%),
+DATING PROBLEM does not hold, UNSTABLE HABITS holds (every tier below 92%). Next: forward-looking habit rules from earlier quarters only (earnings_timing_recency.py).
