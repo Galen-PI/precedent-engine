@@ -3411,3 +3411,9 @@ NOT material (needs 10 points). Quiet misses 7.0%, volume spike only 4.6%; by er
 trucking and rail, AI power names 2024-06-06, insurers 2017-09-08 with nine of ten peers). Reading frame: of 6,635 volume-spike misses, 307 are group moves, 4,938 (74.4%) stock-specific (support 0-1), 1,390 in between. What our own
 data explains is roughly 10% at most (other 8-Ks about 2%, pre-event windows 2-3%, group moves about 5%, overlaps not removed). New stratified reading sample: results/unrecorded_reading_sample_groups_20261021.csv (supersedes
 the first 48-row sample for the 'what kinds of news' question). company_sentiment_timeline columns: id, entity_id, date, article_count, avg_tone, source, created_at.
+
+### 2026-10-21 -- Reading of the group-stratified sample, interim (8 of 36 rows; shuffled order, one search per row, found only for a specific dated item)
+Found 2 of 8: CHRW 2026-02-12 (AI-disruption selloff in logistics services, StreetInsider headline log) and LMT 2024-10-01 (Iran missile attack on Israel; defense contractors up 3.6%, Zacks). Not found: LYV 2026-03-09, BG 2024-05-14,
+MDLZ 2026-03-16, WRB 2024-07-19 (insurer peers moved too), VRT 2024-06-06, CASY 2024-03-05. By stratum: volume stock-specific 1/3, group move 1/3, quiet 0/2 (too small to compare). Both finds are thematic/geopolitical, and CHRW was
+classed stock-specific by the peer check (1 of 10 peers moved), so the peer method likely undercounts thematic shocks that hit an unusual set of stocks (hypothesis; a same-day cluster check without peers would test it). Search wording
+changed after row 8 to surface dated headline logs (StreetInsider / TheFly); not a change to the found rule. 'Not found' never means nothing happened. Working file: results2.csv in the sandbox.
