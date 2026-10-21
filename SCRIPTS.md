@@ -3397,3 +3397,9 @@ On the 17,428 events with at least 8 earlier classifiable quarters: last quarter
 quarters). Where the event's own gap is at least 5 sd: last 4 reads 93.1%. Pre-set: HABIT DRIFT NOT supported (best forward rule +2.2 points over pooled, threshold 3: a conservative test, since pooled sees the future); FORWARD HABITS
 USABLE: yes (93.1% vs 90%). Descriptive (post hoc): last 4 beats all-earlier by 3.7 points; clean-pair switch rate 11.7% (2006-12), 7.3% (2013-19), 5.9% (2020-26); highest flippers BLDR, BRO, TSLA (44%, only 9 pairs), UHS, PLTR,
 KHC (small counts). Next: earnings_role_band_test.py, the walk-forward test of role-specific bands against the pooled day-0 / day +1 bands, with a shuffled-habit placebo.
+
+### 2026-10-21 -- Earnings role bands, walk-forward (earnings_role_band_test.py, 2f031f2; rule, placebo tolerance and predictions committed before the run)
+33,023 isolated earnings events from 2006, 90.0% with a forward habit (majority of the last 4 classifiable quarters). Pooled day-0 / day+1 bands cover habit-assigned reaction days 81.3% and other days 98.3% (calibrated on average,
+not conditionally). Role bands (reaction day / other day, edges from earlier years only): coverage 89.5% / 91.3%, interval score 0.868x pooled (0.890 / 0.869 / 0.857 by era), mean half-width 3.60 vs 3.84. Shuffled-habit
+placebo 1.003x (no gain). Four groups (habit x role) add only 0.2-0.4%. Pre-set verdict ROLE BANDS IMPROVE. Caveats: 'last 4' chosen after the recency test on the same years; tests the edges, not the matrices; the card wiring needs
+the real day_card.py. backfill_gdelt_sentiment.py: the multi-company matching fix is in the file but was 'not yet run', so months already in company_sentiment_timeline may undercount later-listed tickers (unchecked).
