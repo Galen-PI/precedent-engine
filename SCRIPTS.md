@@ -3403,3 +3403,11 @@ KHC (small counts). Next: earnings_role_band_test.py, the walk-forward test of r
 not conditionally). Role bands (reaction day / other day, edges from earlier years only): coverage 89.5% / 91.3%, interval score 0.868x pooled (0.890 / 0.869 / 0.857 by era), mean half-width 3.60 vs 3.84. Shuffled-habit
 placebo 1.003x (no gain). Four groups (habit x role) add only 0.2-0.4%. Pre-set verdict ROLE BANDS IMPROVE. Caveats: 'last 4' chosen after the recency test on the same years; tests the edges, not the matrices; the card wiring needs
 the real day_card.py. backfill_gdelt_sentiment.py: the multi-company matching fix is in the file but was 'not yet run', so months already in company_sentiment_timeline may undercount later-listed tickers (unchecked).
+
+### 2026-10-21 -- Group moves among big ordinary misses (group_move_check.py, 48f6b06; rule and predictions committed before the run)
+Peers = the 10 stocks with the highest correlation of daily standardized misses over the previous 250 days (refreshed every 63 days, no look-ahead); a GROUP MOVE = at least 4 of 10 peers moved at least 1.5 band units the same way
+the same day; placebo = 10 random stocks. 15,293 big ordinary misses scored. GROUP MOVE share 5.7% (placebo 0.1%); among the 6,635 big volume-spike misses 4.6% vs 0.1%, excess +4.5 points [+3.7, +5.4]: pre-set verdict GROUP NEWS
+NOT material (needs 10 points). Quiet misses 7.0%, volume spike only 4.6%; by era 2.0 / 4.9 / 10.3% (rising); by size 6.0% at 3-4 band units falling to 2.0% at 7+. Examples are sensible sub-industries (regional banks 2023-03-14, casinos,
+trucking and rail, AI power names 2024-06-06, insurers 2017-09-08 with nine of ten peers). Reading frame: of 6,635 volume-spike misses, 307 are group moves, 4,938 (74.4%) stock-specific (support 0-1), 1,390 in between. What our own
+data explains is roughly 10% at most (other 8-Ks about 2%, pre-event windows 2-3%, group moves about 5%, overlaps not removed). New stratified reading sample: results/unrecorded_reading_sample_groups_20261021.csv (supersedes
+the first 48-row sample for the 'what kinds of news' question). company_sentiment_timeline columns: id, entity_id, date, article_count, avg_tone, source, created_at.

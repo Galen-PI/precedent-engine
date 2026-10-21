@@ -1,0 +1,49 @@
+peer sets built for 127 quarters x 496 stocks | 3s
+big misses scored: 15293 of 15467 rows | 7s
+
+SUPPORT DISTRIBUTION (how many of the 10 peers moved at least 1.5 band units the same way as the big miss)
+  support         0      1      2      3      4      5      6      7      8      9     10
+  real peers  39.6%  30.8%  17.0%   6.9%   3.1%   1.4%   0.6%   0.3%   0.1%   0.1%   0.1%
+  placebo     60.4%  31.3%   7.2%   1.0%   0.1%   0.0%   0.0%   0.0%   0.0%   0.0%   0.0%
+  GROUP MOVE (support >= 4): real peers   5.7% | placebo   0.1% | mean signed peer move: real +0.28, placebo -0.01 band units
+
+GROUP MOVE SHARE (real peers vs placebo) BY CATEGORY
+  aftershock: previous day big           4.4% vs   0.1% (n 723)
+  aftershock: within 5 days after an event/earnings/7.01   5.8% vs   0.1% (n 1968)
+  article spike only                    10.3% vs   0.0% (n 87)
+  no volume data                         0.0% vs   0.0% (n 37)
+  quiet (neither)                        7.0% vs   0.1% (n 5843)
+  volume spike + article spike           6.2% vs   0.2% (n 208)
+  volume spike only                      4.6% vs   0.1% (n 6427)
+BY ERA
+  2006-2012    2.0% vs   0.2% (n 5038)
+  2013-2019    4.9% vs   0.1% (n 5349)
+  2020-2026   10.3% vs   0.1% (n 4906)
+BY SIZE OF THE MISS (band units)
+  3 to 4       6.0% vs   0.2% (n 10524)
+  4 to 5       5.8% vs   0.1% (n 2750)
+  5 to 7       4.8% vs   0.0% (n 1416)
+  7 to more    2.0% vs   0.0% (n 603)
+
+RULE (volume-spike misses, n 6635): real-peer GROUP MOVE   4.6%, placebo   0.1%, excess +4.5 points [+3.7, +5.4]
+VERDICT (pre-set: excess at least 10 points and the interval above 0): GROUP NEWS IS NOT material
+
+TWELVE RANDOM GROUP MOVES (ticker, date, size, support, the peers that moved):
+  TFC    2023-03-14  3.6 band units  support 4  PNC FITB RF HBAN
+  DAL    2020-06-04  3.9 band units  support 4  UAL NCLH MS CCL
+  LVS    2023-07-05  3.3 band units  support 4  WYNN MGM KLAC VICI
+  HBAN   2007-03-13  3.3 band units  support 5  FITB WFC RF C BAC
+  VMRK   2020-05-19  3.5 band units  support 4  ESS UDR MAA AEP
+  STE    2020-11-23  3.2 band units  support 4  WRB VRSK RSG BALL
+  JBHT   2019-03-19  3.6 band units  support 4  ODFL CHRW UNP NSC
+  VST    2024-06-06  3.4 band units  support 5  NRG CEG VRT ETN IBKR
+  SHW    2024-06-07  4.8 band units  support 5  MAS PHM DHI HD EFX
+  AJG    2017-09-08  3.3 band units  support 9  MRSH AON BRO CB WRB WTW TRV CINF ALL
+  PNC    2022-05-13  4.0 band units  support 7  TFC RF USB KEY CFG FITB BAC
+  HII    2020-09-11  4.7 band units  support 5  LMT LHX NOC DHI NKE
+
+READING FRAME: big volume-spike misses 6635 | group moves (support >= 4) 307 (  4.6%) | STOCK-SPECIFIC (support 0 or 1) 4938 ( 74.4%) | in between 1390
+  new reading sample, volume spike, STOCK-SPECIFIC (support 0-1)       available   525 | sampled 12
+  new reading sample, volume spike, GROUP MOVE (support >= 4)          available    90 | sampled 12
+  new reading sample, quiet, STOCK-SPECIFIC (support 0-1)              available   494 | sampled 12
+wrote results/unrecorded_group_flags.csv and unrecorded_reading_sample_groups_20261021.csv | total 7s
