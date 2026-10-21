@@ -52,8 +52,17 @@ def load_pieces(sb):
     """Pull the four needed names out of the classifier's syntax tree (never executes main())."""
     try:
         from model_config import MODEL_VERSION
-    except ImportError as e:
-        sys.exit('Could not import model_config (%s): tell me where it lives.' % e)
+    except ImportError:
+        found_ = []
+        for dp, dn, fn in os.walk(ROOT):
+            dn[:] = [d for d in dn if d not in (".git", "node_modules", "data_cache", "__pycache__", "results")]
+            if "model_config.py" in fn:
+                found_.append(dp)
+        if len(found_) != 1:
+            sys.exit("model_config.py found in %d places (%s). Tell me which one the classifier uses (or paste lines 55-70 of the classifier)." % (len(found_), ", ".join(found_) or "none"))
+        sys.path.insert(0, found_[0])
+        from model_config import MODEL_VERSION
+        print("model_config found in %s" % found_[0])
     tree = ast.parse(open(CLASSIFIER).read())
     want_assign, want_func = {"KNOWN_ROUTINE_PATTERNS"}, {"build_batch_request", "parse_classification_result", "get_recent_event_titles"}
     picked, found = [], set()
