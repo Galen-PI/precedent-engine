@@ -27,6 +27,7 @@ Usage:
 """
 
 import os
+import time
 import argparse
 from datetime import datetime
 from calendar import monthrange
@@ -40,6 +41,7 @@ supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 bq_client = bigquery.Client()
 
 MAX_GB_PER_MONTH_QUERY = 50
+UPSERT_BATCH = 500        # rows per request (was one request per row)
 
 # ticker -> (GDELT organization name to match, real entity_id)
 TRACKED_COMPANIES = {
@@ -394,17 +396,35 @@ def main():
         results = bq_client.query(query).result()
 
         month_rows = 0
+        # Collect the whole month first, merging rows that land on the same (entity, date): two tickers can share one
+        # entity (e.g. share classes), and Postgres rejects a batch that touches the same row twice. The larger count wins.
+        month_batch = {}
         for row in results:
             ticker = row.company_ticker
             _, entity_id = TRACKED_COMPANIES[ticker]
-            supabase.table("company_sentiment_timeline").upsert({
+            key = (entity_id, row.article_date.isoformat())
+            rec = {
                 "entity_id": entity_id,
-                "date": row.article_date.isoformat(),
+                "date": key[1],
                 "article_count": row.article_count,
                 "avg_tone": float(row.avg_tone) if row.avg_tone is not None else None,
                 "source": "gdelt",
-            }, on_conflict="entity_id,date,source").execute()
+            }
+            if key not in month_batch or rec["article_count"] > month_batch[key]["article_count"]:
+                month_batch[key] = rec
             month_rows += 1
+        pending = list(month_batch.values())
+        for i in range(0, len(pending), UPSERT_BATCH):
+            chunk = pending[i:i + UPSERT_BATCH]
+            for attempt in range(3):
+                try:
+                    supabase.table("company_sentiment_timeline").upsert(chunk, on_conflict="entity_id,date,source").execute()
+                    break
+                except Exception as e:
+                    if attempt == 2:
+                        raise
+                    print(f"  upsert retry {attempt + 1} after error: {str(e)[:100]}", flush=True)
+                    time.sleep(2 * (attempt + 1))
 
         total_rows_upserted += month_rows
         print(f"  Upserted {month_rows} (company, day) rows for this month.")
