@@ -43,6 +43,7 @@ OTHER_BU = 2.5
 N_PLACEBO = 3
 PCTL = 95
 N_BOOT = 500
+SECTOR_CORR = float(os.environ.get('SECTOR_CORR', '1.0'))      # 1.0 = the validated setting; 0 = no sector-mate correction
 SEED = 20261021
 ERAS = [("2006-2012", 2006, 2012), ("2013-2019", 2013, 2019), ("2020-2026", 2020, 2100)]
 VOLUME_CATS = ("volume spike only", "volume spike + article spike")
@@ -105,7 +106,7 @@ def main():
             nsec = int(mates.sum()) + 1
             if nsec > 1:
                 with np.errstate(invalid="ignore", divide="ignore"):
-                    zadj[mates] = zt[mates] + Y[k, t] / ((nsec - 1) * SD[mates, t])      # add back the focal stock's share of each sector-mate's expected return (loading taken as 1)
+                    zadj[mates] = zt[mates] + SECTOR_CORR * Y[k, t] / ((nsec - 1) * SD[mates, t])      # add back the focal stock's share of each sector-mate's expected return (loading taken as 1)
         with np.errstate(invalid="ignore", divide="ignore"):
             qo_j = (S[t] - np.where(v, zt ** 2, 0.0) - zk2) / (ck - 1)
             out = sg * zadj / np.sqrt(qo_j)
