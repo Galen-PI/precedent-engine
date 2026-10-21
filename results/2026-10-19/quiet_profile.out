@@ -1,0 +1,13 @@
+PROFILE OF THE 15467 BIG ORDINARY MISSES BY CATEGORY (no row was read; every figure comes from the data)
+  category                                                  n | negative  |miss|%   band | volume ratio p25/50/75 |  stress   2020+ | under$10 reversal contin. (n rev)
+  volume spike + article spike                            210 |   51.4%    6.06%   4.50 | 2.61 / 3.55 / 5.10  |   19.5%   52.9% |     3.8%     5.7%    5.7%     210
+  volume spike only                                      6516 |   48.5%    5.16%   3.86 | 2.36 / 2.88 / 3.96  |   17.6%   27.4% |    10.1%     7.8%    8.1%    6513
+  article spike only                                       88 |   55.7%    3.99%   3.36 | 1.35 / 1.54 / 1.76  |   11.4%   62.5% |     1.1%     2.3%    4.5%      88
+  quiet (neither)                                        5885 |   43.9%    3.44%   3.36 | 1.22 / 1.49 / 1.73  |    9.0%   36.0% |     8.0%     8.6%    8.5%    5885
+  aftershock: previous day big                            729 |   49.7%    4.52%   3.62 | 1.85 / 2.90 / 4.36  |   17.1%   31.3% |    13.7%    12.8%    8.2%     729
+  aftershock: within 5 days after an event/earnings/7.01   1990 |   44.5%    4.21%   3.48 | 1.53 / 2.03 / 2.99  |   20.2%   31.7% |    10.3%     8.4%    8.4%    1989
+  no volume data                                           44 |   50.0%    4.46%   4.34 | n/a                 |   18.2%    0.0% |     0.0%     2.3%    2.3%      44
+
+  quiet vs volume-spike-only: reversal   8.6% vs   7.8% | continuation   8.5% vs   8.1% | under $10   8.0% vs  10.1% | median volume ratio 1.49 vs 2.88
+
+  reference: for iid Gaussian noise each of reversal and continuation would be about 6-7%; a bad print that corrects the next day would show a reversal share far above that.
