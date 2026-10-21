@@ -3436,3 +3436,10 @@ one-month dry run, one real month (2022-01) with the old-vs-new comparison rule 
 Ran cleanly (no 'Array cannot have a null element' error; batched upserts worked): 8,726 (company, day) rows processed vs 3,477 rows (164 entities) in the table before. 8,726 rows cannot come from 199 tickers (max about 6,200), so the earlier regex
 count of 199 tickers in TRACKED_COMPANIES was wrong; the authoritative count is len(TRACKED_COMPANIES) from importing the module. Pending: old-vs-new ratio, entities now, per-letter coverage for 2022-01 (rule: mean ratio 0.95-1.25 and under 20% of days
 lower before any wider overwrite). entities has columns id, name, entity_type, description, ticker; securities has entity_id, ticker, sector (names for extending the company list live in entities.name).
+
+### 2026-10-21 -- GDELT backfill finished; theme-day check written
+All 141 months (2015-02 .. 2026-10) are done (checkpoint 141 distinct months; database: 141 months with at least 300 entities, 0 pending; the first run finished before the Codespace reset, in two overlapping processes, which is why the checkpoint has interleaved
+duplicates). The relaunch is a no-op (every month skipped). October 2026 is partial (about 20 days): top up at month end with --ignore-checkpoint. Predictions for the detector rerun (written before it runs): article coverage 45-52% of scored stock-days (was 20.7%),
+article-spike rate on calm days about 3%, on big misses 10-14%, quiet share down a few points, volume-spike share unchanged. Archive of the pre-fix candidates CSV and reading samples: results/archive_pre_sentiment_fix/.
+theme_day_check.py (rule, sensitivity note and predictions committed before the run): counts OTHER stocks anywhere with a same-direction big miss (>= 2.5 band units) on the day of each big ordinary miss, against random-day placebos; theme day = above the
+placebo 95th percentile; validated on synthetic worlds (no false positive; planted themes read +6.5 points [+4.3, +10.1] and are a floor, so an excess of 5+ points with the interval above 0 is evidence of themes even if the 10-point rule says no).
