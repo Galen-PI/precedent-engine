@@ -3378,3 +3378,10 @@ reaction against 56.2% of earnings; the offset distribution is a flat background
 (A / B), no general lag; only regulatory flagged (+14.6 / +12.8, interval [+3.4, +20.0], n 658); legal settlement and strategic partnership large but underpowered; capital_raise q 2.1% (no reaction at the recorded date).
 Placebo days read -4.4 / -3.3 (should be about 0): the estimator is noisier or biased more than its intervals show. Candidate mis-dated events 3.9% vs 2.7% for placebo days. sec_8k_filings has no report-date column.
 Conclusion: events are mostly dated correctly; regulatory is a lead only; no re-dating planned.
+
+### 2026-10-21 -- Earnings timing from the opening gap (earnings_timing_check.py, f96d3fd; predictions committed before the run)
+36,682 earnings events from 2006; 59.1% classifiable (a gap of 2 own overnight-gap sd). Pre-set verdict METHOD NOT VALID on ONE criterion: leave-one-out habit agreement 85.0% (threshold 90%); the margin over the close-to-close
+method (76.8%) passed (+8.3), recalled tickers 12 of 14 (TSLA 51%, JPM 85%). Role multipliers (strong habit = 61.9% of events; roles from the habit, never the event's own size): reaction day 3.69x (3.41 / 3.90 / 3.70 by era),
+other day 1.35x, ratio 2.73 = TIMING MATTERS; pooled day 0 / +1 2.75x / 2.53x (card 2.72 / 2.47). The failed identity check (8.65 vs 9.68) implies after-close reaction days (about 4.1x) are bigger than before-open (about 3.5x):
+four parameters, not two (post-hoc inference). Selection caution: the strong-habit group favours stocks with big gaps (its day 0 is 2.94x vs 2.75x for all events), so population multipliers are probably 5-8% lower.
+BMO share among classifiable 61.6 / 58.5 / 56.1% by era. Diagnostics (earnings_timing_diagnostics.py) written to explain the 85%.

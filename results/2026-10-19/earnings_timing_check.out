@@ -1,0 +1,42 @@
+securities with OHLC: 494 of 496 | overnight gaps computed for 90.1% of stock-days from 2006 | 5s
+earnings events from 2006: 36682 | with gaps on both days: 36104 ( 98.4%) | classifiable (a gap of at least 2.0 own sd on a day): 21325 ( 59.1%)
+   2006-2012  events  11169 | gaps on both days  97.4% | classifiable  54.1% | BMO share among classifiable  61.6%
+   2013-2019  events  12410 | gaps on both days  98.5% | classifiable  62.2% | BMO share among classifiable  58.5%
+   2020-2026  events  13103 | gaps on both days  99.2% | classifiable  60.2% | BMO share among classifiable  56.1%
+
+METHOD CHECK 1: HABIT STABILITY (leave one out, classifiable events whose stock has at least 5 other classifiable quarters)
+  gap method:            an event's own classification matches its habit in  85.0% of 21307 events
+  close-to-close method: the same events, the larger |miss| of the two days:  76.8%
+  stocks with at least 8 classifiable quarters: 480 | median majority share  88.9% | stocks at 90% or more:  46.7%
+
+METHOD CHECK 2: RECALLED REPORTING HABITS (UNVERIFIED recollection; share of each ticker's classifiable events classified as recalled)
+  AAPL 96% (n 67, AMC) | MSFT 94% (n 69, AMC) | NVDA 93% (n 54, AMC) | INTC 100% (n 61, AMC) | TSLA 51% (n 43, AMC) | META 92% (n 49, AMC) | JPM 85% (n 39, BMO) | JNJ 96% (n 46, BMO) | WMT 98% (n 62, BMO) | KO 96% (n 57, BMO) | PG 98% (n 64, BMO) | XOM 92% (n 38, BMO) | BAC 91% (n 32, BMO) | HD 95% (n 57, BMO)
+  recalled tickers at 90% or more: 12 of 14 testable
+  VERDICT (pre-set): METHOD NOT VALID (gap agreement 85.0% vs 90%; margin over close-to-close +8.3 points vs 3; tickers 12 vs 12)
+
+BASELINE (ordinary stock-days at least 2 days before and 3 days after an earnings day from 2006): mean squared band unit 0.873, median 0.273 (chi-square(1) would give 1.000 and 0.455)
+
+MULTIPLIERS BY ROLE (events with a habit that is STRONG: at least 85% among the other classifiable quarters; 22700 of 36682 events =  61.9%)
+  era        day                                      n | mult mean  mult med | share of days with |miss| >= 3 band units
+  all years  reaction day (by habit)              22293 |     3.69x     3.66x |  31.1%
+  all years  other day (by habit)                 22294 |     1.35x     1.26x |   2.6%
+  all years  pooled day 0, all events             35980 |     2.75x     1.97x |  17.7%
+  all years  pooled day +1, all events            35980 |     2.53x     1.89x |  13.0%
+  2006-2012  reaction day (by habit)               6649 |     3.41x     3.35x |  27.8%
+  2006-2012  other day (by habit)                  6649 |     1.43x     1.30x |   3.2%
+  2006-2012  pooled day 0, all events             10824 |     2.66x     2.09x |  16.6%
+  2006-2012  pooled day +1, all events            10825 |     2.33x     1.73x |  11.4%
+  2013-2019  reaction day (by habit)               7579 |     3.90x     3.91x |  33.4%
+  2013-2019  other day (by habit)                  7580 |     1.31x     1.23x |   2.4%
+  2013-2019  pooled day 0, all events             12184 |     2.87x     2.02x |  19.0%
+  2013-2019  pooled day +1, all events            12183 |     2.68x     1.93x |  13.8%
+  2020-2026  reaction day (by habit)               8065 |     3.70x     3.68x |  31.7%
+  2020-2026  other day (by habit)                  8065 |     1.32x     1.27x |   2.2%
+  2020-2026  pooled day 0, all events             12972 |     2.71x     1.84x |  17.5%
+  2020-2026  pooled day +1, all events            12972 |     2.55x     1.99x |  13.6%
+
+  BMO share among strong-habit events  66.7% | identity check on those events: pooled day-0 squared multiplier 8.65 vs BMO-share mix of the role multipliers 9.68
+  VERDICT (pre-set): TIMING MATTERS (reaction-day multiplier 3.69x vs other-day 1.35x = ratio 2.73; threshold 1.5)
+  for reference the committed card uses day 0 = 2.72x and day +1 = 2.47x (a different, likelihood-based construction; the pooled rows above are this script's own version)
+
+total 39s
