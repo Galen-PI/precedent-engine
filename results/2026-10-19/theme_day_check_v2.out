@@ -1,0 +1,45 @@
+big misses scored: 15467 | 7s
+
+CLUSTER (other stocks with a big miss the same way that day, >= 2.5 band units): placebo median 5, mean 5.0, 95th percentile 9 | real median 5, mean 5.2
+THEME DAY = a cluster above 9: real   3.1% | placebo   2.7%
+
+THEME-DAY SHARE (real vs placebo) BY CATEGORY
+  aftershock: previous day big           3.8% vs   2.7% (n 729)
+  aftershock: within 5 days after an event/earnings/7.01   2.9% vs   2.6% (n 1990)
+  article spike only                     3.4% vs   2.7% (n 88)
+  no volume data                         0.0% vs   3.0% (n 44)
+  quiet (neither)                        2.7% vs   2.8% (n 5886)
+  volume spike + article spike           5.2% vs   2.4% (n 210)
+  volume spike only                      3.4% vs   2.5% (n 6520)
+BY ERA
+  2006-2012    1.5% vs   1.3% (n 5121)
+  2013-2019    3.2% vs   2.9% (n 5413)
+  2020-2026    4.6% vs   3.8% (n 4933)
+BY SIZE OF THE MISS (band units)
+  3 to 4       3.1% vs   2.7% (n 10642)
+  4 to 5       3.5% vs   2.6% (n 2783)
+  5 to 7       2.7% vs   2.4% (n 1437)
+  7 to more    2.8% vs   3.3% (n 605)
+
+RULE (volume-spike misses, n 6730): theme-day share real   3.5%, placebo   2.5%, excess +0.9 points [+0.2, +1.7]
+VERDICT (pre-set: excess at least 10 points and the interval above 0): THEME DAYS ARE NOT material
+
+THEME-DAY MISSES (478): SECTOR THEME (at least 50% of the participants in the stock's own sector)  15.5% | CROSS-SECTOR  84.5%
+
+OVERLAP WITH GROUP MOVES among the big volume-spike misses that have a group flag (n 6635): both   0.7% | theme day only   2.8% | group move only   3.9% | neither  92.6% | UNION   7.4%
+
+TWELVE RANDOM THEME-DAY MISSES (ticker, date, size, cluster, the top sectors among participants, a few participants):
+  IVZ    2021-06-01  3.1 bu  cluster  10  Health Care 4, Financials 2, Consumer Staples 2 | ICE TMO DHR DRI CME LH
+  ZBRA   2018-01-11  3.3 bu  cluster  10  Energy 2, Consumer Staples 2, Information Technology 1 | TPL FSLR UHS DG PEG TGT
+  BRK-B  2022-03-21  3.6 bu  cluster  11  Industrials 4, Consumer Staples 3, Financials 3 | CL ACGL BG MOS HII ADM
+  CF     2025-06-13  4.3 bu  cluster  10  Industrials 4, Consumer Staples 2, Materials 2 | ORCL ADM BG LMT RTX NOC
+  BNY    2006-07-19  4.7 bu  cluster  10  Financials 3, Industrials 3, Consumer Discretionary 2 | PKG JPM LUV EME MET MPWR
+  TFC    2017-10-05  4.0 bu  cluster  10  Information Technology 2, Health Care 2, Consumer Staples 1 | STZ FTNT NFLX BIIB PODD NCLH
+  IBKR   2018-06-04  3.8 bu  cluster  11  Industrials 4, Energy 1, Health Care 1 | BKR ODFL BMY UNP WYNN FSLR
+  IEX    2016-10-11  3.4 bu  cluster  12  Health Care 5, Industrials 3, Financials 2 | FAST LITE ZBH MSCI BEN MDT
+  ARE    2023-03-10  4.8 bu  cluster  10  Financials 4, Real Estate 4, Information Technology 2 | SCHW APO ESS DOC BXP ICE
+  MET    2023-03-20  3.1 bu  cluster  11  Financials 9, Utilities 1, Materials 1 | AIZ NRG PKG FITB CINF AFL
+  DGX    2014-03-26  5.5 bu  cluster  11  Health Care 5, Information Technology 3, Financials 2 | LNT LH BEN BAX BMY UHS
+  ALL    2019-07-31  5.4 bu  cluster  11  Health Care 2, Information Technology 2, Utilities 2 | MCO AMGN APTV OKE AKAM CDW
+
+wrote results/unrecorded_theme_flags.csv | total 8s
