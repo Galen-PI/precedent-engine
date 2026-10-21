@@ -1,0 +1,57 @@
+sectors: 11 | stocks with a sector: 496 of 496 | 2s
+big misses scored: 15467 | placebo thresholds per sector (stocks above which a cluster counts): Communication  1, Consumer Discr 2, Consumer Stapl 1, Energy 1, Financials 3, Health Care 2, Industrials 2, Information Te 2, Materials 1, Real Estate 1, Utilities 1 | 7s
+
+CLUSTER (other stocks in the SAME SECTOR with a big miss the same way that day, >= 2.5 band units): placebo mean 0.53 | real mean 0.91
+SECTOR THEME: real  11.2% | placebo   3.5%
+
+SECTOR-THEME SHARE (real vs placebo) BY CATEGORY
+  aftershock: previous day big          10.0% vs   4.2% (n 729)
+  aftershock: within 5 days after an event/earnings/7.01  11.9% vs   3.7% (n 1990)
+  article spike only                    11.2% vs   3.6% (n 260)
+  no volume data                         6.8% vs   2.3% (n 44)
+  quiet (neither)                       11.3% vs   3.3% (n 5714)
+  volume spike + article spike          13.8% vs   3.6% (n 682)
+  volume spike only                     10.6% vs   3.5% (n 6048)
+BY ERA
+  2006-2012    7.1% vs   2.9% (n 5121)
+  2013-2019   11.2% vs   3.4% (n 5413)
+  2020-2026   15.3% vs   4.1% (n 4933)
+BY SIZE OF THE MISS (band units)
+  3 to 4      10.1% vs   3.4% (n 10642)
+  4 to 5      12.8% vs   3.5% (n 2783)
+  5 to 7      15.2% vs   3.8% (n 1437)
+  7 to more   13.1% vs   3.8% (n 605)
+BY SECTOR
+  Communication Services      10.1% vs   1.9% (n 653)
+  Consumer Discretionary       6.6% vs   1.9% (n 1395)
+  Consumer Staples            11.8% vs   4.9% (n 1023)
+  Energy                      19.1% vs   2.9% (n 779)
+  Financials                   8.5% vs   1.7% (n 2207)
+  Health Care                  9.5% vs   3.2% (n 2025)
+  Industrials                  9.7% vs   4.8% (n 2147)
+  Information Technology      10.6% vs   4.3% (n 2136)
+  Materials                   10.2% vs   3.3% (n 1004)
+  Real Estate                 20.1% vs   4.1% (n 969)
+  Utilities                   16.5% vs   5.0% (n 1129)
+
+RULE (volume-spike misses, n 6730): sector-theme share real  10.9%, placebo   3.5%, excess +7.4 points [+6.3, +8.6]
+VERDICT (pre-set: excess at least 10 points and the interval above 0): SECTOR THEMES ARE NOT material
+READING GUIDE (fixed beforehand: 2 points or more with the interval above 0 is evidence of narrow themes; the excess approximates the themed share): MET
+
+OVERLAP WITH PEER GROUP MOVES among the big volume-spike misses (n 6635): both   2.1% | sector theme only   8.9% | peer group move only   2.5% | neither  86.5% | UNION  13.5%
+
+TWELVE RANDOM SECTOR-THEME MISSES (ticker, sector, date, size, cluster, the same-sector stocks that moved the same way):
+  MU     Information Technology 2021-08-12  4.4 bu  cluster  4 | WDC KLAC AMAT LRCX
+  ROP    Information Technology 2017-12-18  3.9 bu  cluster  3 | AKAM INTC DELL
+  COST   Consumer Staples       2022-05-18  4.0 bu  cluster  2 | TGT DG
+  CPRT   Industrials            2006-05-30  7.3 bu  cluster  4 | CTAS LMT GD BLDR
+  CCI    Real Estate            2017-11-06  3.6 bu  cluster  2 | SBAC AMT
+  DHI    Consumer Discretionary 2018-05-15  5.3 bu  cluster  3 | PHM LEN NVR
+  GIS    Consumer Staples       2016-09-07  5.0 bu  cluster  2 | CASY KR
+  TMUS   Communication Services 2023-06-02  5.0 bu  cluster  2 | VZ T
+  COHR   Information Technology 2023-06-16  3.7 bu  cluster  3 | GLW TEL APH
+  PSX    Energy                 2014-06-25  4.0 bu  cluster  2 | VLO MPC
+  SBAC   Real Estate            2020-02-11  5.6 bu  cluster  2 | CCI AMT
+  CCL    Consumer Discretionary 2018-04-10  4.1 bu  cluster  3 | HLT RCL NCLH
+
+wrote results/unrecorded_sector_cluster_flags.csv | total 8s
