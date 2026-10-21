@@ -1,0 +1,70 @@
+isolated events: 10928 | isolated earnings windows: 32794 | placebo days: 10928 | 50s
+
+PEAK OFFSET: the day of the largest |miss| (band units) among days -5..+2 (isolated windows)
+                                   n |     -5     -4     -3     -2     -1     +0     +1     +2 | pre-share  at-event
+  recorded events              10928 |  10.0%  10.3%  10.3%  10.3%  11.0%  20.7%  16.6%  10.8% |  51.9%  37.3%
+  earnings windows (benchmark)   32794 |   4.6%   4.5%   5.0%   4.7%   5.4%  37.2%  29.9%   8.6% |  24.3%  67.1%
+  placebo days                 10928 |  13.3%  12.0%  12.6%  12.8%  11.6%  12.5%  12.4%  12.8% |  62.3%  24.9%
+
+PRE-SHARE EXCESS OF RECORDED EVENTS OVER EARNINGS, overall:  51.9% vs  24.3% = +27.6 points [+26.5, +28.7]
+  (a pooled figure can hide types with opposite signs, e.g. a type that lags and a type dated exactly: the BY EVENT TYPE table below is the one to read)
+
+BY EVENT TYPE (types with at least 300 isolated events; benchmark = all earnings windows)
+  type                                n | pre-share  at-event   excess | 95% interval
+  acquisition                      3223 |  51.1%  38.2%   +26.8 | [+25.1, +28.5] POSSIBLY LAGGING (v1, confounded)
+  leadership_change                3147 |  53.3%  35.1%   +29.0 | [+27.0, +30.7] POSSIBLY LAGGING (v1, confounded)
+  legal_settlement                  695 |  57.3%  33.1%   +33.0 | [+29.0, +36.3] POSSIBLY LAGGING (v1, confounded)
+  capital_raise                     692 |  62.3%  26.6%   +38.0 | [+34.5, +41.5] POSSIBLY LAGGING (v1, confounded)
+  regulatory                        658 |  55.6%  35.3%   +31.3 | [+27.7, +34.8] POSSIBLY LAGGING (v1, confounded)
+  corporate_action                  564 |  42.4%  47.2%   +18.1 | [+14.0, +21.9] POSSIBLY LAGGING (v1, confounded)
+  restructuring                     525 |  37.7%  50.5%   +13.4 | [+9.0, +18.2] POSSIBLY LAGGING (v1, confounded)
+  strategic_partnership             456 |  53.5%  35.7%   +29.2 | [+24.5, +33.6] POSSIBLY LAGGING (v1, confounded)
+  financial_result                  313 |  52.4%  37.1%   +28.1 | [+22.9, +33.1] POSSIBLY LAGGING (v1, confounded)
+
+LAG MASS (v2, post hoc): the extra share of peaks on days -4..-1 above the background, in points of events
+  background A = the share on day -5; B = the mean of the shares on days -5 and +2; the verdict uses the smaller of the two; q = model-based share of events with a window-dominating reaction
+  group                               n |      q |    lag A    lag B | 95% interval of the smaller
+  all recorded events             10928 |  16.4% |    +2.0     +0.4 | [-1.6, +2.5] 
+  earnings windows (benchmark)    32794 |  56.2% |    +1.1     -6.8 | [-7.8, -5.8] 
+  placebo days                    10928 |  -0.1% |    -4.4     -3.3 | [-7.5, -1.7] 
+  acquisition                      3223 |  17.6% |    +0.3     -0.8 | [-4.8, +2.3] 
+  leadership_change                3147 |  13.5% |    +0.2     -1.8 | [-5.5, +2.0] 
+  legal_settlement                  695 |  10.8% |    +8.3     +8.6 | [-2.0, +15.3] 
+  capital_raise                     692 |   2.1% |    +0.9     +3.2 | [-10.2, +9.7] 
+  regulatory                        658 |  13.7% |   +14.6    +12.8 | [+3.4, +20.0] LAGGING (v2)
+  corporate_action                  564 |  29.6% |    -2.0     -5.1 | [-16.1, +2.5] 
+  restructuring                     525 |  34.0% |    -1.3     -9.3 | [-19.9, -0.9] 
+  strategic_partnership             456 |  14.3% |    +6.4     +3.7 | [-8.0, +14.1] 
+  financial_result                  313 |  16.1% |    +1.3     +0.6 | [-15.8, +11.5] 
+
+BY ERA
+  era         events n   earn. n |   excess | 95% interval
+  2006-2012       3681      9727 |  54.9% vs  28.4% = +26.5 | [+24.6, +28.8]
+  2013-2019       3656     11026 |  51.0% vs  22.1% = +28.8 | [+27.1, +30.7]
+  2020-2026       3591     12041 |  49.8% vs  22.9% = +26.9 | [+24.9, +28.6]
+
+LAG MASS BY ERA (all recorded events, v2)
+  2006-2012  n  3681 | q  12.7% | lag A +1.8, lag B +1.8 points | 95% interval of the smaller [-2.7, +5.1]
+  2013-2019  n  3656 | q  17.9% | lag A +0.8, lag B -0.4 points | 95% interval of the smaller [-3.7, +2.6]
+  2020-2026  n  3591 | q  18.8% | lag A +3.6, lag B -0.2 points | 95% interval of the smaller [-3.8, +3.2]
+
+CANDIDATE MIS-DATED EVENTS (the largest |miss| in days -5..-1 is >= 3.0 band units and >= twice the largest on days 0..+1)
+  recorded events       426 of  10928 =   3.9%
+  earnings windows      396 of  32794 =   1.2%
+  placebo days          299 of  10928 =   2.7%
+  lag of the candidates (peak offset): -5: 59  -4: 56  -3: 88  -2: 95  -1: 125
+  twelve at random (ticker, event date, type, peak offset, |miss| at the peak vs the largest on days 0..+1):
+    EBAY   2019-01-29  corporate_action       peak -5  4.3 vs 0.4
+    MCO    2009-04-02  restructuring          peak -1  3.2 vs 1.4
+    WYNN   2018-07-05  leadership_change      peak -2  4.5 vs 0.8
+    NEE    2025-08-20  regulatory             peak -3  4.2 vs 0.8
+    FIS    2008-07-09  ipo_spinoff            peak -3  26.2 vs 1.7
+    BSX    2025-01-16  legal_settlement       peak -5  3.3 vs 1.1
+    BNY    2014-03-26  corporate_action       peak -5  4.0 vs 0.6
+    BF-B   2026-03-27  acquisition            peak -1  5.2 vs 2.3
+    DIS    2019-03-20  acquisition            peak -1  4.3 vs 2.1
+    WYNN   2010-11-26  governance_action      peak -4  3.6 vs 0.5
+    NRG    2016-06-13  corporate_action       peak -1  4.0 vs 1.5
+    SPG    2012-09-21  corporate_action       peak -1  3.6 vs 1.3
+
+total 51s

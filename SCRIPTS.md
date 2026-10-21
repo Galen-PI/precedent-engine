@@ -3371,3 +3371,10 @@ more frequent just BEFORE a recorded-event window (1 day 2.41x, 5 days 1.68x) an
 an event; untested), about 200-400 big misses (2-3%); less frequent in the 5 days before earnings (0.77x). Market-adjusted volume ratio: calm 1.5% / mid 5.9% / big 53.5% / known information 84.8% at 2.0x; pi_upper
 0.80 / 0.66 / 0.55 (spread 0.26, still NOT CONSISTENT); range at 2.0x [0.32, 0.66]; by era 0.70 / 0.66 / 0.59. Conclusion unchanged by flow-day contamination. Together the joins explain about 4-5% of the big ordinary
 misses: the information-like pool is mostly outside the database. build_ohlc_cache.py (open/high/low/close) pulled for the earnings-timing check.
+
+### 2026-10-21 -- Event-date lag check (event_date_lag_check.py; first run 3714231, v2 rule ae80e3a)
+First rule (pre-share of events vs earnings) fired for all nine event types: CONFOUNDED by reaction size (the largest of 8 days lands on the event date only when the reaction is large; 16.4% of events have a window-dominating
+reaction against 56.2% of earnings; the offset distribution is a flat background plus a bump at days 0 and +1). Post-hoc v2 (lag mass = extra peaks on days -4..-1 above the day -5 background): all events +2.0 / +0.4 points
+(A / B), no general lag; only regulatory flagged (+14.6 / +12.8, interval [+3.4, +20.0], n 658); legal settlement and strategic partnership large but underpowered; capital_raise q 2.1% (no reaction at the recorded date).
+Placebo days read -4.4 / -3.3 (should be about 0): the estimator is noisier or biased more than its intervals show. Candidate mis-dated events 3.9% vs 2.7% for placebo days. sec_8k_filings has no report-date column.
+Conclusion: events are mostly dated correctly; regulatory is a lead only; no re-dating planned.
