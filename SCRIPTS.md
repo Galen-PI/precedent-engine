@@ -3350,3 +3350,9 @@ NOT ADOPTED. Estimating each stock's spread without its own event, earnings and 
 era (bar +0.005 in each, 14 of 21 years positive vs 70% needed); it loses in volatility spikes (2008, 2020, 2026). Today's spread is about 21% too high in variance (median ratio 0.909) but calibration absorbs the level.
 The unscaled mean squared miss is 0.895 today and 1.133 ex-jump: 1.0 is not the target. Group multipliers move only +0.8 to +3.1%. Ledger row spread_exjump_window (null). The matrices are in
 data_cache/audit_matrices_exjump.npz (gitignored). The card keeps today's spread.
+
+### 2026-10-21 -- Split and volume artefact audit (split_artifact_audit.py; descriptive, no ledger row)
+close = adjusted_close except in about 12% of securities by at most 1.6% (matches the earlier count of about 650 differing rows): returns are PRICE returns. Splits are adjusted in prices AND volume
+(AAPL, TSLA, NVDA, WMT checked; AMZN and GOOGL are not in the cache). Unadjusted corporate actions are spin-offs and special dividends (WY 2010, KDP 2018 and others): 36 down-jumps of 35-50% kept as
+returns, 13 over 50% and 16 up-jumps over 60% dropped by the 50% filter, about 65 stock-days since 2005: too few to justify a screen. Volume level steps: 5,941, of which 5,806 are 1.7-2.5x (ordinary) and
+22 are 4x or more (unit, source or ticker changes, for example AMCR). The detector's 20-day baseline stands as registered.
