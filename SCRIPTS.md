@@ -3461,3 +3461,9 @@ misses the sector-theme share is 10.9% vs 3.5% placebo, excess +7.4 points [+6.3
 Utilities); CHRW 2026-02-12 flagged (EXPD ROL GWW), LMT 2024-10-01 not (2 other Industrials). Union with peer group moves 13.5% of volume-spike misses (both 2.1%, sector only 8.9%, peers only 2.5%). Fixed all-stock theme check: +0.9 points [+0.2, +1.7] (broad
 event days, small). Sector-correction sensitivity (loading assumed 1) pending. build_review_queue.py writes results/human_review_queue.csv: tier A big volume-spike miss with an unpromoted 8-K attached (URL included), tier B sector theme / peer group move without a
 filing, tier C other categories with a filing; stock-specific misses with no filing are not queued (outside source needed). scripts/tagging/resolve_sentiment_confounds.py is where the sentiment-confound flag script lives.
+
+### 2026-10-21 -- Review queue result and the sector-correction sensitivity
+build_review_queue.py: tier A 433 (big volume-spike miss with an unpromoted 8-K, URL included), tier B 857 (sector theme / peer group move, no filing), tier C 476, not queued 5,440 stock-specific misses with no filing or group evidence (A + B + not queued = 6,730).
+Predictions: A right (430-460), B/C/not queued wrong (higher). Top of tier A: large same-day 8.01s (PNR 2012-03-28 +15%, VRTX 2017-03-29 +20%, SPGI 2013-02-04 -14%, ELV 2008-03-11 -28%, UDR 2016-03-04 equity offering, AIZ, CASY): look like material events the classifier called noise
+(from memory, UNVERIFIED; a reviewer must decide). Sector-cluster excess vs the sector-mate correction (loading assumed 1): none +5.2 [+4.2, +6.3], half +6.2 [+5.1, +7.3], full +7.4 [+6.3, +8.6]; reading guide met in all three, so the result does not depend on the assumption.
+Open: reviewer decisions on tier A (top 50 first), how events are promoted (importer not written), detector rerun output (predictions unscored), scripts/tagging/resolve_sentiment_confounds.py not yet read.
