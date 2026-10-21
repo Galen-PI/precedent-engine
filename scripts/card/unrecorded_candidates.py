@@ -75,8 +75,10 @@ def load_volume(ids, dl):
             continue
         with open(path, "rb") as fh:
             d = pickle.load(fh)
+        if not d["dates"]:
+            continue              # an empty file (the pull returned no rows for this security): treated as no volume data
         have += 1
-        ii = np.array([pos.get(x, -1) for x in d["dates"]])
+        ii = np.array([pos.get(x, -1) for x in d["dates"]], dtype=np.int64)
         cl = np.array([np.nan if v is None else v for v in d["close"]], dtype=np.float64)
         ad = np.array([np.nan if v is None else v for v in d["adj"]], dtype=np.float64)
         vv = np.array([np.nan if v is None else v for v in d["vol"]], dtype=np.float64)

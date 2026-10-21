@@ -80,6 +80,9 @@ def main():
         if limit is not None and new >= limit:
             break
         rows = fetch_all(sb, "market_prices", "price_date,close,adjusted_close,volume", [lambda q, sid=s["id"]: q.eq("security_id", sid)], "price_date")
+        if not rows:
+            print("   %-6s returned NO rows: not saved, so a rerun retries it" % s["ticker"], flush=True)
+            continue
         save(path, {"id": s["id"], "ticker": s["ticker"], "dates": [str(r["price_date"])[:10] for r in rows], "close": [num(r["close"]) for r in rows],
                     "adj": [num(r["adjusted_close"]) for r in rows], "vol": [num(r["volume"]) for r in rows]})
         new += 1

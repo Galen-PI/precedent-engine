@@ -1,10 +1,37 @@
-Traceback (most recent call last):
-  File "/workspaces/stock-research1/scripts/card/unrecorded_candidates.py", line 301, in <module>
-    main()
-  File "/workspaces/stock-research1/scripts/card/unrecorded_candidates.py", line 219, in main
-    VOL, SPL, have = load_volume(ids, dl)
-                     ^^^^^^^^^^^^^^^^^^^^
-  File "/workspaces/stock-research1/scripts/card/unrecorded_candidates.py", line 84, in load_volume
-    VOL[k, ii[ok]] = np.where(vv[ok] > 0, vv[ok], np.nan)
-    ~~~^^^^^^^^^^^
-IndexError: arrays used as indices must be of integer (or boolean) type
+securities with a volume file: 494 of 496 | volume ratio available on 99.9% of the stock-days scored | article rows read: 532815 for 445 entities, coverage on 20.7% of scored stock-days | 279s
+
+ORDINARY STOCK-DAYS BY SIZE OF THE MISS: 2187937 scored | BIG (>= 3.0 band units) 15467 (0.71%) | MID 469675 | CALM 1702795
+
+HOW OFTEN EACH SIGNATURE APPEARS (the rate on CALM days is the baseline; enrichment = BIG / CALM)
+                 days |   volume >= 2x   volume >= 3x | days(art.)  article spike
+  CALM        1702795 |           2.9%           0.5% |     348996           3.2%
+  MID          469675 |           8.6%           1.8% |      97908           4.0%
+  BIG           15467 |          53.6%          25.7% |       3038          12.2%
+  enrichment BIG / CALM: volume >= 2x 18.2x | volume >= 3x 47.0x | article spike 3.8x
+
+ANATOMY OF THE 15467 BIG ORDINARY MISSES
+  aftershock, previous day was a big miss:                     729  4.7%
+  aftershock, within 5 days after an event/earnings/7.01:     1990  12.9%
+  everything else:                                           12748  82.4%
+    of which with a volume ratio available:                  12704
+      volume spike (>= 2x):                                   6730  53.0% of those
+      QUIET (no volume spike):                                5974  47.0% of those
+    with BOTH volume ratio and article coverage (2015 on):    2483
+      volume spike + article spike       210  8.5%
+      volume spike only                 1002  40.4%
+      article spike only                  88  3.5%
+      neither (quiet)                   1183  47.6%
+
+BY ERA: share of the non-aftershock big misses that carry a volume spike (the candidate pool) and how large it is
+  2006-2012    4243 with a volume ratio | spike 57.7% | pool size 2449
+  2013-2019    4387 with a volume ratio | spike 54.3% | pool size 2383
+  2020-2026    4074 with a volume ratio | spike 46.6% | pool size 1898
+  pool by year (volume spike, no aftershock): 2006:424 2007:354 2008:295 2009:331 2010:349 2011:322 2012:374 2013:352 2014:383 2015:367 2016:347 2017:352 2018:295 2019:287 2020:276 2021:272 2022:234 2023:296 2024:267 2025:295 2026:258
+
+READING SAMPLE (from 2024-01-01; 12 per stratum; seed 20261020)
+  volume spike + article spike     available    53 | sampled 12
+  volume spike only                available   767 | sampled 12
+  quiet (neither)                  available   906 | sampled 12
+  aftershock: previous day big     available    97 | sampled 12
+
+wrote /workspaces/stock-research1/results/unrecorded_candidates.csv and /workspaces/stock-research1/results/unrecorded_reading_sample_20261020.csv | total 279s
