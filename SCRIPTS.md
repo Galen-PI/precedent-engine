@@ -3356,3 +3356,10 @@ close = adjusted_close except in about 12% of securities by at most 1.6% (matche
 (AAPL, TSLA, NVDA, WMT checked; AMZN and GOOGL are not in the cache). Unadjusted corporate actions are spin-offs and special dividends (WY 2010, KDP 2018 and others): 36 down-jumps of 35-50% kept as
 returns, 13 over 50% and 16 up-jumps over 60% dropped by the 50% filter, about 65 stock-days since 2005: too few to justify a screen. Volume level steps: 5,941, of which 5,806 are 1.7-2.5x (ordinary) and
 22 are 4x or more (unit, source or ticker changes, for example AMCR). The detector's 20-day baseline stands as registered.
+
+### 2026-10-21 -- Volume-spike calibration (volume_calibration.py; rule, degeneracy check and predictions committed 1fce3d5 before the run)
+Known-information big-miss days (earnings, recorded events, Regulation FD; 13,316) spike at 2.0x on 86.6% (reweighted to the size mix of ordinary big misses 81.2%), calm days 2.6%, mid-size misses 7.7%, ordinary big
+misses (12,704, non-aftershock) 53.0%. p / s = 0.65 (informative). pi_upper 0.75 / 0.62 / 0.51 at 1.5x / 2.0x / 3.0x: spread 0.24 > 0.10 = NOT CONSISTENT, so no single information share is quoted; at 2.0x the share that
+looks like information by volume is between 0.31 (extrapolated noise rate) and 0.62 (mid-size noise rate), about 3,900-7,900 of the 12,704 (17-33% of the 23,554 recorded events). At least about 13% show no volume
+elevation at all (under 1.3x; information gives that 1.9% of the time). pi_upper by era 0.66 / 0.62 / 0.56 (s roughly stable 82.7 / 82.6 / 78.4). The 5 readings so far (1 of 5 found) are in the working notes.
+Limit: company-filed information may have a different volume signature from analyst notes, activist stakes, rumours and sector news.
