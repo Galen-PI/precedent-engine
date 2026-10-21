@@ -3417,3 +3417,10 @@ Found 2 of 8: CHRW 2026-02-12 (AI-disruption selloff in logistics services, Stre
 MDLZ 2026-03-16, WRB 2024-07-19 (insurer peers moved too), VRT 2024-06-06, CASY 2024-03-05. By stratum: volume stock-specific 1/3, group move 1/3, quiet 0/2 (too small to compare). Both finds are thematic/geopolitical, and CHRW was
 classed stock-specific by the peer check (1 of 10 peers moved), so the peer method likely undercounts thematic shocks that hit an unusual set of stocks (hypothesis; a same-day cluster check without peers would test it). Search wording
 changed after row 8 to surface dated headline logs (StreetInsider / TheFly); not a change to the found rule. 'Not found' never means nothing happened. Working file: results2.csv in the sandbox.
+
+### 2026-10-21 -- company_sentiment_timeline covers about a third of the universe (found while checking why article coverage was 20.7%)
+Feb-May 2015: 132-143 A-E tickers and 250-263 F-Z tickers have rows; from Jun 2015 on ~105 A-E and ~51 F-Z (of 175 and 324 in the universe): 165 of 499 tickers in Jan 2022 (A-E 65%, F-Z 16%). Pattern matches the old exclusive
+CASE/WHEN dispatch in backfill_gdelt_sentiment.py (an article counts only for the first matching company in alphabetical order); the script's comment says the fixed IF()/UNNEST query was written but not yet run, so Feb-May 2015 probably came
+from an earlier method. June 2025 has rows only for Jun 1-14 (Jun 15-30 missing); Sep 2026 partial (month running); Oct-Nov 2020 have about 40% fewer articles with normal row counts (not investigated).
+Affected so far: unrecorded_candidates.py (the article-spike signature and the 'volume + article spike' stratum); volume-based results, group moves and role bands do not read this table. The product ('Public Opinion Pull') and earlier tests may.
+Plan: confirm the upsert conflict key (rest of the script), dry-run one month in an environment with BigQuery (Cloud Shell likely), run one real month and verify entities / A-E counts / duplicates, then backfill 2015-06 onward and 2025-06-15..30, then rerun the detector.
