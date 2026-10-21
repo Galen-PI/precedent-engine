@@ -14,6 +14,7 @@ RESULTS = os.path.join(ROOT, "results")
 CACHE = os.path.join(ROOT, "data_cache", "sec_excerpts")
 UA = os.environ.get("SEC_USER_AGENT", "stock-research1 project contact@example.com")
 DELAY = 0.2
+HINT_CHARS = 1500             # the hint looks only at the opening of the release, not the safe-harbor boilerplate after it
 MAX_BYTES = 1_500_000
 EXCERPT = 4000                  # kept in the cache and used for the keyword hint; the CSV shows the first 1,200 characters
 HINTS = [("merger/acquisition", r"merger|acquisition|acquire|business combination|tender offer|definitive agreement"), ("guidance/outlook", r"guidance|outlook|expects? (?:revenue|earnings|net income|eps)|preliminary (?:results|revenue)|updat\w+ (?:its )?(?:financial )?(?:guidance|outlook)"),
@@ -111,7 +112,7 @@ def main():
         n_fail += int(not res["excerpt"])
         r = dict(r)
         r["exhibit_excerpt"] = ("[%s] " % res["type"] if res["type"] else "") + (res["excerpt"][:1200] if res["excerpt"] else "(" + res["status"] + ")")
-        r["keyword_hint"] = hint(res["excerpt"])
+        r["keyword_hint"] = hint(res["excerpt"][:HINT_CHARS])
         out.append(r)
         if (i + 1) % 25 == 0:
             print("  %d/%d | excerpts %d, none %d | %.0fs" % (i + 1, len(todo), n_ok, n_fail, time.time() - t0), flush=True)
