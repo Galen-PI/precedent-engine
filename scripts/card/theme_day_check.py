@@ -9,11 +9,18 @@ of its miss) CLUSTER = the number of other stocks whose signed band unit that da
 distribution of CLUSTER on an arbitrary day. A THEME DAY = a CLUSTER above the 95th percentile of the pooled placebo counts, so about 5% of arbitrary days qualify by construction. Reported: the theme-day share (real vs placebo) overall, by
 category, era and size of the miss; for theme-day misses whether the cluster is concentrated in the stock's own sector (at least half of the participants in its sector: SECTOR THEME) or spread across sectors (CROSS-SECTOR); the overlap with the
 group-move flags (support of 4 or more peers) among the big volume-spike misses; twelve random theme-day examples with the participating tickers and sectors; and the file of flags for the next reading sample.
+NORMALISATION FIX (POST HOC, written after the first real run of theme_day_check.py and a diagnosis on a synthetic CONTROL world with no themes, where real days read BELOW placebo days, 1.9% vs 4.0%): the cause is mechanical. A band unit is divided
+by the square root of the other stocks' mean squared miss that day, and that mean includes the focal stock's own big miss, so a big miss by one stock shrinks every other stock's band unit by about 2%; with fat tails that cuts the chance of
+passing a threshold by about 10% (synthetic: 3.01 other stocks at or above 2.5 on days with a big miss vs 3.44 on arbitrary days, the same in every market-scale bin, so matching placebo days on market scale does NOT fix it). The counts of OTHER stocks
+are now computed with the focal stock left out of the normalisation, identically on real and placebo days. The first real run (unfixed: real 2.2% vs placebo 2.5%, excess -0.3 points [-1.0, +0.4]; real mean cluster 4.8 vs 5.0) is superseded;
+its null was biased downward by about 4%.
+SECTOR-MEAN CORRECTION (same post-hoc fix): the matrices subtract a leave-one-out sector mean, so every sector-MATE of the focal stock has an expected return that includes the focal stock's return divided by (sector size - 1); a +5% jump by
+one stock lowers its mates' misses by about 0.1% (z by about -0.06), which cut the same-sector control from 4.0% to 2.6%. The focal stock's raw return over (n - 1) is added back to each mate's miss (sector-factor loading taken as 1, an approximation).
 PRE-SET RULE: THEME DAYS ARE MATERIAL if, among the big volume-spike misses ('volume spike only' plus 'volume spike + article spike'), the theme-day share exceeds the placebo share by at least 10 points and the 95% interval of that
 excess (resampling calendar MONTHS, 500 resamples) is above 0. Everything else is descriptive.
-SENSITIVITY (synthetic worlds, written before the real run): with no theme shocks the excess was -0.8 points [-1.7, +0.1] (no false positive); with 12 random stocks from any sector sharing a 3-6% shock on 1% of days (about 12% of the
-big misses were themed) it read +6.5 points [+4.3, +10.1], which the 10-point rule calls NOT material. A theme day inflates its own scale (the other stocks' mean squared miss rises), which pulls the participants' band units down, so the real
-excess is a FLOOR. Reading guide, fixed before the run: an excess of 5 points or more with the interval above 0 counts as evidence of themes even when the rule says NOT material; the rule itself is unchanged.
+VALIDATION (synthetic worlds with heavy-tailed noise, so an arbitrary day already has about 3.4 other big misses as in real data): CONTROL with no themes: excess -0.0 points [-0.6, +0.5]; narrow themes (6 stocks inside one sector, about 3% of the candidate rows) read
++0.6 [-0.1, +1.4], so this ALL-STOCK measure sees only BROAD event days (many stocks at once); narrow themes need sector_cluster_check.py. Before the post-hoc fixes it read -1.4 [-1.9, -1.0] on the control (mechanical negative dependence). The first REAL run, made before the fixes
+(real 2.2% vs placebo 2.5%, excess -0.3 points [-1.0, +0.4]), is superseded: its null was biased downward by about 4%.
 PREDICTIONS (before the run): the placebo median CLUSTER is 2-4 and its 95th percentile 7-11; the real theme-day share among big volume-spike misses is 12-25% (excess 7-20 points: MATERIAL with probability about 45%); quiet misses 10-20%; the
 share rises across eras by at least 5 points (2006-2012 below 2020-2026); 25-45% of theme-day misses are SECTOR THEMES and the rest CROSS-SECTOR; theme days and group moves overlap only partly, and their union covers 14-28% of the big
 volume-spike misses; CHRW 2026-02-12 is a theme day (probability about 85%) and LMT 2024-10-01 is one (about 50%).
@@ -56,6 +63,7 @@ def main():
             sys.exit("Missing %s" % f)
     d = np.load(CACHE_FILE, allow_pickle=False)
     dates, tickers, E, SD = d["dates"], [str(x) for x in d["tickers"]], d["E"].astype(np.float64), d["SD"].astype(np.float64)
+    Y = d["Y"].astype(np.float64)                                     # the stock's own raw return
     N, n = E.shape
     dl = [str(x) for x in dates]
     years = np.array([int(x[:4]) for x in dl])
@@ -70,9 +78,6 @@ def main():
         qo = (S[None, :] - np.where(valid, z ** 2, 0.0)) / (cnt[None, :] - 1)
         buS = z / np.sqrt(qo)
     buS[~((cnt[None, :] > 20) & np.isfinite(buS))] = np.nan
-    pos = np.nan_to_num(buS, nan=0.0) >= OTHER_BU
-    neg = np.nan_to_num(buS, nan=0.0) <= -OTHER_BU
-    cpos, cneg = pos.sum(axis=0), neg.sum(axis=0)
 
     sector = {}
     try:
@@ -83,6 +88,38 @@ def main():
     except Exception as e:
         print("sectors not available (%s): sector composition is skipped" % str(e)[:80])
     tick_sector = [sector.get(t) for t in tickers]
+
+    names_ = sorted(set(sector.values()))
+    sid_ = {s_: i_ for i_, s_ in enumerate(names_)}
+    sec_of = np.array([sid_.get(sector.get(t_), -1) for t_ in tickers])
+
+    def others_bu(k, t, sg):
+        """Signed band units of every stock on day t, normalised WITHOUT the focal stock k in the day's mean squared miss (and without the stock itself),
+        the same way for a real big-miss day and a placebo day. (With the focal stock left in, its own big miss shrinks every other stock's band unit by about 2%,
+        which with fat tails cuts the chance of passing a threshold by about 10%: a mechanical negative dependence that made real days look LESS clustered than arbitrary days.)"""
+        out = np.full(N, np.nan)
+        if cnt[t] <= 20:
+            return out
+        zt = z[:, t]
+        v = np.isfinite(zt)
+        zk2 = zt[k] ** 2 if v[k] else 0.0
+        ck = cnt[t] - (1 if v[k] else 0)
+        zadj = zt.copy()
+        if sec_of[k] >= 0 and v[k] and np.isfinite(Y[k, t]):
+            mates = (sec_of == sec_of[k]) & v
+            mates[k] = False
+            nsec = int(mates.sum()) + 1
+            if nsec > 1:
+                with np.errstate(invalid="ignore", divide="ignore"):
+                    zadj[mates] = zt[mates] + Y[k, t] / ((nsec - 1) * SD[mates, t])      # add back the focal stock's share of each sector-mate's expected return (loading taken as 1)
+        with np.errstate(invalid="ignore", divide="ignore"):
+            qo_j = (S[t] - np.where(v, zt ** 2, 0.0) - zk2) / (ck - 1)
+            out = sg * zadj / np.sqrt(qo_j)
+        out[k] = np.nan
+        return out
+
+    def count_others(k, t, sg):
+        return int((np.nan_to_num(others_bu(k, t, sg), nan=-9.0) >= OTHER_BU).sum())
 
     kk = {t: k for k, t in enumerate(tickers)}
     rows = []
@@ -99,12 +136,11 @@ def main():
     year_days = {int(y): np.where(years == y)[0] for y in np.unique(years)}
     real_c, plc_c = [], []
     for k, t, sg, cat, bu_ in rows:
-        cs = cpos if sg > 0 else cneg
-        real_c.append(int(cs[t]) - 1)
+        real_c.append(count_others(k, t, sg))
         yd = year_days[int(years[t])]
         ok = yd[(yd != t) & np.isfinite(buS[k, yd])]
         picks = rng.choice(ok, size=N_PLACEBO, replace=len(ok) < N_PLACEBO)
-        plc_c.append([int(cs[tp]) - int(sg * buS[k, tp] >= OTHER_BU) for tp in picks])
+        plc_c.append([count_others(k, tp, sg) for tp in picks])
     real_c, plc_c = np.array(real_c), np.array(plc_c)
     thr = float(np.percentile(plc_c, PCTL))
     theme = real_c > thr
@@ -151,7 +187,7 @@ def main():
     info = {}
     for i in np.where(theme)[0]:
         k, t, sg = rows[i][0], rows[i][1], rows[i][2]
-        vals = sg * buS[:, t]
+        vals = others_bu(k, t, sg)
         part = [j for j in np.argsort(-np.nan_to_num(vals, nan=-9.0)) if j != k and np.isfinite(vals[j]) and vals[j] >= OTHER_BU]
         secs = Counter(tick_sector[j] for j in part if tick_sector[j])
         own = tick_sector[k]
