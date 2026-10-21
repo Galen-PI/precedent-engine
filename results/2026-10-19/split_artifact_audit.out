@@ -1,0 +1,59 @@
+/workspaces/stock-research1/scripts/card/split_artifact_audit.py:85: RuntimeWarning: All-NaN slice encountered
+  med = np.where(cnt >= 10, np.nanmedian(W, axis=1), np.nan)          # med[i] = median of vo[i:i+20]
+securities read: 499
+
+A. close vs adjusted_close: 58 of 499 securities (11.6%) have any relative difference above 1e-4
+     EIX    largest relative difference 0.0159
+     VZ     largest relative difference 0.0150
+     ARE    largest relative difference 0.0146
+     CMCSA  largest relative difference 0.0143
+     VMRK   largest relative difference 0.0116
+
+B. PRICE JUMPS from 2005-01-01 (ratio <= 0.65 or >= 1.6): 65 | SPLIT-LIKE (within 1.5% of an exact split ratio): 3
+     HIG    2008-12-05 price ratio 2.0236 1:2   | volume step across the date 0.83x
+     WY     2010-07-20 price ratio 0.5016 2:1   | volume step across the date 1.44x
+     KDP    2018-07-10 price ratio 0.3300 3:1   | volume step across the date 1.36x
+     BIIB   2005-02-28 price ratio 0.5745 (not an exact ratio) | volume step across the date 3.62x
+     INCY   2005-09-28 price ratio 0.5898 (not an exact ratio) | volume step across the date 2.03x
+     INCY   2006-04-03 price ratio 0.5947 (not an exact ratio) | volume step across the date 1.74x
+     CNC    2006-07-18 price ratio 0.6464 (not an exact ratio) | volume step across the date 1.51x
+     DPZ    2007-05-07 price ratio 0.6064 (not an exact ratio) | volume step across the date 0.78x
+     JCI    2007-07-02 price ratio 0.3948 (not an exact ratio) | volume step across the date 1.38x
+     MO     2008-03-31 price ratio 0.3007 (not an exact ratio) | volume step across the date 1.33x
+     UAL    2008-04-22 price ratio 0.6323 (not an exact ratio) | volume step across the date 1.31x
+     FIS    2008-07-03 price ratio 0.5407 (not an exact ratio) | volume step across the date 1.87x
+     UAL    2008-07-22 price ratio 1.6854 (not an exact ratio) | volume step across the date 1.94x
+     AIG    2008-09-15 price ratio 0.3921 (not an exact ratio) | volume step across the date 5.22x
+     size: down-jumps of more than 50% (ratio <= 0.50, dropped by the pipeline's 50% filter): 13 | down 35-50% (KEPT as returns): 36 | up 60% or more (dropped): 16
+
+C. VOLUME LEVEL STEPS WITHOUT A PRICE JUMP from 2005-01-01 (median volume of the next 20 days vs the previous 20 beyond 1.7x, persisting): 5941
+     up 3371 | down 2570 | near an integer ratio (within 12% of 2, 3, 4 or 5 up, or 1/2..1/5 down): 3115
+     AMCR   2019-03-14 volume step 87.25x | price move that day 0.0%
+     AMCR   2018-11-12 volume step 46.50x | price move that day 1.0%
+     AMCR   2019-01-14 volume step 0.04x | price move that day 0.0%
+     VICI   2018-01-31 volume step 13.90x | price move that day 4.5%
+     PSX    2012-05-10 volume step 9.22x | price move that day 0.0%
+     DHR    2019-12-31 volume step 0.11x | price move that day 0.4%
+     PSKY   2006-01-04 volume step 7.78x | price move that day 0.8%
+     CMI    2024-03-27 volume step 0.13x | price move that day 1.0%
+     LLY    2019-03-25 volume step 0.14x | price move that day 1.2%
+     JNJ    2023-09-05 volume step 0.15x | price move that day 0.1%
+     EFX    2017-08-24 volume step 6.29x | price move that day 0.4%
+     VRT    2019-05-22 volume step 6.24x | price move that day 0.0%
+     VRT    2018-08-30 volume step 0.18x | price move that day 0.0%
+     CHTR   2010-09-07 volume step 4.92x | price move that day 0.0%
+     by size (either direction): 1.7-2.5x 5806 | 2.5-4x 113 | 4-10x 18 | 10x or more 4  (4x or more looks like a unit, source or ticker change)
+
+D. KNOWN SPLITS (price ratio across the date; volume level step = median of the next 20 days / the previous 20):
+     ticker date        split | price ratio  volume step    | reading (adjusted = both near 1.00)
+     AAPL   2020-08-31     4:1 | 1.034        1.01           | prices ADJUSTED; volume ADJUSTED
+     TSLA   2020-08-31     5:1 | 1.126        1.30           | price moved 13%; volume ADJUSTED
+     TSLA   2022-08-25     3:1 | 0.997        0.67           | prices ADJUSTED; volume ADJUSTED
+     NVDA   2021-07-20     4:1 | 0.991        0.51           | prices ADJUSTED; volume step 0.51x (unclear)
+     NVDA   2024-06-10    10:1 | 1.007        0.69           | prices ADJUSTED; volume ADJUSTED
+     AMZN   2022-06-06    20:1 | not in the cache
+     GOOGL  2022-07-18    20:1 | not in the cache
+     WMT    2024-02-26     3:1 | 1.018        0.87           | prices ADJUSTED; volume ADJUSTED
+
+READING: B tells whether split days can sit among the big misses; C tells whether volume ratios are polluted around splits (then a baseline that looks at both sides of the day is safer).
+NOTE: the dates in C are approximate (within about 10 trading days of the step), and an event whose price AND volume are both unadjusted can appear in both B and C.

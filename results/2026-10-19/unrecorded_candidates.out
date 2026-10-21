@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/workspaces/stock-research1/scripts/card/unrecorded_candidates.py", line 301, in <module>
+    main()
+  File "/workspaces/stock-research1/scripts/card/unrecorded_candidates.py", line 219, in main
+    VOL, SPL, have = load_volume(ids, dl)
+                     ^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/stock-research1/scripts/card/unrecorded_candidates.py", line 84, in load_volume
+    VOL[k, ii[ok]] = np.where(vv[ok] > 0, vv[ok], np.nan)
+    ~~~^^^^^^^^^^^
+IndexError: arrays used as indices must be of integer (or boolean) type
