@@ -7,6 +7,9 @@ EVT = a stock's own recorded event, days 0 and +1 (as loaded by event_width_test
 JOB is SCHEDULED (the date is known in advance); EVT, ERN and FD are FILING-DRIVEN (day +1 knowable, day 0 only after the filing). Eras 2004-2018 and 2019-2026.
 READING GUIDE (written before the first real run). A pair is TESTABLE if it has at least 1,000 overlapping stock-days in EACH era (a coverage shortfall at 80% then has a standard error of about 1.3 points), MARGINAL if the smaller era has 300-999, THIN below 300. THIN pairs cannot be tested and are reported with the number.
 PREDICTIONS (before the run): sector-specific pairs involving OIL_E are THIN (under 300 per era) except possibly with EVT; pairs of an all-stock flag with ERN or EVT (JOB x ERN, YLD_F x ERN, YLD_F x EVT) have 300-3,000 per era; at most 6 of the 28 pairs are TESTABLE in both eras; the single-flag volumes are EVT 35,000-45,000, ERN 75,000-90,000, FD 60,000-90,000, JOB 100,000-140,000 stock-days.
+REVISION 2026-10-22, after the first real run (counts only; no outcome has been looked at): stock-day counts overstate independent information for pairs that contain a MARKET-WIDE flag (JOB, OIL_E, YLD_*), because a macro day hits many stocks at once (YLD_F x JOB shows 2,433 stock-days that come from only a few dozen days).
+Distinct overlap days are now printed beside the stock-days, and for those pairs the verdict is the WORSE of the stock-day rule and a days rule: TESTABLE needs >= 100 distinct overlap days in each era, MARGINAL 40-99, THIN below 40. Company-level pairs (EVT, ERN, FD with each other) keep the stock-day rule. Also noted: EVT x ERN is already covered by the card's 'earnings + event' group and ERN x FD by the 7.01 check.
+PREDICTIONS for the days column (before it is printed): YLD_F x JOB, YLD_H x JOB, YLD_RE x JOB and OIL_E x JOB are THIN by days (under 40 per era); JOB x ERN has about 170-185 distinct days in 2004-2018 and about 90-100 in 2019-2026 (TESTABLE in the first era, MARGINAL or TESTABLE in the second).
 Usage:   python3 -u scripts/card/flag_overlap_counts.py      Needs data_cache/audit_matrices.npz.
 """
 import os, sys, bisect, time, warnings
@@ -27,6 +30,8 @@ FLAGS = ["OIL_E", "YLD_F", "YLD_RE", "YLD_H", "JOB", "EVT", "ERN", "FD"]
 TIMING = {"OIL_E": "same-day", "YLD_F": "same-day", "YLD_RE": "same-day", "YLD_H": "same-day", "JOB": "scheduled", "EVT": "filing-driven", "ERN": "filing-driven", "FD": "filing-driven"}
 SECTOR = {"OIL_E": "Energy", "YLD_F": "Financials", "YLD_RE": "Real Estate", "YLD_H": "Health Care"}
 TESTABLE, MARGINAL = 1000, 300
+DAYS_TESTABLE, DAYS_MARGINAL = 100, 40
+MARKET_WIDE = {"OIL_E", "YLD_F", "YLD_RE", "YLD_H", "JOB"}
 
 
 def macro_series(sb, sid, want_release=False):
@@ -64,6 +69,17 @@ def count_overlaps(F, valid, years):
             for b in FLAGS[i + 1:]:
                 pairs.setdefault((a, b), {})[lab] = int((F[a] & F[b] & em).sum())
     return singles, pairs
+
+
+def count_days(F, valid, years):
+    """distinct calendar days on which at least one valid stock-day carries both flags, by era."""
+    out = {}
+    for lab, lo, hi in ERAS:
+        em = valid & ((years >= lo) & (years <= hi))[None, :]
+        for i, a in enumerate(FLAGS):
+            for b in FLAGS[i + 1:]:
+                out.setdefault((a, b), {})[lab] = int((F[a] & F[b] & em).any(axis=0).sum())
+    return out
 
 
 def main():
@@ -134,17 +150,25 @@ def main():
     print("\nSINGLE FLAGS (valid stock-days)      " + "  ".join("%12s" % l for l in labs) + "   timing")
     for a in FLAGS:
         print("  %-8s %-28s" % (a, ("sector " + SECTOR[a]) if a in SECTOR else "all stocks") + "  ".join("%12d" % singles[a][l] for l in labs) + "   " + TIMING[a])
-    print("\nPAIRS (overlapping valid stock-days), largest smaller-era count first")
+    pdays = count_days(F, valid, years)
+    print("\nPAIRS: overlapping valid stock-days | the DISTINCT DAYS they come from | stock-days per day, largest smaller-era stock-day count first")
+    rank = {"TESTABLE": 2, "MARGINAL": 1, "THIN": 0}
+    cls = lambda v, hi, lo: "TESTABLE" if v >= hi else ("MARGINAL" if v >= lo else "THIN")
     rows = sorted(pairs.items(), key=lambda kv: -min(kv[1].values()))
+    final = {}
     for (a, b), c in rows:
-        m = min(c.values())
-        verdict = "TESTABLE" if m >= TESTABLE else ("MARGINAL" if m >= MARGINAL else "THIN")
+        dd = pdays[(a, b)]
+        cs = cls(min(c.values()), TESTABLE, MARGINAL)
+        macro = a in MARKET_WIDE or b in MARKET_WIDE
+        v = cs if not macro else min(cs, cls(min(dd.values()), DAYS_TESTABLE, DAYS_MARGINAL), key=lambda x: rank[x])
+        final[(a, b)] = v
         both_known = "known in advance" if (TIMING[a] != "same-day" and TIMING[b] != "same-day") else "includes a same-day flag"
-        print("  %-7s x %-7s " % (a, b) + "  ".join("%12d" % c[l] for l in labs) + "   %-8s | %s" % (verdict, both_known))
-    nt = sum(1 for _, c in rows if min(c.values()) >= TESTABLE)
-    nm_ = sum(1 for _, c in rows if MARGINAL <= min(c.values()) < TESTABLE)
-    print("\nSUMMARY: %d of %d pairs TESTABLE in both eras (>= %d), %d MARGINAL (%d-%d), %d THIN (< %d) | total %.0fs" % (nt, len(rows), TESTABLE, nm_, MARGINAL, TESTABLE - 1, len(rows) - nt - nm_, MARGINAL, time.time() - t0))
-    return singles, pairs
+        per = "  ".join("%6.1f" % (c[l] / dd[l] if dd[l] else 0.0) for l in labs)
+        print("  %-7s x %-7s " % (a, b) + "  ".join("%9d" % c[l] for l in labs) + " | " + "  ".join("%5d" % dd[l] for l in labs) + " | " + per + "   %-8s%s | %s" % (v, " (by days)" if macro and v != cs else "", both_known))
+    nt = sum(1 for v in final.values() if v == "TESTABLE")
+    nm_ = sum(1 for v in final.values() if v == "MARGINAL")
+    print("\nSUMMARY: %d of %d pairs TESTABLE in both eras, %d MARGINAL, %d THIN | total %.0fs" % (nt, len(rows), nm_, len(rows) - nt - nm_, time.time() - t0))
+    return singles, pairs, pdays
 
 
 if __name__ == "__main__":
