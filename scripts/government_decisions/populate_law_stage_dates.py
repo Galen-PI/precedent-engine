@@ -31,6 +31,8 @@ POS = re.compile(r"\b(passed|agreed to|concurred)\b", re.I)
 NEG = re.compile(r"^(motion|cloture|point of order|rule\b|rules committee|amendment)|reconsider|laid on the table|waive|\bdisagree|committee (now )?rise", re.I)
 STRICT = re.compile(r"^(Passed/agreed to in|Conference report agreed to in|(Senate|House) (agreed to|concurred)|On motion that the (House|Senate) (suspend the rules and )?(agree|concur))", re.I)
 VOTE_RE = re.compile(r"(\d+)\s+-\s+(\d+)")
+# the older Congress.gov action text (103rd-106th Congress) writes the Senate count without spaces: "by Yea-Nay Vote. 94-5." (patched 2026-10-22; 60 laws had been stuck as unknown). Anchored on Yea-Nay so page ranges such as "CR S13855-13858" cannot match.
+VOTE_RE_COMPACT = re.compile(r"Yea-Nay( Vote)?\.\s*(\d{1,3})-(\d{1,3})\.")
 
 
 def fetch(url, params=None, tries=6):
@@ -95,6 +97,9 @@ def vote_info(text):
     m = VOTE_RE.search(t)
     if m:
         return "roll", int(m.group(1)), int(m.group(2))
+    m = VOTE_RE_COMPACT.search(t)
+    if m:
+        return "roll", int(m.group(2)), int(m.group(3))
     if "without objection" in low:
         return "unopposed", None, None
     return "unknown", None, None
