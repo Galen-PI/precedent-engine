@@ -144,7 +144,8 @@ def band_multiplier(model, ptype, size, timing, off):
     if model is None:
         return None, "no band model file"
     if ptype in EXCLUDED_TYPES:
-        return None, "event type %s is excluded from the band model" % ptype
+        extra = "; measured 2026-10-22: the 90% band covered only about 71% of ipo_spinoff event days (n 716, 2005-2026), so read it as too narrow" if ptype == "ipo_spinoff" else ""
+        return None, "event type %s is excluded from the band model%s" % (ptype, extra)
     refs, coef = model["references"], model["coef"]
     lm = coef["intercept"]
     for label, lev in (("type", ptype), ("size", size), ("timing", timing)):
