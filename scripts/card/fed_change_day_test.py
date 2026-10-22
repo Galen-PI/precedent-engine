@@ -14,6 +14,7 @@ POWER (stated before the run): with about 27 and 32 events and a daily log-ratio
 PREDICTIONS (before the run): Financials amplification 1.00-1.12 in both eras (PASS probability about 15%); Real Estate and Utilities 1.00-1.10; Health Care 0.93-1.05; placebos clean in both eras (probability about 90%); the crisis-excluded Financials estimate within 0.05 of the full one.
 VALIDATION (synthetic worlds with the real change-day counts per year, 11 sectors, a common volatility factor and slow sector drifts; run before the real data): NO EFFECT: Financials 1.010 (t +0.48) / 0.982 (t -0.85), NULL, placebos 1.011 / 1.006. PLANTED 1.15x on Financials day 0: 1.156 (t 6.6) / 1.129 (t 5.7), PASS. CRISIS REGIME (Financials x1.35 during the two crisis windows, no Fed effect): 1.013 / 0.981, NULL; the crisis-excluded version agrees.
 TWO ARTIFACTS TO KNOW: (1) when one sector is truly amplified, the OTHER sectors read about 2% below 1 (the rest-of-market includes it; Financials is 15% of stocks): that is the comparison, not a finding about them. (2) With 11 sectors and several subgroups, a chance cell at |t| 2.4 appears in a no-effect world (Health Care t +2.39; Financials cuts-only t -2.44); only the pre-set Financials day-0 cell can pass or fail.
+DATA GUARD (added after the first runs, 2026-10-22): load_sector_day drops any day with fewer than 100 stocks in total (two single-stock weekend rows existed: 2009-07-26 z 89.0, 2016-02-27 z 0.034). Their estimated effect on the first results was under 0.3 points; the first results are in the ledger, the cleaned ones are noted beside them.
 Usage:   python3 -u scripts/card/fed_change_day_test.py
 """
 import os, sys, bisect, time, warnings
@@ -31,6 +32,7 @@ PRIMARY, DESCRIPTIVE = "Financials", ["Real Estate", "Utilities", "Health Care"]
 BASE_LO, BASE_HI, SHIFTS, MIN_BASE = 21, 63, (21, -21), 20
 CRISIS = [("2008-09-15", "2009-06-30"), ("2020-03-01", "2020-06-30")]
 T_PASS, T_LEAD, T_PLACEBO = 2.5, 2.0, 2.5
+MIN_DAY_STOCKS = 100       # data-quality guard (added 2026-10-22 after the first runs): days with fewer stocks in total are not market days (two single-stock weekend rows were found: 2009-07-26 with z 89.0 and 2016-02-27)
 
 
 def load_sector_day(sb):
@@ -44,7 +46,11 @@ def load_sector_day(sb):
         for r in rows[s]:
             if r.get("mean_z") is not None and r.get("n"):
                 MZ[k, pos[str(r["day"])[:10]]], NN[k, pos[str(r["day"])[:10]]] = float(r["mean_z"]), float(r["n"])
-    return days, MZ, NN
+    tot = np.nansum(NN, axis=0)
+    keep = tot >= MIN_DAY_STOCKS
+    if not keep.all():
+        print("DATA GUARD: dropped %d day(s) with fewer than %d stocks in total: %s" % ((~keep).sum(), MIN_DAY_STOCKS, ", ".join("%s (%d)" % (d, t) for d, t, k in zip(days, tot, keep) if not k)), flush=True)
+    return [d for d, k in zip(days, keep) if k], MZ[:, keep], NN[:, keep]
 
 
 def fed_changes(sb):
