@@ -1,9 +1,11 @@
 name: Nightly classification run
 
 on:
-  schedule:
-    # 11:00 UTC daily -- before the ~8am local morning review session
-    - cron: "0 11 * * *"
+  # schedule DISABLED 2026-10-22: ingestion is paused (history-first plan) and the classifier pool is static, so the daily run only spends API calls.
+  # Manual runs stay available through workflow_dispatch below. To re-enable, restore these three lines:
+  #   schedule:
+  #     # 11:00 UTC daily -- before the ~8am local morning review session
+  #     - cron: "0 11 * * *"
   workflow_dispatch:
     inputs:
       filing_limit:
