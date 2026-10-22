@@ -16,7 +16,8 @@ WHAT THE CARD IS. An EXPLANATION of the day using same-day market and sector mov
   3. THE BAND (and the SECTOR PEERS that day: typical miss size, this stock's rank by miss size, and the largest positive and negative peer misses):
      1.645 x spread x sqrt(q) x event multiplier, where q = the mean squared standardized miss of ALL OTHER stocks that day (market-wide stress), and
      the multiplier is a MEASURED GROUP value, never a product: the joint event-day model for a recorded event, 2.72x / 2.47x for an earnings window (8-K item 2.02, day 0 / +1),
-     2.87x for both together, 1.36x for a Regulation FD filing (item 7.01), else 1.0. Whether the actual price
+     2.87x for both together, 1.36x for a Regulation FD filing (item 7.01), else 1.0. ROLE BANDS: for an ISOLATED earnings window of a stock whose release-time habit is known from its last 4 classifiable quarters
+     (models/earnings_role_band_model.json), the reaction day and the other day get their own multiplier and edge instead of the pooled 2.72x / 2.47x. Whether the actual price
      fell inside. The edge is calibrated per kind of day (models/band_calibration.json; walk-forward coverage 88-91% by era), not the fixed 1.645, and the band is an
      explanation line using the same day's stress, not a forecast range.
   4. OWN EVENT(S) on this day (day 0 or +1): title, type, the labeler's label / size / timing, and what similar-labeled events averaged. ANNOTATION ONLY:
@@ -32,6 +33,7 @@ from collections import defaultdict
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import decomp_validation as dv
+import earnings_roles as erl
 
 ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
 MODELS = os.path.join(ROOT, "models")
@@ -300,6 +302,7 @@ def main():
     val = load_json("decomp_validation_20261020.json")
 
     earn_model = load_json("earnings_band_model.json")
+    role_model = load_json("earnings_role_band_model.json")
     lo8 = (datetime.date.fromisoformat(date) - datetime.timedelta(days=7)).isoformat()
     filings = []
     if sec_row.get("id"):
@@ -314,6 +317,15 @@ def main():
     calib = load_json("band_calibration.json")
     group = band_group(fl, bool(lead))
     edge, edge_src = band_edge(calib, group, math.sqrt(q) if q else None)
+    role_note = None                                   # ROLE BANDS: an isolated earnings window of a stock with a known release-time habit gets its reaction-day / other-day band; any failure keeps the pooled band above
+    if role_model and fl["earn_off"] is not None and not lead and not fl["f701"] and sec_row.get("id"):
+        try:
+            hab = erl.habit_for_card(sb, sec_row["id"], U["master"], t - fl["earn_off"], date)
+        except Exception:
+            hab = None
+        new_band = erl.apply_role(fl, bool(lead), hab, role_model)
+        if new_band:
+            mult, mult_src, group, edge, edge_src, role_note = new_band
     sd_eff = c1["sd"] * (math.sqrt(q) if q else 1.0)
     half = edge * sd_eff * mult
     lo_ret, hi_ret = c1["hyp"] - half, c1["hyp"] + half
@@ -374,6 +386,8 @@ def main():
             L.append("         right way about 58% of the time vs 54% from type alone (direction test, passed; far placebo clean).")
     if fl["earn_off"] is not None:
         L.append("   EARNINGS WINDOW  8-K item 2.02 filed %s: today is day %d of the window (the table has no filing time, so the reaction may fall on either day)." % (fl["earn_date"], fl["earn_off"]))
+        if role_note:
+            L.append("         " + role_note)
         L.append("         Earnings days hold about 19.5% of all unexplained squared miss on about 3% of stock-days. The band is widened; the SIGN is not known (no surprise data tested yet).")
     elif fl["f701"]:
         L.append("   REGULATION FD FILING  8-K item 7.01 on day 0 or +1 (a weak lead: about 1.36x on average; mostly routine investor materials).")

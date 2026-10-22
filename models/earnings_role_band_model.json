@@ -1,0 +1,87 @@
+{
+ "what": "Role-based earnings bands: for an ISOLATED earnings window (no own recorded event, no Regulation FD filing) of a stock whose release-time habit is known from its last 4 classifiable quarters, the reaction day and the other day get their own multiplier (root-mean-square |band unit| relative to an ordinary day) and 90% edge (card units).",
+ "habit_rule": {
+  "gap_window": 60,
+  "gap_min_obs": 40,
+  "max_gap": 0.5,
+  "classify_z": 2.0,
+  "history": 4,
+  "thin_days": 20,
+  "label_1": "after the close (the day-i+1 gap is larger)",
+  "label_0": "before the open"
+ },
+ "groups": {
+  "earnings window, reaction day": {
+   "multiplier": 3.541,
+   "edge_90": 1.477,
+   "q90_ordinary_units": 5.229,
+   "n": 29737
+  },
+  "earnings window, other day": {
+   "multiplier": 1.472,
+   "edge_90": 1.339,
+   "q90_ordinary_units": 1.97,
+   "n": 29737
+  }
+ },
+ "by_era": {
+  "earnings window, reaction day": {
+   "2006-2012": {
+    "multiplier": 3.337,
+    "edge_90": 1.497,
+    "q90_ordinary_units": 4.997,
+    "n": 7140
+   },
+   "2013-2019": {
+    "multiplier": 3.721,
+    "edge_90": 1.456,
+    "q90_ordinary_units": 5.418,
+    "n": 10865
+   },
+   "2020-2026": {
+    "multiplier": 3.491,
+    "edge_90": 1.483,
+    "q90_ordinary_units": 5.177,
+    "n": 11732
+   }
+  },
+  "earnings window, other day": {
+   "2006-2012": {
+    "multiplier": 1.585,
+    "edge_90": 1.327,
+    "q90_ordinary_units": 2.103,
+    "n": 7140
+   },
+   "2013-2019": {
+    "multiplier": 1.504,
+    "edge_90": 1.33,
+    "q90_ordinary_units": 2.0,
+    "n": 10865
+   },
+   "2020-2026": {
+    "multiplier": 1.367,
+    "edge_90": 1.359,
+    "q90_ordinary_units": 1.858,
+    "n": 11732
+   }
+  }
+ },
+ "pooled_check": {
+  "day0": 2.803,
+  "day1": 2.618,
+  "card_day0": 2.72,
+  "card_day1": 2.47
+ },
+ "events_used": {
+  "isolated": 33023,
+  "with_habit": 29737,
+  "habit_share": 0.9005
+ },
+ "source": "scripts/card/build_earnings_role_model.py on the isolated earnings releases of 2006-2026; procedure validated out of sample by scripts/card/earnings_role_band_test.py (ROLE BANDS IMPROVE: interval score 0.890 / 0.869 / 0.857 of the pooled bands by era, placebo 1.003).",
+ "caveats": [
+  "Fit on all years; the walk-forward test measured the procedure, not these exact numbers.",
+  "A forward use needs the earnings filing date to be known in advance; the card applies it on the day itself from the filing table.",
+  "'Last 4' came from a recency test on the same years (last 3 / 4 / 8 were within 0.1 point). Strong-habit stocks are mostly big-gap names, so the role multipliers may run a few percent high for weak-habit stocks.",
+  "No habit (fewer than 4 classifiable earlier quarters, no OHLC history, an event or a 7.01 filing on the same days) means the card keeps its pooled day-0 / day-+1 band."
+ ]
+}
