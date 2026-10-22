@@ -311,6 +311,11 @@ def main():
         except Exception:
             filings = []
     fl = filing_flags(filings, U["master"], t)
+    try:                                               # the filing table is refreshed by hand: say so when the card date is past its last filing
+        _lf = sb.table("sec_8k_filings").select("filing_date").order("filing_date", desc=True).limit(1).execute().data
+        last_8k = str(_lf[0]["filing_date"])[:10] if _lf else None
+    except Exception:
+        last_8k = None
     lead = events[0] if events else None
     ev_mult, ev_note = (band_multiplier(band_model, lead["ptype"], lead["size"], lead["timing"], lead["off"]) if lead else (None, None))
     mult, mult_src = combine_multiplier(ev_mult, fl, earn_model, ev_note, bool(lead))
@@ -407,6 +412,8 @@ def main():
     L.append("")
     L.append("6. NOT YET MEASURED  peer and sector events | earnings surprises and analyst changes | anything never filed in an 8-K")
     L.append("   TESTED, NO DOCUMENTED EFFECT  GDELT news article volume (next-day width: +0.5 points of coverage, bar 5) and tone (next-day direction: -0.7 points, bar +3); see the flag ledger")
+    if last_8k and date > last_8k:
+        L.append("   DATA FRESHNESS  the 8-K filing table ends %s: no earnings window, role band or filing flag can be detected after that date (the table is refreshed by hand), so their absence on this card means no data, not no filing." % last_8k)
     L.append("")
     L.append("7. TRACK RECORD  chapter 1 (market + sector) on every stock-day since 2005, scored on days its fit never saw")
     if val:
