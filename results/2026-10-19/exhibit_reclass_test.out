@@ -1,0 +1,43 @@
+model_config found in /workspaces/stock-research1/scripts/shared
+filings 125 (G 50, O 50, R 25) x 5 arms = 625 requests | not yet cached 580 | about 4.39 million input tokens in all (system prompt included in every request; it is sent with cache_control) | up to 1,000 output tokens each
+  50/625 | 22s
+  100/625 | 49s
+  150/625 | 76s
+  200/625 | 102s
+  250/625 | 129s
+  300/625 | 149s
+  350/625 | 174s
+  400/625 | 200s
+  450/625 | 226s
+  500/625 | 250s
+  550/625 | 269s
+  600/625 | 295s
+wrote /workspaces/stock-research1/results/exhibit_reclass_test.csv | 625 rows | 310s
+
+REPLICATION: arm A agrees with the stored verdict on  85% (106/125)
+EXHIBIT TEXT ADDED IN B (B differs from A only for these): G 49 of 50 | O 49 of 50 | R 25 of 25
+
+SHARE CALLED real_event (and uncertain) BY GROUP AND ARM
+  G all                          n  50 | A:  14% (7/50) | unc 6 | A2:  14% (7/50) | unc 2 | B:  24% (12/50) | unc 2 | C:  30% (15/50) | unc 1 | D:  44% (22/50) | unc 1
+  G true guidance (my reading)   n  19 | A:   5% (1/19) | unc 2 | A2:   5% (1/19) | unc 1 | B:   5% (1/19) | unc 1 | C:  16% (3/19) | unc 1 | D:  47% (9/19) | unc 0
+  G not guidance (my reading)    n  16 | A:  25% (4/16) | unc 2 | A2:  25% (4/16) | unc 0 | B:  31% (5/16) | unc 1 | C:  31% (5/16) | unc 0 | D:  38% (6/16) | unc 1
+  G unknown                      n  15 | A:  13% (2/15) | unc 2 | A2:  13% (2/15) | unc 1 | B:  40% (6/15) | unc 0 | C:  47% (7/15) | unc 0 | D:  47% (7/15) | unc 0
+  O control                      n  50 | A:  16% (8/50) | unc 1 | A2:  16% (8/50) | unc 1 | B:  16% (8/50) | unc 0 | C:  14% (7/50) | unc 0 | D:  16% (8/50) | unc 3
+  R decided event                n  17 | A:  12% (2/17) | unc 0 | A2:  12% (2/17) | unc 1 | B:  59% (10/17) | unc 0 | C:  53% (9/17) | unc 1 | D:  71% (12/17) | unc 0
+  R decided not an event         n   8 | A:   0% (0/8) | unc 2 | A2:  12% (1/8) | unc 0 | B:   0% (0/8) | unc 0 | C:   0% (0/8) | unc 0 | D:   0% (0/8) | unc 0
+
+RULE: true-guidance + R-event filings (n 36): real_event A 8% -> B 31% (+22 points) -> D 58% (D - B +28 points)
+      control O: A 16% -> D 16% (+0 points) | R decided not an event: A 0% -> D 0% (+0 points)
+      run-to-run NOISE: A -> A2 on the same filings moves real_event by 0 points (control O: +0 points; filings whose verdict differs between A and A2: 7 of 125)
+      THE EXHIBIT INPUT HELPS (B - A >= 20 points and the noise < 10): YES | THE RULE CHANGE HELPS (D - B >= 15, control O A -> D <= 8 points, R not-an-event A -> D <= 15 points): YES
+
+FLIPS FROM A (real_event in the arm, not in A), by group
+  G all                          A2: 0 | B: 6 | C: 9 | D: 15
+  G true guidance (my reading)   A2: 0 | B: 1 | C: 3 | D: 8
+  G not guidance (my reading)    A2: 0 | B: 1 | C: 1 | D: 2
+  G unknown                      A2: 0 | B: 4 | C: 5 | D: 5
+  O control                      A2: 0 | B: 2 | C: 1 | D: 2
+  R decided event                A2: 0 | B: 8 | C: 7 | D: 10
+  R decided not an event         A2: 1 | B: 0 | C: 0 | D: 0
+
+R: events FLAGGED for review (real_event or uncertain) per arm: A  12% (2/17) | A2  18% (3/17) | B  59% (10/17) | C  59% (10/17) | D  71% (12/17)
