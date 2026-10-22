@@ -326,6 +326,8 @@ def main():
         new_band = erl.apply_role(fl, bool(lead), hab, role_model)
         if new_band:
             mult, mult_src, group, edge, edge_src, role_note = new_band
+        elif hab:
+            role_note = erl.tie_note(fl, bool(lead), hab)
     sd_eff = c1["sd"] * (math.sqrt(q) if q else 1.0)
     half = edge * sd_eff * mult
     lo_ret, hi_ret = c1["hyp"] - half, c1["hyp"] + half

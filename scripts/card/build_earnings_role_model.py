@@ -26,6 +26,7 @@ CACHE_FILE = uc.CACHE_FILE
 TEST_START = etc.TEST_START
 ERAS = [("2006-2012", 2006, 2012), ("2013-2019", 2013, 2019), ("2020-2026", 2020, 2100)]
 REF_ISO, REF_HABIT, REF_DAY0, REF_DAY1, TOL_N, TOL_H, TOL_M = 33023, 0.900, 2.72, 2.47, 0.015, 0.015, 0.20
+EXCLUDE_TIES = "--include-ties" not in sys.argv     # 2-2 ties are not fitted (the card keeps the pooled band on them); --include-ties reproduces the model of 2026-10-22
 
 
 def main():
@@ -90,13 +91,13 @@ def main():
             if not (oth[k, i] or oth[k, i + 1]) and np.isfinite(b0) and np.isfinite(b1):
                 n_iso += 1
                 if habit is not None:
-                    rec.append((int(years[i]), abs(float(b0)), abs(float(b1)), habit))
+                    rec.append((int(years[i]), abs(float(b0)), abs(float(b1)), habit, int(sum(hist[-er.HIST:]))))
             if np.isfinite(a) and np.isfinite(b) and max(a, b) >= er.CLASSIFY_Z:
                 hist.append(1 if b > a else 0)
     ordm = np.isfinite(bu) & ~oth & ~earnw & (years >= TEST_START)[None, :]
     rms_ord = float(np.sqrt(np.mean(bu[ordm] ** 2)))
     R = np.array(rec, dtype=float)
-    yr, b0, b1, hb = R[:, 0], R[:, 1], R[:, 2], R[:, 3]
+    yr, b0, b1, hb, sa = R[:, 0], R[:, 1], R[:, 2], R[:, 3], R[:, 4]
     react = np.where(hb == 1, b1, b0)
     other = np.where(hb == 1, b0, b1)
     share = len(rec) / max(n_iso, 1)
@@ -107,6 +108,12 @@ def main():
     if abs(n_iso / REF_ISO - 1) > TOL_N: problems.append("isolated events differ from the role test by more than %.1f%%" % (100 * TOL_N))
     if abs(share - REF_HABIT) > TOL_H: problems.append("forward-habit share differs from the role test by more than %.1f points" % (100 * TOL_H))
     if abs(p0 - REF_DAY0) > TOL_M or abs(p1 - REF_DAY1) > TOL_M: problems.append("pooled multipliers differ from the card's by more than %.2f: the convention or baseline does not match" % TOL_M)
+
+    n_ties = int((sa == 2).sum())
+    if EXCLUDE_TIES:                           # the checks above used every habit-assigned release; the FIT leaves the ties out
+        keep = sa != 2
+        yr, b0, b1, hb, react, other = (x[keep] for x in (yr, b0, b1, hb, react, other))
+        print("ties excluded from the fit: %d of %d habit-assigned releases (%.1f%%)" % (n_ties, len(sa), 100.0 * n_ties / len(sa)))
 
     def group_stats(x):
         m = float(np.sqrt(np.mean(x ** 2)) / rms_ord)
@@ -124,7 +131,7 @@ def main():
              "habit_rule": {"gap_window": er.GAP_WIN, "gap_min_obs": er.GAP_MIN, "max_gap": er.MAX_GAP, "classify_z": er.CLASSIFY_Z, "history": er.HIST, "thin_days": er.THIN, "label_1": "after the close (the day-i+1 gap is larger)", "label_0": "before the open"},
              "groups": groups, "by_era": by_era,
              "pooled_check": {"day0": round(p0, 3), "day1": round(p1, 3), "card_day0": REF_DAY0, "card_day1": REF_DAY1},
-             "events_used": {"isolated": n_iso, "with_habit": len(rec), "habit_share": round(share, 4)},
+             "events_used": {"isolated": n_iso, "with_habit": len(rec), "habit_share": round(share, 4), "ties_excluded_from_fit": n_ties if EXCLUDE_TIES else 0},
              "source": "scripts/card/build_earnings_role_model.py on the isolated earnings releases of 2006-2026; procedure validated out of sample by scripts/card/earnings_role_band_test.py (ROLE BANDS IMPROVE: interval score 0.890 / 0.869 / 0.857 of the pooled bands by era, placebo 1.003).",
              "caveats": ["Fit on all years; the walk-forward test measured the procedure, not these exact numbers.", "A forward use needs the earnings filing date to be known in advance; the card applies it on the day itself from the filing table.",
                          "'Last 4' came from a recency test on the same years (last 3 / 4 / 8 were within 0.1 point). Strong-habit stocks are mostly big-gap names, so the role multipliers may run a few percent high for weak-habit stocks.",

@@ -67,30 +67,38 @@ def habit_at(events, ZG, i0, n, first_i=0):
     return {"habit": majority(last), "n_used": len(last), "n_after_close": int(sum(last)), "last": last[-1]}
 
 
+def is_tie(hab):
+    """A 2-2 split of the last 4 classifiable quarters (the habit then rests on the most recent one alone)."""
+    return bool(hab) and 2 * hab["n_after_close"] == hab["n_used"]
+
+
 def apply_role(fl, has_event, hab, rm):
     """Replace the pooled earnings group by the role group when the stock-day is an ISOLATED earnings window (no own recorded event, no Regulation FD filing) and a habit exists.
+    A 2-2 TIE returns None (the card keeps the pooled band): habit_strength_check.py found ties agree with the next quarter only about 57% of the time and the role bands score 8.8% WORSE than the pooled bands on them (ratio 1.088 [1.062, 1.112]; above 1.00 in all three eras).
     Returns (multiplier, multiplier_source, group, edge, edge_source, note) or None to leave the card's pooled logic untouched."""
-    if not rm or not hab or fl.get("earn_off") is None or has_event or fl.get("f701"):
+    if not rm or not hab or fl.get("earn_off") is None or has_event or fl.get("f701") or is_tie(hab):
         return None
     g = rm.get("groups", {})
     reaction = fl["earn_off"] == hab["habit"]
     name = REACTION if reaction else OTHER
     if name not in g:
         return None
-    when = "after the close (reaction on day +1)" if hab["habit"] == 1 else "before the open (reaction on day 0)"
     n_after = hab["n_after_close"]
     n_before = hab["n_used"] - n_after
-    tie = 2 * n_after == hab["n_used"]
+    when = "after the close (reaction on day +1)" if hab["habit"] == 1 else "before the open (reaction on day 0)"
     role_word = "REACTION day" if reaction else "other day"
-    if tie:
-        basis = "this stock's last %d classifiable quarters split evenly (%d after the close, %d before the open), so its most recent one decides: %s" % (hab["n_used"], n_after, n_before, "after the close" if hab["habit"] == 1 else "before the open")
-        src = "earnings window (8-K item 2.02 filed %s, day %d): WEAK HABIT: %s; so today is treated as its %s; the measured multiplier of that role on all stocks since 2006" % (fl["earn_date"], fl["earn_off"], basis, role_word)
-        note = "ROLE BAND  WEAK HABIT: the last %d classifiable quarters split %d-%d and the most recent one (%s) decides, so the release time may differ this quarter; treated as its %s. Ties were not validated separately (the pooled day-0 / day-+1 band covers reaction days only about 81%% and other days about 98%%)." % (hab["n_used"], n_after, n_before, "after the close" if hab["habit"] == 1 else "before the open", role_word.lower())
-    else:
-        src = ("earnings window (8-K item 2.02 filed %s, day %d): this stock released %s in %d of its last %d classifiable quarters, so today is its %s; the measured multiplier of that role on all stocks since 2006"
-               % (fl["earn_date"], fl["earn_off"], "after the close" if hab["habit"] == 1 else "before the open", n_after if hab["habit"] == 1 else n_before, hab["n_used"], role_word))
-        note = "ROLE BAND  usual release time %s from the opening gaps of its last %d classifiable quarters; today is its %s (the pooled day-0 / day-+1 band covers reaction days only about 81%% and other days about 98%%)." % (when, hab["n_used"], "reaction day" if reaction else "other day")
+    src = ("earnings window (8-K item 2.02 filed %s, day %d): this stock released %s in %d of its last %d classifiable quarters, so today is its %s; the measured multiplier of that role on all stocks since 2006"
+           % (fl["earn_date"], fl["earn_off"], "after the close" if hab["habit"] == 1 else "before the open", n_after if hab["habit"] == 1 else n_before, hab["n_used"], role_word))
+    note = "ROLE BAND  usual release time %s from the opening gaps of its last %d classifiable quarters; today is its %s (the pooled day-0 / day-+1 band covers reaction days only about 81%% and other days about 98%%)." % (when, hab["n_used"], role_word.lower())
     return g[name]["multiplier"], src, name, g[name]["edge_90"], "calibrated 90%% edge for: %s (card units: times the multiplier it equals the ordinary-scale 90th percentile of that role)" % name, note
+
+
+def tie_note(fl, has_event, hab):
+    """The card's note when a 2-2 tie keeps the pooled band (None when it does not apply)."""
+    if not is_tie(hab) or fl.get("earn_off") is None or has_event or fl.get("f701"):
+        return None
+    return ("ROLE BAND  not applied: this stock's last %d classifiable quarters split %d-%d (the most recent was %s), so its release slot is a near coin flip (a tie agreed with the next quarter only about 57%% of the time, 2006-2026); "
+            "the pooled day-0 / day-+1 band is used, which covers such releases at about 90-94%% on both days." % (hab["n_used"], hab["n_after_close"], hab["n_used"] - hab["n_after_close"], "after the close" if hab.get("last") == 1 else "before the open"))
 
 
 def load_one_ohlc(sec_id, master, ohlc_dir=None):

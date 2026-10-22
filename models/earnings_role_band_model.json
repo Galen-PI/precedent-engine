@@ -12,57 +12,57 @@
  },
  "groups": {
   "earnings window, reaction day": {
-   "multiplier": 3.541,
-   "edge_90": 1.477,
-   "q90_ordinary_units": 5.229,
-   "n": 29737
+   "multiplier": 3.609,
+   "edge_90": 1.474,
+   "q90_ordinary_units": 5.322,
+   "n": 27697
   },
   "earnings window, other day": {
-   "multiplier": 1.472,
-   "edge_90": 1.339,
-   "q90_ordinary_units": 1.97,
-   "n": 29737
+   "multiplier": 1.408,
+   "edge_90": 1.352,
+   "q90_ordinary_units": 1.904,
+   "n": 27697
   }
  },
  "by_era": {
   "earnings window, reaction day": {
    "2006-2012": {
-    "multiplier": 3.337,
-    "edge_90": 1.497,
-    "q90_ordinary_units": 4.997,
-    "n": 7140
+    "multiplier": 3.429,
+    "edge_90": 1.496,
+    "q90_ordinary_units": 5.13,
+    "n": 6497
    },
    "2013-2019": {
-    "multiplier": 3.721,
-    "edge_90": 1.456,
-    "q90_ordinary_units": 5.418,
-    "n": 10865
+    "multiplier": 3.784,
+    "edge_90": 1.463,
+    "q90_ordinary_units": 5.536,
+    "n": 10154
    },
    "2020-2026": {
-    "multiplier": 3.491,
-    "edge_90": 1.483,
-    "q90_ordinary_units": 5.177,
-    "n": 11732
+    "multiplier": 3.548,
+    "edge_90": 1.48,
+    "q90_ordinary_units": 5.249,
+    "n": 11046
    }
   },
   "earnings window, other day": {
    "2006-2012": {
-    "multiplier": 1.585,
-    "edge_90": 1.327,
-    "q90_ordinary_units": 2.103,
-    "n": 7140
+    "multiplier": 1.522,
+    "edge_90": 1.321,
+    "q90_ordinary_units": 2.011,
+    "n": 6497
    },
    "2013-2019": {
-    "multiplier": 1.504,
-    "edge_90": 1.33,
-    "q90_ordinary_units": 2.0,
-    "n": 10865
+    "multiplier": 1.431,
+    "edge_90": 1.351,
+    "q90_ordinary_units": 1.932,
+    "n": 10154
    },
    "2020-2026": {
-    "multiplier": 1.367,
-    "edge_90": 1.359,
-    "q90_ordinary_units": 1.858,
-    "n": 11732
+    "multiplier": 1.315,
+    "edge_90": 1.383,
+    "q90_ordinary_units": 1.819,
+    "n": 11046
    }
   }
  },
@@ -75,7 +75,8 @@
  "events_used": {
   "isolated": 33023,
   "with_habit": 29737,
-  "habit_share": 0.9005
+  "habit_share": 0.9005,
+  "ties_excluded_from_fit": 2040
  },
  "source": "scripts/card/build_earnings_role_model.py on the isolated earnings releases of 2006-2026; procedure validated out of sample by scripts/card/earnings_role_band_test.py (ROLE BANDS IMPROVE: interval score 0.890 / 0.869 / 0.857 of the pooled bands by era, placebo 1.003).",
  "caveats": [
