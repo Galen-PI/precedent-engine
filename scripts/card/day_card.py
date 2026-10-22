@@ -23,7 +23,7 @@ WHAT THE CARD IS. An EXPLANATION of the day using same-day market and sector mov
   4. OWN EVENT(S) on this day (day 0 or +1): title, type, the labeler's label / size / timing, and what similar-labeled events averaged. ANNOTATION ONLY:
      the label's pull did not earn a place in the price (event_center_test, pre-set: DOES NOT).
   5. REGISTERED MACRO LINKS: oil, yield and credit flag states (magnitude-only links; no signed pull earned a place).
-  6. NOT YET MEASURED: peer and sector events, earnings surprises and analyst changes, news tone. Listed so a gap is visible, not hidden.
+  6. NOT YET MEASURED: peer and sector events, earnings surprises and analyst changes. Listed so a gap is visible, not hidden. TESTED, NO DOCUMENTED EFFECT: GDELT news article volume (width) and tone (direction), 2015-2026.
   7. TRACK RECORD: how well chapter 1 has done overall, for this sector, and on event days (from the full validation run).
 Every number is labeled with where it comes from.
 """
@@ -403,7 +403,8 @@ def main():
         shown = pct(v) if key == "oil" else "%+.2f pp" % v
         L.append("   %-22s %-10s %s (flag line %s)" % (nm, shown, "ON" if on else "quiet", "%.0f%%" % (100 * line) if key == "oil" else "%.2f pp" % line))
     L.append("")
-    L.append("6. NOT YET MEASURED  peer and sector events | earnings surprises and analyst changes | news tone | anything never filed in an 8-K")
+    L.append("6. NOT YET MEASURED  peer and sector events | earnings surprises and analyst changes | anything never filed in an 8-K")
+    L.append("   TESTED, NO DOCUMENTED EFFECT  GDELT news article volume (next-day width: +0.5 points of coverage, bar 5) and tone (next-day direction: -0.7 points, bar +3); see the flag ledger")
     L.append("")
     L.append("7. TRACK RECORD  chapter 1 (market + sector) on every stock-day since 2005, scored on days its fit never saw")
     if val:
