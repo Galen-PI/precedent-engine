@@ -91,7 +91,7 @@ def main(sb=None):
     for lab, _, _ in ERAS:
         print("  %-10s %s" % (lab, pfmt(plc[lab])))
     v = verdict_of(res, plc)
-    print("\nDESCRIPTIVE (exploratory; each sector against its own baseline): amplification = exp(mean log-difference)")
+    print("\nDESCRIPTIVE (exploratory; each sector RELATIVE TO THE REST OF THE MARKET, as log_ratio builds it, so a market-wide effect cancels; the absolute table is fomc_day_sector_absolute.py): amplification = exp(mean log-difference)")
     print("  %-24s %s" % ("sector", "   |   ".join("%s day 0 / day +1 / both (n)" % lab for lab, _, _ in ERAS)))
     for s in fct.SECTORS:
         cells = []
