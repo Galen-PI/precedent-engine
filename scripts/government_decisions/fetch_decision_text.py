@@ -29,12 +29,24 @@ def strip_html(t):
 FR_NOISE = [r"Federal Register, Volume \d+ Issue \d+ \([^)]*\)", r"\[\[Page [^\]]*\]\]", r"\[Federal Register Volume[^\]]*\]", r"\[Presidential Documents\]", r"\[Pages? [^\]]*\]", r"From the Federal Register Online via the Government Publishing Office \[[^\]]*\]", r"\[FR Doc[^\]]*\]", r"\[Billing code[^\]]*\]", r"Vol\. \d+ [A-Za-z]+, No\. \d+ [A-Za-z]+ \d{1,2}, \d{4}", r"Part [IVX]+ The President", r"-{10,}", r"={10,}"]
 
 
-def clean_fr(t):
+ORDER_HEADING = r"Executive Order %s of [A-Z][a-z]+ \d{1,2}, \d{4}"
+
+
+def clean_fr(t, eo_number=None):
     """the Federal Register 'raw text' URL returns an HTML page wrapped around a <pre> block with header boilerplate: strip the tags and the bracketed header and page markers"""
-    t = strip_html(t)
+    t = strip_html(re.sub(r"(?is)<head.*?</head>", " ", t))   # the page title is not part of the order
     for pat in FR_NOISE:
         t = re.sub(pat, " ", t)
-    return " ".join(t.split())
+    t = " ".join(t.split())
+    # every order's own text starts at its heading 'Executive Order <number> of <Month> <day>, <year>'; what comes before it (the running head, the date line, an editorial note, OCR debris, the issue's contents list) is not the order. Prefer THIS order's number so an editorial note that cites another order cannot fool the cut.
+    m = None
+    if eo_number:
+        m = re.search(ORDER_HEADING % re.escape(str(eo_number)), t)
+    if not m:
+        m = re.search(ORDER_HEADING % r"\d{3,6}", t)
+    if m and 0 < m.start() <= 3000:
+        t = t[m.start():]
+    return t
 
 
 def http_get(url, params=None, tries=5, as_json=True):
@@ -101,12 +113,12 @@ def order_text(sd, srcdoc, raw=None):
         t, e = http_get(data["raw_text_url"], as_json=False)
         time.sleep(PACE_FR)
         if not e and t and t.strip():
-            text, how = clean_fr(t), "raw_text"
+            text, how = clean_fr(t, sd.get("executive_order_number")), "raw_text"
     if not text and data.get("body_html_url"):
         t, e = http_get(data["body_html_url"], as_json=False)
         time.sleep(PACE_FR)
         if not e and t:
-            text, how = clean_fr(t), "body_html"
+            text, how = clean_fr(t, sd.get("executive_order_number")), "body_html"
     abstract = strip_html(data.get("abstract") or "")
     body = (abstract + "\n\n" if abstract else "") + text
     if not body.strip():
