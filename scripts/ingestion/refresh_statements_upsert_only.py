@@ -8,6 +8,7 @@ Uses scripts/audit/statements_refresh_dryrun.py for the module loader and the ke
 ADDED 2026-10-22 (after the first whole-universe dry run showed 4,202 changed rows, mostly free_cash_flow, total_equity, total_assets, total_liabilities): the summary now classifies every changed CELL as FILLED (stored NULL, computed value), CLEARED (stored value, computed NULL) or RESTATED (both present and different, with examples), and --additive writes ONLY new rows and FILLS (the stored row is kept and only its NULL columns are completed): it never overwrites a stored value.
 Usage:   python3 scripts/ingestion/refresh_statements_upsert_only.py AAPL SYY                dry run for these tickers
          python3 scripts/ingestion/refresh_statements_upsert_only.py --additive --all       dry run of the additive mode (add --apply to write)
+         python3 scripts/ingestion/refresh_statements_upsert_only.py --additive --only-columns free_cash_flow,operating_cash_flow,capital_expenditures --all      ADDED 2026-10-23: fills ONLY the named columns on EXISTING rows (new rows are never written, no other column is touched); needs --additive
          python3 scripts/ingestion/refresh_statements_upsert_only.py --all                  dry run for every ticker in CIK_TO_TICKER (about 8 minutes of SEC calls)
          python3 scripts/ingestion/refresh_statements_upsert_only.py --apply --all          write
          python3 scripts/ingestion/refresh_statements_upsert_only.py FOX=1754301 NWSA=1564708     dual-class tickers (TICKER=CIK writes that CIK's data to that ticker's own security)
@@ -73,6 +74,14 @@ def main():
     apply = "--apply" in args
     additive = "--additive" in args
     args = [a for a in args if a not in ("--apply", "--additive")]
+    only_cols = None
+    if "--only-columns" in args:
+        k = args.index("--only-columns")
+        only_cols = set(c.strip() for c in args[k + 1].split(",") if c.strip()) if k + 1 < len(args) else set()
+        del args[k:k + 2]
+        if not additive or not only_cols:
+            print("--only-columns needs --additive and a comma-separated column list: stopping")
+            sys.exit(1)
     if not args:
         print(__doc__)
         sys.exit(1)
@@ -124,13 +133,13 @@ def main():
         if additive:
             fills = []
             for r, d, srow in p["changed"]:
-                fc = [c for c in d if srow.get(c) is None and r.get(c) is not None]
+                fc = [c for c in d if srow.get(c) is None and r.get(c) is not None and (only_cols is None or c in only_cols)]
                 if fc:
                     merged = dict(srow)
                     for c in fc:
                         merged[c] = r[c]
                     fills.append(m.prepare_database_record(merged))
-            payload = p["new"] + fills
+            payload = (p["new"] if only_cols is None else []) + fills
         else:
             payload = p["new"] + [r for r, _, _ in p["changed"]]
         tot["to_write"] += len(payload)
