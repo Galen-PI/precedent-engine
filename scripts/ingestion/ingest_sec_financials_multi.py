@@ -1302,26 +1302,50 @@ def build_concept_facts(data, concept_map):
     return concept_facts
 
 
+def _earliest_by_end(facts, keep):
+    """
+    For each period end, the fact with the earliest (filed, accn) among the facts
+    that pass keep(): the ORIGINAL disclosure, not a later comparative re-mention
+    or recast. Independent of the order in which the facts are listed.
+    """
+    best = {}
+    for f in facts:
+        if not keep(f):
+            continue
+        end = f.get("end")
+        if not end:
+            continue
+        k = (f.get("filed") or "9999-99-99", f.get("accn") or "")
+        if end not in best or k < best[end][0]:
+            best[end] = (k, f)
+    return {e: v[1] for e, v in best.items()}
+
+
 def build_annual_periods(data, concept_map):
+    """
+    FIXED 2026-10-22. The previous version compared every fact against the
+    PERIOD-level filed_date (which any field could reset, even upward) and iterated
+    SETS of field names, so its output depended on PYTHONHASHSEED: the same company
+    could be ingested with the original or with a later recast balance sheet and
+    filed_date (found by running a dry run under different hash seeds). Now each
+    field takes its own earliest-filed fact per period end, the field order is a
+    fixed tuple, and filed_date is set once, afterwards, as the earliest filed date
+    among the income, cash-flow and EPS facts chosen (balance-sheet facts never
+    set it, as before).
+    """
     concept_facts = build_concept_facts(data, concept_map)
     periods = {}
+    chosen_filed = {}
 
-    duration_fields = {
+    duration_fields = (
         "revenue", "gross_profit", "operating_income", "net_income",
         "operating_cash_flow", "capital_expenditures",
-    }
-
+    )
     for field in duration_fields:
-        for fact in concept_facts.get(field, []):
-            if not is_annual_duration_fact(fact):
-                continue
-            end = fact.get("end")
-            if not end:
-                continue
+        for end, fact in _earliest_by_end(concept_facts.get(field, []), is_annual_duration_fact).items():
             period_end = parse_date(end)
             if not period_end:
                 continue
-
             if end not in periods:
                 periods[end] = {
                     "period_end": end,
@@ -1331,43 +1355,26 @@ def build_annual_periods(data, concept_map):
                     "fiscal_quarter": None,
                     "filed_date": None,
                 }
+            periods[end][field] = fact.get("val")
+            if fact.get("filed") and (end not in chosen_filed or fact["filed"] < chosen_filed[end]):
+                chosen_filed[end] = fact["filed"]
 
-            current = periods[end]
-            fact_filed = fact.get("filed") or ""
-            current_filed = current.get("filed_date")
-            if field not in current or current_filed is None or fact_filed < current_filed:
-                current[field] = fact.get("val")
-                if fact.get("filed"):
-                    current["filed_date"] = fact["filed"]
-
-    instant_fields = {"total_assets", "total_liabilities", "total_equity", "cash_and_equivalents"}
+    instant_fields = ("total_assets", "total_liabilities", "total_equity", "cash_and_equivalents")
     for field in instant_fields:
-        for fact in concept_facts.get(field, []):
-            if fact.get("form") != "10-K":
-                continue
-            end = fact.get("end")
-            if not end or end not in periods:
-                continue
-            current = periods[end]
-            fact_filed = fact.get("filed") or ""
-            current_filed = current.get("filed_date")
-            if field not in current or current_filed is None or fact_filed < current_filed:
-                current[field] = fact.get("val")
+        for end, fact in _earliest_by_end(concept_facts.get(field, []), lambda f: f.get("form") == "10-K").items():
+            if end in periods:
+                periods[end][field] = fact.get("val")
 
-    for field in {"eps_basic", "eps_diluted"}:
-        for fact in concept_facts.get(field, []):
-            if not is_annual_duration_fact(fact):
+    for field in ("eps_basic", "eps_diluted"):
+        for end, fact in _earliest_by_end(concept_facts.get(field, []), is_annual_duration_fact).items():
+            if end not in periods:
                 continue
-            end = fact.get("end")
-            if not end or end not in periods:
-                continue
-            current = periods[end]
-            fact_filed = fact.get("filed") or ""
-            current_filed = current.get("filed_date")
-            if field not in current or current_filed is None or fact_filed < current_filed:
-                current[field] = fact.get("val")
-                if fact.get("filed"):
-                    current["filed_date"] = fact["filed"]
+            periods[end][field] = fact.get("val")
+            if fact.get("filed") and (end not in chosen_filed or fact["filed"] < chosen_filed[end]):
+                chosen_filed[end] = fact["filed"]
+
+    for end, filed in chosen_filed.items():
+        periods[end]["filed_date"] = filed
 
     for period in periods.values():
         ocf = period.get("operating_cash_flow")
