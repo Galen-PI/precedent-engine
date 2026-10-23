@@ -1,0 +1,33 @@
+# PRE-REGISTRATION 2026-10-23, written before any computation: split of the 2025-2026 executive-order watch item (day 0 1.081 t +2.01, day +1 1.158 t +3.98)
+# T = signing days of hand-read trade/tariff orders (dates below, 28 days); N = every other relevant-order day; a day with both counts as T. Same baseline and day definitions as eo_day_test.py, 2025-01-01..2026-09; weekend signing dates (2025-02-01, 03-01, 03-02) map exactly as eo_day_test.py maps them.
+# RULE: CARRIED BY TARIFF ORDERS if T amplification >= 1.10 with t >= 2.0 on day 0 or day +1 AND N has t < 2.0 on both days; BROAD if N has t >= 2.0 on day 0 or day +1; NEITHER otherwise. SENSITIVITY: T_strict = T without 2025-08-06 (the only day identified from knowledge of the order's content, not its title).
+# PREDICTIONS: T day +1 amplification 1.30 (1.10-1.60); N day +1 1.05 (0.95-1.20); P(CARRIED) 55%, P(BROAD) 20%, P(NEITHER) 25%; 28 T days.
+# LIMITS: trade days cluster (Mar 1-6, Apr 2-9, Jul 30-Aug 11, Nov 4-20) so they are not independent: a verdict is descriptive, not a claim about tariffs. Ambiguous titles kept in N: 2026-01-29 (Cuba), the 2026-02-06 Iran order, 2026-07-20 (defense supply chains).
+2025-02-01
+2025-02-05
+2025-02-25
+2025-03-01
+2025-03-02
+2025-03-03
+2025-03-06
+2025-03-24
+2025-04-02
+2025-04-08
+2025-04-09
+2025-04-15
+2025-04-29
+2025-05-12
+2025-06-16
+2025-07-07
+2025-07-30
+2025-07-31
+2025-08-06
+2025-08-11
+2025-09-04
+2025-09-05
+2025-11-04
+2025-11-14
+2025-11-20
+2026-02-06
+2026-02-20
+2026-06-03
