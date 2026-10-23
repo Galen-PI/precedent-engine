@@ -9,7 +9,7 @@ LIMIT: only companies that report both kinds of fact can be checked (a selected 
 Usage:   PYTHONHASHSEED=0 python3 scripts/audit/ytd_differencing_check.py AAPL MSFT       (explicit tickers)
          PYTHONHASHSEED=0 python3 scripts/audit/ytd_differencing_check.py --all > /tmp/ytd_check.log        (about 8-10 minutes of SEC calls)
 """
-import os, sys, io, time, contextlib
+import os, sys, io, time, contextlib, datetime
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
@@ -32,7 +32,7 @@ def check_ticker(m, ticker, cik, tally, examples):
             continue
         fy_start = q[0]["start"]
         for field in FIELDS:
-            ytd, three = {}, {}
+            ytd, three, ytd_f, three_f = {}, {}, {}, {}
             for n, per in enumerate(q, start=1):
                 if not per:
                     continue
@@ -40,21 +40,31 @@ def check_ticker(m, ticker, cik, tally, examples):
                 b = m.choose_earliest_fact([f for f in cf.get(field, []) if f.get("form") == "10-Q" and f.get("start") == fy_start and f.get("end") == end])
                 if b is not None and b.get("val") is not None:
                     ytd[n] = b["val"]
+                    ytd_f[n] = b.get("filed")
                 b3 = m.choose_earliest_fact([f for f in cf.get(field, []) if f.get("form") == "10-Q" and f.get("end") == end and f.get("start") and 70 <= (m.duration_days(f["start"], end) or 0) <= 110])
                 if b3 is not None and b3.get("val") is not None:
                     three[n] = b3["val"]
+                    three_f[n] = b3.get("filed")
             for n, hi, lo in ((2, 2, 1), (3, 3, 2)):
                 if n in three and hi in ytd and lo in ytd:
                     diff, ref = ytd[hi] - ytd[lo], three[n]
                     gap = abs(diff - ref)
                     kind = "exact" if gap <= 1.0 else ("within 0.5%" if gap <= 0.005 * max(1.0, abs(ref)) else "MISMATCH")
                     key = (field, "Q%d" % n)
-                    tally.setdefault(key, {"exact": 0, "within 0.5%": 0, "MISMATCH": 0})[kind] += 1
+                    c_ = tally.setdefault(key, {"exact": 0, "within 0.5%": 0, "MISMATCH": 0, "late": 0})
+                    c_[kind] += 1
+                    late = False
+                    try:
+                        late = datetime.date.fromisoformat(str(three_f[n])[:10]) > datetime.date.fromisoformat(str(ytd_f[hi])[:10]) + datetime.timedelta(days=100)
+                    except (TypeError, ValueError, KeyError):
+                        pass
+                    if kind == "MISMATCH" and late:
+                        c_["late"] += 1
                     n_cmp += 1
                     if kind != "exact":
                         ex = examples.setdefault(key, [])
-                        if len(ex) < 4:
-                            ex.append("%s FY%d: YTD difference %s vs reported three-month %s (%s)" % (ticker, fy, diff, ref, kind))
+                        if len(ex) < 8:
+                            ex.append("%s FY%d: YTD difference %s vs reported three-month %s (%s) [YTD fact filed %s, three-month fact filed %s%s]" % (ticker, fy, diff, ref, kind, str(ytd_f.get(hi))[:10], str(three_f.get(n))[:10], ", THREE-MONTH FACT FILED >100 DAYS LATER" if late else ""))
     return n_cmp
 
 
@@ -78,8 +88,8 @@ def main():
     print("\nYTD DIFFERENCING vs REPORTED THREE-MONTH VALUES (%d tickers, %d comparisons)" % (len(jobs), tot))
     for key in sorted(tally):
         c = tally[key]
-        n = sum(c.values())
-        print("  %-22s %s  compared %5d | exact %5d (%.1f%%) | within 0.5%% %4d | MISMATCH %4d (%.1f%%)" % (key[0], key[1], n, c["exact"], 100.0 * c["exact"] / n, c["within 0.5%"], c["MISMATCH"], 100.0 * c["MISMATCH"] / n))
+        n = c["exact"] + c["within 0.5%"] + c["MISMATCH"]
+        print("  %-22s %s  compared %5d | exact %5d (%.1f%%) | within 0.5%% %4d | MISMATCH %4d (%.1f%%), of which the three-month fact was filed >100 days after the YTD fact: %d" % (key[0], key[1], n, c["exact"], 100.0 * c["exact"] / n, c["within 0.5%"], c["MISMATCH"], 100.0 * c["MISMATCH"] / n, c["late"]))
         for ex in examples.get(key, []):
             print("        " + ex)
     return tally
