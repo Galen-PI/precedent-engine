@@ -1,0 +1,988 @@
+sample,decision_id,bucket_type,bucket,direction,confidence,input_kind,text_version,stable_in_repeat
+primary,d2c30e61-2214-4ef4-9cd3-29e156c57c38,persistence,persistent_condition,,low,partial,final_or_order,NA
+primary,d2c30e61-2214-4ef4-9cd3-29e156c57c38,scope,not_company_relevant,,low,partial,final_or_order,NA
+primary,d2c30e61-2214-4ef4-9cd3-29e156c57c38,theme,sanctions_foreign_policy,,low,partial,final_or_order,NA
+primary,8c40983a-a2ac-4285-9878-af691c81f502,persistence,persistent_condition,,low,full,final_or_order,N
+primary,8c40983a-a2ac-4285-9878-af691c81f502,scope,not_company_relevant,,low,full,final_or_order,Y
+primary,8c40983a-a2ac-4285-9878-af691c81f502,theme,government_operations,,low,full,final_or_order,Y
+primary,c1d7b04e-555d-48ea-8910-f38d57d0a1b6,persistence,persistent_condition,,low,full,final_or_order,Y
+primary,c1d7b04e-555d-48ea-8910-f38d57d0a1b6,scope,sector_specific,,low,full,final_or_order,Y
+primary,c1d7b04e-555d-48ea-8910-f38d57d0a1b6,sector,Health Care,mixed,low,full,final_or_order,Y
+primary,c1d7b04e-555d-48ea-8910-f38d57d0a1b6,theme,healthcare_drug_pricing,,low,full,final_or_order,Y
+primary,c1d7b04e-555d-48ea-8910-f38d57d0a1b6,theme,trade_tariffs,,low,full,final_or_order,N
+primary,fa37e213-3389-451e-a8a0-524b7b94491f,persistence,one_off,,high,full,final_or_order,NA
+primary,fa37e213-3389-451e-a8a0-524b7b94491f,scope,not_company_relevant,,high,full,final_or_order,NA
+primary,fa37e213-3389-451e-a8a0-524b7b94491f,theme,budget_appropriations,,high,full,final_or_order,NA
+primary,fa37e213-3389-451e-a8a0-524b7b94491f,theme,government_operations,,high,full,final_or_order,NA
+primary,a5e63ee3-bbbf-4b98-b916-f414b9b0d90d,persistence,persistent_condition,,medium,partial,final_or_order,Y
+primary,a5e63ee3-bbbf-4b98-b916-f414b9b0d90d,scope,sector_specific,,medium,partial,final_or_order,Y
+primary,a5e63ee3-bbbf-4b98-b916-f414b9b0d90d,sector,Health Care,benefit,medium,partial,final_or_order,Y
+primary,a5e63ee3-bbbf-4b98-b916-f414b9b0d90d,theme,defense_procurement,,medium,partial,final_or_order,Y
+primary,a5e63ee3-bbbf-4b98-b916-f414b9b0d90d,theme,healthcare_drug_pricing,,medium,partial,final_or_order,Y
+primary,7e973f51-3e44-4591-ad0a-5af916f66481,persistence,persistent_condition,,medium,partial,final_or_order,Y
+primary,7e973f51-3e44-4591-ad0a-5af916f66481,scope,market_wide,,medium,partial,final_or_order,Y
+primary,7e973f51-3e44-4591-ad0a-5af916f66481,sector,Financials,benefit,medium,partial,final_or_order,Y
+primary,7e973f51-3e44-4591-ad0a-5af916f66481,theme,financial_regulation,,medium,partial,final_or_order,Y
+primary,24df8b08-c3af-47a7-8faf-e322a84a30d7,persistence,persistent_condition,,low,partial,final_or_order,Y
+primary,24df8b08-c3af-47a7-8faf-e322a84a30d7,scope,not_company_relevant,,low,partial,final_or_order,Y
+primary,24df8b08-c3af-47a7-8faf-e322a84a30d7,theme,environment_climate,,low,partial,final_or_order,Y
+primary,24df8b08-c3af-47a7-8faf-e322a84a30d7,theme,government_operations,,low,partial,final_or_order,Y
+primary,00312255-0487-4592-921d-91e03305039c,persistence,one_off,,low,partial,final_or_order,Y
+primary,00312255-0487-4592-921d-91e03305039c,scope,market_wide,,low,partial,final_or_order,Y
+primary,00312255-0487-4592-921d-91e03305039c,sector,Health Care,mixed,low,partial,final_or_order,Y
+primary,00312255-0487-4592-921d-91e03305039c,theme,budget_appropriations,,low,partial,final_or_order,Y
+primary,0edaa90d-7879-4c4a-9dc1-ecba25dd7e10,persistence,persistent_condition,,medium,full,final_or_order,Y
+primary,0edaa90d-7879-4c4a-9dc1-ecba25dd7e10,scope,sector_specific,,medium,full,final_or_order,Y
+primary,0edaa90d-7879-4c4a-9dc1-ecba25dd7e10,sector,Financials,benefit,medium,full,final_or_order,Y
+primary,0edaa90d-7879-4c4a-9dc1-ecba25dd7e10,theme,consumer_protection,,medium,full,final_or_order,N
+primary,0edaa90d-7879-4c4a-9dc1-ecba25dd7e10,theme,financial_regulation,,medium,full,final_or_order,Y
+primary,dbeebd85-3302-4182-a48e-feb557c1f9c7,persistence,persistent_condition,,low,full,nonfinal:Passed House amended,NA
+primary,dbeebd85-3302-4182-a48e-feb557c1f9c7,scope,market_wide,,low,full,nonfinal:Passed House amended,NA
+primary,dbeebd85-3302-4182-a48e-feb557c1f9c7,sector,Information Technology,mixed,low,full,nonfinal:Passed House amended,NA
+primary,dbeebd85-3302-4182-a48e-feb557c1f9c7,theme,antitrust_competition,,low,full,nonfinal:Passed House amended,NA
+primary,dbeebd85-3302-4182-a48e-feb557c1f9c7,theme,technology_ai_data,,low,full,nonfinal:Passed House amended,NA
+primary,020421cd-ce09-4440-b487-9ae575a9084c,persistence,persistent_condition,,high,full,final_or_order,Y
+primary,020421cd-ce09-4440-b487-9ae575a9084c,scope,not_company_relevant,,high,full,final_or_order,Y
+primary,020421cd-ce09-4440-b487-9ae575a9084c,theme,government_operations,,high,full,final_or_order,Y
+primary,a7f3f82d-5dcc-4599-8571-d541e16a5212,persistence,persistent_condition,,medium,full,final_or_order,Y
+primary,a7f3f82d-5dcc-4599-8571-d541e16a5212,scope,sector_specific,,medium,full,final_or_order,Y
+primary,a7f3f82d-5dcc-4599-8571-d541e16a5212,sector,Energy,harm,medium,full,final_or_order,N
+primary,a7f3f82d-5dcc-4599-8571-d541e16a5212,theme,sanctions_foreign_policy,,medium,full,final_or_order,Y
+primary,a7f3f82d-5dcc-4599-8571-d541e16a5212,theme,trade_tariffs,,medium,full,final_or_order,N
+primary,0645af51-c063-45b3-af66-5cb3f6b408ed,persistence,one_off,,low,full,final_or_order,Y
+primary,0645af51-c063-45b3-af66-5cb3f6b408ed,scope,market_wide,,low,full,final_or_order,Y
+primary,0645af51-c063-45b3-af66-5cb3f6b408ed,theme,budget_appropriations,,low,full,final_or_order,Y
+primary,8b45f6d3-6a4b-47a3-bc7c-fc2963f35cab,persistence,persistent_condition,,medium,full,final_or_order,Y
+primary,8b45f6d3-6a4b-47a3-bc7c-fc2963f35cab,scope,sector_specific,,medium,full,final_or_order,Y
+primary,8b45f6d3-6a4b-47a3-bc7c-fc2963f35cab,sector,Materials,harm,medium,full,final_or_order,Y
+primary,8b45f6d3-6a4b-47a3-bc7c-fc2963f35cab,theme,sanctions_foreign_policy,,medium,full,final_or_order,Y
+primary,8b45f6d3-6a4b-47a3-bc7c-fc2963f35cab,theme,trade_tariffs,,medium,full,final_or_order,Y
+primary,146f87c6-413f-4226-b2a4-9f7c075e17e3,persistence,one_off,,medium,full,final_or_order,Y
+primary,146f87c6-413f-4226-b2a4-9f7c075e17e3,scope,market_wide,,medium,full,final_or_order,Y
+primary,146f87c6-413f-4226-b2a4-9f7c075e17e3,sector,Health Care,mixed,medium,full,final_or_order,Y
+primary,146f87c6-413f-4226-b2a4-9f7c075e17e3,theme,budget_appropriations,,medium,full,final_or_order,Y
+primary,146f87c6-413f-4226-b2a4-9f7c075e17e3,theme,healthcare_drug_pricing,,medium,full,final_or_order,Y
+primary,7fc76f44-e503-47f3-a556-1fc8aea44c43,persistence,one_off,,low,full,final_or_order,Y
+primary,7fc76f44-e503-47f3-a556-1fc8aea44c43,scope,not_company_relevant,,low,full,final_or_order,Y
+primary,7fc76f44-e503-47f3-a556-1fc8aea44c43,theme,healthcare_drug_pricing,,low,full,final_or_order,Y
+primary,09b1c814-2c5d-43fd-8082-403de05bc70f,persistence,one_off,,medium,full,nonfinal:Line item veto by President,Y
+primary,09b1c814-2c5d-43fd-8082-403de05bc70f,scope,market_wide,,medium,full,nonfinal:Line item veto by President,Y
+primary,09b1c814-2c5d-43fd-8082-403de05bc70f,sector,Consumer Staples,mixed,medium,full,nonfinal:Line item veto by President,Y
+primary,09b1c814-2c5d-43fd-8082-403de05bc70f,theme,agriculture_food,,medium,full,nonfinal:Line item veto by President,Y
+primary,09b1c814-2c5d-43fd-8082-403de05bc70f,theme,budget_appropriations,,medium,full,nonfinal:Line item veto by President,Y
+primary,acea101d-113a-4479-8c03-b1850e442184,persistence,persistent_condition,,high,full,final_or_order,Y
+primary,acea101d-113a-4479-8c03-b1850e442184,scope,sector_specific,,high,full,final_or_order,Y
+primary,acea101d-113a-4479-8c03-b1850e442184,sector,Utilities,benefit,high,full,final_or_order,Y
+primary,acea101d-113a-4479-8c03-b1850e442184,theme,energy_policy,,high,full,final_or_order,Y
+primary,acea101d-113a-4479-8c03-b1850e442184,theme,environment_climate,,high,full,final_or_order,Y
+primary,ca4236b8-ede0-46b4-a373-fee215d9c07d,persistence,persistent_condition,,low,partial,final_or_order,Y
+primary,ca4236b8-ede0-46b4-a373-fee215d9c07d,scope,not_company_relevant,,low,partial,final_or_order,Y
+primary,ca4236b8-ede0-46b4-a373-fee215d9c07d,theme,sanctions_foreign_policy,,low,partial,final_or_order,Y
+primary,02a82dda-b80a-4e38-9be0-a3c0c1efba06,persistence,persistent_condition,,medium,partial,final_or_order,Y
+primary,02a82dda-b80a-4e38-9be0-a3c0c1efba06,scope,sector_specific,,medium,partial,final_or_order,Y
+primary,02a82dda-b80a-4e38-9be0-a3c0c1efba06,sector,Industrials,mixed,medium,partial,final_or_order,Y
+primary,02a82dda-b80a-4e38-9be0-a3c0c1efba06,theme,government_operations,,medium,partial,final_or_order,Y
+primary,02a82dda-b80a-4e38-9be0-a3c0c1efba06,theme,labor_employment,,medium,partial,final_or_order,Y
+primary,ef633b38-03cf-45b2-b2d7-3fc35a392f25,persistence,one_off,,medium,full,final_or_order,NA
+primary,ef633b38-03cf-45b2-b2d7-3fc35a392f25,scope,sector_specific,,medium,full,final_or_order,NA
+primary,ef633b38-03cf-45b2-b2d7-3fc35a392f25,sector,Industrials,mixed,medium,full,final_or_order,NA
+primary,ef633b38-03cf-45b2-b2d7-3fc35a392f25,theme,sanctions_foreign_policy,,medium,full,final_or_order,NA
+primary,ef633b38-03cf-45b2-b2d7-3fc35a392f25,theme,transportation_infrastructure,,medium,full,final_or_order,NA
+primary,3f77794e-6700-464b-bc5a-09de85a37052,persistence,persistent_condition,,low,partial,final_or_order,Y
+primary,3f77794e-6700-464b-bc5a-09de85a37052,scope,not_company_relevant,,low,partial,final_or_order,Y
+primary,3f77794e-6700-464b-bc5a-09de85a37052,theme,government_operations,,low,partial,final_or_order,Y
+primary,3f77794e-6700-464b-bc5a-09de85a37052,theme,transportation_infrastructure,,low,partial,final_or_order,Y
+primary,d2acb239-5549-494e-b56b-13bc163f3f12,persistence,one_off,,low,full,nonfinal:Passed House amended,NA
+primary,d2acb239-5549-494e-b56b-13bc163f3f12,scope,sector_specific,,low,full,nonfinal:Passed House amended,NA
+primary,d2acb239-5549-494e-b56b-13bc163f3f12,sector,Utilities,mixed,low,full,nonfinal:Passed House amended,NA
+primary,d2acb239-5549-494e-b56b-13bc163f3f12,theme,budget_appropriations,,low,full,nonfinal:Passed House amended,NA
+primary,d2acb239-5549-494e-b56b-13bc163f3f12,theme,energy_policy,,low,full,nonfinal:Passed House amended,NA
+primary,fdb6d48f-cd1d-4be3-af05-2043937ebdf5,persistence,persistent_condition,,medium,full,final_or_order,NA
+primary,fdb6d48f-cd1d-4be3-af05-2043937ebdf5,scope,not_company_relevant,,medium,full,final_or_order,NA
+primary,fdb6d48f-cd1d-4be3-af05-2043937ebdf5,theme,labor_employment,,medium,full,final_or_order,NA
+primary,f2320f7f-dbf0-4bc9-a78b-3420c6df510c,persistence,one_off,,medium,full,final_or_order,NA
+primary,f2320f7f-dbf0-4bc9-a78b-3420c6df510c,scope,not_company_relevant,,medium,full,final_or_order,NA
+primary,f2320f7f-dbf0-4bc9-a78b-3420c6df510c,theme,financial_regulation,,medium,full,final_or_order,NA
+primary,98b323ef-e9ff-4160-8cfa-644631e324ac,persistence,one_off,,medium,full,final_or_order,Y
+primary,98b323ef-e9ff-4160-8cfa-644631e324ac,scope,sector_specific,,medium,full,final_or_order,Y
+primary,98b323ef-e9ff-4160-8cfa-644631e324ac,sector,Consumer Staples,mixed,medium,full,final_or_order,Y
+primary,98b323ef-e9ff-4160-8cfa-644631e324ac,theme,agriculture_food,,medium,full,final_or_order,Y
+primary,98b323ef-e9ff-4160-8cfa-644631e324ac,theme,budget_appropriations,,medium,full,final_or_order,N
+primary,5950d7cd-a7e7-4c22-9b52-52c45c35ef9b,persistence,one_off,,low,full,nonfinal:Passed House amended,Y
+primary,5950d7cd-a7e7-4c22-9b52-52c45c35ef9b,scope,not_company_relevant,,low,full,nonfinal:Passed House amended,Y
+primary,5950d7cd-a7e7-4c22-9b52-52c45c35ef9b,theme,trade_tariffs,,low,full,nonfinal:Passed House amended,Y
+primary,9bb3b1e3-e236-46c6-be23-4d81519460d8,persistence,persistent_condition,,medium,partial,final_or_order,Y
+primary,9bb3b1e3-e236-46c6-be23-4d81519460d8,scope,sector_specific,,medium,partial,final_or_order,Y
+primary,9bb3b1e3-e236-46c6-be23-4d81519460d8,sector,Health Care,benefit,medium,partial,final_or_order,Y
+primary,9bb3b1e3-e236-46c6-be23-4d81519460d8,theme,defense_procurement,,medium,partial,final_or_order,Y
+primary,9bb3b1e3-e236-46c6-be23-4d81519460d8,theme,healthcare_drug_pricing,,medium,partial,final_or_order,Y
+primary,edbf327b-185b-4d77-86b4-41858703e22f,persistence,persistent_condition,,medium,partial,final_or_order,NA
+primary,edbf327b-185b-4d77-86b4-41858703e22f,scope,sector_specific,,medium,partial,final_or_order,NA
+primary,edbf327b-185b-4d77-86b4-41858703e22f,sector,Industrials,mixed,medium,partial,final_or_order,NA
+primary,edbf327b-185b-4d77-86b4-41858703e22f,theme,technology_ai_data,,medium,partial,final_or_order,NA
+primary,edbf327b-185b-4d77-86b4-41858703e22f,theme,transportation_infrastructure,,medium,partial,final_or_order,NA
+primary,cff114fd-2042-49db-8c34-659f2e92dd98,persistence,persistent_condition,,low,thin,nonfinal:Reported to House without amendment,Y
+primary,cff114fd-2042-49db-8c34-659f2e92dd98,theme,trade_tariffs,,low,thin,nonfinal:Reported to House without amendment,Y
+primary,81b92e6b-5f4f-4652-9609-f62a0e1dd2cf,persistence,one_off,,medium,full,final_or_order,Y
+primary,81b92e6b-5f4f-4652-9609-f62a0e1dd2cf,scope,sector_specific,,medium,full,final_or_order,Y
+primary,81b92e6b-5f4f-4652-9609-f62a0e1dd2cf,sector,Industrials,mixed,medium,full,final_or_order,Y
+primary,81b92e6b-5f4f-4652-9609-f62a0e1dd2cf,theme,budget_appropriations,,medium,full,final_or_order,Y
+primary,59e12e8d-e8f1-4367-82db-6ce16a1ef8d1,persistence,persistent_condition,,medium,full,final_or_order,Y
+primary,59e12e8d-e8f1-4367-82db-6ce16a1ef8d1,scope,not_company_relevant,,medium,full,final_or_order,Y
+primary,59e12e8d-e8f1-4367-82db-6ce16a1ef8d1,theme,government_operations,,medium,full,final_or_order,Y
+primary,7dd4c7e1-8b6a-4417-b519-6bf8a35d797b,persistence,persistent_condition,,medium,full,final_or_order,Y
+primary,7dd4c7e1-8b6a-4417-b519-6bf8a35d797b,scope,not_company_relevant,,medium,full,final_or_order,Y
+primary,7dd4c7e1-8b6a-4417-b519-6bf8a35d797b,theme,government_operations,,medium,full,final_or_order,N
+primary,4d1a4f94-cc4e-47e9-b7aa-24ee927f490a,persistence,one_off,,high,full,final_or_order,Y
+primary,4d1a4f94-cc4e-47e9-b7aa-24ee927f490a,scope,not_company_relevant,,high,full,final_or_order,Y
+primary,4d1a4f94-cc4e-47e9-b7aa-24ee927f490a,theme,government_operations,,high,full,final_or_order,Y
+primary,33cd3b81-4b97-419f-a7a6-ff987d03510f,persistence,one_off,,medium,partial,final_or_order,Y
+primary,33cd3b81-4b97-419f-a7a6-ff987d03510f,scope,market_wide,,medium,partial,final_or_order,Y
+primary,33cd3b81-4b97-419f-a7a6-ff987d03510f,theme,budget_appropriations,,medium,partial,final_or_order,Y
+primary,33cd3b81-4b97-419f-a7a6-ff987d03510f,theme,defense_procurement,,medium,partial,final_or_order,Y
+primary,d2c074e1-754d-4ddc-b407-4ab0fb695b90,persistence,persistent_condition,,medium,partial,final_or_order,NA
+primary,d2c074e1-754d-4ddc-b407-4ab0fb695b90,scope,sector_specific,,medium,partial,final_or_order,NA
+primary,d2c074e1-754d-4ddc-b407-4ab0fb695b90,sector,Health Care,benefit,medium,partial,final_or_order,NA
+primary,d2c074e1-754d-4ddc-b407-4ab0fb695b90,theme,healthcare_drug_pricing,,medium,partial,final_or_order,NA
+primary,33d5987a-7edd-45f1-9349-9b5e01994911,persistence,persistent_condition,,medium,partial,final_or_order,NA
+primary,33d5987a-7edd-45f1-9349-9b5e01994911,scope,market_wide,,medium,partial,final_or_order,NA
+primary,33d5987a-7edd-45f1-9349-9b5e01994911,sector,Energy,mixed,medium,partial,final_or_order,NA
+primary,33d5987a-7edd-45f1-9349-9b5e01994911,sector,Utilities,benefit,medium,partial,final_or_order,NA
+primary,33d5987a-7edd-45f1-9349-9b5e01994911,theme,energy_policy,,medium,partial,final_or_order,NA
+primary,33d5987a-7edd-45f1-9349-9b5e01994911,theme,environment_climate,,medium,partial,final_or_order,NA
+primary,2c2692c0-0fd8-454d-b621-c50aaf099481,persistence,persistent_condition,,medium,partial,final_or_order,Y
+primary,2c2692c0-0fd8-454d-b621-c50aaf099481,scope,sector_specific,,medium,partial,final_or_order,Y
+primary,2c2692c0-0fd8-454d-b621-c50aaf099481,sector,Financials,harm,medium,partial,final_or_order,Y
+primary,2c2692c0-0fd8-454d-b621-c50aaf099481,theme,sanctions_foreign_policy,,medium,partial,final_or_order,Y
+primary,2c2692c0-0fd8-454d-b621-c50aaf099481,theme,trade_tariffs,,medium,partial,final_or_order,Y
+primary,59bf1371-ae6d-434d-a35c-cfb00b365976,persistence,persistent_condition,,medium,partial,final_or_order,Y
+primary,59bf1371-ae6d-434d-a35c-cfb00b365976,scope,sector_specific,,medium,partial,final_or_order,Y
+primary,59bf1371-ae6d-434d-a35c-cfb00b365976,sector,Health Care,mixed,medium,partial,final_or_order,Y
+primary,59bf1371-ae6d-434d-a35c-cfb00b365976,theme,healthcare_drug_pricing,,medium,partial,final_or_order,Y
+primary,10b7884e-e33b-445d-a7d1-adf35c7637be,persistence,one_off,,medium,partial,final_or_order,Y
+primary,10b7884e-e33b-445d-a7d1-adf35c7637be,scope,market_wide,,medium,partial,final_or_order,Y
+primary,10b7884e-e33b-445d-a7d1-adf35c7637be,sector,Energy,mixed,medium,partial,final_or_order,Y
+primary,10b7884e-e33b-445d-a7d1-adf35c7637be,sector,Financials,harm,medium,partial,final_or_order,Y
+primary,10b7884e-e33b-445d-a7d1-adf35c7637be,theme,agriculture_food,,medium,partial,final_or_order,Y
+primary,10b7884e-e33b-445d-a7d1-adf35c7637be,theme,budget_appropriations,,medium,partial,final_or_order,Y
+primary,10b7884e-e33b-445d-a7d1-adf35c7637be,theme,energy_policy,,medium,partial,final_or_order,N
+primary,1d83d480-1972-4c3d-a882-ff71159b0ed8,persistence,one_off,,medium,full,final_or_order,Y
+primary,1d83d480-1972-4c3d-a882-ff71159b0ed8,scope,not_company_relevant,,medium,full,final_or_order,Y
+primary,1d83d480-1972-4c3d-a882-ff71159b0ed8,theme,healthcare_drug_pricing,,medium,full,final_or_order,Y
+primary,d699b67b-3ff4-4448-b1e7-0f70717a4303,persistence,one_off,,medium,partial,final_or_order,NA
+primary,d699b67b-3ff4-4448-b1e7-0f70717a4303,scope,sector_specific,,medium,partial,final_or_order,NA
+primary,d699b67b-3ff4-4448-b1e7-0f70717a4303,sector,Industrials,mixed,medium,partial,final_or_order,NA
+primary,d699b67b-3ff4-4448-b1e7-0f70717a4303,sector,Materials,mixed,medium,partial,final_or_order,NA
+primary,d699b67b-3ff4-4448-b1e7-0f70717a4303,theme,defense_procurement,,medium,partial,final_or_order,NA
+primary,d699b67b-3ff4-4448-b1e7-0f70717a4303,theme,trade_tariffs,,medium,partial,final_or_order,NA
+primary,bebc202f-f1d2-49f2-a28e-11b260734138,persistence,persistent_condition,,medium,partial,final_or_order,Y
+primary,bebc202f-f1d2-49f2-a28e-11b260734138,scope,market_wide,,medium,partial,final_or_order,Y
+primary,bebc202f-f1d2-49f2-a28e-11b260734138,sector,Consumer Discretionary,mixed,medium,partial,final_or_order,Y
+primary,bebc202f-f1d2-49f2-a28e-11b260734138,theme,trade_tariffs,,medium,partial,final_or_order,Y
+primary,55b7b99a-6477-40a6-ab23-a18ff461c6d7,persistence,persistent_condition,,low,full,nonfinal:Passed House amended,Y
+primary,55b7b99a-6477-40a6-ab23-a18ff461c6d7,scope,sector_specific,,low,full,nonfinal:Passed House amended,Y
+primary,55b7b99a-6477-40a6-ab23-a18ff461c6d7,sector,Health Care,benefit,low,full,nonfinal:Passed House amended,Y
+primary,55b7b99a-6477-40a6-ab23-a18ff461c6d7,theme,consumer_protection,,low,full,nonfinal:Passed House amended,Y
+primary,55b7b99a-6477-40a6-ab23-a18ff461c6d7,theme,healthcare_drug_pricing,,low,full,nonfinal:Passed House amended,Y
+primary,2e4b0194-dd20-4596-97f5-2f1c07b91d8b,persistence,one_off,,medium,partial,final_or_order,Y
+primary,2e4b0194-dd20-4596-97f5-2f1c07b91d8b,scope,market_wide,,medium,partial,final_or_order,Y
+primary,2e4b0194-dd20-4596-97f5-2f1c07b91d8b,theme,agriculture_food,,medium,partial,final_or_order,Y
+primary,2e4b0194-dd20-4596-97f5-2f1c07b91d8b,theme,budget_appropriations,,medium,partial,final_or_order,Y
+primary,c04d4782-5492-4353-b996-ff3507feec2d,persistence,persistent_condition,,low,partial,final_or_order,Y
+primary,c04d4782-5492-4353-b996-ff3507feec2d,scope,not_company_relevant,,low,partial,final_or_order,Y
+primary,c04d4782-5492-4353-b996-ff3507feec2d,theme,sanctions_foreign_policy,,low,partial,final_or_order,Y
+primary,c5be04f5-c07e-4256-a569-563197663f2f,persistence,persistent_condition,,medium,full,final_or_order,Y
+primary,c5be04f5-c07e-4256-a569-563197663f2f,scope,sector_specific,,medium,full,final_or_order,Y
+primary,c5be04f5-c07e-4256-a569-563197663f2f,sector,Information Technology,mixed,medium,full,final_or_order,Y
+primary,c5be04f5-c07e-4256-a569-563197663f2f,theme,energy_policy,,medium,full,final_or_order,Y
+primary,c5be04f5-c07e-4256-a569-563197663f2f,theme,government_operations,,medium,full,final_or_order,Y
+primary,0c5c92eb-f4b9-4078-b295-b541cb91a230,persistence,persistent_condition,,low,partial,nonfinal:Passed Senate amended,Y
+primary,0c5c92eb-f4b9-4078-b295-b541cb91a230,scope,sector_specific,,low,partial,nonfinal:Passed Senate amended,Y
+primary,0c5c92eb-f4b9-4078-b295-b541cb91a230,sector,Consumer Staples,mixed,low,partial,nonfinal:Passed Senate amended,Y
+primary,0c5c92eb-f4b9-4078-b295-b541cb91a230,theme,environment_climate,,low,partial,nonfinal:Passed Senate amended,Y
+primary,0c5c92eb-f4b9-4078-b295-b541cb91a230,theme,trade_tariffs,,low,partial,nonfinal:Passed Senate amended,Y
+primary,f5a5ffdc-e8ae-4609-98e1-5181b0081dfe,persistence,one_off,,low,thin,nonfinal:Introduced in House,NA
+primary,f5a5ffdc-e8ae-4609-98e1-5181b0081dfe,theme,budget_appropriations,,low,thin,nonfinal:Introduced in House,NA
+primary,e2247db6-447f-4526-80b2-fc59db20ff18,persistence,one_off,,high,full,final_or_order,NA
+primary,e2247db6-447f-4526-80b2-fc59db20ff18,scope,not_company_relevant,,high,full,final_or_order,NA
+primary,e2247db6-447f-4526-80b2-fc59db20ff18,theme,sanctions_foreign_policy,,high,full,final_or_order,NA
+primary,d2802b6b-6121-4cc1-8792-33dd445939b1,persistence,one_off,,low,full,nonfinal:Introduced in House,NA
+primary,d2802b6b-6121-4cc1-8792-33dd445939b1,scope,not_company_relevant,,low,full,nonfinal:Introduced in House,NA
+primary,d2802b6b-6121-4cc1-8792-33dd445939b1,theme,energy_policy,,low,full,nonfinal:Introduced in House,NA
+primary,fa348e11-da8b-4b10-821e-cccafc08d7ee,persistence,persistent_condition,,medium,full,final_or_order,NA
+primary,fa348e11-da8b-4b10-821e-cccafc08d7ee,scope,market_wide,,medium,full,final_or_order,NA
+primary,fa348e11-da8b-4b10-821e-cccafc08d7ee,sector,Financials,mixed,medium,full,final_or_order,NA
+primary,fa348e11-da8b-4b10-821e-cccafc08d7ee,theme,consumer_protection,,medium,full,final_or_order,NA
+primary,fa348e11-da8b-4b10-821e-cccafc08d7ee,theme,government_operations,,medium,full,final_or_order,NA
+primary,7edbf0d3-a466-446b-b7f6-cacfa1e2642c,persistence,persistent_condition,,medium,full,final_or_order,Y
+primary,7edbf0d3-a466-446b-b7f6-cacfa1e2642c,scope,market_wide,,medium,full,final_or_order,Y
+primary,7edbf0d3-a466-446b-b7f6-cacfa1e2642c,sector,Consumer Discretionary,benefit,medium,full,final_or_order,Y
+primary,7edbf0d3-a466-446b-b7f6-cacfa1e2642c,theme,consumer_protection,,medium,full,final_or_order,Y
+primary,7edbf0d3-a466-446b-b7f6-cacfa1e2642c,theme,technology_ai_data,,medium,full,final_or_order,Y
+primary,1a3d3ad6-2f74-4e89-891b-1c3bbcda2eb3,persistence,persistent_condition,,low,partial,final_or_order,Y
+primary,1a3d3ad6-2f74-4e89-891b-1c3bbcda2eb3,scope,not_company_relevant,,low,partial,final_or_order,Y
+primary,1a3d3ad6-2f74-4e89-891b-1c3bbcda2eb3,theme,government_operations,,low,partial,final_or_order,Y
+primary,82f69155-a7e5-4593-869b-eab522132c84,persistence,persistent_condition,,medium,full,final_or_order,Y
+primary,82f69155-a7e5-4593-869b-eab522132c84,scope,not_company_relevant,,medium,full,final_or_order,Y
+primary,82f69155-a7e5-4593-869b-eab522132c84,theme,healthcare_drug_pricing,,medium,full,final_or_order,Y
+primary,e1ce35b7-3bbb-453c-a106-44ac73c9cb2a,persistence,one_off,,medium,partial,final_or_order,NA
+primary,e1ce35b7-3bbb-453c-a106-44ac73c9cb2a,scope,market_wide,,medium,partial,final_or_order,NA
+primary,e1ce35b7-3bbb-453c-a106-44ac73c9cb2a,sector,Industrials,benefit,medium,partial,final_or_order,NA
+primary,e1ce35b7-3bbb-453c-a106-44ac73c9cb2a,theme,budget_appropriations,,medium,partial,final_or_order,NA
+primary,e1ce35b7-3bbb-453c-a106-44ac73c9cb2a,theme,defense_procurement,,medium,partial,final_or_order,NA
+primary,dd85ba9e-aebb-449b-86e4-4ef25aa22bd9,persistence,one_off,,high,full,final_or_order,NA
+primary,dd85ba9e-aebb-449b-86e4-4ef25aa22bd9,scope,not_company_relevant,,high,full,final_or_order,NA
+primary,dd85ba9e-aebb-449b-86e4-4ef25aa22bd9,theme,government_operations,,high,full,final_or_order,NA
+primary,279adde7-6294-4ebc-817d-8566af23c56a,persistence,persistent_condition,,low,full,nonfinal:Passed Senate amended,Y
+primary,279adde7-6294-4ebc-817d-8566af23c56a,scope,company_specific,,low,full,nonfinal:Passed Senate amended,Y
+primary,279adde7-6294-4ebc-817d-8566af23c56a,sector,Energy,benefit,low,full,nonfinal:Passed Senate amended,Y
+primary,279adde7-6294-4ebc-817d-8566af23c56a,theme,energy_policy,,low,full,nonfinal:Passed Senate amended,Y
+primary,fa025350-a608-4464-ab2d-69bc42912ae3,persistence,one_off,,low,partial,nonfinal:Conference report filed in House,NA
+primary,fa025350-a608-4464-ab2d-69bc42912ae3,scope,not_company_relevant,,low,partial,nonfinal:Conference report filed in House,NA
+primary,fa025350-a608-4464-ab2d-69bc42912ae3,theme,budget_appropriations,,low,partial,nonfinal:Conference report filed in House,NA
+primary,fa025350-a608-4464-ab2d-69bc42912ae3,theme,government_operations,,low,partial,nonfinal:Conference report filed in House,NA
+primary,d14ae075-72ee-489f-b4dd-e6bb898a1393,persistence,persistent_condition,,low,full,nonfinal:Passed Senate amended,NA
+primary,d14ae075-72ee-489f-b4dd-e6bb898a1393,scope,sector_specific,,low,full,nonfinal:Passed Senate amended,NA
+primary,d14ae075-72ee-489f-b4dd-e6bb898a1393,sector,Materials,mixed,low,full,nonfinal:Passed Senate amended,NA
+primary,d14ae075-72ee-489f-b4dd-e6bb898a1393,theme,environment_climate,,low,full,nonfinal:Passed Senate amended,NA
+primary,63aa13e7-c54f-4232-aff1-286c8352e545,persistence,persistent_condition,,low,partial,final_or_order,Y
+primary,63aa13e7-c54f-4232-aff1-286c8352e545,scope,market_wide,,low,partial,final_or_order,Y
+primary,63aa13e7-c54f-4232-aff1-286c8352e545,sector,Industrials,benefit,low,partial,final_or_order,Y
+primary,63aa13e7-c54f-4232-aff1-286c8352e545,theme,government_operations,,low,partial,final_or_order,Y
+primary,63aa13e7-c54f-4232-aff1-286c8352e545,theme,trade_tariffs,,low,partial,final_or_order,Y
+primary,6db5c686-ec7d-40e4-9434-585e3f14f4d0,persistence,persistent_condition,,low,partial,final_or_order,Y
+primary,6db5c686-ec7d-40e4-9434-585e3f14f4d0,scope,sector_specific,,low,partial,final_or_order,N
+primary,6db5c686-ec7d-40e4-9434-585e3f14f4d0,sector,Industrials,benefit,low,partial,final_or_order,Y
+primary,6db5c686-ec7d-40e4-9434-585e3f14f4d0,theme,government_operations,,low,partial,final_or_order,Y
+primary,6db5c686-ec7d-40e4-9434-585e3f14f4d0,theme,technology_ai_data,,low,partial,final_or_order,N
+primary,9ed82750-520a-4267-bd84-6486d16bbd72,persistence,persistent_condition,,low,full,final_or_order,Y
+primary,9ed82750-520a-4267-bd84-6486d16bbd72,scope,not_company_relevant,,low,full,final_or_order,Y
+primary,9ed82750-520a-4267-bd84-6486d16bbd72,theme,government_operations,,low,full,final_or_order,Y
+primary,9ed82750-520a-4267-bd84-6486d16bbd72,theme,technology_ai_data,,low,full,final_or_order,Y
+primary,d1575a4a-cc79-49ee-8e87-2690540f4cdb,persistence,persistent_condition,,high,full,final_or_order,NA
+primary,d1575a4a-cc79-49ee-8e87-2690540f4cdb,scope,not_company_relevant,,high,full,final_or_order,NA
+primary,d1575a4a-cc79-49ee-8e87-2690540f4cdb,theme,government_operations,,high,full,final_or_order,NA
+primary,1042475b-2ced-4b1d-9415-2892c347f47f,persistence,one_off,,low,thin,nonfinal:Introduced in House,Y
+primary,1042475b-2ced-4b1d-9415-2892c347f47f,theme,budget_appropriations,,low,thin,nonfinal:Introduced in House,Y
+primary,f820f83b-8e25-4b70-8a47-896518d14076,persistence,persistent_condition,,high,full,final_or_order,NA
+primary,f820f83b-8e25-4b70-8a47-896518d14076,scope,not_company_relevant,,high,full,final_or_order,NA
+primary,f820f83b-8e25-4b70-8a47-896518d14076,theme,government_operations,,high,full,final_or_order,NA
+primary,1b43bc08-f984-459b-82b6-6b15701f6673,persistence,persistent_condition,,low,full,nonfinal:Introduced in Senate,Y
+primary,1b43bc08-f984-459b-82b6-6b15701f6673,scope,not_company_relevant,,low,full,nonfinal:Introduced in Senate,Y
+primary,1b43bc08-f984-459b-82b6-6b15701f6673,theme,government_operations,,low,full,nonfinal:Introduced in Senate,Y
+primary,f97b1af9-fafa-4e67-a074-894f7a87415f,persistence,one_off,,medium,full,final_or_order,NA
+primary,f97b1af9-fafa-4e67-a074-894f7a87415f,scope,sector_specific,,medium,full,final_or_order,NA
+primary,f97b1af9-fafa-4e67-a074-894f7a87415f,sector,Industrials,benefit,medium,full,final_or_order,NA
+primary,f97b1af9-fafa-4e67-a074-894f7a87415f,theme,budget_appropriations,,medium,full,final_or_order,NA
+primary,f97b1af9-fafa-4e67-a074-894f7a87415f,theme,transportation_infrastructure,,medium,full,final_or_order,NA
+primary,48ec1c96-78f8-41d7-8e8c-396e83efe6d5,persistence,persistent_condition,,medium,partial,final_or_order,Y
+primary,48ec1c96-78f8-41d7-8e8c-396e83efe6d5,scope,sector_specific,,medium,partial,final_or_order,Y
+primary,48ec1c96-78f8-41d7-8e8c-396e83efe6d5,sector,Information Technology,benefit,medium,partial,final_or_order,Y
+primary,48ec1c96-78f8-41d7-8e8c-396e83efe6d5,sector,Utilities,mixed,medium,partial,final_or_order,Y
+primary,48ec1c96-78f8-41d7-8e8c-396e83efe6d5,theme,energy_policy,,medium,partial,final_or_order,Y
+primary,48ec1c96-78f8-41d7-8e8c-396e83efe6d5,theme,technology_ai_data,,medium,partial,final_or_order,Y
+primary,41d2e279-f564-4c97-b93d-0cb6bc04c3e3,persistence,persistent_condition,,medium,full,final_or_order,Y
+primary,41d2e279-f564-4c97-b93d-0cb6bc04c3e3,scope,not_company_relevant,,medium,full,final_or_order,Y
+primary,41d2e279-f564-4c97-b93d-0cb6bc04c3e3,theme,government_operations,,medium,full,final_or_order,Y
+primary,ea6ace45-a270-437d-afbf-3010caf5b782,persistence,persistent_condition,,low,full,nonfinal:Passed Senate amended,NA
+primary,ea6ace45-a270-437d-afbf-3010caf5b782,scope,sector_specific,,low,full,nonfinal:Passed Senate amended,NA
+primary,ea6ace45-a270-437d-afbf-3010caf5b782,sector,Health Care,benefit,low,full,nonfinal:Passed Senate amended,NA
+primary,ea6ace45-a270-437d-afbf-3010caf5b782,theme,healthcare_drug_pricing,,low,full,nonfinal:Passed Senate amended,NA
+primary,ea6ace45-a270-437d-afbf-3010caf5b782,theme,immigration,,low,full,nonfinal:Passed Senate amended,NA
+primary,ea6ace45-a270-437d-afbf-3010caf5b782,theme,labor_employment,,low,full,nonfinal:Passed Senate amended,NA
+primary,5ce2ac36-b5d4-4091-b583-8520446f425a,persistence,persistent_condition,,high,full,final_or_order,Y
+primary,5ce2ac36-b5d4-4091-b583-8520446f425a,scope,not_company_relevant,,high,full,final_or_order,Y
+primary,5ce2ac36-b5d4-4091-b583-8520446f425a,theme,government_operations,,high,full,final_or_order,Y
+primary,c781881b-ed8e-4f52-80a4-c2fc8233ffec,persistence,persistent_condition,,low,partial,final_or_order,Y
+primary,c781881b-ed8e-4f52-80a4-c2fc8233ffec,scope,not_company_relevant,,low,partial,final_or_order,Y
+primary,c781881b-ed8e-4f52-80a4-c2fc8233ffec,theme,government_operations,,low,partial,final_or_order,Y
+primary,2e95c8f4-c5ee-4f04-99bb-4d1429dd29f2,persistence,persistent_condition,,high,full,final_or_order,Y
+primary,2e95c8f4-c5ee-4f04-99bb-4d1429dd29f2,scope,sector_specific,,high,full,final_or_order,Y
+primary,2e95c8f4-c5ee-4f04-99bb-4d1429dd29f2,sector,Health Care,mixed,high,full,final_or_order,Y
+primary,2e95c8f4-c5ee-4f04-99bb-4d1429dd29f2,theme,antitrust_competition,,high,full,final_or_order,Y
+primary,2e95c8f4-c5ee-4f04-99bb-4d1429dd29f2,theme,healthcare_drug_pricing,,high,full,final_or_order,Y
+primary,f14a87c7-4158-46e3-8b34-a11bd4dc1471,persistence,one_off,,medium,full,final_or_order,NA
+primary,f14a87c7-4158-46e3-8b34-a11bd4dc1471,scope,sector_specific,,medium,full,final_or_order,NA
+primary,f14a87c7-4158-46e3-8b34-a11bd4dc1471,sector,Health Care,benefit,medium,full,final_or_order,NA
+primary,f14a87c7-4158-46e3-8b34-a11bd4dc1471,theme,budget_appropriations,,medium,full,final_or_order,NA
+primary,f14a87c7-4158-46e3-8b34-a11bd4dc1471,theme,healthcare_drug_pricing,,medium,full,final_or_order,NA
+primary,40d06fcc-1092-4723-96df-4bf948a3fa48,persistence,persistent_condition,,low,full,nonfinal:Passed Senate amended,Y
+primary,40d06fcc-1092-4723-96df-4bf948a3fa48,scope,sector_specific,,low,full,nonfinal:Passed Senate amended,N
+primary,40d06fcc-1092-4723-96df-4bf948a3fa48,sector,Health Care,mixed,low,full,nonfinal:Passed Senate amended,N
+primary,40d06fcc-1092-4723-96df-4bf948a3fa48,theme,budget_appropriations,,low,full,nonfinal:Passed Senate amended,N
+primary,40d06fcc-1092-4723-96df-4bf948a3fa48,theme,healthcare_drug_pricing,,low,full,nonfinal:Passed Senate amended,Y
+primary,9c8d8a52-c4c5-4e1f-8a70-dd298ef07811,persistence,persistent_condition,,low,partial,final_or_order,NA
+primary,9c8d8a52-c4c5-4e1f-8a70-dd298ef07811,scope,not_company_relevant,,low,partial,final_or_order,NA
+primary,9c8d8a52-c4c5-4e1f-8a70-dd298ef07811,theme,government_operations,,low,partial,final_or_order,NA
+primary,9c8d8a52-c4c5-4e1f-8a70-dd298ef07811,theme,healthcare_drug_pricing,,low,partial,final_or_order,NA
+primary,006c1895-a7c1-4874-a8cd-957382e531f3,persistence,one_off,,medium,partial,final_or_order,Y
+primary,006c1895-a7c1-4874-a8cd-957382e531f3,scope,market_wide,,medium,partial,final_or_order,Y
+primary,006c1895-a7c1-4874-a8cd-957382e531f3,theme,agriculture_food,,medium,partial,final_or_order,Y
+primary,006c1895-a7c1-4874-a8cd-957382e531f3,theme,budget_appropriations,,medium,partial,final_or_order,Y
+primary,7b6afb20-b79d-466d-912f-3474a75643df,persistence,persistent_condition,,high,full,final_or_order,Y
+primary,7b6afb20-b79d-466d-912f-3474a75643df,scope,not_company_relevant,,high,full,final_or_order,Y
+primary,7b6afb20-b79d-466d-912f-3474a75643df,theme,budget_appropriations,,high,full,final_or_order,N
+primary,7b6afb20-b79d-466d-912f-3474a75643df,theme,government_operations,,high,full,final_or_order,Y
+primary,725118c5-983c-4c05-9d8b-541cb242b157,persistence,one_off,,low,full,nonfinal:Passed House amended,Y
+primary,725118c5-983c-4c05-9d8b-541cb242b157,scope,sector_specific,,low,full,nonfinal:Passed House amended,Y
+primary,725118c5-983c-4c05-9d8b-541cb242b157,sector,Utilities,benefit,low,full,nonfinal:Passed House amended,Y
+primary,725118c5-983c-4c05-9d8b-541cb242b157,theme,budget_appropriations,,low,full,nonfinal:Passed House amended,Y
+primary,725118c5-983c-4c05-9d8b-541cb242b157,theme,environment_climate,,low,full,nonfinal:Passed House amended,Y
+primary,8efca133-6690-4aec-8811-1cb458f7648a,persistence,one_off,,low,full,nonfinal:Passed House amended,Y
+primary,8efca133-6690-4aec-8811-1cb458f7648a,scope,sector_specific,,low,full,nonfinal:Passed House amended,Y
+primary,8efca133-6690-4aec-8811-1cb458f7648a,sector,Consumer Staples,mixed,low,full,nonfinal:Passed House amended,Y
+primary,8efca133-6690-4aec-8811-1cb458f7648a,theme,agriculture_food,,low,full,nonfinal:Passed House amended,Y
+primary,8efca133-6690-4aec-8811-1cb458f7648a,theme,government_operations,,low,full,nonfinal:Passed House amended,N
+primary,1287cd63-5923-4f80-bf4a-41a48f58d496,persistence,one_off,,low,partial,nonfinal:House receded and concurred with amendment,Y
+primary,1287cd63-5923-4f80-bf4a-41a48f58d496,scope,sector_specific,,low,partial,nonfinal:House receded and concurred with amendment,Y
+primary,1287cd63-5923-4f80-bf4a-41a48f58d496,sector,Industrials,mixed,low,partial,nonfinal:House receded and concurred with amendment,Y
+primary,1287cd63-5923-4f80-bf4a-41a48f58d496,theme,budget_appropriations,,low,partial,nonfinal:House receded and concurred with amendment,Y
+primary,1287cd63-5923-4f80-bf4a-41a48f58d496,theme,transportation_infrastructure,,low,partial,nonfinal:House receded and concurred with amendment,Y
+primary,b7171608-3734-4c77-bf72-a87f6df199e5,persistence,one_off,,low,full,final_or_order,Y
+primary,b7171608-3734-4c77-bf72-a87f6df199e5,scope,sector_specific,,low,full,final_or_order,N
+primary,b7171608-3734-4c77-bf72-a87f6df199e5,sector,Consumer Discretionary,mixed,low,full,final_or_order,N
+primary,b7171608-3734-4c77-bf72-a87f6df199e5,theme,budget_appropriations,,low,full,final_or_order,Y
+primary,b7171608-3734-4c77-bf72-a87f6df199e5,theme,transportation_infrastructure,,low,full,final_or_order,Y
+primary,b9254c18-fe91-4ce3-923e-ca5ee3ffd8d7,persistence,one_off,,medium,partial,final_or_order,Y
+primary,b9254c18-fe91-4ce3-923e-ca5ee3ffd8d7,scope,market_wide,,medium,partial,final_or_order,Y
+primary,b9254c18-fe91-4ce3-923e-ca5ee3ffd8d7,theme,budget_appropriations,,medium,partial,final_or_order,Y
+primary,b9254c18-fe91-4ce3-923e-ca5ee3ffd8d7,theme,immigration,,medium,partial,final_or_order,Y
+primary,b09f6603-bbdd-400d-b66b-95658e49f50b,persistence,persistent_condition,,high,full,final_or_order,Y
+primary,b09f6603-bbdd-400d-b66b-95658e49f50b,scope,not_company_relevant,,high,full,final_or_order,Y
+primary,b09f6603-bbdd-400d-b66b-95658e49f50b,theme,government_operations,,high,full,final_or_order,Y
+primary,34af3828-6ce4-4e16-8930-925bf73cc7f5,persistence,one_off,,medium,partial,final_or_order,Y
+primary,34af3828-6ce4-4e16-8930-925bf73cc7f5,scope,market_wide,,medium,partial,final_or_order,Y
+primary,34af3828-6ce4-4e16-8930-925bf73cc7f5,sector,Industrials,benefit,medium,partial,final_or_order,Y
+primary,34af3828-6ce4-4e16-8930-925bf73cc7f5,theme,budget_appropriations,,medium,partial,final_or_order,Y
+primary,34af3828-6ce4-4e16-8930-925bf73cc7f5,theme,defense_procurement,,medium,partial,final_or_order,Y
+primary,df4d2f29-84b8-424c-8e76-02a38ce412f8,persistence,persistent_condition,,medium,full,final_or_order,NA
+primary,df4d2f29-84b8-424c-8e76-02a38ce412f8,scope,not_company_relevant,,medium,full,final_or_order,NA
+primary,df4d2f29-84b8-424c-8e76-02a38ce412f8,theme,government_operations,,medium,full,final_or_order,NA
+primary,f8232f93-0023-494a-a6e6-e83d47856f91,persistence,persistent_condition,,medium,full,nonfinal:Conference report filed in House,NA
+primary,f8232f93-0023-494a-a6e6-e83d47856f91,scope,market_wide,,medium,full,nonfinal:Conference report filed in House,NA
+primary,f8232f93-0023-494a-a6e6-e83d47856f91,sector,Information Technology,benefit,medium,full,nonfinal:Conference report filed in House,NA
+primary,f8232f93-0023-494a-a6e6-e83d47856f91,theme,consumer_protection,,medium,full,nonfinal:Conference report filed in House,NA
+primary,f8232f93-0023-494a-a6e6-e83d47856f91,theme,technology_ai_data,,medium,full,nonfinal:Conference report filed in House,NA
+primary,4985c9e6-dc68-49dd-a145-b5519a9e9182,persistence,one_off,,medium,partial,final_or_order,Y
+primary,4985c9e6-dc68-49dd-a145-b5519a9e9182,scope,market_wide,,medium,partial,final_or_order,Y
+primary,4985c9e6-dc68-49dd-a145-b5519a9e9182,theme,budget_appropriations,,medium,partial,final_or_order,Y
+primary,4985c9e6-dc68-49dd-a145-b5519a9e9182,theme,defense_procurement,,medium,partial,final_or_order,Y
+primary,31282ce6-270a-4c78-ac1a-ace02b2120ee,persistence,persistent_condition,,low,full,nonfinal:Passed Senate amended,Y
+primary,31282ce6-270a-4c78-ac1a-ace02b2120ee,scope,sector_specific,,low,full,nonfinal:Passed Senate amended,Y
+primary,31282ce6-270a-4c78-ac1a-ace02b2120ee,sector,Information Technology,benefit,low,full,nonfinal:Passed Senate amended,Y
+primary,31282ce6-270a-4c78-ac1a-ace02b2120ee,theme,budget_appropriations,,low,full,nonfinal:Passed Senate amended,Y
+primary,31282ce6-270a-4c78-ac1a-ace02b2120ee,theme,telecom_media,,low,full,nonfinal:Passed Senate amended,N
+primary,a21a0052-b8e0-4e4b-9ade-dd7bb6685932,persistence,one_off,,medium,full,final_or_order,Y
+primary,a21a0052-b8e0-4e4b-9ade-dd7bb6685932,scope,not_company_relevant,,medium,full,final_or_order,Y
+primary,a21a0052-b8e0-4e4b-9ade-dd7bb6685932,theme,trade_tariffs,,medium,full,final_or_order,Y
+primary,cbfa381a-eeb1-478e-9906-2ec5a9f6a17d,persistence,persistent_condition,,low,full,final_or_order,Y
+primary,cbfa381a-eeb1-478e-9906-2ec5a9f6a17d,scope,not_company_relevant,,low,full,final_or_order,Y
+primary,cbfa381a-eeb1-478e-9906-2ec5a9f6a17d,theme,government_operations,,low,full,final_or_order,N
+primary,cbfa381a-eeb1-478e-9906-2ec5a9f6a17d,theme,transportation_infrastructure,,low,full,final_or_order,Y
+primary,b45d9390-e6f8-4edd-a580-84d5813d8347,persistence,persistent_condition,,high,full,final_or_order,N
+primary,b45d9390-e6f8-4edd-a580-84d5813d8347,scope,not_company_relevant,,high,full,final_or_order,Y
+primary,b45d9390-e6f8-4edd-a580-84d5813d8347,theme,government_operations,,high,full,final_or_order,Y
+primary,f2fad79e-159a-4ddc-9c4a-e506dc65b369,persistence,persistent_condition,,medium,partial,final_or_order,NA
+primary,f2fad79e-159a-4ddc-9c4a-e506dc65b369,scope,sector_specific,,medium,partial,final_or_order,NA
+primary,f2fad79e-159a-4ddc-9c4a-e506dc65b369,sector,Financials,mixed,medium,partial,final_or_order,NA
+primary,f2fad79e-159a-4ddc-9c4a-e506dc65b369,theme,consumer_protection,,medium,partial,final_or_order,NA
+primary,f2fad79e-159a-4ddc-9c4a-e506dc65b369,theme,financial_regulation,,medium,partial,final_or_order,NA
+primary,6d2ab3be-087d-47c5-ad30-2b30e8b06354,persistence,one_off,,low,thin,final_or_order,Y
+primary,6d2ab3be-087d-47c5-ad30-2b30e8b06354,theme,budget_appropriations,,low,thin,final_or_order,N
+primary,1f2d9c14-0f84-45c0-b6c7-8e67f14273bd,persistence,one_off,,medium,full,final_or_order,Y
+primary,1f2d9c14-0f84-45c0-b6c7-8e67f14273bd,scope,sector_specific,,medium,full,final_or_order,Y
+primary,1f2d9c14-0f84-45c0-b6c7-8e67f14273bd,sector,Information Technology,benefit,medium,full,final_or_order,Y
+primary,1f2d9c14-0f84-45c0-b6c7-8e67f14273bd,theme,energy_policy,,medium,full,final_or_order,Y
+primary,ec4759a6-0511-4c60-b291-5043d86e8668,persistence,persistent_condition,,low,full,nonfinal:Passed Senate amended,NA
+primary,ec4759a6-0511-4c60-b291-5043d86e8668,scope,not_company_relevant,,low,full,nonfinal:Passed Senate amended,NA
+primary,ec4759a6-0511-4c60-b291-5043d86e8668,theme,agriculture_food,,low,full,nonfinal:Passed Senate amended,NA
+primary,23a7eac5-6742-4a5d-8b67-e3fd5fd53840,persistence,one_off,,low,partial,nonfinal:Conference report filed in House,Y
+primary,23a7eac5-6742-4a5d-8b67-e3fd5fd53840,scope,market_wide,,low,partial,nonfinal:Conference report filed in House,Y
+primary,23a7eac5-6742-4a5d-8b67-e3fd5fd53840,sector,Energy,mixed,low,partial,nonfinal:Conference report filed in House,Y
+primary,23a7eac5-6742-4a5d-8b67-e3fd5fd53840,theme,budget_appropriations,,low,partial,nonfinal:Conference report filed in House,Y
+primary,b3d28e3f-9ac0-4de1-a5d6-70169cb5cc8f,persistence,persistent_condition,,low,full,final_or_order,Y
+primary,b3d28e3f-9ac0-4de1-a5d6-70169cb5cc8f,scope,not_company_relevant,,low,full,final_or_order,Y
+primary,b3d28e3f-9ac0-4de1-a5d6-70169cb5cc8f,theme,government_operations,,low,full,final_or_order,Y
+primary,b3d28e3f-9ac0-4de1-a5d6-70169cb5cc8f,theme,taxation,,low,full,final_or_order,Y
+primary,0b0bf039-74cc-4cd4-b342-7b67f2881af0,persistence,persistent_condition,,low,partial,final_or_order,Y
+primary,0b0bf039-74cc-4cd4-b342-7b67f2881af0,scope,not_company_relevant,,low,partial,final_or_order,Y
+primary,0b0bf039-74cc-4cd4-b342-7b67f2881af0,theme,healthcare_drug_pricing,,low,partial,final_or_order,Y
+primary,86c1967a-f800-429d-a357-b06d899bd339,persistence,one_off,,medium,partial,final_or_order,Y
+primary,86c1967a-f800-429d-a357-b06d899bd339,scope,market_wide,,medium,partial,final_or_order,Y
+primary,86c1967a-f800-429d-a357-b06d899bd339,theme,budget_appropriations,,medium,partial,final_or_order,Y
+primary,86c1967a-f800-429d-a357-b06d899bd339,theme,transportation_infrastructure,,medium,partial,final_or_order,Y
+primary,86c66f5f-a367-4adf-8515-78f916c6368a,persistence,persistent_condition,,low,partial,final_or_order,Y
+primary,86c66f5f-a367-4adf-8515-78f916c6368a,scope,not_company_relevant,,low,partial,final_or_order,N
+primary,86c66f5f-a367-4adf-8515-78f916c6368a,theme,government_operations,,low,partial,final_or_order,Y
+primary,28ddde4f-b7ad-46ed-a897-eb225f51accf,persistence,one_off,,low,partial,final_or_order,Y
+primary,28ddde4f-b7ad-46ed-a897-eb225f51accf,scope,not_company_relevant,,low,partial,final_or_order,Y
+primary,28ddde4f-b7ad-46ed-a897-eb225f51accf,theme,financial_regulation,,low,partial,final_or_order,N
+primary,28ddde4f-b7ad-46ed-a897-eb225f51accf,theme,government_operations,,low,partial,final_or_order,Y
+primary,1b1e5f76-6113-42c9-8ee2-bfaf95adf3f2,persistence,persistent_condition,,low,full,nonfinal:Passed Senate amended,Y
+primary,1b1e5f76-6113-42c9-8ee2-bfaf95adf3f2,scope,sector_specific,,low,full,nonfinal:Passed Senate amended,Y
+primary,1b1e5f76-6113-42c9-8ee2-bfaf95adf3f2,sector,Communication Services,harm,low,full,nonfinal:Passed Senate amended,Y
+primary,1b1e5f76-6113-42c9-8ee2-bfaf95adf3f2,theme,environment_climate,,low,full,nonfinal:Passed Senate amended,Y
+primary,1b1e5f76-6113-42c9-8ee2-bfaf95adf3f2,theme,government_operations,,low,full,nonfinal:Passed Senate amended,Y
+primary,ae6a4342-f33e-4f37-9472-12126c8ee95e,persistence,persistent_condition,,medium,full,final_or_order,Y
+primary,ae6a4342-f33e-4f37-9472-12126c8ee95e,scope,sector_specific,,medium,full,final_or_order,Y
+primary,ae6a4342-f33e-4f37-9472-12126c8ee95e,sector,Communication Services,harm,medium,full,final_or_order,Y
+primary,ae6a4342-f33e-4f37-9472-12126c8ee95e,theme,budget_appropriations,,medium,full,final_or_order,Y
+primary,ae6a4342-f33e-4f37-9472-12126c8ee95e,theme,telecom_media,,medium,full,final_or_order,N
+primary,8213ea5e-7eef-479e-8e9f-349d8ee3bcd3,persistence,one_off,,high,full,final_or_order,Y
+primary,8213ea5e-7eef-479e-8e9f-349d8ee3bcd3,scope,not_company_relevant,,high,full,final_or_order,Y
+primary,8213ea5e-7eef-479e-8e9f-349d8ee3bcd3,theme,government_operations,,high,full,final_or_order,Y
+primary,ff620c2f-e567-4048-a659-db2208b0e7a6,persistence,persistent_condition,,low,full,final_or_order,NA
+primary,ff620c2f-e567-4048-a659-db2208b0e7a6,scope,sector_specific,,low,full,final_or_order,NA
+primary,ff620c2f-e567-4048-a659-db2208b0e7a6,sector,Utilities,benefit,low,full,final_or_order,NA
+primary,ff620c2f-e567-4048-a659-db2208b0e7a6,theme,energy_policy,,low,full,final_or_order,NA
+primary,ff620c2f-e567-4048-a659-db2208b0e7a6,theme,transportation_infrastructure,,low,full,final_or_order,NA
+primary,72edb589-ced1-4635-946a-3e50df7be390,persistence,persistent_condition,,low,full,nonfinal:Passed Senate amended,Y
+primary,72edb589-ced1-4635-946a-3e50df7be390,scope,sector_specific,,low,full,nonfinal:Passed Senate amended,Y
+primary,72edb589-ced1-4635-946a-3e50df7be390,sector,Financials,mixed,low,full,nonfinal:Passed Senate amended,Y
+primary,72edb589-ced1-4635-946a-3e50df7be390,theme,financial_regulation,,low,full,nonfinal:Passed Senate amended,Y
+primary,72edb589-ced1-4635-946a-3e50df7be390,theme,labor_employment,,low,full,nonfinal:Passed Senate amended,Y
+primary,ba9ceb29-c601-4d62-90c6-483da22e2e4e,persistence,persistent_condition,,low,full,final_or_order,Y
+primary,ba9ceb29-c601-4d62-90c6-483da22e2e4e,scope,not_company_relevant,,low,full,final_or_order,Y
+primary,ba9ceb29-c601-4d62-90c6-483da22e2e4e,theme,government_operations,,low,full,final_or_order,Y
+primary,ba9ceb29-c601-4d62-90c6-483da22e2e4e,theme,technology_ai_data,,low,full,final_or_order,Y
+primary,a7b12442-0473-495c-a9b2-3ea93bfa9dc7,persistence,persistent_condition,,medium,partial,final_or_order,Y
+primary,a7b12442-0473-495c-a9b2-3ea93bfa9dc7,scope,sector_specific,,medium,partial,final_or_order,Y
+primary,a7b12442-0473-495c-a9b2-3ea93bfa9dc7,sector,Financials,harm,medium,partial,final_or_order,N
+primary,a7b12442-0473-495c-a9b2-3ea93bfa9dc7,theme,immigration,,medium,partial,final_or_order,Y
+primary,a7b12442-0473-495c-a9b2-3ea93bfa9dc7,theme,sanctions_foreign_policy,,medium,partial,final_or_order,N
+primary,4b83b93c-6eb6-4957-98b9-5c87f395d598,persistence,persistent_condition,,low,partial,final_or_order,Y
+primary,4b83b93c-6eb6-4957-98b9-5c87f395d598,scope,not_company_relevant,,low,partial,final_or_order,Y
+primary,4b83b93c-6eb6-4957-98b9-5c87f395d598,theme,sanctions_foreign_policy,,low,partial,final_or_order,Y
+primary,d23fce06-ad83-442a-a62c-cac53bce37a1,persistence,persistent_condition,,low,full,final_or_order,NA
+primary,d23fce06-ad83-442a-a62c-cac53bce37a1,scope,not_company_relevant,,low,full,final_or_order,NA
+primary,d23fce06-ad83-442a-a62c-cac53bce37a1,theme,government_operations,,low,full,final_or_order,NA
+primary,d23fce06-ad83-442a-a62c-cac53bce37a1,theme,labor_employment,,low,full,final_or_order,NA
+primary,c218e9bc-5f2a-45fe-80cc-04f587349d3e,persistence,one_off,,low,full,nonfinal:Passed House amended,Y
+primary,c218e9bc-5f2a-45fe-80cc-04f587349d3e,scope,sector_specific,,low,full,nonfinal:Passed House amended,Y
+primary,c218e9bc-5f2a-45fe-80cc-04f587349d3e,sector,Utilities,mixed,low,full,nonfinal:Passed House amended,Y
+primary,c218e9bc-5f2a-45fe-80cc-04f587349d3e,theme,budget_appropriations,,low,full,nonfinal:Passed House amended,Y
+primary,c218e9bc-5f2a-45fe-80cc-04f587349d3e,theme,environment_climate,,low,full,nonfinal:Passed House amended,Y
+primary,a5fbfec9-c9ff-4159-a78e-152eeb070bbe,persistence,one_off,,low,thin,nonfinal:Introduced in House,Y
+primary,a5fbfec9-c9ff-4159-a78e-152eeb070bbe,theme,budget_appropriations,,low,thin,nonfinal:Introduced in House,Y
+primary,a5fbfec9-c9ff-4159-a78e-152eeb070bbe,theme,government_operations,,low,thin,nonfinal:Introduced in House,N
+primary,19ba39a1-1a5e-4cfa-a7dd-82d35c637e68,persistence,one_off,,low,full,nonfinal:House receded and concurred with amendment,Y
+primary,19ba39a1-1a5e-4cfa-a7dd-82d35c637e68,scope,market_wide,,low,full,nonfinal:House receded and concurred with amendment,Y
+primary,19ba39a1-1a5e-4cfa-a7dd-82d35c637e68,sector,Health Care,mixed,low,full,nonfinal:House receded and concurred with amendment,Y
+primary,19ba39a1-1a5e-4cfa-a7dd-82d35c637e68,theme,budget_appropriations,,low,full,nonfinal:House receded and concurred with amendment,Y
+primary,19ba39a1-1a5e-4cfa-a7dd-82d35c637e68,theme,healthcare_drug_pricing,,low,full,nonfinal:House receded and concurred with amendment,Y
+primary,19ba39a1-1a5e-4cfa-a7dd-82d35c637e68,theme,labor_employment,,low,full,nonfinal:House receded and concurred with amendment,Y
+primary,bded5ca9-f41a-4dee-8f2b-6ded3a9009f9,persistence,persistent_condition,,low,full,nonfinal:Passed House amended,Y
+primary,bded5ca9-f41a-4dee-8f2b-6ded3a9009f9,scope,sector_specific,,low,full,nonfinal:Passed House amended,Y
+primary,bded5ca9-f41a-4dee-8f2b-6ded3a9009f9,theme,agriculture_food,,low,full,nonfinal:Passed House amended,Y
+primary,bded5ca9-f41a-4dee-8f2b-6ded3a9009f9,theme,environment_climate,,low,full,nonfinal:Passed House amended,Y
+primary,bded5ca9-f41a-4dee-8f2b-6ded3a9009f9,theme,government_operations,,low,full,nonfinal:Passed House amended,N
+primary,c744ca78-c6c6-45d0-af6e-fcbbbe29c150,persistence,persistent_condition,,medium,full,final_or_order,Y
+primary,c744ca78-c6c6-45d0-af6e-fcbbbe29c150,scope,not_company_relevant,,medium,full,final_or_order,Y
+primary,c744ca78-c6c6-45d0-af6e-fcbbbe29c150,theme,budget_appropriations,,medium,full,final_or_order,Y
+primary,c744ca78-c6c6-45d0-af6e-fcbbbe29c150,theme,healthcare_drug_pricing,,medium,full,final_or_order,Y
+primary,49349d5a-67c3-4f3c-944f-b28eedb48bea,persistence,persistent_condition,,medium,partial,final_or_order,Y
+primary,49349d5a-67c3-4f3c-944f-b28eedb48bea,scope,sector_specific,,medium,partial,final_or_order,Y
+primary,49349d5a-67c3-4f3c-944f-b28eedb48bea,sector,Materials,harm,medium,partial,final_or_order,Y
+primary,49349d5a-67c3-4f3c-944f-b28eedb48bea,theme,trade_tariffs,,medium,partial,final_or_order,N
+primary,be9c0c12-0a93-4468-a0ec-b6d61b84bcd3,persistence,persistent_condition,,low,full,final_or_order,Y
+primary,be9c0c12-0a93-4468-a0ec-b6d61b84bcd3,scope,sector_specific,,low,full,final_or_order,Y
+primary,be9c0c12-0a93-4468-a0ec-b6d61b84bcd3,sector,Health Care,benefit,low,full,final_or_order,Y
+primary,be9c0c12-0a93-4468-a0ec-b6d61b84bcd3,theme,budget_appropriations,,low,full,final_or_order,Y
+primary,be9c0c12-0a93-4468-a0ec-b6d61b84bcd3,theme,government_operations,,low,full,final_or_order,N
+primary,be9c0c12-0a93-4468-a0ec-b6d61b84bcd3,theme,healthcare_drug_pricing,,low,full,final_or_order,Y
+primary,f7f108eb-0fd6-4e76-9a8d-f5d145a55141,persistence,persistent_condition,,low,full,final_or_order,NA
+primary,f7f108eb-0fd6-4e76-9a8d-f5d145a55141,scope,sector_specific,,low,full,final_or_order,NA
+primary,f7f108eb-0fd6-4e76-9a8d-f5d145a55141,theme,sanctions_foreign_policy,,low,full,final_or_order,NA
+primary,f7f108eb-0fd6-4e76-9a8d-f5d145a55141,theme,trade_tariffs,,low,full,final_or_order,NA
+primary,df982b73-2af6-461f-b032-c7aaa9cd1d91,persistence,persistent_condition,,high,full,final_or_order,NA
+primary,df982b73-2af6-461f-b032-c7aaa9cd1d91,scope,not_company_relevant,,high,full,final_or_order,NA
+primary,df982b73-2af6-461f-b032-c7aaa9cd1d91,theme,environment_climate,,high,full,final_or_order,NA
+primary,db1eb047-c402-4e87-9d77-c462d44790e1,persistence,persistent_condition,,medium,partial,final_or_order,NA
+primary,db1eb047-c402-4e87-9d77-c462d44790e1,scope,sector_specific,,medium,partial,final_or_order,NA
+primary,db1eb047-c402-4e87-9d77-c462d44790e1,sector,Energy,mixed,medium,partial,final_or_order,NA
+primary,db1eb047-c402-4e87-9d77-c462d44790e1,theme,energy_policy,,medium,partial,final_or_order,NA
+primary,db1eb047-c402-4e87-9d77-c462d44790e1,theme,environment_climate,,medium,partial,final_or_order,NA
+primary,ec4f0db2-686a-42fa-85f0-b9dd2b484fd7,persistence,persistent_condition,,low,full,nonfinal:Passed House amended,NA
+primary,ec4f0db2-686a-42fa-85f0-b9dd2b484fd7,scope,sector_specific,,low,full,nonfinal:Passed House amended,NA
+primary,ec4f0db2-686a-42fa-85f0-b9dd2b484fd7,sector,Health Care,mixed,low,full,nonfinal:Passed House amended,NA
+primary,ec4f0db2-686a-42fa-85f0-b9dd2b484fd7,theme,consumer_protection,,low,full,nonfinal:Passed House amended,NA
+primary,ec4f0db2-686a-42fa-85f0-b9dd2b484fd7,theme,government_operations,,low,full,nonfinal:Passed House amended,NA
+primary,0cee2c9d-0c3c-4494-918c-4c30bee92c09,persistence,persistent_condition,,medium,full,final_or_order,Y
+primary,0cee2c9d-0c3c-4494-918c-4c30bee92c09,scope,sector_specific,,medium,full,final_or_order,Y
+primary,0cee2c9d-0c3c-4494-918c-4c30bee92c09,sector,Industrials,benefit,medium,full,final_or_order,Y
+primary,0cee2c9d-0c3c-4494-918c-4c30bee92c09,theme,government_operations,,medium,full,final_or_order,N
+primary,0cee2c9d-0c3c-4494-918c-4c30bee92c09,theme,transportation_infrastructure,,medium,full,final_or_order,Y
+primary,cec38980-fc78-45b4-953c-8d7c8e7c83d3,persistence,one_off,,low,full,final_or_order,N
+primary,cec38980-fc78-45b4-953c-8d7c8e7c83d3,scope,not_company_relevant,,low,full,final_or_order,Y
+primary,cec38980-fc78-45b4-953c-8d7c8e7c83d3,theme,financial_regulation,,low,full,final_or_order,N
+primary,c99195b5-fcf3-4830-ba16-89e52434f092,persistence,persistent_condition,,medium,partial,final_or_order,Y
+primary,c99195b5-fcf3-4830-ba16-89e52434f092,scope,sector_specific,,medium,partial,final_or_order,Y
+primary,c99195b5-fcf3-4830-ba16-89e52434f092,sector,Health Care,mixed,medium,partial,final_or_order,Y
+primary,c99195b5-fcf3-4830-ba16-89e52434f092,theme,consumer_protection,,medium,partial,final_or_order,Y
+primary,c99195b5-fcf3-4830-ba16-89e52434f092,theme,healthcare_drug_pricing,,medium,partial,final_or_order,Y
+primary,84662872-6df7-4077-a792-6d5a8de7ca41,persistence,persistent_condition,,low,partial,final_or_order,Y
+primary,84662872-6df7-4077-a792-6d5a8de7ca41,scope,not_company_relevant,,low,partial,final_or_order,Y
+primary,84662872-6df7-4077-a792-6d5a8de7ca41,theme,government_operations,,low,partial,final_or_order,Y
+primary,ca2dcb92-552c-47dd-ad5f-9a8b83cde389,persistence,one_off,,low,thin,nonfinal:Introduced in House,Y
+primary,ca2dcb92-552c-47dd-ad5f-9a8b83cde389,theme,budget_appropriations,,low,thin,nonfinal:Introduced in House,Y
+primary,2a2cb106-a238-41b1-8c91-d632e0a34fae,persistence,persistent_condition,,medium,partial,final_or_order,Y
+primary,2a2cb106-a238-41b1-8c91-d632e0a34fae,scope,sector_specific,,medium,partial,final_or_order,Y
+primary,2a2cb106-a238-41b1-8c91-d632e0a34fae,sector,Industrials,benefit,medium,partial,final_or_order,Y
+primary,2a2cb106-a238-41b1-8c91-d632e0a34fae,theme,trade_tariffs,,medium,partial,final_or_order,Y
+primary,89bd14f6-f822-4c6a-96b0-c7fad2fdd0e7,persistence,persistent_condition,,medium,full,final_or_order,Y
+primary,89bd14f6-f822-4c6a-96b0-c7fad2fdd0e7,scope,market_wide,,medium,full,final_or_order,Y
+primary,89bd14f6-f822-4c6a-96b0-c7fad2fdd0e7,theme,labor_employment,,medium,full,final_or_order,Y
+primary,b4ff0e7a-9d82-447f-9011-e337e8412ebf,persistence,one_off,,medium,full,final_or_order,N
+primary,b4ff0e7a-9d82-447f-9011-e337e8412ebf,scope,sector_specific,,medium,full,final_or_order,Y
+primary,b4ff0e7a-9d82-447f-9011-e337e8412ebf,sector,Health Care,mixed,medium,full,final_or_order,Y
+primary,b4ff0e7a-9d82-447f-9011-e337e8412ebf,theme,budget_appropriations,,medium,full,final_or_order,Y
+primary,b4ff0e7a-9d82-447f-9011-e337e8412ebf,theme,consumer_protection,,medium,full,final_or_order,N
+primary,b4ff0e7a-9d82-447f-9011-e337e8412ebf,theme,healthcare_drug_pricing,,medium,full,final_or_order,Y
+primary,2daf2c9c-9722-498d-8728-b63514228988,persistence,persistent_condition,,high,full,final_or_order,Y
+primary,2daf2c9c-9722-498d-8728-b63514228988,scope,sector_specific,,high,full,final_or_order,Y
+primary,2daf2c9c-9722-498d-8728-b63514228988,sector,Financials,mixed,high,full,final_or_order,Y
+primary,2daf2c9c-9722-498d-8728-b63514228988,theme,budget_appropriations,,high,full,final_or_order,N
+primary,2daf2c9c-9722-498d-8728-b63514228988,theme,financial_regulation,,high,full,final_or_order,Y
+primary,d335404e-b551-46b1-8aeb-11a26a7513b5,persistence,persistent_condition,,low,full,final_or_order,NA
+primary,d335404e-b551-46b1-8aeb-11a26a7513b5,scope,not_company_relevant,,low,full,final_or_order,NA
+primary,d335404e-b551-46b1-8aeb-11a26a7513b5,theme,banking_monetary,,low,full,final_or_order,NA
+primary,d335404e-b551-46b1-8aeb-11a26a7513b5,theme,financial_regulation,,low,full,final_or_order,NA
+primary,806786eb-c5a0-4039-86b6-53de8f830d9b,persistence,persistent_condition,,medium,partial,final_or_order,Y
+primary,806786eb-c5a0-4039-86b6-53de8f830d9b,scope,market_wide,,medium,partial,final_or_order,Y
+primary,806786eb-c5a0-4039-86b6-53de8f830d9b,theme,environment_climate,,medium,partial,final_or_order,Y
+primary,806786eb-c5a0-4039-86b6-53de8f830d9b,theme,government_operations,,medium,partial,final_or_order,N
+primary,e4261f5f-0591-4fef-adf1-7d169a2319a5,persistence,persistent_condition,,medium,partial,final_or_order,NA
+primary,e4261f5f-0591-4fef-adf1-7d169a2319a5,scope,market_wide,,medium,partial,final_or_order,NA
+primary,e4261f5f-0591-4fef-adf1-7d169a2319a5,sector,Information Technology,benefit,medium,partial,final_or_order,NA
+primary,e4261f5f-0591-4fef-adf1-7d169a2319a5,theme,technology_ai_data,,medium,partial,final_or_order,NA
+primary,e4261f5f-0591-4fef-adf1-7d169a2319a5,theme,trade_tariffs,,medium,partial,final_or_order,NA
+primary,9a2e6c8e-ac5b-40eb-8581-d05a4e9e824f,persistence,persistent_condition,,low,full,final_or_order,Y
+primary,9a2e6c8e-ac5b-40eb-8581-d05a4e9e824f,scope,sector_specific,,low,full,final_or_order,Y
+primary,9a2e6c8e-ac5b-40eb-8581-d05a4e9e824f,sector,Industrials,mixed,low,full,final_or_order,Y
+primary,9a2e6c8e-ac5b-40eb-8581-d05a4e9e824f,theme,healthcare_drug_pricing,,low,full,final_or_order,Y
+primary,9a2e6c8e-ac5b-40eb-8581-d05a4e9e824f,theme,transportation_infrastructure,,low,full,final_or_order,Y
+primary,e5518ace-0d2b-4357-8db5-ecdb93ef2bf4,persistence,persistent_condition,,high,full,final_or_order,NA
+primary,e5518ace-0d2b-4357-8db5-ecdb93ef2bf4,scope,not_company_relevant,,high,full,final_or_order,NA
+primary,e5518ace-0d2b-4357-8db5-ecdb93ef2bf4,theme,government_operations,,high,full,final_or_order,NA
+primary,8c8191c9-b5ce-4ce0-93fc-9361da5258ea,persistence,persistent_condition,,low,full,nonfinal:Passed Senate amended,Y
+primary,8c8191c9-b5ce-4ce0-93fc-9361da5258ea,scope,sector_specific,,low,full,nonfinal:Passed Senate amended,Y
+primary,8c8191c9-b5ce-4ce0-93fc-9361da5258ea,sector,Industrials,mixed,low,full,nonfinal:Passed Senate amended,Y
+primary,8c8191c9-b5ce-4ce0-93fc-9361da5258ea,theme,consumer_protection,,low,full,nonfinal:Passed Senate amended,Y
+primary,8c8191c9-b5ce-4ce0-93fc-9361da5258ea,theme,transportation_infrastructure,,low,full,nonfinal:Passed Senate amended,Y
+primary,b1e4a076-b299-4aa1-8e16-dc7f060eb375,persistence,one_off,,low,partial,nonfinal:Conference report filed in House,Y
+primary,b1e4a076-b299-4aa1-8e16-dc7f060eb375,scope,market_wide,,low,partial,nonfinal:Conference report filed in House,Y
+primary,b1e4a076-b299-4aa1-8e16-dc7f060eb375,sector,Industrials,benefit,low,partial,nonfinal:Conference report filed in House,Y
+primary,b1e4a076-b299-4aa1-8e16-dc7f060eb375,theme,budget_appropriations,,low,partial,nonfinal:Conference report filed in House,Y
+primary,b1e4a076-b299-4aa1-8e16-dc7f060eb375,theme,defense_procurement,,low,partial,nonfinal:Conference report filed in House,Y
+primary,48362174-734e-4d49-b7a8-132da4cd9397,persistence,persistent_condition,,low,full,nonfinal:Passed House amended,Y
+primary,48362174-734e-4d49-b7a8-132da4cd9397,scope,sector_specific,,low,full,nonfinal:Passed House amended,Y
+primary,48362174-734e-4d49-b7a8-132da4cd9397,sector,Health Care,benefit,low,full,nonfinal:Passed House amended,Y
+primary,48362174-734e-4d49-b7a8-132da4cd9397,theme,budget_appropriations,,low,full,nonfinal:Passed House amended,Y
+primary,48362174-734e-4d49-b7a8-132da4cd9397,theme,healthcare_drug_pricing,,low,full,nonfinal:Passed House amended,Y
+primary,d20bef8d-5ebc-4fc8-aacf-51b32cf47897,persistence,one_off,,medium,full,final_or_order,NA
+primary,d20bef8d-5ebc-4fc8-aacf-51b32cf47897,scope,sector_specific,,medium,full,final_or_order,NA
+primary,d20bef8d-5ebc-4fc8-aacf-51b32cf47897,sector,Health Care,mixed,medium,full,final_or_order,NA
+primary,d20bef8d-5ebc-4fc8-aacf-51b32cf47897,theme,healthcare_drug_pricing,,medium,full,final_or_order,NA
+primary,0bc0030a-dbc6-4d76-b9f3-a1f9224c83d9,persistence,persistent_condition,,medium,full,final_or_order,Y
+primary,0bc0030a-dbc6-4d76-b9f3-a1f9224c83d9,scope,sector_specific,,medium,full,final_or_order,Y
+primary,0bc0030a-dbc6-4d76-b9f3-a1f9224c83d9,sector,Health Care,benefit,medium,full,final_or_order,Y
+primary,0bc0030a-dbc6-4d76-b9f3-a1f9224c83d9,theme,budget_appropriations,,medium,full,final_or_order,Y
+primary,0bc0030a-dbc6-4d76-b9f3-a1f9224c83d9,theme,healthcare_drug_pricing,,medium,full,final_or_order,Y
+primary,d11dbb40-f43d-46b7-a7b3-2b4a8246d176,persistence,persistent_condition,,medium,full,final_or_order,NA
+primary,d11dbb40-f43d-46b7-a7b3-2b4a8246d176,scope,not_company_relevant,,medium,full,final_or_order,NA
+primary,d11dbb40-f43d-46b7-a7b3-2b4a8246d176,theme,government_operations,,medium,full,final_or_order,NA
+primary,e67b9514-1136-465d-a1c9-e6a704f94c57,persistence,one_off,,medium,full,final_or_order,NA
+primary,e67b9514-1136-465d-a1c9-e6a704f94c57,scope,not_company_relevant,,medium,full,final_or_order,NA
+primary,e67b9514-1136-465d-a1c9-e6a704f94c57,theme,labor_employment,,medium,full,final_or_order,NA
+primary,1ea826f6-0784-436b-88cf-42d6c5f56870,persistence,one_off,,medium,partial,final_or_order,Y
+primary,1ea826f6-0784-436b-88cf-42d6c5f56870,scope,market_wide,,medium,partial,final_or_order,Y
+primary,1ea826f6-0784-436b-88cf-42d6c5f56870,theme,budget_appropriations,,medium,partial,final_or_order,Y
+primary,1ea826f6-0784-436b-88cf-42d6c5f56870,theme,transportation_infrastructure,,medium,partial,final_or_order,Y
+primary,f3ffc8c8-3f08-4c3d-ac68-56b1c280a7ee,persistence,persistent_condition,,low,partial,final_or_order,NA
+primary,f3ffc8c8-3f08-4c3d-ac68-56b1c280a7ee,scope,not_company_relevant,,low,partial,final_or_order,NA
+primary,f3ffc8c8-3f08-4c3d-ac68-56b1c280a7ee,theme,government_operations,,low,partial,final_or_order,NA
+primary,c3ea879f-0f2d-47ba-97e7-1b889f95d7c0,persistence,persistent_condition,,low,full,nonfinal:House agreed to Senate amendment with amendment,Y
+primary,c3ea879f-0f2d-47ba-97e7-1b889f95d7c0,scope,sector_specific,,low,full,nonfinal:House agreed to Senate amendment with amendment,Y
+primary,c3ea879f-0f2d-47ba-97e7-1b889f95d7c0,sector,Consumer Staples,mixed,low,full,nonfinal:House agreed to Senate amendment with amendment,Y
+primary,c3ea879f-0f2d-47ba-97e7-1b889f95d7c0,theme,agriculture_food,,low,full,nonfinal:House agreed to Senate amendment with amendment,Y
+primary,c3ea879f-0f2d-47ba-97e7-1b889f95d7c0,theme,budget_appropriations,,low,full,nonfinal:House agreed to Senate amendment with amendment,Y
+primary,c3ea879f-0f2d-47ba-97e7-1b889f95d7c0,theme,trade_tariffs,,low,full,nonfinal:House agreed to Senate amendment with amendment,Y
+primary,14761d41-8fe6-497b-9aba-a4081eac3206,persistence,persistent_condition,,medium,full,final_or_order,Y
+primary,14761d41-8fe6-497b-9aba-a4081eac3206,scope,sector_specific,,medium,full,final_or_order,Y
+primary,14761d41-8fe6-497b-9aba-a4081eac3206,sector,Utilities,benefit,medium,full,final_or_order,Y
+primary,14761d41-8fe6-497b-9aba-a4081eac3206,theme,environment_climate,,medium,full,final_or_order,Y
+primary,14761d41-8fe6-497b-9aba-a4081eac3206,theme,transportation_infrastructure,,medium,full,final_or_order,N
+primary,bef2e608-832f-43a3-a489-eaafa43ac5fd,persistence,persistent_condition,,medium,full,final_or_order,Y
+primary,bef2e608-832f-43a3-a489-eaafa43ac5fd,scope,not_company_relevant,,medium,full,final_or_order,Y
+primary,bef2e608-832f-43a3-a489-eaafa43ac5fd,theme,healthcare_drug_pricing,,medium,full,final_or_order,Y
+primary,a6119985-9a3e-4027-a514-f43a9389806e,persistence,persistent_condition,,medium,full,final_or_order,Y
+primary,a6119985-9a3e-4027-a514-f43a9389806e,scope,not_company_relevant,,medium,full,final_or_order,Y
+primary,a6119985-9a3e-4027-a514-f43a9389806e,theme,government_operations,,medium,full,final_or_order,Y
+lowconf,3fefd916-6f03-4244-9b84-aeb89f4d49bd,persistence,one_off,,low,full,final_or_order,Y
+lowconf,3fefd916-6f03-4244-9b84-aeb89f4d49bd,scope,not_company_relevant,,low,full,final_or_order,Y
+lowconf,3fefd916-6f03-4244-9b84-aeb89f4d49bd,theme,budget_appropriations,,low,full,final_or_order,Y
+lowconf,3fefd916-6f03-4244-9b84-aeb89f4d49bd,theme,government_operations,,low,full,final_or_order,Y
+lowconf,223e42d5-5f91-453b-b9a9-7f87272c1b6b,persistence,persistent_condition,,low,thin,final_or_order,Y
+lowconf,223e42d5-5f91-453b-b9a9-7f87272c1b6b,theme,trade_tariffs,,low,thin,final_or_order,N
+lowconf,b09f4d02-9c9f-47ae-998c-c9538a49239b,persistence,persistent_condition,,low,full,final_or_order,Y
+lowconf,b09f4d02-9c9f-47ae-998c-c9538a49239b,scope,sector_specific,,low,full,final_or_order,Y
+lowconf,b09f4d02-9c9f-47ae-998c-c9538a49239b,sector,Industrials,mixed,low,full,final_or_order,Y
+lowconf,b09f4d02-9c9f-47ae-998c-c9538a49239b,theme,government_operations,,low,full,final_or_order,Y
+lowconf,b09f4d02-9c9f-47ae-998c-c9538a49239b,theme,transportation_infrastructure,,low,full,final_or_order,Y
+lowconf,de1ca353-f60b-4c51-9aab-3808b8afb9cb,persistence,persistent_condition,,low,full,final_or_order,NA
+lowconf,de1ca353-f60b-4c51-9aab-3808b8afb9cb,scope,sector_specific,,low,full,final_or_order,NA
+lowconf,de1ca353-f60b-4c51-9aab-3808b8afb9cb,sector,Real Estate,mixed,low,full,final_or_order,NA
+lowconf,de1ca353-f60b-4c51-9aab-3808b8afb9cb,theme,budget_appropriations,,low,full,final_or_order,NA
+lowconf,de1ca353-f60b-4c51-9aab-3808b8afb9cb,theme,housing_real_estate,,low,full,final_or_order,NA
+lowconf,e28bac74-3620-4cb6-a625-598fdb9f92a8,persistence,persistent_condition,,low,partial,final_or_order,NA
+lowconf,e28bac74-3620-4cb6-a625-598fdb9f92a8,scope,sector_specific,,low,partial,final_or_order,NA
+lowconf,e28bac74-3620-4cb6-a625-598fdb9f92a8,sector,Financials,mixed,low,partial,final_or_order,NA
+lowconf,e28bac74-3620-4cb6-a625-598fdb9f92a8,theme,government_operations,,low,partial,final_or_order,NA
+lowconf,d881873b-037f-47fd-9b8e-183a971e35a2,persistence,one_off,,low,thin,nonfinal:Introduced in House,NA
+lowconf,d881873b-037f-47fd-9b8e-183a971e35a2,theme,budget_appropriations,,low,thin,nonfinal:Introduced in House,NA
+lowconf,94939163-6d2e-4227-b00d-b2ab569b9d31,persistence,one_off,,low,full,final_or_order,Y
+lowconf,94939163-6d2e-4227-b00d-b2ab569b9d31,scope,not_company_relevant,,low,full,final_or_order,Y
+lowconf,94939163-6d2e-4227-b00d-b2ab569b9d31,theme,budget_appropriations,,low,full,final_or_order,Y
+lowconf,56f2e57c-0726-4918-ac7d-6ec6968e3d53,persistence,persistent_condition,,low,partial,final_or_order,Y
+lowconf,56f2e57c-0726-4918-ac7d-6ec6968e3d53,scope,sector_specific,,low,partial,final_or_order,Y
+lowconf,56f2e57c-0726-4918-ac7d-6ec6968e3d53,sector,Real Estate,mixed,low,partial,final_or_order,Y
+lowconf,56f2e57c-0726-4918-ac7d-6ec6968e3d53,theme,environment_climate,,low,partial,final_or_order,Y
+lowconf,56f2e57c-0726-4918-ac7d-6ec6968e3d53,theme,government_operations,,low,partial,final_or_order,Y
+lowconf,2e38a9e1-844f-41f2-ae09-ae08360d751a,persistence,persistent_condition,,low,full,nonfinal:Conference report filed in House,Y
+lowconf,2e38a9e1-844f-41f2-ae09-ae08360d751a,scope,sector_specific,,low,full,nonfinal:Conference report filed in House,Y
+lowconf,2e38a9e1-844f-41f2-ae09-ae08360d751a,sector,Consumer Discretionary,mixed,low,full,nonfinal:Conference report filed in House,Y
+lowconf,2e38a9e1-844f-41f2-ae09-ae08360d751a,theme,consumer_protection,,low,full,nonfinal:Conference report filed in House,Y
+lowconf,ef229b86-44e8-49e7-ba17-78db10271310,persistence,one_off,,low,full,nonfinal:Senate agreed to House amendment with amendment,NA
+lowconf,ef229b86-44e8-49e7-ba17-78db10271310,scope,sector_specific,,low,full,nonfinal:Senate agreed to House amendment with amendment,NA
+lowconf,ef229b86-44e8-49e7-ba17-78db10271310,sector,Energy,mixed,low,full,nonfinal:Senate agreed to House amendment with amendment,NA
+lowconf,ef229b86-44e8-49e7-ba17-78db10271310,theme,budget_appropriations,,low,full,nonfinal:Senate agreed to House amendment with amendment,NA
+lowconf,ef229b86-44e8-49e7-ba17-78db10271310,theme,energy_policy,,low,full,nonfinal:Senate agreed to House amendment with amendment,NA
+lowconf,a4eb9f04-d06b-4885-95b0-37e740c7209f,persistence,persistent_condition,,low,full,final_or_order,Y
+lowconf,a4eb9f04-d06b-4885-95b0-37e740c7209f,scope,sector_specific,,low,full,final_or_order,Y
+lowconf,a4eb9f04-d06b-4885-95b0-37e740c7209f,sector,Materials,mixed,low,full,final_or_order,Y
+lowconf,a4eb9f04-d06b-4885-95b0-37e740c7209f,theme,environment_climate,,low,full,final_or_order,Y
+lowconf,a4eb9f04-d06b-4885-95b0-37e740c7209f,theme,government_operations,,low,full,final_or_order,Y
+lowconf,9c6b123b-2a45-4ce4-911e-4135cb05b5b4,persistence,persistent_condition,,low,partial,nonfinal:Passed House amended,Y
+lowconf,9c6b123b-2a45-4ce4-911e-4135cb05b5b4,scope,sector_specific,,low,partial,nonfinal:Passed House amended,N
+lowconf,9c6b123b-2a45-4ce4-911e-4135cb05b5b4,sector,Real Estate,mixed,low,partial,nonfinal:Passed House amended,N
+lowconf,9c6b123b-2a45-4ce4-911e-4135cb05b5b4,theme,environment_climate,,low,partial,nonfinal:Passed House amended,Y
+lowconf,bab1b2f9-92ca-4d04-b815-944f87f75425,persistence,one_off,,low,full,final_or_order,Y
+lowconf,bab1b2f9-92ca-4d04-b815-944f87f75425,scope,sector_specific,,low,full,final_or_order,Y
+lowconf,bab1b2f9-92ca-4d04-b815-944f87f75425,sector,Industrials,benefit,low,full,final_or_order,Y
+lowconf,bab1b2f9-92ca-4d04-b815-944f87f75425,theme,budget_appropriations,,low,full,final_or_order,Y
+lowconf,bab1b2f9-92ca-4d04-b815-944f87f75425,theme,defense_procurement,,low,full,final_or_order,Y
+lowconf,24a3aa7c-67fa-43e9-9f5a-5a600910eae7,persistence,persistent_condition,,low,partial,final_or_order,Y
+lowconf,24a3aa7c-67fa-43e9-9f5a-5a600910eae7,scope,not_company_relevant,,low,partial,final_or_order,Y
+lowconf,24a3aa7c-67fa-43e9-9f5a-5a600910eae7,theme,budget_appropriations,,low,partial,final_or_order,Y
+lowconf,24a3aa7c-67fa-43e9-9f5a-5a600910eae7,theme,government_operations,,low,partial,final_or_order,Y
+lowconf,f7312aaf-76ae-487b-9b54-302efeebb0e1,persistence,one_off,,low,partial,final_or_order,NA
+lowconf,f7312aaf-76ae-487b-9b54-302efeebb0e1,scope,not_company_relevant,,low,partial,final_or_order,NA
+lowconf,f7312aaf-76ae-487b-9b54-302efeebb0e1,theme,budget_appropriations,,low,partial,final_or_order,NA
+lowconf,f7312aaf-76ae-487b-9b54-302efeebb0e1,theme,immigration,,low,partial,final_or_order,NA
+lowconf,d795b922-7e3e-48be-bbd1-2d77231bdcfc,persistence,one_off,,low,partial,nonfinal:Conference report filed in House,NA
+lowconf,d795b922-7e3e-48be-bbd1-2d77231bdcfc,scope,sector_specific,,low,partial,nonfinal:Conference report filed in House,NA
+lowconf,d795b922-7e3e-48be-bbd1-2d77231bdcfc,sector,Industrials,mixed,low,partial,nonfinal:Conference report filed in House,NA
+lowconf,d795b922-7e3e-48be-bbd1-2d77231bdcfc,theme,budget_appropriations,,low,partial,nonfinal:Conference report filed in House,NA
+lowconf,d795b922-7e3e-48be-bbd1-2d77231bdcfc,theme,transportation_infrastructure,,low,partial,nonfinal:Conference report filed in House,NA
+lowconf,0c0b8042-eb0f-4f2f-ad81-ac84191b68d0,persistence,persistent_condition,,low,full,nonfinal:Passed House amended,Y
+lowconf,0c0b8042-eb0f-4f2f-ad81-ac84191b68d0,scope,sector_specific,,low,full,nonfinal:Passed House amended,N
+lowconf,0c0b8042-eb0f-4f2f-ad81-ac84191b68d0,sector,Utilities,mixed,low,full,nonfinal:Passed House amended,N
+lowconf,0c0b8042-eb0f-4f2f-ad81-ac84191b68d0,theme,housing_real_estate,,low,full,nonfinal:Passed House amended,N
+lowconf,1205ee3f-6cf5-42ee-9628-6dc21facf6fa,persistence,persistent_condition,,low,full,final_or_order,Y
+lowconf,1205ee3f-6cf5-42ee-9628-6dc21facf6fa,scope,sector_specific,,low,full,final_or_order,Y
+lowconf,1205ee3f-6cf5-42ee-9628-6dc21facf6fa,sector,Financials,mixed,low,full,final_or_order,N
+lowconf,1205ee3f-6cf5-42ee-9628-6dc21facf6fa,theme,government_operations,,low,full,final_or_order,Y
+lowconf,1205ee3f-6cf5-42ee-9628-6dc21facf6fa,theme,labor_employment,,low,full,final_or_order,Y
+lowconf,f834c345-2bd7-49e1-a245-49c86b1bfd9c,persistence,one_off,,low,thin,final_or_order,NA
+lowconf,f834c345-2bd7-49e1-a245-49c86b1bfd9c,theme,budget_appropriations,,low,thin,final_or_order,NA
+lowconf,3ea36283-6306-4bb0-968e-1b74574ce458,persistence,persistent_condition,,low,partial,final_or_order,Y
+lowconf,3ea36283-6306-4bb0-968e-1b74574ce458,scope,not_company_relevant,,low,partial,final_or_order,Y
+lowconf,3ea36283-6306-4bb0-968e-1b74574ce458,theme,government_operations,,low,partial,final_or_order,Y
+lowconf,3ea36283-6306-4bb0-968e-1b74574ce458,theme,technology_ai_data,,low,partial,final_or_order,Y
+lowconf,b0c4e125-69f9-43ae-8b91-17c4125b9521,persistence,one_off,,low,full,nonfinal:Passed House amended,Y
+lowconf,b0c4e125-69f9-43ae-8b91-17c4125b9521,scope,not_company_relevant,,low,full,nonfinal:Passed House amended,Y
+lowconf,b0c4e125-69f9-43ae-8b91-17c4125b9521,theme,budget_appropriations,,low,full,nonfinal:Passed House amended,Y
+lowconf,e6591f5f-3637-4249-94cb-67a7db44479b,persistence,one_off,,low,partial,final_or_order,NA
+lowconf,e6591f5f-3637-4249-94cb-67a7db44479b,scope,market_wide,,low,partial,final_or_order,NA
+lowconf,e6591f5f-3637-4249-94cb-67a7db44479b,theme,agriculture_food,,low,partial,final_or_order,NA
+lowconf,e6591f5f-3637-4249-94cb-67a7db44479b,theme,budget_appropriations,,low,partial,final_or_order,NA
+lowconf,19a4f9fc-5122-473e-aa06-6939fb92b829,persistence,one_off,,low,thin,nonfinal:Passed House without amendment,Y
+lowconf,19a4f9fc-5122-473e-aa06-6939fb92b829,theme,labor_employment,,low,thin,nonfinal:Passed House without amendment,Y
+lowconf,d28b4bb1-c58c-49ab-83b5-de9eec1419c3,persistence,persistent_condition,,low,full,nonfinal:Introduced in Senate,NA
+lowconf,d28b4bb1-c58c-49ab-83b5-de9eec1419c3,scope,sector_specific,,low,full,nonfinal:Introduced in Senate,NA
+lowconf,d28b4bb1-c58c-49ab-83b5-de9eec1419c3,sector,Consumer Discretionary,benefit,low,full,nonfinal:Introduced in Senate,NA
+lowconf,d28b4bb1-c58c-49ab-83b5-de9eec1419c3,theme,trade_tariffs,,low,full,nonfinal:Introduced in Senate,NA
+lowconf,64ecce5d-4dfa-4bde-b4df-d737ba137e82,persistence,one_off,,low,partial,final_or_order,Y
+lowconf,64ecce5d-4dfa-4bde-b4df-d737ba137e82,scope,market_wide,,low,partial,final_or_order,Y
+lowconf,64ecce5d-4dfa-4bde-b4df-d737ba137e82,theme,labor_employment,,low,partial,final_or_order,Y
+lowconf,64ecce5d-4dfa-4bde-b4df-d737ba137e82,theme,taxation,,low,partial,final_or_order,Y
+lowconf,92732de9-c940-4934-bc17-3e6000f8e273,persistence,one_off,,low,full,final_or_order,Y
+lowconf,92732de9-c940-4934-bc17-3e6000f8e273,scope,not_company_relevant,,low,full,final_or_order,Y
+lowconf,92732de9-c940-4934-bc17-3e6000f8e273,theme,budget_appropriations,,low,full,final_or_order,Y
+lowconf,1626e4c9-611b-4ca5-b56b-727517aa09eb,persistence,one_off,,low,partial,final_or_order,Y
+lowconf,1626e4c9-611b-4ca5-b56b-727517aa09eb,scope,sector_specific,,low,partial,final_or_order,Y
+lowconf,1626e4c9-611b-4ca5-b56b-727517aa09eb,theme,banking_monetary,,low,partial,final_or_order,N
+lowconf,1626e4c9-611b-4ca5-b56b-727517aa09eb,theme,budget_appropriations,,low,partial,final_or_order,Y
+lowconf,e7ddd86c-1e93-4a56-baa6-2d293573071f,persistence,persistent_condition,,low,thin,final_or_order,NA
+lowconf,e7ddd86c-1e93-4a56-baa6-2d293573071f,theme,government_operations,,low,thin,final_or_order,NA
+lowconf,bb757d1e-8cb0-4b4e-ae6b-9f05997ec233,persistence,persistent_condition,,low,partial,nonfinal:Conference report filed in House,Y
+lowconf,bb757d1e-8cb0-4b4e-ae6b-9f05997ec233,scope,sector_specific,,low,partial,nonfinal:Conference report filed in House,Y
+lowconf,bb757d1e-8cb0-4b4e-ae6b-9f05997ec233,sector,Financials,mixed,low,partial,nonfinal:Conference report filed in House,Y
+lowconf,bb757d1e-8cb0-4b4e-ae6b-9f05997ec233,theme,financial_regulation,,low,partial,nonfinal:Conference report filed in House,Y
+lowconf,2722e9d3-049d-4ed8-9dda-95c7c5946da3,persistence,persistent_condition,,low,full,nonfinal:Introduced in Senate,Y
+lowconf,2722e9d3-049d-4ed8-9dda-95c7c5946da3,scope,sector_specific,,low,full,nonfinal:Introduced in Senate,Y
+lowconf,2722e9d3-049d-4ed8-9dda-95c7c5946da3,sector,Consumer Staples,mixed,low,full,nonfinal:Introduced in Senate,Y
+lowconf,2722e9d3-049d-4ed8-9dda-95c7c5946da3,theme,agriculture_food,,low,full,nonfinal:Introduced in Senate,Y
+lowconf,2722e9d3-049d-4ed8-9dda-95c7c5946da3,theme,government_operations,,low,full,nonfinal:Introduced in Senate,Y
+lowconf,4b7b79d9-a522-444d-95d9-67e71a9189c6,persistence,persistent_condition,,low,full,final_or_order,Y
+lowconf,4b7b79d9-a522-444d-95d9-67e71a9189c6,scope,not_company_relevant,,low,full,final_or_order,Y
+lowconf,4b7b79d9-a522-444d-95d9-67e71a9189c6,theme,government_operations,,low,full,final_or_order,Y
+lowconf,7d7f4368-b302-46ef-8183-5bfb6a37cf0f,persistence,persistent_condition,,low,full,final_or_order,Y
+lowconf,7d7f4368-b302-46ef-8183-5bfb6a37cf0f,scope,sector_specific,,low,full,final_or_order,Y
+lowconf,7d7f4368-b302-46ef-8183-5bfb6a37cf0f,sector,Consumer Discretionary,mixed,low,full,final_or_order,Y
+lowconf,7d7f4368-b302-46ef-8183-5bfb6a37cf0f,theme,consumer_protection,,low,full,final_or_order,Y
+lowconf,7d7f4368-b302-46ef-8183-5bfb6a37cf0f,theme,trade_tariffs,,low,full,final_or_order,Y
+lowconf,66ba3a28-07b4-4b22-a5f3-5108ead9f23a,persistence,one_off,,low,partial,nonfinal:Line item veto by President,Y
+lowconf,66ba3a28-07b4-4b22-a5f3-5108ead9f23a,scope,market_wide,,low,partial,nonfinal:Line item veto by President,Y
+lowconf,66ba3a28-07b4-4b22-a5f3-5108ead9f23a,theme,budget_appropriations,,low,partial,nonfinal:Line item veto by President,Y
+lowconf,77d03f30-1750-46e5-9c0d-94e3847eca86,persistence,one_off,,low,full,final_or_order,Y
+lowconf,77d03f30-1750-46e5-9c0d-94e3847eca86,scope,not_company_relevant,,low,full,final_or_order,Y
+lowconf,77d03f30-1750-46e5-9c0d-94e3847eca86,theme,housing_real_estate,,low,full,final_or_order,Y
+lowconf,77d03f30-1750-46e5-9c0d-94e3847eca86,theme,taxation,,low,full,final_or_order,Y
+lowconf,ef932ed9-b54d-4e7f-b29e-9d169d4131da,persistence,persistent_condition,,low,full,final_or_order,NA
+lowconf,ef932ed9-b54d-4e7f-b29e-9d169d4131da,scope,sector_specific,,low,full,final_or_order,NA
+lowconf,ef932ed9-b54d-4e7f-b29e-9d169d4131da,sector,Communication Services,mixed,low,full,final_or_order,NA
+lowconf,ef932ed9-b54d-4e7f-b29e-9d169d4131da,theme,consumer_protection,,low,full,final_or_order,NA
+lowconf,ef932ed9-b54d-4e7f-b29e-9d169d4131da,theme,telecom_media,,low,full,final_or_order,NA
+lowconf,a139e79b-09f3-43dc-b87b-c02036333790,persistence,one_off,,low,thin,final_or_order,Y
+lowconf,a139e79b-09f3-43dc-b87b-c02036333790,theme,budget_appropriations,,low,thin,final_or_order,Y
+lowconf,0df731e6-5780-4d6f-a88d-c8e286406e29,persistence,persistent_condition,,low,partial,final_or_order,Y
+lowconf,0df731e6-5780-4d6f-a88d-c8e286406e29,scope,sector_specific,,low,partial,final_or_order,Y
+lowconf,0df731e6-5780-4d6f-a88d-c8e286406e29,sector,Consumer Staples,mixed,low,partial,final_or_order,Y
+lowconf,0df731e6-5780-4d6f-a88d-c8e286406e29,theme,agriculture_food,,low,partial,final_or_order,Y
+lowconf,0df731e6-5780-4d6f-a88d-c8e286406e29,theme,healthcare_drug_pricing,,low,partial,final_or_order,Y
+lowconf,d53c9592-66d4-41e4-8905-07555358e9f4,persistence,persistent_condition,,low,full,nonfinal:Reported to Senate with amendment(s),NA
+lowconf,d53c9592-66d4-41e4-8905-07555358e9f4,scope,not_company_relevant,,low,full,nonfinal:Reported to Senate with amendment(s),NA
+lowconf,d53c9592-66d4-41e4-8905-07555358e9f4,theme,technology_ai_data,,low,full,nonfinal:Reported to Senate with amendment(s),NA
+lowconf,c0602e6a-b24a-4f8e-87c1-91288d1ab4bc,persistence,one_off,,low,full,nonfinal:Passed Senate amended,Y
+lowconf,c0602e6a-b24a-4f8e-87c1-91288d1ab4bc,scope,sector_specific,,low,full,nonfinal:Passed Senate amended,N
+lowconf,c0602e6a-b24a-4f8e-87c1-91288d1ab4bc,sector,Consumer Staples,mixed,low,full,nonfinal:Passed Senate amended,N
+lowconf,c0602e6a-b24a-4f8e-87c1-91288d1ab4bc,theme,agriculture_food,,low,full,nonfinal:Passed Senate amended,Y
+lowconf,18318124-0c2b-4261-a682-4a75cc1d68c8,persistence,persistent_condition,,low,full,final_or_order,Y
+lowconf,18318124-0c2b-4261-a682-4a75cc1d68c8,scope,not_company_relevant,,low,full,final_or_order,Y
+lowconf,18318124-0c2b-4261-a682-4a75cc1d68c8,theme,financial_regulation,,low,full,final_or_order,Y
+lowconf,fe9b41b2-d4ee-4203-990f-fad0b6079478,persistence,one_off,,low,full,final_or_order,NA
+lowconf,fe9b41b2-d4ee-4203-990f-fad0b6079478,scope,not_company_relevant,,low,full,final_or_order,NA
+lowconf,fe9b41b2-d4ee-4203-990f-fad0b6079478,theme,budget_appropriations,,low,full,final_or_order,NA
+lowconf,fe9b41b2-d4ee-4203-990f-fad0b6079478,theme,government_operations,,low,full,final_or_order,NA
+lowconf,138406d2-9db9-4b24-a07c-7cf691076ba8,persistence,one_off,,low,partial,nonfinal:Introduced in House,Y
+lowconf,138406d2-9db9-4b24-a07c-7cf691076ba8,scope,not_company_relevant,,low,partial,nonfinal:Introduced in House,Y
+lowconf,138406d2-9db9-4b24-a07c-7cf691076ba8,theme,budget_appropriations,,low,partial,nonfinal:Introduced in House,Y
+lowconf,a2285546-a9a0-4822-8b1f-8477da91267a,persistence,one_off,,low,full,final_or_order,Y
+lowconf,a2285546-a9a0-4822-8b1f-8477da91267a,scope,sector_specific,,low,full,final_or_order,Y
+lowconf,a2285546-a9a0-4822-8b1f-8477da91267a,sector,Health Care,benefit,low,full,final_or_order,Y
+lowconf,a2285546-a9a0-4822-8b1f-8477da91267a,theme,healthcare_drug_pricing,,low,full,final_or_order,N
+lowconf,a2285546-a9a0-4822-8b1f-8477da91267a,theme,immigration,,low,full,final_or_order,Y
+lowconf,8a4b0d1e-00f7-45c8-94d8-eacf04ced7d0,persistence,persistent_condition,,low,thin,final_or_order,Y
+lowconf,8a4b0d1e-00f7-45c8-94d8-eacf04ced7d0,theme,environment_climate,,low,thin,final_or_order,Y
+lowconf,4b75a379-132f-4496-9b18-c653cd20bc65,persistence,one_off,,low,thin,nonfinal:Introduced in House,Y
+lowconf,4b75a379-132f-4496-9b18-c653cd20bc65,theme,budget_appropriations,,low,thin,nonfinal:Introduced in House,Y
+lowconf,34c19262-9d22-4a03-95b5-980906f92a75,persistence,persistent_condition,,low,full,final_or_order,Y
+lowconf,34c19262-9d22-4a03-95b5-980906f92a75,scope,sector_specific,,low,full,final_or_order,N
+lowconf,34c19262-9d22-4a03-95b5-980906f92a75,sector,Financials,mixed,low,full,final_or_order,N
+lowconf,34c19262-9d22-4a03-95b5-980906f92a75,theme,financial_regulation,,low,full,final_or_order,Y
+lowconf,e39d6976-0ba9-4136-811d-5f37b5631684,persistence,persistent_condition,,low,thin,final_or_order,NA
+lowconf,e39d6976-0ba9-4136-811d-5f37b5631684,theme,government_operations,,low,thin,final_or_order,NA
+lowconf,74141ae5-604a-4d51-a6e6-c37297c31165,persistence,one_off,,low,full,final_or_order,Y
+lowconf,74141ae5-604a-4d51-a6e6-c37297c31165,scope,market_wide,,low,full,final_or_order,Y
+lowconf,74141ae5-604a-4d51-a6e6-c37297c31165,theme,budget_appropriations,,low,full,final_or_order,Y
+lowconf,f51322ef-08be-4f55-8c40-da3b4e62ba5f,persistence,one_off,,low,full,final_or_order,NA
+lowconf,f51322ef-08be-4f55-8c40-da3b4e62ba5f,scope,not_company_relevant,,low,full,final_or_order,NA
+lowconf,f51322ef-08be-4f55-8c40-da3b4e62ba5f,theme,government_operations,,low,full,final_or_order,NA
+lowconf,2556de54-5271-41a5-b920-9f1500823be4,persistence,persistent_condition,,low,full,nonfinal:Introduced in House,Y
+lowconf,2556de54-5271-41a5-b920-9f1500823be4,scope,not_company_relevant,,low,full,nonfinal:Introduced in House,Y
+lowconf,2556de54-5271-41a5-b920-9f1500823be4,theme,government_operations,,low,full,nonfinal:Introduced in House,Y
+lowconf,0210c08c-b3d6-41ee-b523-4b7e3209d130,persistence,one_off,,low,full,nonfinal:Introduced in House,Y
+lowconf,0210c08c-b3d6-41ee-b523-4b7e3209d130,scope,not_company_relevant,,low,full,nonfinal:Introduced in House,Y
+lowconf,0210c08c-b3d6-41ee-b523-4b7e3209d130,theme,budget_appropriations,,low,full,nonfinal:Introduced in House,Y
+lowconf,0210c08c-b3d6-41ee-b523-4b7e3209d130,theme,government_operations,,low,full,nonfinal:Introduced in House,Y
+lowconf,1e94eb70-7ac5-4446-8db9-393d01870d93,persistence,one_off,,low,full,nonfinal:Introduced in House,Y
+lowconf,1e94eb70-7ac5-4446-8db9-393d01870d93,scope,market_wide,,low,full,nonfinal:Introduced in House,Y
+lowconf,1e94eb70-7ac5-4446-8db9-393d01870d93,theme,budget_appropriations,,low,full,nonfinal:Introduced in House,Y
+lowconf,7aa9a583-a3d6-4b6c-9d9c-daf4c6286051,persistence,persistent_condition,,low,partial,final_or_order,Y
+lowconf,7aa9a583-a3d6-4b6c-9d9c-daf4c6286051,scope,not_company_relevant,,low,partial,final_or_order,Y
+lowconf,7aa9a583-a3d6-4b6c-9d9c-daf4c6286051,theme,government_operations,,low,partial,final_or_order,Y
+lowconf,332693f1-d827-4b3b-afa2-decee48a144f,persistence,one_off,,low,full,nonfinal:Passed House amended,Y
+lowconf,332693f1-d827-4b3b-afa2-decee48a144f,scope,not_company_relevant,,low,full,nonfinal:Passed House amended,Y
+lowconf,332693f1-d827-4b3b-afa2-decee48a144f,theme,environment_climate,,low,full,nonfinal:Passed House amended,Y
+lowconf,332693f1-d827-4b3b-afa2-decee48a144f,theme,transportation_infrastructure,,low,full,nonfinal:Passed House amended,N
+lowconf,be0c82f9-9f83-463d-a89b-b5b67b58262f,persistence,persistent_condition,,low,partial,final_or_order,Y
+lowconf,be0c82f9-9f83-463d-a89b-b5b67b58262f,scope,market_wide,,low,partial,final_or_order,Y
+lowconf,be0c82f9-9f83-463d-a89b-b5b67b58262f,theme,government_operations,,low,partial,final_or_order,Y
+lowconf,c7e5c8b8-c9b6-4b05-9f6c-3fea3c198515,persistence,persistent_condition,,low,thin,final_or_order,Y
+lowconf,c7e5c8b8-c9b6-4b05-9f6c-3fea3c198515,theme,consumer_protection,,low,thin,final_or_order,Y
+lowconf,706d2d02-59ec-4999-8602-e45a36ff2d77,persistence,persistent_condition,,low,partial,final_or_order,Y
+lowconf,706d2d02-59ec-4999-8602-e45a36ff2d77,scope,not_company_relevant,,low,partial,final_or_order,Y
+lowconf,706d2d02-59ec-4999-8602-e45a36ff2d77,theme,financial_regulation,,low,partial,final_or_order,Y
+lowconf,706d2d02-59ec-4999-8602-e45a36ff2d77,theme,government_operations,,low,partial,final_or_order,Y
+lowconf,c9cbf663-1cd7-4d76-9c0b-55e7abc77a28,persistence,persistent_condition,,low,full,final_or_order,Y
+lowconf,c9cbf663-1cd7-4d76-9c0b-55e7abc77a28,scope,market_wide,,low,full,final_or_order,Y
+lowconf,c9cbf663-1cd7-4d76-9c0b-55e7abc77a28,theme,taxation,,low,full,final_or_order,Y
+lowconf,6d712fd3-c74d-4a4a-90d4-538775380f4d,persistence,one_off,,low,thin,final_or_order,Y
+lowconf,6d712fd3-c74d-4a4a-90d4-538775380f4d,theme,budget_appropriations,,low,thin,final_or_order,Y
+lowconf,806876c9-c53d-4088-9efc-db2ef344c48a,persistence,one_off,,low,thin,nonfinal:Passed Senate amended,Y
+lowconf,806876c9-c53d-4088-9efc-db2ef344c48a,theme,government_operations,,low,thin,nonfinal:Passed Senate amended,N
+lowconf,6796c532-83d2-4a00-b6f1-8ec037e8dc2a,persistence,one_off,,low,full,nonfinal:House agreed to Senate amendment with amendment,Y
+lowconf,6796c532-83d2-4a00-b6f1-8ec037e8dc2a,scope,market_wide,,low,full,nonfinal:House agreed to Senate amendment with amendment,Y
+lowconf,6796c532-83d2-4a00-b6f1-8ec037e8dc2a,theme,budget_appropriations,,low,full,nonfinal:House agreed to Senate amendment with amendment,Y
+lowconf,b7125182-dc35-469d-8f76-e8cdd7e77111,persistence,one_off,,low,partial,nonfinal:Conference report filed in House,Y
+lowconf,b7125182-dc35-469d-8f76-e8cdd7e77111,scope,not_company_relevant,,low,partial,nonfinal:Conference report filed in House,N
+lowconf,b7125182-dc35-469d-8f76-e8cdd7e77111,theme,budget_appropriations,,low,partial,nonfinal:Conference report filed in House,Y
+lowconf,1bb4d1cf-1ab5-4b89-b06b-38aba7d96e59,persistence,persistent_condition,,low,full,final_or_order,Y
+lowconf,1bb4d1cf-1ab5-4b89-b06b-38aba7d96e59,scope,sector_specific,,low,full,final_or_order,Y
+lowconf,1bb4d1cf-1ab5-4b89-b06b-38aba7d96e59,theme,telecom_media,,low,full,final_or_order,Y
+lowconf,df1d0800-9fa4-4508-ade2-6e3668c7990c,persistence,persistent_condition,,low,partial,nonfinal:Line item veto by President,NA
+lowconf,df1d0800-9fa4-4508-ade2-6e3668c7990c,scope,market_wide,,low,partial,nonfinal:Line item veto by President,NA
+lowconf,df1d0800-9fa4-4508-ade2-6e3668c7990c,sector,Health Care,mixed,low,partial,nonfinal:Line item veto by President,NA
+lowconf,df1d0800-9fa4-4508-ade2-6e3668c7990c,theme,agriculture_food,,low,partial,nonfinal:Line item veto by President,NA
+lowconf,df1d0800-9fa4-4508-ade2-6e3668c7990c,theme,budget_appropriations,,low,partial,nonfinal:Line item veto by President,NA
+lowconf,d8851be9-9eeb-40d6-952a-2c183cd0e7de,persistence,one_off,,low,thin,nonfinal:Introduced in House,NA
+lowconf,d8851be9-9eeb-40d6-952a-2c183cd0e7de,theme,budget_appropriations,,low,thin,nonfinal:Introduced in House,NA
+lowconf,d8851be9-9eeb-40d6-952a-2c183cd0e7de,theme,energy_policy,,low,thin,nonfinal:Introduced in House,NA
+lowconf,13d2c49b-393a-4004-aaec-66c5121c13e0,persistence,one_off,,low,thin,final_or_order,Y
+lowconf,13d2c49b-393a-4004-aaec-66c5121c13e0,theme,budget_appropriations,,low,thin,final_or_order,Y
+lowconf,7054e0cf-0aff-4826-84d9-ba045e7e425c,persistence,one_off,,low,full,final_or_order,Y
+lowconf,7054e0cf-0aff-4826-84d9-ba045e7e425c,scope,market_wide,,low,full,final_or_order,Y
+lowconf,7054e0cf-0aff-4826-84d9-ba045e7e425c,sector,Materials,benefit,low,full,final_or_order,Y
+lowconf,7054e0cf-0aff-4826-84d9-ba045e7e425c,theme,taxation,,low,full,final_or_order,Y
+lowconf,7054e0cf-0aff-4826-84d9-ba045e7e425c,theme,trade_tariffs,,low,full,final_or_order,Y
+lowconf,d670d6af-af15-453e-a77b-63d580088026,persistence,persistent_condition,,low,full,nonfinal:Passed Senate amended,NA
+lowconf,d670d6af-af15-453e-a77b-63d580088026,scope,sector_specific,,low,full,nonfinal:Passed Senate amended,NA
+lowconf,d670d6af-af15-453e-a77b-63d580088026,sector,Health Care,benefit,low,full,nonfinal:Passed Senate amended,NA
+lowconf,d670d6af-af15-453e-a77b-63d580088026,theme,budget_appropriations,,low,full,nonfinal:Passed Senate amended,NA
+lowconf,d670d6af-af15-453e-a77b-63d580088026,theme,healthcare_drug_pricing,,low,full,nonfinal:Passed Senate amended,NA
+lowconf,ff567ee6-cdc5-43f0-84a2-ac09059e9a68,persistence,persistent_condition,,low,partial,final_or_order,NA
+lowconf,ff567ee6-cdc5-43f0-84a2-ac09059e9a68,scope,not_company_relevant,,low,partial,final_or_order,NA
+lowconf,ff567ee6-cdc5-43f0-84a2-ac09059e9a68,theme,government_operations,,low,partial,final_or_order,NA
+lowconf,543646ad-fc3c-42fd-93f5-455b94f42478,persistence,one_off,,low,full,final_or_order,Y
+lowconf,543646ad-fc3c-42fd-93f5-455b94f42478,scope,not_company_relevant,,low,full,final_or_order,Y
+lowconf,543646ad-fc3c-42fd-93f5-455b94f42478,theme,taxation,,low,full,final_or_order,Y
+lowconf,543646ad-fc3c-42fd-93f5-455b94f42478,theme,trade_tariffs,,low,full,final_or_order,Y
+lowconf,ab026ca4-3b6d-4ec1-825f-1b60d5c06ac6,persistence,persistent_condition,,low,partial,nonfinal:Conference report filed in House,Y
+lowconf,ab026ca4-3b6d-4ec1-825f-1b60d5c06ac6,scope,sector_specific,,low,partial,nonfinal:Conference report filed in House,Y
+lowconf,ab026ca4-3b6d-4ec1-825f-1b60d5c06ac6,sector,Health Care,benefit,low,partial,nonfinal:Conference report filed in House,Y
+lowconf,ab026ca4-3b6d-4ec1-825f-1b60d5c06ac6,theme,budget_appropriations,,low,partial,nonfinal:Conference report filed in House,N
+lowconf,ab026ca4-3b6d-4ec1-825f-1b60d5c06ac6,theme,labor_employment,,low,partial,nonfinal:Conference report filed in House,Y
+lowconf,f65d54d5-f9bd-4d54-be79-94036f9a677b,persistence,persistent_condition,,low,full,nonfinal:Passed Senate amended,NA
+lowconf,f65d54d5-f9bd-4d54-be79-94036f9a677b,scope,not_company_relevant,,low,full,nonfinal:Passed Senate amended,NA
+lowconf,f65d54d5-f9bd-4d54-be79-94036f9a677b,theme,defense_procurement,,low,full,nonfinal:Passed Senate amended,NA
+lowconf,b7f48910-8e85-4627-a99e-42c450d0ef4c,persistence,persistent_condition,,low,full,nonfinal:Passed House amended,Y
+lowconf,b7f48910-8e85-4627-a99e-42c450d0ef4c,scope,sector_specific,,low,full,nonfinal:Passed House amended,Y
+lowconf,b7f48910-8e85-4627-a99e-42c450d0ef4c,sector,Communication Services,benefit,low,full,nonfinal:Passed House amended,N
+lowconf,b7f48910-8e85-4627-a99e-42c450d0ef4c,sector,Information Technology,benefit,low,full,nonfinal:Passed House amended,Y
+lowconf,b7f48910-8e85-4627-a99e-42c450d0ef4c,theme,consumer_protection,,low,full,nonfinal:Passed House amended,Y
+lowconf,b7f48910-8e85-4627-a99e-42c450d0ef4c,theme,technology_ai_data,,low,full,nonfinal:Passed House amended,N
+lowconf,b7f48910-8e85-4627-a99e-42c450d0ef4c,theme,telecom_media,,low,full,nonfinal:Passed House amended,N
+lowconf,3d4c4d73-3fe2-4fb1-a859-c595edb56cbf,persistence,one_off,,low,full,final_or_order,Y
+lowconf,3d4c4d73-3fe2-4fb1-a859-c595edb56cbf,scope,not_company_relevant,,low,full,final_or_order,Y
+lowconf,3d4c4d73-3fe2-4fb1-a859-c595edb56cbf,theme,budget_appropriations,,low,full,final_or_order,Y
+lowconf,0b755811-b33e-4121-82b4-179d864eecb9,persistence,one_off,,low,thin,nonfinal:Introduced in House,Y
+lowconf,0b755811-b33e-4121-82b4-179d864eecb9,theme,energy_policy,,low,thin,nonfinal:Introduced in House,N
+lowconf,233a631d-c38a-48c9-8d93-f0c1b38eaef6,persistence,persistent_condition,,low,partial,nonfinal:Passed Senate amended,Y
+lowconf,233a631d-c38a-48c9-8d93-f0c1b38eaef6,scope,market_wide,,low,partial,nonfinal:Passed Senate amended,Y
+lowconf,233a631d-c38a-48c9-8d93-f0c1b38eaef6,theme,labor_employment,,low,partial,nonfinal:Passed Senate amended,Y
+lowconf,88a72ff1-dd5a-4325-962e-d85dc516e38c,persistence,persistent_condition,,low,full,final_or_order,Y
+lowconf,88a72ff1-dd5a-4325-962e-d85dc516e38c,scope,sector_specific,,low,full,final_or_order,Y
+lowconf,88a72ff1-dd5a-4325-962e-d85dc516e38c,sector,Consumer Staples,mixed,low,full,final_or_order,Y
+lowconf,88a72ff1-dd5a-4325-962e-d85dc516e38c,theme,consumer_protection,,low,full,final_or_order,Y
+lowconf,88a72ff1-dd5a-4325-962e-d85dc516e38c,theme,environment_climate,,low,full,final_or_order,Y
+lowconf,41d681f5-189d-46d2-b469-84bf24faf8b1,persistence,persistent_condition,,low,full,nonfinal:Introduced in Senate,Y
+lowconf,41d681f5-189d-46d2-b469-84bf24faf8b1,scope,not_company_relevant,,low,full,nonfinal:Introduced in Senate,Y
+lowconf,41d681f5-189d-46d2-b469-84bf24faf8b1,theme,government_operations,,low,full,nonfinal:Introduced in Senate,Y
+lowconf,2705a637-aa65-4176-ad51-e94592b59ed1,persistence,persistent_condition,,low,full,final_or_order,Y
+lowconf,2705a637-aa65-4176-ad51-e94592b59ed1,scope,sector_specific,,low,full,final_or_order,Y
+lowconf,2705a637-aa65-4176-ad51-e94592b59ed1,sector,Energy,mixed,low,full,final_or_order,Y
+lowconf,2705a637-aa65-4176-ad51-e94592b59ed1,theme,energy_policy,,low,full,final_or_order,Y
+lowconf,05472731-5af8-42ce-be0f-b3170276514c,persistence,one_off,,low,full,final_or_order,Y
+lowconf,05472731-5af8-42ce-be0f-b3170276514c,scope,not_company_relevant,,low,full,final_or_order,Y
+lowconf,05472731-5af8-42ce-be0f-b3170276514c,theme,budget_appropriations,,low,full,final_or_order,Y
+lowconf,3d5df04d-250d-4811-a93a-e34e4f52e4bd,persistence,one_off,,low,partial,nonfinal:Conference report filed in House,Y
+lowconf,3d5df04d-250d-4811-a93a-e34e4f52e4bd,scope,market_wide,,low,partial,nonfinal:Conference report filed in House,N
+lowconf,3d5df04d-250d-4811-a93a-e34e4f52e4bd,sector,Utilities,mixed,low,partial,nonfinal:Conference report filed in House,Y
+lowconf,3d5df04d-250d-4811-a93a-e34e4f52e4bd,theme,budget_appropriations,,low,partial,nonfinal:Conference report filed in House,Y
+lowconf,3d5df04d-250d-4811-a93a-e34e4f52e4bd,theme,transportation_infrastructure,,low,partial,nonfinal:Conference report filed in House,Y
+lowconf,9b0c62a9-c27f-4a1c-afef-7c4b2c6c4ca8,persistence,persistent_condition,,low,full,final_or_order,Y
+lowconf,9b0c62a9-c27f-4a1c-afef-7c4b2c6c4ca8,scope,sector_specific,,low,full,final_or_order,Y
+lowconf,9b0c62a9-c27f-4a1c-afef-7c4b2c6c4ca8,sector,Health Care,mixed,low,full,final_or_order,Y
+lowconf,9b0c62a9-c27f-4a1c-afef-7c4b2c6c4ca8,theme,healthcare_drug_pricing,,low,full,final_or_order,Y
+lowconf,aaa1b007-fd73-4b27-a829-08bf093af6de,persistence,persistent_condition,,low,partial,final_or_order,Y
+lowconf,aaa1b007-fd73-4b27-a829-08bf093af6de,scope,not_company_relevant,,low,partial,final_or_order,Y
+lowconf,aaa1b007-fd73-4b27-a829-08bf093af6de,theme,government_operations,,low,partial,final_or_order,Y
+lowconf,eb105e90-1e37-4587-aa44-e722fcceb7b7,persistence,one_off,,low,partial,final_or_order,NA
+lowconf,eb105e90-1e37-4587-aa44-e722fcceb7b7,scope,not_company_relevant,,low,partial,final_or_order,NA
+lowconf,eb105e90-1e37-4587-aa44-e722fcceb7b7,theme,budget_appropriations,,low,partial,final_or_order,NA
+lowconf,eb105e90-1e37-4587-aa44-e722fcceb7b7,theme,government_operations,,low,partial,final_or_order,NA
+lowconf,afdae427-f92d-4a49-a9cd-fc2546e471c5,persistence,persistent_condition,,low,full,nonfinal:Passed Senate amended,Y
+lowconf,afdae427-f92d-4a49-a9cd-fc2546e471c5,scope,not_company_relevant,,low,full,nonfinal:Passed Senate amended,Y
+lowconf,afdae427-f92d-4a49-a9cd-fc2546e471c5,theme,government_operations,,low,full,nonfinal:Passed Senate amended,Y
+lowconf,afdae427-f92d-4a49-a9cd-fc2546e471c5,theme,telecom_media,,low,full,nonfinal:Passed Senate amended,N
+lowconf,29a0f5c0-50c5-4cfe-8e69-d2c1fc7ae991,persistence,one_off,,low,partial,nonfinal:Conference report filed in House,Y
+lowconf,29a0f5c0-50c5-4cfe-8e69-d2c1fc7ae991,scope,not_company_relevant,,low,partial,nonfinal:Conference report filed in House,N
+lowconf,29a0f5c0-50c5-4cfe-8e69-d2c1fc7ae991,theme,budget_appropriations,,low,partial,nonfinal:Conference report filed in House,Y
+lowconf,29a0f5c0-50c5-4cfe-8e69-d2c1fc7ae991,theme,defense_procurement,,low,partial,nonfinal:Conference report filed in House,Y
+lowconf,6264b2d7-15cc-4fee-92c0-8e92be1198db,persistence,one_off,,low,full,final_or_order,Y
+lowconf,6264b2d7-15cc-4fee-92c0-8e92be1198db,scope,not_company_relevant,,low,full,final_or_order,Y
+lowconf,6264b2d7-15cc-4fee-92c0-8e92be1198db,theme,financial_regulation,,low,full,final_or_order,Y
+lowconf,0c7388a6-2ffe-4880-868c-f1634b33c523,persistence,one_off,,low,thin,final_or_order,Y
+lowconf,0c7388a6-2ffe-4880-868c-f1634b33c523,theme,budget_appropriations,,low,thin,final_or_order,Y
+lowconf,8b00ed43-32c6-438f-b654-f1cfa2194e2a,persistence,persistent_condition,,low,full,final_or_order,Y
+lowconf,8b00ed43-32c6-438f-b654-f1cfa2194e2a,scope,not_company_relevant,,low,full,final_or_order,Y
+lowconf,8b00ed43-32c6-438f-b654-f1cfa2194e2a,theme,environment_climate,,low,full,final_or_order,Y
+lowconf,d0798047-25b5-4d18-b4de-9532cc6800aa,persistence,persistent_condition,,low,full,nonfinal:Passed Senate amended,Y
+lowconf,d0798047-25b5-4d18-b4de-9532cc6800aa,scope,sector_specific,,low,full,nonfinal:Passed Senate amended,Y
+lowconf,d0798047-25b5-4d18-b4de-9532cc6800aa,sector,Utilities,mixed,low,full,nonfinal:Passed Senate amended,N
+lowconf,d0798047-25b5-4d18-b4de-9532cc6800aa,theme,budget_appropriations,,low,full,nonfinal:Passed Senate amended,Y
+lowconf,d0798047-25b5-4d18-b4de-9532cc6800aa,theme,environment_climate,,low,full,nonfinal:Passed Senate amended,N
+lowconf,d45b138f-917d-4f98-806c-8c88a74b92d1,persistence,persistent_condition,,low,thin,nonfinal:Introduced in Senate,NA
+lowconf,d45b138f-917d-4f98-806c-8c88a74b92d1,theme,agriculture_food,,low,thin,nonfinal:Introduced in Senate,NA
+lowconf,a9f3e288-a988-416e-a91d-ac33e5b1aa0f,persistence,persistent_condition,,low,partial,nonfinal:Conference report filed in House,Y
+lowconf,a9f3e288-a988-416e-a91d-ac33e5b1aa0f,scope,sector_specific,,low,partial,nonfinal:Conference report filed in House,Y
+lowconf,a9f3e288-a988-416e-a91d-ac33e5b1aa0f,sector,Consumer Staples,benefit,low,partial,nonfinal:Conference report filed in House,Y
+lowconf,a9f3e288-a988-416e-a91d-ac33e5b1aa0f,theme,agriculture_food,,low,partial,nonfinal:Conference report filed in House,Y
+lowconf,a9f3e288-a988-416e-a91d-ac33e5b1aa0f,theme,budget_appropriations,,low,partial,nonfinal:Conference report filed in House,Y
+lowconf,6c8acddd-9742-43f1-a5a0-eca775d4c372,persistence,persistent_condition,,low,full,nonfinal:Passed Senate amended,Y
+lowconf,6c8acddd-9742-43f1-a5a0-eca775d4c372,scope,not_company_relevant,,low,full,nonfinal:Passed Senate amended,N
+lowconf,6c8acddd-9742-43f1-a5a0-eca775d4c372,theme,budget_appropriations,,low,full,nonfinal:Passed Senate amended,Y
+lowconf,6c8acddd-9742-43f1-a5a0-eca775d4c372,theme,environment_climate,,low,full,nonfinal:Passed Senate amended,Y
+lowconf,5bac34d1-0421-488c-b366-cab84a0013fc,persistence,persistent_condition,,low,full,nonfinal:Introduced in Senate,Y
+lowconf,5bac34d1-0421-488c-b366-cab84a0013fc,scope,sector_specific,,low,full,nonfinal:Introduced in Senate,Y
+lowconf,5bac34d1-0421-488c-b366-cab84a0013fc,sector,Utilities,mixed,low,full,nonfinal:Introduced in Senate,Y
+lowconf,5bac34d1-0421-488c-b366-cab84a0013fc,theme,energy_policy,,low,full,nonfinal:Introduced in Senate,Y
+lowconf,eb139e83-1e64-4f8c-9128-f76b506dd471,persistence,persistent_condition,,low,partial,final_or_order,NA
+lowconf,eb139e83-1e64-4f8c-9128-f76b506dd471,scope,not_company_relevant,,low,partial,final_or_order,NA
+lowconf,eb139e83-1e64-4f8c-9128-f76b506dd471,theme,healthcare_drug_pricing,,low,partial,final_or_order,NA
+lowconf,7e515fdd-ce70-47b1-bbef-3b0e417e0429,persistence,persistent_condition,,low,partial,nonfinal:Conference report filed in House,Y
+lowconf,7e515fdd-ce70-47b1-bbef-3b0e417e0429,scope,sector_specific,,low,partial,nonfinal:Conference report filed in House,Y
+lowconf,7e515fdd-ce70-47b1-bbef-3b0e417e0429,theme,environment_climate,,low,partial,nonfinal:Conference report filed in House,Y
+lowconf,7e515fdd-ce70-47b1-bbef-3b0e417e0429,theme,transportation_infrastructure,,low,partial,nonfinal:Conference report filed in House,Y
+lowconf,e8baf97d-2cb5-4b2a-aaa6-f409ce9f7f41,persistence,persistent_condition,,low,full,nonfinal:Passed House amended,NA
+lowconf,e8baf97d-2cb5-4b2a-aaa6-f409ce9f7f41,scope,sector_specific,,low,full,nonfinal:Passed House amended,NA
+lowconf,e8baf97d-2cb5-4b2a-aaa6-f409ce9f7f41,sector,Health Care,harm,low,full,nonfinal:Passed House amended,NA
+lowconf,e8baf97d-2cb5-4b2a-aaa6-f409ce9f7f41,sector,Materials,harm,low,full,nonfinal:Passed House amended,NA
+lowconf,e8baf97d-2cb5-4b2a-aaa6-f409ce9f7f41,theme,healthcare_drug_pricing,,low,full,nonfinal:Passed House amended,NA
+lowconf,e8baf97d-2cb5-4b2a-aaa6-f409ce9f7f41,theme,trade_tariffs,,low,full,nonfinal:Passed House amended,NA
+lowconf,2a3a22c2-773c-46f5-acca-299dba464daa,persistence,one_off,,low,full,nonfinal:Introduced in House,Y
+lowconf,2a3a22c2-773c-46f5-acca-299dba464daa,scope,not_company_relevant,,low,full,nonfinal:Introduced in House,Y
+lowconf,2a3a22c2-773c-46f5-acca-299dba464daa,theme,budget_appropriations,,low,full,nonfinal:Introduced in House,Y
+lowconf,2a3a22c2-773c-46f5-acca-299dba464daa,theme,energy_policy,,low,full,nonfinal:Introduced in House,Y
+lowconf,0924637a-5aee-4ca9-b254-a929abd9052e,persistence,one_off,,low,partial,final_or_order,Y
+lowconf,0924637a-5aee-4ca9-b254-a929abd9052e,scope,sector_specific,,low,partial,final_or_order,Y
+lowconf,0924637a-5aee-4ca9-b254-a929abd9052e,sector,Health Care,mixed,low,partial,final_or_order,Y
+lowconf,0924637a-5aee-4ca9-b254-a929abd9052e,theme,budget_appropriations,,low,partial,final_or_order,Y
+lowconf,0924637a-5aee-4ca9-b254-a929abd9052e,theme,healthcare_drug_pricing,,low,partial,final_or_order,Y
+lowconf,76165784-dc4a-417e-a3aa-5edbe4231d71,persistence,persistent_condition,,low,partial,final_or_order,Y
+lowconf,76165784-dc4a-417e-a3aa-5edbe4231d71,scope,sector_specific,,low,partial,final_or_order,N
+lowconf,76165784-dc4a-417e-a3aa-5edbe4231d71,sector,Health Care,benefit,low,partial,final_or_order,N
+lowconf,76165784-dc4a-417e-a3aa-5edbe4231d71,theme,budget_appropriations,,low,partial,final_or_order,N
+lowconf,76165784-dc4a-417e-a3aa-5edbe4231d71,theme,government_operations,,low,partial,final_or_order,Y
+lowconf,76165784-dc4a-417e-a3aa-5edbe4231d71,theme,healthcare_drug_pricing,,low,partial,final_or_order,Y
