@@ -31,3 +31,4 @@
 2026-02-06
 2026-02-20
 2026-06-03
+# ADDENDUM 1 (2026-10-23, written BEFORE any real computation, after testing eo_trade_split.py on synthetic data): a trade order's effect lands on day +1, so a non-trade order signed the trading day after a trade day has its day 0 inflated (contamination of N; with an effect on trade days only, the registered rule read BROAD in 1 of 3 synthetic seeds for this reason). THE REGISTERED RULE IS UNCHANGED and its verdict (full N) stands. Added as a sensitivity: N_clean = N without the days directly after a T day; if its verdict differs from the registered one, the difference is reported as contamination, not as a result. Added prediction: N days directly after a T day: 5 (3-8); P(registered verdict = N_clean verdict) 85%.
