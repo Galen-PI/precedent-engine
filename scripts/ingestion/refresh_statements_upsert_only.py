@@ -81,7 +81,7 @@ def main():
     cik_of = {v: k for k, v in m.CIK_TO_TICKER.items()}
     jobs = []
     if "--all" in args:
-        jobs = [(t, c) for t, c in sorted(cik_of.items())]
+        jobs = [(t, c) for t, c in sorted(cik_of.items()) if t != "SPY"]   # SPY has no company facts (an ETF): it only produced an error
         args = [a for a in args if a != "--all"]
     for a in args:
         if "=" in a:
@@ -119,8 +119,8 @@ def main():
                 old, newv = srow.get(col), r.get(col)
                 kind = "filled" if old is None else ("cleared" if newv is None else "restated")
                 kinds.setdefault(col, {"filled": 0, "cleared": 0, "restated": 0})[kind] += 1
-                if kind == "restated" and len(examples.setdefault(col, [])) < 3:
-                    examples[col].append("%s %s %s: %s -> %s" % (t, srow.get("period_type"), str(srow.get("period_end"))[:10], old, newv))
+                if kind in ("restated", "cleared") and len(examples.setdefault((col, kind), [])) < 3:
+                    examples[(col, kind)].append("%s %s %s: %s -> %s  [%s]" % (t, srow.get("period_type"), str(srow.get("period_end"))[:10], old, newv, kind))
         if additive:
             fills = []
             for r, d, srow in p["changed"]:
@@ -142,8 +142,9 @@ def main():
         print("\nCHANGED CELLS by column (filled = stored NULL; cleared = computed NULL; restated = both present and different)")
         for col, k in sorted(kinds.items(), key=lambda kv: -sum(kv[1].values())):
             print("  %-22s filled %5d | cleared %5d | restated %5d" % (col, k["filled"], k["cleared"], k["restated"]))
-            for ex in examples.get(col, []):
-                print("        e.g. " + ex)
+            for kind_ in ("restated", "cleared"):
+                for ex in examples.get((col, kind_), []):
+                    print("        e.g. " + ex)
     print("\nSUMMARY (%s%s) over %d tickers: new rows %d | changed rows %d | rows %s %d | stale rows left alone %d | DANGER tickers skipped %d | errors %d" % ("APPLIED" if apply else "DRY RUN", " ADDITIVE: new rows and fills only" if additive else "", tot["tickers"], tot["new"], tot["changed"], "written" if apply else "that would be written", tot["to_write"], tot["stale"], tot["danger"], tot["errors"]))
     if apply:
         print("NEXT: python3 scripts/financial_pipeline/populate_financial_metrics.py")
