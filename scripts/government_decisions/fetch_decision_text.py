@@ -2,7 +2,7 @@
 """
 fetch_decision_text.py -- fetches the SOURCE TEXT the government-decision tagger will read, for the RELEVANT decisions (structured_data.relevance_verdict = relevant), into the new table government_decision_text. Reads government_decisions; writes only government_decision_text, and only with --apply (a dry run still calls the free public APIs).
 WHY. The tagging input must be real text: not the title ('Addressing Risks From Susman Godfrey' cannot be sector-tagged by anyone) and not the classifier's own reasoning (circular).
-SOURCES. Laws: Congress.gov v3 /bill/{congress}/{type}/{number}/summaries (CRS summaries; the version with the latest actionDate; HTML stripped); needs CONGRESS_API_KEY. Executive orders: Federal Register /api/v1/documents/{document_number}.json, then its raw_text_url (plain text), else body_html_url; the first 10,000 characters; abstract first when present.
+SOURCES. Laws: Congress.gov v3 /bill/{congress}/{type}/{number}/summaries (CRS summaries; the version with the latest actionDate; HTML stripped); needs CONGRESS_API_KEY. Executive orders: Federal Register /api/v1/documents/{document_number}.json, then its raw_text_url (plain text), else body_html_url; the cleaned text (HTML wrapper and header boilerplate removed); abstract first when present. Stored in FULL (caps 150,000 characters for laws and 40,000 for orders, recorded in the note when hit): the tagging step, not this script, decides how much of a long text to read, because the first N characters of an omnibus bill are not representative of it.
 STATUS per decision: ok | no_text (the source has no summary or text: the tagger must treat the title alone as low confidence) | error (retried on the next run). Resume-safe: decisions already ok or no_text are skipped.
 Table: government_decision_text(decision_id PK, source, text_chars, body, fetched_at, status, note); see the DO block in the instructions.
 Usage:   python3 -u scripts/government_decisions/fetch_decision_text.py --pilot --show-raw          3 laws + 3 orders, prints what came back, writes nothing
@@ -15,7 +15,7 @@ import requests
 CONGRESS_BASE = "https://api.congress.gov/v3"
 FR_BASE = "https://www.federalregister.gov/api/v1"
 PACE_CONGRESS, PACE_FR = 0.2, 0.5
-MAX_CHARS = 10000
+MAX_CHARS_LAW, MAX_CHARS_ORDER = 150000, 40000   # storage caps only: the tagging step decides how much of a long text it reads
 UA = {"User-Agent": "precedent-engine research (contact via GitHub Galen-PI)"}
 DONE = ("ok", "no_text")
 
@@ -24,6 +24,17 @@ def strip_html(t):
     t = re.sub(r"(?is)<(script|style).*?</\1>", " ", t or "")
     t = re.sub(r"(?s)<[^>]+>", " ", t)
     return " ".join(html.unescape(t).split())
+
+
+FR_NOISE = [r"Federal Register, Volume \d+ Issue \d+ \([^)]*\)", r"\[\[Page [^\]]*\]\]", r"\[Federal Register Volume[^\]]*\]", r"\[Presidential Documents\]", r"\[Pages? [^\]]*\]", r"From the Federal Register Online via the Government Publishing Office \[[^\]]*\]", r"\[FR Doc[^\]]*\]", r"\[Billing code[^\]]*\]"]
+
+
+def clean_fr(t):
+    """the Federal Register 'raw text' URL returns an HTML page wrapped around a <pre> block with header boilerplate: strip the tags and the bracketed header and page markers"""
+    t = strip_html(t)
+    for pat in FR_NOISE:
+        t = re.sub(pat, " ", t)
+    return " ".join(t.split())
 
 
 def http_get(url, params=None, tries=5, as_json=True):
@@ -72,7 +83,7 @@ def law_text(key, sd, raw=None):
         return {"status": "no_text", "source": "congress_crs_summary", "note": "the bill has no CRS summary"}
     s = max(sums, key=lambda x: (x.get("actionDate") or "", x.get("updateDate") or ""))
     body = strip_html(s["text"])
-    return {"status": "ok", "source": "congress_crs_summary", "body": body[:MAX_CHARS], "note": "version %s | %s | %s | %d summaries" % (s.get("versionCode"), s.get("actionDesc"), s.get("actionDate"), len(sums)) + (" | truncated" if len(body) > MAX_CHARS else "")}
+    return {"status": "ok", "source": "congress_crs_summary", "body": body[:MAX_CHARS_LAW], "note": "version %s | %s | %s | %d summaries | %d characters" % (s.get("versionCode"), s.get("actionDesc"), s.get("actionDate"), len(sums), len(body)) + (" | TRUNCATED at %d" % MAX_CHARS_LAW if len(body) > MAX_CHARS_LAW else "")}
 
 
 def order_text(sd, srcdoc, raw=None):
@@ -90,17 +101,17 @@ def order_text(sd, srcdoc, raw=None):
         t, e = http_get(data["raw_text_url"], as_json=False)
         time.sleep(PACE_FR)
         if not e and t and t.strip():
-            text, how = " ".join(t.split()), "raw_text"
+            text, how = clean_fr(t), "raw_text"
     if not text and data.get("body_html_url"):
         t, e = http_get(data["body_html_url"], as_json=False)
         time.sleep(PACE_FR)
         if not e and t:
-            text, how = strip_html(t), "body_html"
+            text, how = clean_fr(t), "body_html"
     abstract = (data.get("abstract") or "").strip()
     body = (abstract + "\n\n" if abstract else "") + text
     if not body.strip():
         return {"status": "no_text", "source": "federal_register_text", "note": "no abstract and no retrievable text"}
-    return {"status": "ok", "source": "federal_register_text", "body": body[:MAX_CHARS], "note": "%s%s%s" % (how or "abstract only", " | abstract present" if abstract else "", " | truncated" if len(body) > MAX_CHARS else "")}
+    return {"status": "ok", "source": "federal_register_text", "body": body[:MAX_CHARS_ORDER], "note": "%s%s | %d characters%s" % (how or "abstract only", " | abstract present" if abstract else "", len(body), " | TRUNCATED at %d" % MAX_CHARS_ORDER if len(body) > MAX_CHARS_ORDER else "")}
 
 
 def load_decisions(sb):
