@@ -294,7 +294,23 @@ def pilot_pick(items, n, seed=20261023):
 
 
 def main(argv=None, infra=None):
+    """runs _main under the vocabulary label given by --label (default v1), then restores the module default"""
+    global VOCAB
+    saved = VOCAB
+    pre = argparse.ArgumentParser(add_help=False)
+    pre.add_argument("--label", default="")
+    lab = pre.parse_known_args(argv)[0].label
+    try:
+        if lab:
+            VOCAB = lab
+        return _main(argv, infra)
+    finally:
+        VOCAB = saved
+
+
+def _main(argv=None, infra=None):
     ap = argparse.ArgumentParser()
+    ap.add_argument("--label", default="", help="write under this vocabulary label instead of v1 (for example v1_rerun: a repeat of the same prompt, kept apart from the main tags)")
     ap.add_argument("--live", action="store_true")
     ap.add_argument("--apply", action="store_true")
     ap.add_argument("--pilot", type=int, default=0)
