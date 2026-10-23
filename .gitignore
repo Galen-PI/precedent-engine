@@ -150,3 +150,4 @@ sweep.log
 classification_backup/
 scripts/card/out/
 data_cache/
+scripts/gdelt/.gdelt_backfill_checkpoint*
