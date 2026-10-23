@@ -231,6 +231,12 @@ def summarize(rows):
     A = [d for d in by.values() if "A" in d]
     ag = [d["A"]["verdict"] == d["A"]["stored"] for d in A if d["A"]["stored"]]
     print("REPLICATION: arm A agrees with the stored verdict on %s" % pct(sum(ag), len(ag)))
+    hx = defaultdict(lambda: [0, 0])
+    for (g_, _), d_ in by.items():
+        if "B" in d_:
+            hx[g_][1] += 1
+            hx[g_][0] += int(d_["B"]["has_exhibit_text"])
+    print("EXHIBIT TEXT ADDED IN B (B differs from A only for these): " + " | ".join("%s %d of %d" % (g_, hx[g_][0], hx[g_][1]) for g_ in ("G", "O", "R") if g_ in hx))
     print("\nSHARE CALLED real_event (and uncertain) BY GROUP AND ARM")
     def cell(ds, arm):
         v = [d[arm]["verdict"] for d in ds if arm in d]
