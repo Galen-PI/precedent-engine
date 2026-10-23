@@ -30,7 +30,7 @@ INDEPENDENT_PAST = ["2021-01-27", "2021-03-17", "2021-04-28", "2021-06-16", "202
 # scheduled, not yet held (tentative until confirmed): (first day, last day)
 FUTURE = [("2026-10-27", "2026-10-28"), ("2026-12-08", "2026-12-09"), ("2027-01-26", "2027-01-27"), ("2027-03-16", "2027-03-17"), ("2027-04-27", "2027-04-28"), ("2027-06-08", "2027-06-09"), ("2027-07-27", "2027-07-28"), ("2027-09-14", "2027-09-15"), ("2027-10-26", "2027-10-27"), ("2027-12-07", "2027-12-08")]
 MONTHS = {m.lower()[:3]: i for i, m in enumerate(["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"], 1)}
-HEAD = re.compile(r"^\s*(?P<m1>[A-Za-z]+)\.?(?:\s*/\s*(?P<mb>[A-Za-z]+)\.?)?\s+(?P<d1>\d{1,2})(?:\s*[-\u2013\u2014/]\s*(?:(?P<m2>[A-Za-z]+)\.?\s+)?(?P<d2>\d{1,2}))?\s+(?:(?P<un>Unscheduled|Emergency)\s+)?(?P<kind>Meeting|Conference Call)\s*[-\u2013\u2014]\s*(?P<year>\d{4})\s*$")
+HEAD = re.compile(r"^\s*(?P<m1>[A-Za-z]+)\.?(?:\s*/\s*(?P<mb>[A-Za-z]+)\.?)?\s+(?P<d1>\d{1,2})(?:\s*[-\u2013\u2014/]\s*(?:(?P<m2>[A-Za-z]+)\.?\s+)?(?P<d2>\d{1,2}))?\s+(?:\((?P<note>[^)]*)\)\s+)?(?:(?P<un>Unscheduled|Emergency)\s+)?(?P<kind>Meeting|Conference Call)\s*[-\u2013\u2014]\s*(?P<year>\d{4})\s*$")
 UNMATCHED = []
 POLICY_PR = re.compile(r"/pressreleases/monetary(\d{8})a\.htm$")
 
@@ -127,8 +127,11 @@ def parse_year_page(html, year, url):
                 UNMATCHED.append((year, tk[1] + " [INVALID DATE]"))
                 cur = None
                 continue
+            note = (m.group("note") or "").lower()
             kind = "meeting" if m.group("kind") == "Meeting" else "conference_call"
-            cur = {"year": y, "kind": kind, "start_date": start, "end_date": end, "announcement_date": None, "statement_url": "", "flags": "UNSCHEDULED" if m.group("un") else "", "source_url": url, "confirmed": True}
+            if "cancel" in note:
+                kind = "cancelled"
+            cur = {"year": y, "kind": kind, "start_date": start, "end_date": end, "announcement_date": None, "statement_url": "", "flags": (("UNSCHEDULED" if (m.group("un") or "unsched" in note) else "") + (" CANCELLED" if kind == "cancelled" else "")).strip(), "source_url": url, "confirmed": True}
             out.append(cur)
         elif tk[0] == "a" and "minutes" in tk[1].lower():
             for tok in re.findall(r"(?<!\d)(\d{8})(?!\d)", tk[1]):
@@ -189,6 +192,10 @@ def build(fetcher=fetch, first=FIRST_YEAR, last=LAST_HIST, pause=1.0):
     rows += past
     rows += future_rows({r["end_date"] for r in past})
     for r in rows:
+        if r["kind"] == "meeting" and r["year"] >= 2000 and "URL DATE MORE THAN 3 DAYS" in r["flags"]:
+            r["announcement_date"] = r["end_date"]
+            r["flags"] += " | ANNOUNCEMENT SET TO THE LAST DAY (the statement link pointed to a different date)"
+    for r in rows:
         r["has_statement"] = r["announcement_date"] is not None
     rows.sort(key=lambda r: (r["start_date"], r["kind"]))
     return rows
@@ -243,7 +250,7 @@ def validate(rows, sb, log):
     P("\n(a) 2021-2026 announcement dates vs the independent transcription: %d expected, %d parsed; missing %s; extra %s" % (len(ind), len(got), sorted(str(x) for x in ind - got) or "none", sorted(str(x) for x in got - ind) or "none"))
     by = {}
     for r in rows:
-        if r["confirmed"]:
+        if r["confirmed"] and r["kind"] != "cancelled":
             by.setdefault(r["year"], [0, 0, 0])[0 if r["kind"] == "meeting" else 1] += 1
             by[r["year"]][2] += 1 if r["announcement_date"] else 0
     P("\n(b) per year: meetings / conference calls / announcements   [regular years have 8 meetings; years outside 8 are listed after]")
@@ -253,6 +260,7 @@ def validate(rows, sb, log):
     for a in ann:
         wd[a.strftime("%a")] = wd.get(a.strftime("%a"), 0) + 1
     P("\n(c) weekday of the announcements: " + ", ".join("%s %d" % (k, wd[k]) for k in ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun") if k in wd))
+    P("    announcements on a weekend: " + (", ".join(str(a) for a in sorted(ann) if a.weekday() >= 5) or "none"))
     post2000_missing = [r for r in rows if r["kind"] == "meeting" and r["confirmed"] and r["year"] >= 2000 and not r["announcement_date"]]
     P("    meetings from 2000 without a statement link (expected none; each is a parse gap or a real exception): %d  %s" % (len(post2000_missing), [str(r["start_date"]) for r in post2000_missing][:12]))
     synth = [r for r in rows if "FROM MINUTES LINK ONLY" in r["flags"]]
