@@ -428,7 +428,7 @@ def _main(argv=None, infra=None):
         if agree[1]:
             print("laws: the model's themes include the policy-area baseline theme in %d of %d (%.0f%%)" % (agree[0], agree[1], 100.0 * agree[0] / agree[1]))
     if a.apply:
-        replace_ids = sorted({r["decision_id"] for r in tag_rows})   # a decision's tag set is REPLACED by its newest answer, never merged with an older one
+        replace_ids = sorted(meta.keys())   # a decision's tag set is REPLACED by its newest answer, never merged with an older one: EVERY decision processed in this run, including one whose new answer is invalid or unparseable (it then has no tags, matching its run status)
         for i in range(0, len(replace_ids), 100):
             sb.table("government_decision_tags").delete().eq("vocab_version", VOCAB).in_("decision_id", replace_ids[i:i + 100]).execute()
         for i in range(0, len(tag_rows), 500):
