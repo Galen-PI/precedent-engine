@@ -1619,6 +1619,41 @@ def build_quarterly_periods(data, concept_map, ticker):
             if assets is not None and equity is not None:
                 period["total_liabilities"] = assets - equity
 
+    # ADDED 2026-10-23: quarterly cash flows from YEAR-TO-DATE facts. A 10-Q cash-flow statement reports
+    # cumulative figures (3, 6 and 9 months), so the 70-110 day window above finds only Q1 and every Q2/Q3
+    # operating_cash_flow / capital_expenditures stayed NULL (which also blocked the Q4 derivation below).
+    # Q2 = 6-month YTD - 3-month YTD and Q3 = 9-month YTD - 6-month YTD, matched on the fiscal-year start
+    # of Q1 (the start date every YTD fact of that year carries) and on the quarter's period_end; the
+    # earliest-filed fact wins (choose_earliest_fact). Only NULL fields are filled. free_cash_flow =
+    # operating_cash_flow - capital_expenditures wherever both exist (the definition the annual and Q4 rows use).
+    for fiscal_year in sorted({k[0] for k in periods}):
+        qs = [periods.get((fiscal_year, n)) for n in (1, 2, 3)]
+        if not qs[0] or not qs[0].get("start"):
+            continue
+        fy_start_cf = qs[0]["start"]
+        for cf_field in ("operating_cash_flow", "capital_expenditures"):
+            ytd = {}
+            for n, per in enumerate(qs, start=1):
+                if not per:
+                    continue
+                cands = [
+                    fact for fact in concept_facts.get(cf_field, [])
+                    if fact.get("form") == "10-Q" and fact.get("start") == fy_start_cf and fact.get("end") == per["period_end"]
+                ]
+                best = choose_earliest_fact(cands)
+                if best is not None and best.get("val") is not None:
+                    ytd[n] = best["val"]
+            base1 = ytd.get(1) if ytd.get(1) is not None else qs[0].get(cf_field)
+            if qs[0].get(cf_field) is None and base1 is not None:
+                qs[0][cf_field] = base1
+            if qs[1] and qs[1].get(cf_field) is None and ytd.get(2) is not None and base1 is not None:
+                qs[1][cf_field] = ytd[2] - base1
+            if qs[2] and qs[2].get(cf_field) is None and ytd.get(3) is not None and ytd.get(2) is not None:
+                qs[2][cf_field] = ytd[3] - ytd[2]
+        for per in qs:
+            if per and per.get("operating_cash_flow") is not None and per.get("capital_expenditures") is not None:
+                per["free_cash_flow"] = per["operating_cash_flow"] - per["capital_expenditures"]
+
     annual_periods = build_annual_periods(data, concept_map)
     annual_by_fiscal_year = {a["fiscal_year"]: a for a in annual_periods if a.get("fiscal_year") is not None}
 
