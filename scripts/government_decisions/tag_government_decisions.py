@@ -1,0 +1,337 @@
+#!/usr/bin/env python3
+"""
+tag_government_decisions.py -- tags the RELEVANT government decisions into the vocabulary buckets of results/government_tag_vocabulary_v1.md (sectors, themes, scope, persistence), from their stored SOURCE TEXT (government_decision_text), through the same Anthropic batch infrastructure as classify_decision_relevance.py.
+GUARDS (all from the registered vocabulary): every sector and theme tag needs a quote of 3-25 words that must be FOUND in the text the model was shown (a tag whose quote is not found is dropped, never written); a text with no source text is tagged at confidence 'low' with no sector tags; a summary of a bill AS INTRODUCED caps confidence at 'medium'; an omnibus law (title Consolidated/Continuing/Omnibus Appropriations, or 8+ Divisions) is scope market_wide with no sector tags; a decision scoped not_company_relevant gets no sector tags; this script has its OWN parser (the 8-K parser once silently turned every verdict into 'uncertain'); a parse failure writes NOTHING for that decision (recorded in the runs table, retried next run), never a guessed tag.
+Tables (see the DO block in the instructions): government_decision_tags (one row per decision, bucket_type, bucket, vocab_version) and government_decision_tag_runs (one row per decision and vocab_version: status ok | partial | invalid | parse_error | failed).
+Usage:   python3 -u scripts/government_decisions/tag_government_decisions.py                       dry run: counts, a sample prompt, nothing submitted
+         python3 -u scripts/government_decisions/tag_government_decisions.py --pilot 12 --live      submits 12 stratified decisions, PRINTS every result for hand reading, writes nothing
+         python3 -u scripts/government_decisions/tag_government_decisions.py --live --apply         everything not yet tagged under this vocabulary version
+"""
+import os, sys, re, json, random, argparse, datetime, importlib.util, types, collections
+
+VOCAB = "v1"
+SECTORS = ("Communication Services", "Consumer Discretionary", "Consumer Staples", "Energy", "Financials", "Health Care", "Industrials", "Information Technology", "Materials", "Real Estate", "Utilities")
+THEMES = ("trade_tariffs", "sanctions_foreign_policy", "taxation", "budget_appropriations", "financial_regulation", "banking_monetary", "healthcare_drug_pricing", "environment_climate", "energy_policy", "technology_ai_data", "telecom_media", "labor_employment", "antitrust_competition", "defense_procurement", "housing_real_estate", "immigration", "agriculture_food", "transportation_infrastructure", "consumer_protection", "government_operations")
+SCOPES = ("market_wide", "sector_specific", "company_specific", "not_company_relevant")
+PERSIST = ("one_off", "persistent_condition")
+DIRECTIONS = ("benefit", "harm", "mixed", "unclear")
+CONFS = ("high", "medium", "low")
+PA_THEME = {"Agriculture and Food": "agriculture_food", "Armed Forces and National Security": "defense_procurement", "Commerce": "consumer_protection", "Congress": "government_operations", "Crime and Law Enforcement": "government_operations", "Economics and Public Finance": "budget_appropriations", "Education": "government_operations", "Emergency Management": "government_operations", "Energy": "energy_policy", "Environmental Protection": "environment_climate", "Families": "government_operations", "Finance and Financial Sector": "financial_regulation", "Foreign Trade and International Finance": "trade_tariffs", "Government Operations and Politics": "government_operations", "Health": "healthcare_drug_pricing", "Housing and Community Development": "housing_real_estate", "Immigration": "immigration", "International Affairs": "sanctions_foreign_policy", "Labor and Employment": "labor_employment", "Law": "government_operations", "Native Americans": "government_operations", "Public Lands and Natural Resources": "environment_climate", "Science, Technology, Communications": "technology_ai_data", "Social Welfare": "government_operations", "Taxation": "taxation", "Transportation and Public Works": "transportation_infrastructure", "Water Resources Development": "transportation_infrastructure"}
+WEAK_PA = {"Commerce", "Education", "Families", "Public Lands and Natural Resources"}
+WHOLE_MAX, HEAD_CHARS, MAX_HEADINGS = 6000, 5000, 60
+DONE = ("ok", "partial", "invalid")
+
+PROMPT = """You are tagging a US federal government decision (an enacted law or an executive order) for a stock-research database. The tags are used to find which sectors and themes a decision touches. Read ONLY the text supplied below; do not use outside knowledge about the decision.
+
+DECISION TYPE: {{TYPE}}
+TITLE: {{TITLE}}
+CONGRESS.GOV POLICY AREA (laws only): {{PA}}
+TEXT KIND: {{KIND}}
+{{FEED}}
+
+CONTROLLED VOCABULARY (use these exact strings):
+SECTORS: {{SECTORS}}
+THEMES: {{THEMES}}
+SCOPE: market_wide | sector_specific | company_specific | not_company_relevant
+PERSISTENCE: one_off | persistent_condition
+DIRECTION: benefit | harm | mixed | unclear
+CONFIDENCE: high | medium | low
+
+RULES:
+1. scope: market_wide = affects businesses broadly (taxes, government-wide appropriations, broad regulation, trade policy across many goods); sector_specific = chiefly 1 to 4 sectors; company_specific = names a particular company; not_company_relevant = commemorative, symbolic, procedural or with no plausible effect on companies.
+2. persistence: persistent_condition = sets a standing rule, tax, tariff, program or regulatory condition that stays in force until changed; one_off = a single payment, a one-year appropriation, a one-time action or a short extension.
+3. themes: 1 to 3 themes. Each needs a QUOTE: a phrase of 3 to 25 words copied EXACTLY, character for character, from the text above, that supports the theme.
+4. sectors: 0 to 4 sectors whose economics the decision plausibly changes. Each needs a direction and a QUOTE copied exactly from the text above. Do not tag a sector you cannot support with a quote.
+5. confidence: high if the text states the effect plainly; medium if you must infer part of it; low if the text is thin, partial, or describes only an early version.
+6. If the text is marked PARTIAL you see only the start of a long text plus a list of its headings: tag only what you can support from what you see.
+
+Respond with ONLY valid JSON, no markdown code fences, no other text:
+{"scope": "...", "persistence": "...", "themes": [{"theme": "...", "quote": "..."}], "sectors": [{"sector": "...", "direction": "...", "quote": "..."}], "confidence": "...", "note": "<= 20 words"}"""
+
+HEAD_RE = re.compile(r"\b(Division|Title)\s+([A-Z]{1,2}|[IVXLC]{1,6}|\d{1,3})\s*:\s*(.{3,170}?)(?:\s+-\s|\s+(?=(?:Division|Title)\s+(?:[A-Z]{1,2}|[IVXLC]{1,6}|\d{1,3})\s*:))")
+SEC_RE = re.compile(r"\bSec(?:tion)?\.?\s+(\d{1,2})\.\s+([A-Z][A-Za-z ,'\-]{2,80}?)\.")
+
+
+def norm(s):
+    s = (s or "").replace("\u201c", '"').replace("\u201d", '"').replace("\u2018", "'").replace("\u2019", "'").replace("``", '"').replace("''", '"').replace("\u2013", "-").replace("\u2014", "-")
+    return " ".join(s.lower().split())
+
+
+def extract_headings(body, is_order):
+    seen, out = set(), []
+    for m in (SEC_RE if is_order else HEAD_RE).finditer(body or ""):
+        h = ("Sec. %s: %s" % (m.group(1), m.group(2))) if is_order else ("%s %s: %s" % (m.group(1), m.group(2), " ".join(m.group(3).split())))
+        if h not in seen:
+            seen.add(h)
+            out.append(h)
+        if len(out) >= MAX_HEADINGS:
+            break
+    return out
+
+
+def is_omnibus(title, body):
+    divs = set(re.findall(r"\bDivision\s+([A-Z]{1,2})\s*:", body or ""))
+    return bool(re.search(r"\b(consolidated|continuing|omnibus)\b[^.]{0,60}\bappropriations\b", title or "", re.I)) or len(divs) >= 8
+
+
+def build_feed(body, is_order):
+    """returns (kind, shown_text, prompt_block): kind is title_only | full | partial"""
+    if not body or not body.strip():
+        return "title_only", "", "(no source text is available: only the title and policy area)"
+    if len(body) <= WHOLE_MAX:
+        return "full", body, "<text>\n%s\n</text>" % body
+    head = body[:HEAD_CHARS]
+    head = head[:head.rfind(" ")] if " " in head[-60:] else head
+    heads = extract_headings(body, is_order)
+    block = "<text>\n%s\n</text>\nHEADINGS FROM THE FULL TEXT (%d shown; the full text has %d characters):\n%s" % (head, len(heads), len(body), "\n".join("- " + h for h in heads) or "- (none found)")
+    return "partial", head + "\n" + "\n".join(heads), block
+
+
+def build_prompt(d, kind, block, note):
+    label = {"full": "FULL TEXT", "partial": "PARTIAL: only the start of a long text plus its headings", "title_only": "TITLE ONLY"}[kind]
+    if note and "Introduced" in note:
+        label += " (NOTE: this summary describes the bill AS INTRODUCED, which may differ from the law as enacted)"
+    return (PROMPT.replace("{{TYPE}}", d["decision_type"]).replace("{{TITLE}}", d.get("title") or "").replace("{{PA}}", d["sd"].get("policy_area") or "(none)")
+            .replace("{{KIND}}", label).replace("{{FEED}}", block).replace("{{SECTORS}}", ", ".join(SECTORS)).replace("{{THEMES}}", ", ".join(THEMES)))
+
+
+def parse_tag_result(raw):
+    """this script's OWN parser (never the 8-K parser): returns a dict or None"""
+    t = (raw or "").strip()
+    if t.startswith("```"):
+        t = t.split("```")[1]
+        if t.startswith("json"):
+            t = t[4:]
+    try:
+        p = json.loads(t.strip())
+    except ValueError:
+        return None
+    return p if isinstance(p, dict) else None
+
+
+def quote_problem(q, seen):
+    if not isinstance(q, str):
+        return "no quote"
+    n = len(q.split())
+    if n < 3:
+        return "quote under 3 words"
+    if n > 25:
+        return "quote over 25 words"
+    return None if norm(q) in seen else "quote not found in the text shown"
+
+
+def validate(p, shown_text, kind, omnibus, intro_only):
+    """returns None if the core (scope, persistence, at least one theme) is unusable, else {status, rows, dropped, confidence}"""
+    seen, dropped, rows = norm(shown_text), [], []
+    scope, pers = p.get("scope"), p.get("persistence")
+    if scope not in SCOPES or pers not in PERSIST:
+        return {"status": "invalid", "rows": [], "dropped": ["scope or persistence not in the vocabulary: %r, %r" % (scope, pers)], "confidence": None}
+    if omnibus:
+        scope = "market_wide"
+    themes = []
+    for t in (p.get("themes") if isinstance(p.get("themes"), list) else []):
+        if not isinstance(t, dict) or t.get("theme") not in THEMES:
+            dropped.append("theme %r not in the vocabulary" % (t.get("theme") if isinstance(t, dict) else t))
+            continue
+        why = quote_problem(t.get("quote"), seen)
+        if why:
+            dropped.append("theme %s: %s" % (t["theme"], why))
+        elif t["theme"] not in [x[0] for x in themes]:
+            themes.append((t["theme"], t["quote"]))
+    if len(themes) > 3:
+        dropped.append("themes beyond the third dropped: %s" % [x[0] for x in themes[3:]])
+        themes = themes[:3]
+    if omnibus and "budget_appropriations" not in [x[0] for x in themes]:
+        themes.append(("budget_appropriations", "RULE: omnibus appropriations law (title or 8+ divisions)"))
+    if not themes:
+        return {"status": "invalid", "rows": [], "dropped": dropped + ["no theme with a verifiable quote"], "confidence": None}
+    sectors = []
+    sec_in = p.get("sectors") if isinstance(p.get("sectors"), list) else []
+    if kind == "title_only" or omnibus or scope == "not_company_relevant":
+        if sec_in:
+            dropped.append("sector tags dropped by rule (%s)" % ("title only" if kind == "title_only" else "omnibus law" if omnibus else "not_company_relevant"))
+    else:
+        for s in sec_in:
+            if not isinstance(s, dict) or s.get("sector") not in SECTORS or s.get("direction") not in DIRECTIONS:
+                dropped.append("sector entry not in the vocabulary: %r" % (s,))
+                continue
+            why = quote_problem(s.get("quote"), seen)
+            if why:
+                dropped.append("sector %s: %s" % (s["sector"], why))
+            elif s["sector"] not in [x[0] for x in sectors]:
+                sectors.append((s["sector"], s["direction"], s["quote"]))
+        if len(sectors) > 4:
+            dropped.append("sectors beyond the fourth dropped")
+            sectors = sectors[:4]
+    conf = p.get("confidence") if p.get("confidence") in CONFS else "low"
+    if kind == "title_only":
+        conf = "low"
+    elif intro_only and conf == "high":
+        conf = "medium"
+    rows.append({"bucket_type": "scope", "bucket": scope, "direction": None, "evidence": (p.get("note") or "")[:200] or None, "quote_verified": None})
+    rows.append({"bucket_type": "persistence", "bucket": pers, "direction": None, "evidence": None, "quote_verified": None})
+    rows += [{"bucket_type": "theme", "bucket": t, "direction": None, "evidence": q, "quote_verified": not q.startswith("RULE:")} if not q.startswith("RULE:") else {"bucket_type": "theme", "bucket": t, "direction": None, "evidence": q, "quote_verified": None} for t, q in themes]
+    rows += [{"bucket_type": "sector", "bucket": s, "direction": d, "evidence": q, "quote_verified": True} for s, d, q in sectors]
+    return {"status": "partial" if dropped else "ok", "rows": rows, "dropped": dropped, "confidence": conf}
+
+
+def load_infra():
+    from supabase import create_client
+    here = os.path.dirname(os.path.abspath(__file__))
+    sys.path.insert(0, os.path.join(here, "..", "shared"))
+    from model_config import MODEL_VERSION
+    headers = {"x-api-key": os.environ["ANTHROPIC_API_KEY"], "anthropic-version": "2023-06-01", "content-type": "application/json"}
+    spec = importlib.util.spec_from_file_location("classify_8k_filings_batch_v2", os.path.join(here, "..", "classification", "classify_8k_filings_batch_v2.py"))
+    bm = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(bm)
+    bm.ANTHROPIC_HEADERS = headers
+    import requests
+    return types.SimpleNamespace(sb=create_client(os.environ["SUPABASE_URL"], os.environ["SUPABASE_KEY"]), batch=bm, headers=headers, model=MODEL_VERSION, http_get=requests.get)
+
+
+def paged(sb, table, cols, order, size=1000):
+    out, off = [], 0
+    while True:
+        page = sb.table(table).select(cols).order(order).range(off, off + size - 1).execute().data
+        if not page:
+            break
+        out += page
+        if len(page) < size:
+            break
+        off += size
+    return out
+
+
+def sd_of(r):
+    sd = r.get("structured_data")
+    if isinstance(sd, str):
+        try:
+            sd = json.loads(sd)
+        except ValueError:
+            return {}
+    return sd if isinstance(sd, dict) else {}
+
+
+def era_of(d):
+    y = int(str(d.get("decision_date") or "0000")[:4] or 0)
+    return "<=2004" if y <= 2004 else "2005-2014" if y <= 2014 else ">=2015"
+
+
+def pilot_pick(items, n, seed=20261023):
+    rng, groups = random.Random(seed), collections.defaultdict(list)
+    for d in items:
+        groups[(d["decision_type"], era_of(d))].append(d)
+    keys = sorted(groups)
+    for k in keys:
+        rng.shuffle(groups[k])
+    out, i = [], 0
+    while len(out) < n and any(groups[k] for k in keys):
+        k = keys[i % len(keys)]
+        if groups[k]:
+            out.append(groups[k].pop())
+        i += 1
+    return out
+
+
+def main(argv=None, infra=None):
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--live", action="store_true")
+    ap.add_argument("--apply", action="store_true")
+    ap.add_argument("--pilot", type=int, default=0)
+    a = ap.parse_args(argv)
+    if a.apply and not a.live:
+        ap.error("--apply needs --live")
+    if a.apply and a.pilot:
+        ap.error("a pilot never writes: drop --pilot or --apply")
+    infra = infra or load_infra()
+    sb = infra.sb
+    decs = [r for r in paged(sb, "government_decisions", "id,title,decision_type,decision_date,structured_data", "id") if r["decision_type"] in ("enacted_law", "executive_order") and sd_of(r).get("relevance_verdict") == "relevant"]
+    for r in decs:
+        r["sd"] = sd_of(r)
+        r["id"] = str(r["id"])
+    texts = {str(t["decision_id"]): t for t in paged(sb, "government_decision_text", "decision_id,status,note,body", "decision_id", 200)}
+    done = {str(r["decision_id"]) for r in paged(sb, "government_decision_tag_runs", "decision_id,vocab_version,status", "decision_id") if r["vocab_version"] == VOCAB and r["status"] in DONE}
+    todo = [d for d in decs if d["id"] not in done]
+    if a.pilot:
+        todo = pilot_pick([d for d in todo if d["id"] in texts], a.pilot)
+    reqs, meta = [], {}
+    for d in todo:
+        t = texts.get(d["id"]) or {}
+        body = t.get("body") if t.get("status") == "ok" else None
+        kind, shown, block = build_feed(body, d["decision_type"] == "executive_order")
+        note = t.get("note") or ""
+        meta[d["id"]] = {"d": d, "kind": kind, "shown": shown, "omnibus": is_omnibus(d.get("title"), body), "intro": "Introduced" in note, "chars": len(shown)}
+        reqs.append({"custom_id": d["id"], "params": {"model": infra.model, "max_tokens": 1000, "thinking": {"type": "disabled"}, "messages": [{"role": "user", "content": build_prompt(d, kind, block, note)}]}})
+    kinds = collections.Counter(m["kind"] for m in meta.values())
+    print("relevant decisions %d | already tagged (%s) %d | to tag %d | input kinds %s | omnibus by rule %d | introduced-version only %d | %s" % (len(decs), VOCAB, len(done), len(todo), dict(kinds), sum(m["omnibus"] for m in meta.values()), sum(m["intro"] for m in meta.values()), "LIVE" if a.live else "DRY RUN"), flush=True)
+    if not reqs:
+        return {}
+    if not a.live:
+        print("DRY RUN: nothing submitted. About %d input tokens in total (characters / 4). Sample prompt:\n%s" % (sum(len(r["params"]["messages"][0]["content"]) for r in reqs) // 4, reqs[0]["params"]["messages"][0]["content"][:3500]))
+        return {}
+    bm = infra.batch
+    chunks = bm.chunk_list(reqs, bm.MAX_BATCH_SIZE)
+    print("Submitting %d batch job(s)..." % len(chunks), flush=True)
+    final = bm.poll_batches_until_all_done([bm.submit_batch(c) for c in chunks])
+    raw = {}
+    for bid, b in final.items():
+        if not b.get("results_url"):
+            print("  WARNING: batch %s has no results_url" % bid)
+            continue
+        resp = infra.http_get(b["results_url"], headers=infra.headers, timeout=60)
+        resp.raise_for_status()
+        for line in resp.text.strip().split("\n"):
+            row = json.loads(line)
+            res = row["result"]
+            if res["type"] != "succeeded":
+                raw[row["custom_id"]] = ("failed", "BATCH REQUEST FAILED: %s" % res["type"])
+                continue
+            blocks = [x["text"] for x in res["message"]["content"] if x.get("type") == "text"]
+            raw[row["custom_id"]] = ("ok", blocks[0]) if blocks else ("failed", "EMPTY RESPONSE CONTENT")
+    tag_rows, run_rows, tally = [], [], collections.Counter()
+    themes_c, sectors_c, scope_c, agree = collections.Counter(), collections.Counter(), collections.Counter(), [0, 0]
+    for cid, m in meta.items():
+        d, (how, text) = m["d"], raw.get(cid, ("failed", "NO RESULT RETURNED"))
+        parsed = parse_tag_result(text) if how == "ok" else None
+        v = validate(parsed, m["shown"], m["kind"], m["omnibus"], m["intro"]) if parsed else None
+        status = "failed" if how != "ok" else "parse_error" if parsed is None else v["status"]
+        tally[status] += 1
+        if v and v["rows"]:
+            for r in v["rows"]:
+                tag_rows.append(dict(r, decision_id=cid, confidence=v["confidence"], vocab_version=VOCAB, model_version=infra.model, text_version="introduced_only" if m["intro"] else "final_or_order" if m["kind"] != "title_only" else "title_only"))
+            tb = [r["bucket"] for r in v["rows"] if r["bucket_type"] == "theme"]
+            themes_c.update(tb)
+            sectors_c.update(r["bucket"] for r in v["rows"] if r["bucket_type"] == "sector")
+            scope_c.update(r["bucket"] for r in v["rows"] if r["bucket_type"] == "scope")
+            pa = d["sd"].get("policy_area")
+            if d["decision_type"] == "enacted_law" and pa in PA_THEME and pa not in WEAK_PA:
+                agree[1] += 1
+                agree[0] += PA_THEME[pa] in tb
+        run_rows.append({"decision_id": cid, "vocab_version": VOCAB, "status": status, "n_tags": len(v["rows"]) if v else 0, "dropped": ("; ".join(v["dropped"])[:800] if v and v["dropped"] else None), "input_kind": m["kind"], "input_chars": m["chars"], "raw_response": (text or "")[:1500], "model_version": infra.model})
+        if a.pilot:
+            print("\n=== %s | %s | %s | input %s (%d chars)%s%s" % ((d.get("title") or "")[:70], d["decision_type"], str(d.get("decision_date"))[:10], m["kind"], m["chars"], " | OMNIBUS" if m["omnibus"] else "", " | INTRODUCED ONLY" if m["intro"] else ""))
+            print("    status %s | confidence %s | policy area: %s" % (status, v["confidence"] if v else None, d["sd"].get("policy_area")))
+            for r in (v["rows"] if v else []):
+                print("    %-11s %-26s %-8s %s" % (r["bucket_type"], r["bucket"], r["direction"] or "", ("\"%s\"" % r["evidence"])[:150] if r["evidence"] else ""))
+            for x in (v["dropped"] if v else []):
+                print("    DROPPED: %s" % x)
+            if parsed is None:
+                print("    RAW: %s" % (text or "")[:300])
+    print("\nstatus %s" % dict(tally))
+    if tag_rows:
+        print("scope %s | themes %s | sectors %s" % (dict(scope_c), dict(themes_c.most_common(8)), dict(sectors_c.most_common(8))))
+        if agree[1]:
+            print("laws: the model's themes include the policy-area baseline theme in %d of %d (%.0f%%)" % (agree[0], agree[1], 100.0 * agree[0] / agree[1]))
+    if a.apply:
+        for i in range(0, len(tag_rows), 500):
+            sb.table("government_decision_tags").upsert(tag_rows[i:i + 500], on_conflict="decision_id,bucket_type,bucket,vocab_version").execute()
+        for i in range(0, len(run_rows), 500):
+            sb.table("government_decision_tag_runs").upsert(run_rows[i:i + 500], on_conflict="decision_id,vocab_version").execute()
+        print("wrote %d tag rows and %d run rows" % (len(tag_rows), len(run_rows)))
+    else:
+        print("nothing written (%s)" % ("a pilot never writes" if a.pilot else "add --apply"))
+    return {"tally": tally, "tags": tag_rows, "runs": run_rows}
+
+
+if __name__ == "__main__":
+    main()
