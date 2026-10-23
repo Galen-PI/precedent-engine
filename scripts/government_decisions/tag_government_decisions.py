@@ -10,7 +10,7 @@ Usage:   python3 -u scripts/government_decisions/tag_government_decisions.py    
 import os, sys, re, json, random, argparse, datetime, importlib.util, types, collections
 
 VOCAB = "v1"
-PROMPT_VERSION = "v1.1"
+PROMPT_VERSION = "v1.2"
 SECTORS = ("Communication Services", "Consumer Discretionary", "Consumer Staples", "Energy", "Financials", "Health Care", "Industrials", "Information Technology", "Materials", "Real Estate", "Utilities")
 THEMES = ("trade_tariffs", "sanctions_foreign_policy", "taxation", "budget_appropriations", "financial_regulation", "banking_monetary", "healthcare_drug_pricing", "environment_climate", "energy_policy", "technology_ai_data", "telecom_media", "labor_employment", "antitrust_competition", "defense_procurement", "housing_real_estate", "immigration", "agriculture_food", "transportation_infrastructure", "consumer_protection", "government_operations")
 SCOPES = ("market_wide", "sector_specific", "company_specific", "not_company_relevant")
@@ -44,25 +44,25 @@ THEMES, with what each one means (choose a theme only if its meaning applies; a 
 - energy_policy: oil, gas, coal, power, renewables, fuel and efficiency standards
 - technology_ai_data: software, AI, data, cybersecurity, semiconductors, internet platforms
 - telecom_media: telephone, broadband, spectrum, broadcasting, media
-- labor_employment: wages, unions, workplace rules, hiring, employment benefits for workers
+- labor_employment: private-sector wages, unions, workplace rules, hiring, employment benefits for workers (rules about the federal civil service are government_operations)
 - antitrust_competition: mergers, market concentration, competition enforcement
-- defense_procurement: military spending, weapons, defense contracts
+- defense_procurement: military spending, weapons, defense contracts (civilian federal procurement and contracting preferences are government_operations)
 - housing_real_estate: housing, mortgages, real estate, home construction
 - immigration: visas, borders, immigration rules
 - agriculture_food: farms, crops, food safety, nutrition programs
 - transportation_infrastructure: roads, rail, aviation, shipping, ports, water infrastructure
 - consumer_protection: rules protecting consumers in the marketplace (disclosure, fraud, product safety, pricing practices)
-- government_operations: the government's own administration, personnel, procedure and organization
+- government_operations: the government's own administration, federal personnel and hiring, civilian procurement, advisory bodies, procedure and organization
 SCOPE: market_wide | sector_specific | company_specific | not_company_relevant
 PERSISTENCE: one_off | persistent_condition
-DIRECTION (of the effect on the sector's companies overall): benefit | harm | mixed | unclear
+DIRECTION (of the effect on the sector's companies overall): benefit | harm | mixed
 CONFIDENCE: high | medium | low
 
 RULES:
-1. scope: market_wide = affects businesses broadly (taxes, government-wide appropriations, broad regulation, trade policy across many goods); sector_specific = chiefly 1 to 4 sectors AND you can name at least one of them with a supporting quote (otherwise choose market_wide or not_company_relevant); company_specific = names a particular company; not_company_relevant = commemorative, symbolic, procedural, or with no plausible effect on companies.
+1. scope: market_wide = affects businesses broadly (taxes, government-wide appropriations, broad regulation, trade policy across many goods); sector_specific = the text itself names an industry, a product or a type of company that is chiefly affected (for example banks, drug makers, air carriers) AND you can support at least one sector with a quote; rules that apply to all employers, all federal agencies or all contractors are market_wide; company_specific = names a particular company; not_company_relevant = commemorative, symbolic, procedural, internal government administration, personnel or advisory bodies, or anything with no plausible effect on companies.
 2. persistence: persistent_condition = sets a standing rule, tax, tariff, program or regulatory condition, or permanently changes or ends one, that stays in force until changed; one_off = fixed-term or single-year funding (annual appropriations or an authorization for one fiscal year), a single payment, a one-time action, or a short extension or delay.
 3. themes: 1 to 3 themes. Each needs a QUOTE: a phrase of 3 to 25 words copied EXACTLY, character for character, from the text above, that supports the theme. A quote longer than 25 words is invalid: count the words.
-4. sectors: 0 to 4 sectors whose economics the decision plausibly changes. Each needs a direction and a QUOTE (3 to 25 words) copied exactly from the text above. Do not tag a sector you cannot support with a quote.
+4. sectors: 0 to 4 sectors whose economics the decision plausibly changes. Each needs a direction (benefit, harm or mixed: if you cannot tell, omit the sector) and a QUOTE (3 to 25 words) copied exactly from the text above, and the quote must name or describe that sector's own activity: if it would apply equally to any business, do not tag the sector.
 5. confidence: high if the text states the effect plainly; medium if you must infer part of it; low if the text is thin, partial, or describes only an earlier version of a bill.
 6. If the text is marked PARTIAL you see only the start of a long text plus a list of its headings: tag only what you can support from what you see.
 
@@ -141,7 +141,13 @@ def parse_tag_result(raw):
     try:
         p = json.loads(t.strip())
     except ValueError:
-        return None
+        i, k = t.find("{"), t.rfind("}")   # prose before or after the JSON: take the outermost braces (still strict JSON; no value is guessed)
+        if i < 0 or k <= i:
+            return None
+        try:
+            p = json.loads(t[i:k + 1])
+        except ValueError:
+            return None
     return p if isinstance(p, dict) else None
 
 
@@ -196,6 +202,9 @@ def validate(p, shown_text, kind, omnibus, intro_only, force_one_off=False):
             if not isinstance(s, dict) or s.get("sector") not in SECTORS or s.get("direction") not in DIRECTIONS:
                 dropped.append("sector entry not in the vocabulary: %r" % (s,))
                 continue
+            if s.get("direction") == "unclear":
+                dropped.append("sector %s: direction unclear (a sector tag needs benefit, harm or mixed)" % s["sector"])
+                continue
             why, ev = quote_check(s.get("quote"), seen)
             if why:
                 dropped.append("sector %s: %s" % (s["sector"], why))
@@ -204,6 +213,8 @@ def validate(p, shown_text, kind, omnibus, intro_only, force_one_off=False):
         if len(sectors) > 4:
             dropped.append("sectors beyond the fourth dropped")
             sectors = sectors[:4]
+    if scope == "sector_specific" and not sectors:
+        dropped.append("scope sector_specific but no sector survived the checks")
     conf = p.get("confidence") if p.get("confidence") in CONFS else "low"
     if kind == "title_only":
         conf = "low"
@@ -358,7 +369,7 @@ def main(argv=None, infra=None):
             for x in (v["dropped"] if v else []):
                 print("    DROPPED: %s" % x)
             if parsed is None:
-                print("    RAW: %s" % (text or "")[:300])
+                print("    RAW: %s" % (text or "")[:1500])
     print("\nstatus %s" % dict(tally))
     if tag_rows:
         print("scope %s | themes %s | sectors %s" % (dict(scope_c), dict(themes_c.most_common(8)), dict(sectors_c.most_common(8))))
