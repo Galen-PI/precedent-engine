@@ -299,6 +299,8 @@ def main(argv=None, infra=None):
     ap.add_argument("--apply", action="store_true")
     ap.add_argument("--pilot", type=int, default=0)
     ap.add_argument("--seed", type=int, default=20261023, help="pilot sample seed (a different seed gives a fresh stratified sample)")
+    ap.add_argument("--allow-waiting", action="store_true", help="let --live run while some decisions are still waiting for source text")
+    ap.add_argument("--include-submitted", action="store_true", help="also resubmit decisions that are marked as already in a submitted batch")
     ap.add_argument("--collect", default="", help="comma-separated ids of batches ALREADY submitted: fetch their results instead of submitting a new batch (recovery after a dropped session)")
     a = ap.parse_args(argv)
     if a.apply and not a.live:
@@ -314,7 +316,10 @@ def main(argv=None, infra=None):
         r["sd"] = sd_of(r)
         r["id"] = str(r["id"])
     texts = {str(t["decision_id"]): t for t in paged(sb, "government_decision_text", "decision_id,status,note,body", "decision_id", 200)}
-    done = {str(r["decision_id"]) for r in paged(sb, "government_decision_tag_runs", "decision_id,vocab_version,status", "decision_id") if r["vocab_version"] == VOCAB and r["status"] in DONE}
+    run_state = [r for r in paged(sb, "government_decision_tag_runs", "decision_id,vocab_version,status", "decision_id") if r["vocab_version"] == VOCAB]
+    submitted = {str(r["decision_id"]) for r in run_state if r["status"] == "submitted"}
+    # --collect is authoritative for the decisions in the named batches, whatever their earlier status; otherwise finished AND submitted decisions are skipped
+    done = set() if a.collect else {str(r["decision_id"]) for r in run_state if r["status"] in DONE or (r["status"] == "submitted" and not a.include_submitted)}
     todo = [d for d in decs if d["id"] not in done]
     # only decisions whose source text has been fetched (status ok or no_text) are taggable: a decision whose text row is missing or errored is WAITING, never tagged as 'title only' (an 'invalid' run counts as done and would never be retried)
     waiting = [d for d in todo if (texts.get(d["id"]) or {}).get("status") not in ("ok", "no_text")]
@@ -330,11 +335,14 @@ def main(argv=None, infra=None):
         meta[d["id"]] = {"d": d, "kind": kind, "shown": shown, "omnibus": is_omnibus(d.get("title"), body), "omni_title": omnibus_title(d.get("title")), "intro": is_nonfinal(d, note), "desc": version_desc(note), "chars": len(shown)}
         reqs.append({"custom_id": d["id"], "params": {"model": infra.model, "max_tokens": 1000, "thinking": {"type": "disabled"}, "messages": [{"role": "user", "content": build_prompt(d, kind, block, note)}]}})
     kinds = collections.Counter(m["kind"] for m in meta.values())
-    print("relevant decisions %d | already tagged (%s) %d | waiting for source text %d | to tag %d | input kinds %s | omnibus by rule %d | non-final version only %d | %s" % (len(decs), VOCAB, len(done), len(waiting), len(todo), dict(kinds), sum(m["omnibus"] for m in meta.values()), sum(m["intro"] for m in meta.values()), "LIVE" if a.live else "DRY RUN"), flush=True)
+    print("relevant decisions %d | already tagged or submitted (%s) %d (of which in a submitted batch %d) | waiting for source text %d | to tag %d | input kinds %s | omnibus by rule %d | non-final version only %d | %s" % (len(decs), VOCAB, len(done), len(submitted & done), len(waiting), len(todo), dict(kinds), sum(m["omnibus"] for m in meta.values()), sum(m["intro"] for m in meta.values()), "LIVE" if a.live else "DRY RUN"), flush=True)
     if not reqs:
         return {}
     if not a.live:
         print("DRY RUN: nothing submitted. About %d input tokens in total (characters / 4). Sample prompt:\n%s" % (sum(len(r["params"]["messages"][0]["content"]) for r in reqs) // 4, reqs[0]["params"]["messages"][0]["content"][:3500]))
+        return {}
+    if waiting and not (a.collect or a.pilot or a.allow_waiting):
+        print("REFUSING to run live: %d decisions are still waiting for their source text (the text job is not finished). Run again when it is, or pass --allow-waiting to tag only the others now." % len(waiting))
         return {}
     bm = infra.batch
     if a.collect:
@@ -345,6 +353,11 @@ def main(argv=None, infra=None):
         print("Submitting %d batch job(s)..." % len(chunks), flush=True)
         ids = [bm.submit_batch(c) for c in chunks]
         print("BATCH IDS (keep them: if this session dies before the tags are written, rerun with   --collect %s --live --apply  ): %s" % (",".join(ids), ids), flush=True)
+        if a.apply:
+            marks = [{"decision_id": c, "vocab_version": VOCAB, "status": "submitted", "n_tags": 0, "raw_response": ",".join(ids)[:300], "input_kind": m["kind"], "input_chars": m["chars"], "model_version": infra.model, "prompt_version": PROMPT_VERSION} for c, m in meta.items()]
+            for i in range(0, len(marks), 500):
+                sb.table("government_decision_tag_runs").upsert(marks[i:i + 500], on_conflict="decision_id,vocab_version").execute()
+            print("marked %d decisions as submitted (a second run will skip them)" % len(marks), flush=True)
     final = bm.poll_batches_until_all_done(ids)
     raw = {}
     for bid, b in final.items():
@@ -399,6 +412,9 @@ def main(argv=None, infra=None):
         if agree[1]:
             print("laws: the model's themes include the policy-area baseline theme in %d of %d (%.0f%%)" % (agree[0], agree[1], 100.0 * agree[0] / agree[1]))
     if a.apply:
+        replace_ids = sorted({r["decision_id"] for r in tag_rows})   # a decision's tag set is REPLACED by its newest answer, never merged with an older one
+        for i in range(0, len(replace_ids), 100):
+            sb.table("government_decision_tags").delete().eq("vocab_version", VOCAB).in_("decision_id", replace_ids[i:i + 100]).execute()
         for i in range(0, len(tag_rows), 500):
             sb.table("government_decision_tags").upsert(tag_rows[i:i + 500], on_conflict="decision_id,bucket_type,bucket,vocab_version").execute()
         for i in range(0, len(run_rows), 500):
