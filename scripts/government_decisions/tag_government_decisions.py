@@ -299,11 +299,14 @@ def main(argv=None, infra=None):
     ap.add_argument("--apply", action="store_true")
     ap.add_argument("--pilot", type=int, default=0)
     ap.add_argument("--seed", type=int, default=20261023, help="pilot sample seed (a different seed gives a fresh stratified sample)")
+    ap.add_argument("--collect", default="", help="comma-separated ids of batches ALREADY submitted: fetch their results instead of submitting a new batch (recovery after a dropped session)")
     a = ap.parse_args(argv)
     if a.apply and not a.live:
         ap.error("--apply needs --live")
     if a.apply and a.pilot:
         ap.error("a pilot never writes: drop --pilot or --apply")
+    if a.collect and not a.live:
+        ap.error("--collect needs --live")
     infra = infra or load_infra()
     sb = infra.sb
     decs = [r for r in paged(sb, "government_decisions", "id,title,decision_type,decision_date,structured_data", "id") if r["decision_type"] in ("enacted_law", "executive_order") and sd_of(r).get("relevance_verdict") == "relevant"]
@@ -334,9 +337,15 @@ def main(argv=None, infra=None):
         print("DRY RUN: nothing submitted. About %d input tokens in total (characters / 4). Sample prompt:\n%s" % (sum(len(r["params"]["messages"][0]["content"]) for r in reqs) // 4, reqs[0]["params"]["messages"][0]["content"][:3500]))
         return {}
     bm = infra.batch
-    chunks = bm.chunk_list(reqs, bm.MAX_BATCH_SIZE)
-    print("Submitting %d batch job(s)..." % len(chunks), flush=True)
-    final = bm.poll_batches_until_all_done([bm.submit_batch(c) for c in chunks])
+    if a.collect:
+        ids = [x.strip() for x in a.collect.split(",") if x.strip()]
+        print("Collecting the results of %d already-submitted batch(es): %s" % (len(ids), ids), flush=True)
+    else:
+        chunks = bm.chunk_list(reqs, bm.MAX_BATCH_SIZE)
+        print("Submitting %d batch job(s)..." % len(chunks), flush=True)
+        ids = [bm.submit_batch(c) for c in chunks]
+        print("BATCH IDS (keep them: if this session dies before the tags are written, rerun with   --collect %s --live --apply  ): %s" % (",".join(ids), ids), flush=True)
+    final = bm.poll_batches_until_all_done(ids)
     raw = {}
     for bid, b in final.items():
         if not b.get("results_url"):
@@ -352,6 +361,9 @@ def main(argv=None, infra=None):
                 continue
             blocks = [x["text"] for x in res["message"]["content"] if x.get("type") == "text"]
             raw[row["custom_id"]] = ("ok", blocks[0]) if blocks else ("failed", "EMPTY RESPONSE CONTENT")
+    if a.collect:
+        meta = {c: m for c, m in meta.items() if c in raw}   # only the decisions that were in the collected batches
+        print("collected results for %d decisions" % len(meta), flush=True)
     tag_rows, run_rows, tally = [], [], collections.Counter()
     themes_c, sectors_c, scope_c, agree = collections.Counter(), collections.Counter(), collections.Counter(), [0, 0]
     for cid, m in meta.items():
