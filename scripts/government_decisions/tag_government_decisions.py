@@ -19,7 +19,7 @@ DIRECTIONS = ("benefit", "harm", "mixed", "unclear")
 CONFS = ("high", "medium", "low")
 PA_THEME = {"Agriculture and Food": "agriculture_food", "Armed Forces and National Security": "defense_procurement", "Commerce": "consumer_protection", "Congress": "government_operations", "Crime and Law Enforcement": "government_operations", "Economics and Public Finance": "budget_appropriations", "Education": "government_operations", "Emergency Management": "government_operations", "Energy": "energy_policy", "Environmental Protection": "environment_climate", "Families": "government_operations", "Finance and Financial Sector": "financial_regulation", "Foreign Trade and International Finance": "trade_tariffs", "Government Operations and Politics": "government_operations", "Health": "healthcare_drug_pricing", "Housing and Community Development": "housing_real_estate", "Immigration": "immigration", "International Affairs": "sanctions_foreign_policy", "Labor and Employment": "labor_employment", "Law": "government_operations", "Native Americans": "government_operations", "Public Lands and Natural Resources": "environment_climate", "Science, Technology, Communications": "technology_ai_data", "Social Welfare": "government_operations", "Taxation": "taxation", "Transportation and Public Works": "transportation_infrastructure", "Water Resources Development": "transportation_infrastructure"}
 WEAK_PA = {"Commerce", "Education", "Families", "Public Lands and Natural Resources"}
-WHOLE_MAX, HEAD_CHARS, MAX_HEADINGS = 6000, 5000, 60
+WHOLE_MAX, HEAD_CHARS, MAX_HEADINGS, THIN_MAX = 6000, 5000, 60, 300
 DONE = ("ok", "partial", "invalid")
 
 PROMPT = """You are tagging a US federal government decision (an enacted law or an executive order) for a stock-research database. The tags are used to find which sectors and themes a decision touches. Read ONLY the text supplied below; do not use outside knowledge about the decision.
@@ -114,6 +114,8 @@ def build_feed(body, is_order):
     """returns (kind, shown_text, prompt_block): kind is title_only | full | partial"""
     if not body or not body.strip():
         return "title_only", "", "(no source text is available: only the title and policy area)"
+    if len(body.strip()) < THIN_MAX:
+        return "thin", body, "<text>\n%s\n</text>" % body
     if len(body) <= WHOLE_MAX:
         return "full", body, "<text>\n%s\n</text>" % body
     head = body[:HEAD_CHARS]
@@ -124,7 +126,7 @@ def build_feed(body, is_order):
 
 
 def build_prompt(d, kind, block, note):
-    label = {"full": "FULL TEXT", "partial": "PARTIAL: only the start of a long text plus its headings", "title_only": "TITLE ONLY"}[kind]
+    label = {"full": "FULL TEXT", "partial": "PARTIAL: only the start of a long text plus its headings", "title_only": "TITLE ONLY", "thin": "VERY SHORT TEXT (too thin to judge company relevance reliably)"}[kind]
     if is_nonfinal(d, note):
         label += " (NOTE: this summary describes an EARLIER VERSION of the bill, '%s', which may differ from the law as enacted)" % version_desc(note)
     return (PROMPT.replace("{{TYPE}}", d["decision_type"]).replace("{{TITLE}}", d.get("title") or "").replace("{{PA}}", d["sd"].get("policy_area") or "(none)")
@@ -194,9 +196,9 @@ def validate(p, shown_text, kind, omnibus, intro_only, force_one_off=False):
         return {"status": "invalid", "rows": [], "dropped": dropped + ["no theme with a verifiable quote"], "confidence": None}
     sectors = []
     sec_in = p.get("sectors") if isinstance(p.get("sectors"), list) else []
-    if kind == "title_only" or omnibus or scope == "not_company_relevant":
+    if kind in ("title_only", "thin") or omnibus or scope == "not_company_relevant":
         if sec_in:
-            dropped.append("sector tags dropped by rule (%s)" % ("title only" if kind == "title_only" else "omnibus law" if omnibus else "not_company_relevant"))
+            dropped.append("sector tags dropped by rule (%s)" % ("title only" if kind == "title_only" else "text under %d characters" % THIN_MAX if kind == "thin" else "omnibus law" if omnibus else "not_company_relevant"))
     else:
         for s in sec_in:
             if not isinstance(s, dict) or s.get("sector") not in SECTORS or s.get("direction") not in DIRECTIONS:
@@ -216,11 +218,17 @@ def validate(p, shown_text, kind, omnibus, intro_only, force_one_off=False):
     if scope == "sector_specific" and not sectors:
         dropped.append("scope sector_specific but no sector survived the checks")
     conf = p.get("confidence") if p.get("confidence") in CONFS else "low"
-    if kind == "title_only":
+    if kind in ("title_only", "thin"):
         conf = "low"
     elif intro_only and conf == "high":
         conf = "medium"
-    rows.append({"bucket_type": "scope", "bucket": scope, "direction": None, "evidence": (p.get("note") or "")[:200] or None, "quote_verified": None})
+    if kind == "partial" and scope == "not_company_relevant" and conf != "low":
+        conf = "low"
+        dropped.append("scope not_company_relevant rests on a partial text: confidence set to low")
+    if kind == "thin":
+        dropped.append("scope not written: the text is under %d characters, so company relevance is unassessed" % THIN_MAX)
+    else:
+        rows.append({"bucket_type": "scope", "bucket": scope, "direction": None, "evidence": (p.get("note") or "")[:200] or None, "quote_verified": None})
     rows.append({"bucket_type": "persistence", "bucket": pers, "direction": None, "evidence": None, "quote_verified": None})
     rows += [{"bucket_type": "theme", "bucket": t, "direction": None, "evidence": q, "quote_verified": not q.startswith("RULE:")} if not q.startswith("RULE:") else {"bucket_type": "theme", "bucket": t, "direction": None, "evidence": q, "quote_verified": None} for t, q in themes]
     rows += [{"bucket_type": "sector", "bucket": s, "direction": d, "evidence": q, "quote_verified": True} for s, d, q in sectors]
@@ -305,6 +313,9 @@ def main(argv=None, infra=None):
     texts = {str(t["decision_id"]): t for t in paged(sb, "government_decision_text", "decision_id,status,note,body", "decision_id", 200)}
     done = {str(r["decision_id"]) for r in paged(sb, "government_decision_tag_runs", "decision_id,vocab_version,status", "decision_id") if r["vocab_version"] == VOCAB and r["status"] in DONE}
     todo = [d for d in decs if d["id"] not in done]
+    # only decisions whose source text has been fetched (status ok or no_text) are taggable: a decision whose text row is missing or errored is WAITING, never tagged as 'title only' (an 'invalid' run counts as done and would never be retried)
+    waiting = [d for d in todo if (texts.get(d["id"]) or {}).get("status") not in ("ok", "no_text")]
+    todo = [d for d in todo if (texts.get(d["id"]) or {}).get("status") in ("ok", "no_text")]
     if a.pilot:
         todo = pilot_pick([d for d in todo if d["id"] in texts], a.pilot, a.seed)
     reqs, meta = [], {}
@@ -316,7 +327,7 @@ def main(argv=None, infra=None):
         meta[d["id"]] = {"d": d, "kind": kind, "shown": shown, "omnibus": is_omnibus(d.get("title"), body), "omni_title": omnibus_title(d.get("title")), "intro": is_nonfinal(d, note), "desc": version_desc(note), "chars": len(shown)}
         reqs.append({"custom_id": d["id"], "params": {"model": infra.model, "max_tokens": 1000, "thinking": {"type": "disabled"}, "messages": [{"role": "user", "content": build_prompt(d, kind, block, note)}]}})
     kinds = collections.Counter(m["kind"] for m in meta.values())
-    print("relevant decisions %d | already tagged (%s) %d | to tag %d | input kinds %s | omnibus by rule %d | non-final version only %d | %s" % (len(decs), VOCAB, len(done), len(todo), dict(kinds), sum(m["omnibus"] for m in meta.values()), sum(m["intro"] for m in meta.values()), "LIVE" if a.live else "DRY RUN"), flush=True)
+    print("relevant decisions %d | already tagged (%s) %d | waiting for source text %d | to tag %d | input kinds %s | omnibus by rule %d | non-final version only %d | %s" % (len(decs), VOCAB, len(done), len(waiting), len(todo), dict(kinds), sum(m["omnibus"] for m in meta.values()), sum(m["intro"] for m in meta.values()), "LIVE" if a.live else "DRY RUN"), flush=True)
     if not reqs:
         return {}
     if not a.live:
