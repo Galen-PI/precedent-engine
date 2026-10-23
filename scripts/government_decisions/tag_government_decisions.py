@@ -10,6 +10,7 @@ Usage:   python3 -u scripts/government_decisions/tag_government_decisions.py    
 import os, sys, re, json, random, argparse, datetime, importlib.util, types, collections
 
 VOCAB = "v1"
+PROMPT_VERSION = "v1.1"
 SECTORS = ("Communication Services", "Consumer Discretionary", "Consumer Staples", "Energy", "Financials", "Health Care", "Industrials", "Information Technology", "Materials", "Real Estate", "Utilities")
 THEMES = ("trade_tariffs", "sanctions_foreign_policy", "taxation", "budget_appropriations", "financial_regulation", "banking_monetary", "healthcare_drug_pricing", "environment_climate", "energy_policy", "technology_ai_data", "telecom_media", "labor_employment", "antitrust_competition", "defense_procurement", "housing_real_estate", "immigration", "agriculture_food", "transportation_infrastructure", "consumer_protection", "government_operations")
 SCOPES = ("market_wide", "sector_specific", "company_specific", "not_company_relevant")
@@ -31,18 +32,38 @@ TEXT KIND: {{KIND}}
 
 CONTROLLED VOCABULARY (use these exact strings):
 SECTORS: {{SECTORS}}
-THEMES: {{THEMES}}
+THEMES, with what each one means (choose a theme only if its meaning applies; a shared word is not enough):
+- trade_tariffs: tariffs, duties, quotas, import or export controls, trade agreements on goods
+- sanctions_foreign_policy: sanctions, blocking of property, national emergencies against foreign parties, foreign aid, diplomatic measures
+- taxation: taxes, credits, deductions, tax administration
+- budget_appropriations: government spending, appropriations, authorizations of funds, the debt limit
+- financial_regulation: regulation of banks, securities, insurance, lending and capital-market participants
+- banking_monetary: central banking, money, payments, deposit insurance, the Federal Reserve
+- healthcare_drug_pricing: health care delivery, health insurance, drugs, devices, medical programs
+- environment_climate: pollution, emissions, climate, wildlife, protection of land and water
+- energy_policy: oil, gas, coal, power, renewables, fuel and efficiency standards
+- technology_ai_data: software, AI, data, cybersecurity, semiconductors, internet platforms
+- telecom_media: telephone, broadband, spectrum, broadcasting, media
+- labor_employment: wages, unions, workplace rules, hiring, employment benefits for workers
+- antitrust_competition: mergers, market concentration, competition enforcement
+- defense_procurement: military spending, weapons, defense contracts
+- housing_real_estate: housing, mortgages, real estate, home construction
+- immigration: visas, borders, immigration rules
+- agriculture_food: farms, crops, food safety, nutrition programs
+- transportation_infrastructure: roads, rail, aviation, shipping, ports, water infrastructure
+- consumer_protection: rules protecting consumers in the marketplace (disclosure, fraud, product safety, pricing practices)
+- government_operations: the government's own administration, personnel, procedure and organization
 SCOPE: market_wide | sector_specific | company_specific | not_company_relevant
 PERSISTENCE: one_off | persistent_condition
-DIRECTION: benefit | harm | mixed | unclear
+DIRECTION (of the effect on the sector's companies overall): benefit | harm | mixed | unclear
 CONFIDENCE: high | medium | low
 
 RULES:
-1. scope: market_wide = affects businesses broadly (taxes, government-wide appropriations, broad regulation, trade policy across many goods); sector_specific = chiefly 1 to 4 sectors; company_specific = names a particular company; not_company_relevant = commemorative, symbolic, procedural or with no plausible effect on companies.
-2. persistence: persistent_condition = sets a standing rule, tax, tariff, program or regulatory condition that stays in force until changed; one_off = a single payment, a one-year appropriation, a one-time action or a short extension.
-3. themes: 1 to 3 themes. Each needs a QUOTE: a phrase of 3 to 25 words copied EXACTLY, character for character, from the text above, that supports the theme.
-4. sectors: 0 to 4 sectors whose economics the decision plausibly changes. Each needs a direction and a QUOTE copied exactly from the text above. Do not tag a sector you cannot support with a quote.
-5. confidence: high if the text states the effect plainly; medium if you must infer part of it; low if the text is thin, partial, or describes only an early version.
+1. scope: market_wide = affects businesses broadly (taxes, government-wide appropriations, broad regulation, trade policy across many goods); sector_specific = chiefly 1 to 4 sectors AND you can name at least one of them with a supporting quote (otherwise choose market_wide or not_company_relevant); company_specific = names a particular company; not_company_relevant = commemorative, symbolic, procedural, or with no plausible effect on companies.
+2. persistence: persistent_condition = sets a standing rule, tax, tariff, program or regulatory condition, or permanently changes or ends one, that stays in force until changed; one_off = fixed-term or single-year funding (annual appropriations or an authorization for one fiscal year), a single payment, a one-time action, or a short extension or delay.
+3. themes: 1 to 3 themes. Each needs a QUOTE: a phrase of 3 to 25 words copied EXACTLY, character for character, from the text above, that supports the theme. A quote longer than 25 words is invalid: count the words.
+4. sectors: 0 to 4 sectors whose economics the decision plausibly changes. Each needs a direction and a QUOTE (3 to 25 words) copied exactly from the text above. Do not tag a sector you cannot support with a quote.
+5. confidence: high if the text states the effect plainly; medium if you must infer part of it; low if the text is thin, partial, or describes only an earlier version of a bill.
 6. If the text is marked PARTIAL you see only the start of a long text plus a list of its headings: tag only what you can support from what you see.
 
 Respond with ONLY valid JSON, no markdown code fences, no other text:
@@ -69,9 +90,24 @@ def extract_headings(body, is_order):
     return out
 
 
+def omnibus_title(title):
+    return bool(re.search(r"\b(consolidated|continuing|omnibus)\b[^.]{0,60}\bappropriations\b", title or "", re.I))
+
+
 def is_omnibus(title, body):
-    divs = set(re.findall(r"\bDivision\s+([A-Z]{1,2})\s*:", body or ""))
-    return bool(re.search(r"\b(consolidated|continuing|omnibus)\b[^.]{0,60}\bappropriations\b", title or "", re.I)) or len(divs) >= 8
+    return omnibus_title(title) or len(set(re.findall(r"\bDivision\s+([A-Z]{1,2})\s*:", body or ""))) >= 8
+
+
+def version_desc(note):
+    """the CRS summary version stored by fetch_decision_text.py: 'version 49 | Public Law | 2014-08-07 | ...' -> 'Public Law'"""
+    parts = (note or "").split(" | ")
+    return parts[1] if len(parts) > 1 and parts[0].startswith("version") else None
+
+
+def is_nonfinal(d, note):
+    """a law whose stored summary is NOT the Public Law version (Introduced, Passed House amended, Reported...) may differ from the law as enacted"""
+    v = version_desc(note)
+    return d["decision_type"] == "enacted_law" and v is not None and v != "Public Law"
 
 
 def build_feed(body, is_order):
@@ -89,8 +125,8 @@ def build_feed(body, is_order):
 
 def build_prompt(d, kind, block, note):
     label = {"full": "FULL TEXT", "partial": "PARTIAL: only the start of a long text plus its headings", "title_only": "TITLE ONLY"}[kind]
-    if note and "Introduced" in note:
-        label += " (NOTE: this summary describes the bill AS INTRODUCED, which may differ from the law as enacted)"
+    if is_nonfinal(d, note):
+        label += " (NOTE: this summary describes an EARLIER VERSION of the bill, '%s', which may differ from the law as enacted)" % version_desc(note)
     return (PROMPT.replace("{{TYPE}}", d["decision_type"]).replace("{{TITLE}}", d.get("title") or "").replace("{{PA}}", d["sd"].get("policy_area") or "(none)")
             .replace("{{KIND}}", label).replace("{{FEED}}", block).replace("{{SECTORS}}", ", ".join(SECTORS)).replace("{{THEMES}}", ", ".join(THEMES)))
 
@@ -109,18 +145,21 @@ def parse_tag_result(raw):
     return p if isinstance(p, dict) else None
 
 
-def quote_problem(q, seen):
+def quote_check(q, seen):
+    """returns (problem, evidence): a quote of 3 to 60 words that is FOUND in the text shown is verified; the evidence stored is its first 25 words (the start of an exact quote is itself exact)"""
     if not isinstance(q, str):
-        return "no quote"
-    n = len(q.split())
-    if n < 3:
-        return "quote under 3 words"
-    if n > 25:
-        return "quote over 25 words"
-    return None if norm(q) in seen else "quote not found in the text shown"
+        return "no quote", None
+    w = q.split()
+    if len(w) < 3:
+        return "quote under 3 words", None
+    if len(w) > 60:
+        return "quote over 60 words", None
+    if norm(q) not in seen:
+        return "quote not found in the text shown", None
+    return None, " ".join(w[:25])
 
 
-def validate(p, shown_text, kind, omnibus, intro_only):
+def validate(p, shown_text, kind, omnibus, intro_only, force_one_off=False):
     """returns None if the core (scope, persistence, at least one theme) is unusable, else {status, rows, dropped, confidence}"""
     seen, dropped, rows = norm(shown_text), [], []
     scope, pers = p.get("scope"), p.get("persistence")
@@ -128,16 +167,18 @@ def validate(p, shown_text, kind, omnibus, intro_only):
         return {"status": "invalid", "rows": [], "dropped": ["scope or persistence not in the vocabulary: %r, %r" % (scope, pers)], "confidence": None}
     if omnibus:
         scope = "market_wide"
+    if force_one_off:
+        pers = "one_off"   # an annual omnibus or continuing appropriations law (identified by its title) is fixed-term funding
     themes = []
     for t in (p.get("themes") if isinstance(p.get("themes"), list) else []):
         if not isinstance(t, dict) or t.get("theme") not in THEMES:
             dropped.append("theme %r not in the vocabulary" % (t.get("theme") if isinstance(t, dict) else t))
             continue
-        why = quote_problem(t.get("quote"), seen)
+        why, ev = quote_check(t.get("quote"), seen)
         if why:
             dropped.append("theme %s: %s" % (t["theme"], why))
         elif t["theme"] not in [x[0] for x in themes]:
-            themes.append((t["theme"], t["quote"]))
+            themes.append((t["theme"], ev))
     if len(themes) > 3:
         dropped.append("themes beyond the third dropped: %s" % [x[0] for x in themes[3:]])
         themes = themes[:3]
@@ -155,11 +196,11 @@ def validate(p, shown_text, kind, omnibus, intro_only):
             if not isinstance(s, dict) or s.get("sector") not in SECTORS or s.get("direction") not in DIRECTIONS:
                 dropped.append("sector entry not in the vocabulary: %r" % (s,))
                 continue
-            why = quote_problem(s.get("quote"), seen)
+            why, ev = quote_check(s.get("quote"), seen)
             if why:
                 dropped.append("sector %s: %s" % (s["sector"], why))
             elif s["sector"] not in [x[0] for x in sectors]:
-                sectors.append((s["sector"], s["direction"], s["quote"]))
+                sectors.append((s["sector"], s["direction"], ev))
         if len(sectors) > 4:
             dropped.append("sectors beyond the fourth dropped")
             sectors = sectors[:4]
@@ -238,6 +279,7 @@ def main(argv=None, infra=None):
     ap.add_argument("--live", action="store_true")
     ap.add_argument("--apply", action="store_true")
     ap.add_argument("--pilot", type=int, default=0)
+    ap.add_argument("--seed", type=int, default=20261023, help="pilot sample seed (a different seed gives a fresh stratified sample)")
     a = ap.parse_args(argv)
     if a.apply and not a.live:
         ap.error("--apply needs --live")
@@ -253,17 +295,17 @@ def main(argv=None, infra=None):
     done = {str(r["decision_id"]) for r in paged(sb, "government_decision_tag_runs", "decision_id,vocab_version,status", "decision_id") if r["vocab_version"] == VOCAB and r["status"] in DONE}
     todo = [d for d in decs if d["id"] not in done]
     if a.pilot:
-        todo = pilot_pick([d for d in todo if d["id"] in texts], a.pilot)
+        todo = pilot_pick([d for d in todo if d["id"] in texts], a.pilot, a.seed)
     reqs, meta = [], {}
     for d in todo:
         t = texts.get(d["id"]) or {}
         body = t.get("body") if t.get("status") == "ok" else None
         kind, shown, block = build_feed(body, d["decision_type"] == "executive_order")
         note = t.get("note") or ""
-        meta[d["id"]] = {"d": d, "kind": kind, "shown": shown, "omnibus": is_omnibus(d.get("title"), body), "intro": "Introduced" in note, "chars": len(shown)}
+        meta[d["id"]] = {"d": d, "kind": kind, "shown": shown, "omnibus": is_omnibus(d.get("title"), body), "omni_title": omnibus_title(d.get("title")), "intro": is_nonfinal(d, note), "desc": version_desc(note), "chars": len(shown)}
         reqs.append({"custom_id": d["id"], "params": {"model": infra.model, "max_tokens": 1000, "thinking": {"type": "disabled"}, "messages": [{"role": "user", "content": build_prompt(d, kind, block, note)}]}})
     kinds = collections.Counter(m["kind"] for m in meta.values())
-    print("relevant decisions %d | already tagged (%s) %d | to tag %d | input kinds %s | omnibus by rule %d | introduced-version only %d | %s" % (len(decs), VOCAB, len(done), len(todo), dict(kinds), sum(m["omnibus"] for m in meta.values()), sum(m["intro"] for m in meta.values()), "LIVE" if a.live else "DRY RUN"), flush=True)
+    print("relevant decisions %d | already tagged (%s) %d | to tag %d | input kinds %s | omnibus by rule %d | non-final version only %d | %s" % (len(decs), VOCAB, len(done), len(todo), dict(kinds), sum(m["omnibus"] for m in meta.values()), sum(m["intro"] for m in meta.values()), "LIVE" if a.live else "DRY RUN"), flush=True)
     if not reqs:
         return {}
     if not a.live:
@@ -293,12 +335,12 @@ def main(argv=None, infra=None):
     for cid, m in meta.items():
         d, (how, text) = m["d"], raw.get(cid, ("failed", "NO RESULT RETURNED"))
         parsed = parse_tag_result(text) if how == "ok" else None
-        v = validate(parsed, m["shown"], m["kind"], m["omnibus"], m["intro"]) if parsed else None
+        v = validate(parsed, m["shown"], m["kind"], m["omnibus"], m["intro"], m["omni_title"]) if parsed else None
         status = "failed" if how != "ok" else "parse_error" if parsed is None else v["status"]
         tally[status] += 1
         if v and v["rows"]:
             for r in v["rows"]:
-                tag_rows.append(dict(r, decision_id=cid, confidence=v["confidence"], vocab_version=VOCAB, model_version=infra.model, text_version="introduced_only" if m["intro"] else "final_or_order" if m["kind"] != "title_only" else "title_only"))
+                tag_rows.append(dict(r, decision_id=cid, confidence=v["confidence"], vocab_version=VOCAB, model_version=infra.model, prompt_version=PROMPT_VERSION, text_version=("nonfinal:%s" % m["desc"]) if m["intro"] else "final_or_order" if m["kind"] != "title_only" else "title_only"))
             tb = [r["bucket"] for r in v["rows"] if r["bucket_type"] == "theme"]
             themes_c.update(tb)
             sectors_c.update(r["bucket"] for r in v["rows"] if r["bucket_type"] == "sector")
@@ -307,9 +349,9 @@ def main(argv=None, infra=None):
             if d["decision_type"] == "enacted_law" and pa in PA_THEME and pa not in WEAK_PA:
                 agree[1] += 1
                 agree[0] += PA_THEME[pa] in tb
-        run_rows.append({"decision_id": cid, "vocab_version": VOCAB, "status": status, "n_tags": len(v["rows"]) if v else 0, "dropped": ("; ".join(v["dropped"])[:800] if v and v["dropped"] else None), "input_kind": m["kind"], "input_chars": m["chars"], "raw_response": (text or "")[:1500], "model_version": infra.model})
+        run_rows.append({"decision_id": cid, "vocab_version": VOCAB, "status": status, "n_tags": len(v["rows"]) if v else 0, "dropped": ("; ".join(v["dropped"])[:800] if v and v["dropped"] else None), "input_kind": m["kind"], "input_chars": m["chars"], "raw_response": (text or "")[:1500], "model_version": infra.model, "prompt_version": PROMPT_VERSION})
         if a.pilot:
-            print("\n=== %s | %s | %s | input %s (%d chars)%s%s" % ((d.get("title") or "")[:70], d["decision_type"], str(d.get("decision_date"))[:10], m["kind"], m["chars"], " | OMNIBUS" if m["omnibus"] else "", " | INTRODUCED ONLY" if m["intro"] else ""))
+            print("\n=== %s | %s | %s | input %s (%d chars)%s%s" % ((d.get("title") or "")[:70], d["decision_type"], str(d.get("decision_date"))[:10], m["kind"], m["chars"], " | OMNIBUS" if m["omnibus"] else "", (" | NON-FINAL VERSION: %s" % m["desc"]) if m["intro"] else ""))
             print("    status %s | confidence %s | policy area: %s" % (status, v["confidence"] if v else None, d["sd"].get("policy_area")))
             for r in (v["rows"] if v else []):
                 print("    %-11s %-26s %-8s %s" % (r["bucket_type"], r["bucket"], r["direction"] or "", ("\"%s\"" % r["evidence"])[:150] if r["evidence"] else ""))
