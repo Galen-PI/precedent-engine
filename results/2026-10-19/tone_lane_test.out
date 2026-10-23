@@ -1,0 +1,9 @@
+nohup: ignoring input
+article rows read 1334217 for 461 entities | stock-days with a tone z-score 18.5% | POS days 19276, NEG days 30263 | 1260s
+2015-2020 | POS 9135, NEG 14517 | previous-day miss positive: after POS flags 50%, after NEG flags 48% | UNMATCHED lift -0.7 pts | MATCHED lift -0.7 pts [-1.7, +0.5] | matched delta -0.007 band units [-0.028, +0.014] | PLACEBO matched lift +1.0 pts
+2021-2026 | POS 8271, NEG 12181 | previous-day miss positive: after POS flags 49%, after NEG flags 49% | UNMATCHED lift -0.7 pts | MATCHED lift -0.7 pts [-2.1, +0.8] | matched delta -0.016 band units [-0.043, +0.009] | PLACEBO matched lift +0.8 pts
+held-out centre test: shift fitted on 2015-2020 (delta -0.007) scored on 2021-2026: squared miss of flagged days changes by +0.003%
+held-out centre test: shift fitted on 2021-2026 (delta -0.016) scored on 2015-2020: squared miss of flagged days changes by -0.011%
+
+VERDICT (pre-set: both eras >= 2000 POS and NEG days, matched lift >= 3.0 points with the interval's lower end above +1.0, placebo within +-2.0; a place in the price also needs a held-out reduction >= 0.5% both ways): NO LANE
+total 1304s

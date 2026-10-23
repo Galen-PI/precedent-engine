@@ -1,0 +1,46 @@
+{
+ "ticker": "NVDA",
+ "date": "2026-10-09",
+ "sector": "Information Technology",
+ "day": {
+  "return": -0.00520652551197498,
+  "prev_close": 230.48,
+  "close": 229.28
+ },
+ "chapter1": {
+  "ret": -0.00520652551197498,
+  "market_move": 0.005995400178251398,
+  "sector_excess": 0.0031045427450520167,
+  "beta_market": 1.823809875045062,
+  "beta_sector": 0.10179379219937412,
+  "market_part": 0.010934470049941823,
+  "sector_part": 0.0003160231790638995,
+  "hyp": 0.011250493229005723,
+  "e1": -0.016457018740980704,
+  "sd": 0.01811773006629507,
+  "fit_days": 250
+ },
+ "hypothetical_price": 233.0730136794212,
+ "q": 1.1077509901840032,
+ "event_multiplier": 1.0,
+ "band_multiplier_source": "no own event, earnings filing or item 7.01 filing on day 0 or +1",
+ "band_group": "ordinary",
+ "band_edge": 1.4413469381137038,
+ "band_edge_source": "calibrated 90% edge for ordinary days with normal market stress",
+ "filing_flags": {
+  "earn_off": null,
+  "earn_date": null,
+  "f701": false
+ },
+ "band_return": [
+  -0.016234357850724586,
+  0.03873534430873603
+ ],
+ "band_units_of_miss": -0.8630308202865159,
+ "events": [],
+ "macro": {
+  "oil": 0.004783228170160747,
+  "yield": 0.020000000000000462,
+  "credit": 0.020000000000000462
+ }
+}

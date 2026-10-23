@@ -1,0 +1,46 @@
+{
+ "ticker": "TPL",
+ "date": "2026-08-06",
+ "sector": "Energy",
+ "day": {
+  "return": -0.06871265922817194,
+  "prev_close": 381.2689,
+  "close": 355.0709
+ },
+ "chapter1": {
+  "ret": -0.06871265922817194,
+  "market_move": -0.0015978113888188705,
+  "sector_excess": 0.01964916653961716,
+  "beta_market": 1.4994459007381606,
+  "beta_sector": 0.9837078638316734,
+  "market_part": -0.0023958317371172025,
+  "sector_part": 0.01932903964275959,
+  "hyp": 0.01693320790564239,
+  "e1": -0.08564586713381432,
+  "sd": 0.02701227916710282,
+  "fit_days": 250
+ },
+ "hypothetical_price": 387.72500555165556,
+ "q": 1.3109462115431627,
+ "event_multiplier": 2.47,
+ "band_multiplier_source": "earnings window (8-K item 2.02 filed 2026-08-05, day 1): measured on all stocks since 2006, relative to an ordinary day",
+ "band_group": "earnings window, day +1 (no event)",
+ "band_edge": 1.384364509602128,
+ "band_edge_source": "calibrated 90% edge for: earnings window, day +1 (no event)",
+ "filing_flags": {
+  "earn_off": 1,
+  "earn_date": "2026-08-05",
+  "f701": false
+ },
+ "band_return": [
+  -0.08882183262904213,
+  0.1226882484403269
+ ],
+ "band_units_of_miss": -1.12112952966309,
+ "events": [],
+ "macro": {
+  "oil": 0.027350872623078892,
+  "yield": 0.0600000000000005,
+  "credit": -8.881784197001252e-16
+ }
+}

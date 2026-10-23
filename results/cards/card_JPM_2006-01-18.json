@@ -1,0 +1,46 @@
+{
+ "ticker": "JPM",
+ "date": "2006-01-18",
+ "sector": "Financials",
+ "day": {
+  "return": -0.010828542832430732,
+  "prev_close": 23.53964,
+  "close": 23.28474
+ },
+ "chapter1": {
+  "ret": -0.010828542832430732,
+  "market_move": -0.003974205057323377,
+  "sector_excess": -0.001981056827097513,
+  "beta_market": 0.9708089659528233,
+  "beta_sector": 0.7107553031813846,
+  "market_part": -0.003858193902184588,
+  "sector_part": -0.0014080466457632446,
+  "hyp": -0.005266240547947833,
+  "e1": -0.005562302284482899,
+  "sd": 0.0057528769450789375,
+  "fit_days": 250
+ },
+ "hypothetical_price": 23.4156745933479,
+ "q": 1.5063322329600934,
+ "event_multiplier": 2.72,
+ "band_multiplier_source": "earnings window (8-K item 2.02 filed 2006-01-18, day 0): measured on all stocks since 2006, relative to an ordinary day",
+ "band_group": "earnings window, day 0 (no event)",
+ "band_edge": 1.5061851178424372,
+ "band_edge_source": "calibrated 90% edge for: earnings window, day 0 (no event)",
+ "filing_flags": {
+  "earn_off": 0,
+  "earn_date": "2006-01-18",
+  "f701": true
+ },
+ "band_return": [
+  -0.03419252984647655,
+  0.023660048750580878
+ ],
+ "band_units_of_miss": -0.28962777891650476,
+ "events": [],
+ "macro": {
+  "oil": -0.009041591320072206,
+  "yield": 0.0,
+  "credit": -0.010000000000000675
+ }
+}

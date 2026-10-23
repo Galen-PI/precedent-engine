@@ -1,0 +1,46 @@
+{
+ "ticker": "JPM",
+ "date": "2018-01-12",
+ "sector": "Financials",
+ "day": {
+  "return": 0.016510299175242826,
+  "prev_close": 88.42844,
+  "close": 89.88842
+ },
+ "chapter1": {
+  "ret": 0.016510299175242826,
+  "market_move": 0.006518956019666788,
+  "sector_excess": -0.00015074754105666357,
+  "beta_market": 1.191294772223074,
+  "beta_sector": 1.4576971495376176,
+  "market_part": 0.007765998226581184,
+  "sector_part": -0.00021974426089810346,
+  "hyp": 0.0075462539656830805,
+  "e1": 0.008964045209559745,
+  "sd": 0.005853656364197261,
+  "fit_days": 250
+ },
+ "hypothetical_price": 89.09574346602915,
+ "q": 1.5189064233569518,
+ "event_multiplier": 2.72,
+ "band_multiplier_source": "earnings window (8-K item 2.02 filed 2018-01-12, day 0): measured on all stocks since 2006, relative to an ordinary day",
+ "band_group": "earnings window, day 0 (no event)",
+ "band_edge": 1.5061851178424372,
+ "band_edge_source": "calibrated 90% edge for: earnings window, day 0 (no event)",
+ "filing_flags": {
+  "earn_off": 0,
+  "earn_date": "2018-01-12",
+  "f701": true
+ },
+ "band_return": [
+  -0.022009360264343688,
+  0.03710186819570985
+ ],
+ "band_units_of_miss": 0.4568171510571733,
+ "events": [],
+ "macro": {
+  "oil": 0.006425325184140407,
+  "yield": 0.009999999999999787,
+  "credit": 0.029999999999999805
+ }
+}

@@ -1,0 +1,46 @@
+{
+ "ticker": "TGT",
+ "date": "2018-11-21",
+ "sector": "Consumer Staples",
+ "day": {
+  "return": 0.0033320518440593805,
+  "prev_close": 55.63839,
+  "close": 55.82378
+ },
+ "chapter1": {
+  "ret": 0.0033320518440593805,
+  "market_move": 0.0034075228009229352,
+  "sector_excess": -0.007595441528484945,
+  "beta_market": 1.0569022754108663,
+  "beta_sector": 0.6305585536414344,
+  "market_part": 0.003601418601809859,
+  "sector_part": -0.004789370624469553,
+  "hyp": -0.001187952022659694,
+  "e1": 0.004520003866719075,
+  "sd": 0.01601570486778498,
+  "fit_days": 250
+ },
+ "hypothetical_price": 55.57229426206197,
+ "q": 1.1869646068352901,
+ "event_multiplier": 1.472,
+ "band_multiplier_source": "earnings window (8-K item 2.02 filed 2018-11-20, day 1): this stock released before the open in 4 of its last 4 classifiable quarters, so today is its other day; the measured multiplier of that role on all stocks since 2006",
+ "band_group": "earnings window, other day",
+ "band_edge": 1.339,
+ "band_edge_source": "calibrated 90% edge for: earnings window, other day (card units: times the multiplier it equals the ordinary-scale 90th percentile of that role)",
+ "filing_flags": {
+  "earn_off": 1,
+  "earn_date": "2018-11-20",
+  "f701": false
+ },
+ "band_return": [
+  -0.03557962708231034,
+  0.033203723036990956
+ ],
+ "band_units_of_miss": 0.17598111074960593,
+ "events": [],
+ "macro": {
+  "oil": 0.01910470125491659,
+  "yield": 0.0,
+  "credit": 0.02999999999999936
+ }
+}

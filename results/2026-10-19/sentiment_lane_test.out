@@ -1,0 +1,7 @@
+nohup: ignoring input
+article rows read 1334217 for 461 entities | stock-days with article coverage 31.8% | spike days 60408 | 1469s
+2015-2020 | flagged 20810, unflagged 532468 | k_ref 1.42 | UNMATCHED shortfall +1.3 pts | MATCHED shortfall +0.6 pts [+0.1, +1.1] | matched mean-square ratio 1.12 [1.05, 1.18] | PLACEBO matched -0.1 pts (unmatched -0.1)
+2021-2026 | flagged 22025, unflagged 565942 | k_ref 1.43 | UNMATCHED shortfall +1.0 pts | MATCHED shortfall +0.5 pts [+0.1, +0.9] | matched mean-square ratio 1.11 [1.03, 1.21] | PLACEBO matched +0.1 pts (unmatched +0.1)
+
+VERDICT (pre-set: both eras flagged >= 5000, matched shortfall >= 5 points with the interval's lower end above 3, placebo within +-1.5): NO LANE
+total 1512s

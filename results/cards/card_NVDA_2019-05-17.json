@@ -1,0 +1,46 @@
+{
+ "ticker": "NVDA",
+ "date": "2019-05-17",
+ "sector": "Information Technology",
+ "day": {
+  "return": -0.022848296589144113,
+  "prev_close": 3.96616,
+  "close": 3.87554
+ },
+ "chapter1": {
+  "ret": -0.022848296589144113,
+  "market_move": -0.006465125339065403,
+  "sector_excess": -0.008982021418344761,
+  "beta_market": 1.4443505221980868,
+  "beta_sector": 1.8133463629579238,
+  "market_part": -0.009337907159555198,
+  "sector_part": -0.016287515870965646,
+  "hyp": -0.025625423030520844,
+  "e1": 0.0027771264413767316,
+  "sd": 0.02189644335679481,
+  "fit_days": 250
+ },
+ "hypothetical_price": 3.8645254721932694,
+ "q": 0.6810589912752407,
+ "event_multiplier": 3.609,
+ "band_multiplier_source": "earnings window (8-K item 2.02 filed 2019-05-16, day 1): this stock released after the close in 3 of its last 4 classifiable quarters, so today is its REACTION day; the measured multiplier of that role on all stocks since 2006",
+ "band_group": "earnings window, reaction day",
+ "band_edge": 1.474,
+ "band_edge_source": "calibrated 90% edge for: earnings window, reaction day (card units: times the multiplier it equals the ordinary-scale 90th percentile of that role)",
+ "filing_flags": {
+  "earn_off": 1,
+  "earn_date": "2019-05-16",
+  "f701": false
+ },
+ "band_return": [
+  -0.12175351209425334,
+  0.07050266603321165
+ ],
+ "band_units_of_miss": 0.04258364453573336,
+ "events": [],
+ "macro": {
+  "oil": -0.002542507548069284,
+  "yield": -0.009999999999999787,
+  "credit": -0.009999999999999787
+ }
+}
