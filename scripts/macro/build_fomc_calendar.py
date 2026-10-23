@@ -30,7 +30,8 @@ INDEPENDENT_PAST = ["2021-01-27", "2021-03-17", "2021-04-28", "2021-06-16", "202
 # scheduled, not yet held (tentative until confirmed): (first day, last day)
 FUTURE = [("2026-10-27", "2026-10-28"), ("2026-12-08", "2026-12-09"), ("2027-01-26", "2027-01-27"), ("2027-03-16", "2027-03-17"), ("2027-04-27", "2027-04-28"), ("2027-06-08", "2027-06-09"), ("2027-07-27", "2027-07-28"), ("2027-09-14", "2027-09-15"), ("2027-10-26", "2027-10-27"), ("2027-12-07", "2027-12-08")]
 MONTHS = {m.lower()[:3]: i for i, m in enumerate(["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"], 1)}
-HEAD = re.compile(r"^\s*(?P<m1>[A-Za-z]+)\.?\s+(?P<d1>\d{1,2})(?:\s*[-\u2013\u2014/]\s*(?:(?P<m2>[A-Za-z]+)\.?\s+)?(?P<d2>\d{1,2}))?\s+(?P<kind>Meeting|Conference Call)\s*[-\u2013\u2014]\s*(?P<year>\d{4})\s*$")
+HEAD = re.compile(r"^\s*(?P<m1>[A-Za-z]+)\.?(?:\s*/\s*(?P<mb>[A-Za-z]+)\.?)?\s+(?P<d1>\d{1,2})(?:\s*[-\u2013\u2014/]\s*(?:(?P<m2>[A-Za-z]+)\.?\s+)?(?P<d2>\d{1,2}))?\s+(?:(?P<un>Unscheduled|Emergency)\s+)?(?P<kind>Meeting|Conference Call)\s*[-\u2013\u2014]\s*(?P<year>\d{4})\s*$")
+UNMATCHED = []
 POLICY_PR = re.compile(r"/pressreleases/monetary(\d{8})a\.htm$")
 
 
@@ -95,11 +96,13 @@ def ann_from_url(href, end):
 
 
 def parse_year_page(html, year, url):
-    out, cur = [], None
+    out, cur, minutes = [], None, set()
     for tk in tokens_of(html):
         if tk[0] == "h":
             m = HEAD.match(tk[1])
             if not m:
+                if re.search(r"Meeting|Conference", tk[1], re.I) and re.search(r"(?<!\d)(19|20)\d{2}(?!\d)", tk[1]):
+                    UNMATCHED.append((year, tk[1]))
                 cur = None
                 continue
             m1 = month_num(m.group("m1"))
@@ -107,24 +110,42 @@ def parse_year_page(html, year, url):
                 cur = None
                 continue
             y = int(m.group("year"))
-            start = datetime.date(y, m1, int(m.group("d1")))
-            end = start
-            if m.group("d2"):
-                m2 = month_num(m.group("m2")) if m.group("m2") else m1
-                yy = y
-                if m2 == m1 and int(m.group("d2")) < start.day:
-                    m2 += 1
-                elif m2 < m1:
-                    yy = y + 1
-                if m2 > 12:
-                    m2, yy = 1, y + 1
-                end = datetime.date(yy, m2, int(m.group("d2")))
+            try:
+                start = datetime.date(y, m1, int(m.group("d1")))
+                end = start
+                if m.group("d2"):
+                    m2 = month_num(m.group("m2")) if m.group("m2") else (month_num(m.group("mb")) if m.group("mb") else m1)
+                    yy = y
+                    if m2 == m1 and int(m.group("d2")) < start.day:
+                        m2 += 1
+                    elif m2 < m1:
+                        yy = y + 1
+                    if m2 > 12:
+                        m2, yy = 1, y + 1
+                    end = datetime.date(yy, m2, int(m.group("d2")))
+            except (ValueError, TypeError):
+                UNMATCHED.append((year, tk[1] + " [INVALID DATE]"))
+                cur = None
+                continue
             kind = "meeting" if m.group("kind") == "Meeting" else "conference_call"
-            cur = {"year": y, "kind": kind, "start_date": start, "end_date": end, "announcement_date": None, "statement_url": "", "flags": "", "source_url": url, "confirmed": True}
+            cur = {"year": y, "kind": kind, "start_date": start, "end_date": end, "announcement_date": None, "statement_url": "", "flags": "UNSCHEDULED" if m.group("un") else "", "source_url": url, "confirmed": True}
             out.append(cur)
+        elif tk[0] == "a" and "minutes" in tk[1].lower():
+            for tok in re.findall(r"(?<!\d)(\d{8})(?!\d)", tk[1]):
+                try:
+                    d_ = datetime.date(int(tok[:4]), int(tok[4:6]), int(tok[6:]))
+                except ValueError:
+                    continue
+                if d_.year == year:
+                    minutes.add(d_)
         elif tk[0] == "a" and cur is not None and not cur["statement_url"] and is_statement(tk[1], tk[2]):
             cur["statement_url"] = urljoin(url, tk[1])
-            cur["announcement_date"], cur["flags"] = ann_from_url(tk[1], cur["end_date"])
+            cur["announcement_date"], fl = ann_from_url(tk[1], cur["end_date"])
+            cur["flags"] = (cur["flags"] + " " + fl).strip()
+    # second, independent signal: a minutes link is dated by the meeting's last day; a minutes date with no parsed meeting is a meeting the heading parser missed
+    for md in sorted(minutes):
+        if not any(abs((r["end_date"] - md).days) <= 2 for r in out):
+            out.append({"year": md.year, "kind": "meeting", "start_date": md - datetime.timedelta(days=1), "end_date": md, "announcement_date": md, "statement_url": "", "flags": "FROM MINUTES LINK ONLY: announcement date ASSUMED = last day, VERIFY", "source_url": url, "confirmed": True})
     return out
 
 
@@ -216,7 +237,7 @@ def validate(rows, sb, log):
     flagged = [r for r in rows if r["flags"] and r["confirmed"] and "INFERRED" not in r["flags"]]
     P("  rows with a flag (excluding the inferred start day of 2021+ meetings): %d" % len(flagged))
     for r in flagged[:15]:
-        P("     %s %s %s: %s" % (r["kind"], r["start_date"], r["end_date"], r["flags"]))
+        P("     %s %s %s: %s  %s" % (r["kind"], r["start_date"], r["end_date"], r["flags"], r["statement_url"][-70:]))
     ind = set(datetime.date.fromisoformat(x) for x in INDEPENDENT_PAST)
     got = {a for a in ann if a.year >= 2021}
     P("\n(a) 2021-2026 announcement dates vs the independent transcription: %d expected, %d parsed; missing %s; extra %s" % (len(ind), len(got), sorted(str(x) for x in ind - got) or "none", sorted(str(x) for x in got - ind) or "none"))
@@ -234,12 +255,17 @@ def validate(rows, sb, log):
     P("\n(c) weekday of the announcements: " + ", ".join("%s %d" % (k, wd[k]) for k in ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun") if k in wd))
     post2000_missing = [r for r in rows if r["kind"] == "meeting" and r["confirmed"] and r["year"] >= 2000 and not r["announcement_date"]]
     P("    meetings from 2000 without a statement link (expected none; each is a parse gap or a real exception): %d  %s" % (len(post2000_missing), [str(r["start_date"]) for r in post2000_missing][:12]))
+    synth = [r for r in rows if "FROM MINUTES LINK ONLY" in r["flags"]]
+    P("\n(b2) meetings synthesized from a minutes link because no section heading parsed (announcement date ASSUMED = last day; verify): %d  %s" % (len(synth), [str(r["end_date"]) for r in synth][:24]))
+    P("     headings mentioning Meeting or Conference Call that did NOT parse: %d  %s" % (len(UNMATCHED), UNMATCHED[:14]))
     if sb is None:
         return
-    P("\n(d) CHANGES IN THE TARGET-RATE SERIES (macro_long) vs the announcement dates")
+    P("\n(d) CHANGES IN THE TARGET-RATE SERIES (macro_long) vs the announcement dates (only changes on or after the calendar's first day)")
     for sid in ("DFEDTAR", "DFEDTARU", "DFEDTARL"):
         try:
-            ch = change_dates(fetch_series(sb, sid))
+            ch_all = change_dates(fetch_series(sb, sid))
+            lo_ = min(r["start_date"] for r in rows)
+            ch = [c for c in ch_all if c[0] >= lo_]
         except Exception as e:
             P("   %s: could not read (%s)" % (sid, str(e)[:80]))
             continue
@@ -251,6 +277,7 @@ def validate(rows, sb, log):
             if k == "other":
                 oth.append("%s %+.2f" % (d, b - a))
         P("   %-9s %3d changes: same day %3d | the day after an announcement %3d | neither %3d%s" % (sid, len(ch), cnt["same_day"], cnt["day_after"], cnt["other"], ("   neither: " + ", ".join(oth[:14])) if oth else ""))
+        P("      (%d earlier changes before %s are outside the calendar and not classified)" % (len(ch_all) - len(ch), lo_))
     P("\n(e) government_decisions rows with decision_type = interest_rate vs the announcement dates")
     try:
         gd = sb.table("government_decisions").select("decision_date").eq("decision_type", "interest_rate").order("decision_date").execute().data
