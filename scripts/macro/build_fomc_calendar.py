@@ -15,7 +15,7 @@ from urllib.parse import urljoin
 BASE = "https://www.federalreserve.gov/monetarypolicy/"
 UA = {"User-Agent": "Mozilla/5.0 (research script; FOMC calendar builder)"}
 FIRST_YEAR, LAST_HIST = 1994, 2020
-TODAY = datetime.date(2026, 10, 23)
+TODAY = datetime.date.today()
 ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
 OUT_CSV = os.path.join(ROOT, "results", "fomc_meetings.csv")
 OUT_TXT = os.path.join(ROOT, "results", "fomc_calendar_validation.txt")
