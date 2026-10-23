@@ -19,13 +19,13 @@ TOL = 5e-5
 DAILY_RESERVE = 25
 SYMBOL_OVERRIDES = {"BRK-B": "BRK.B", "BF-B": "BF.B"}   # same map as refresh_market_prices.py
 DONE = ("ok", "flagged")
-SPLIT_RATIOS = (1.25, 1.5, 2, 3, 4, 5, 6, 7, 8, 10, 15, 20, 25, 30, 40, 50)
+SPLIT_RATIOS = (1.2, 1.25, 4.0 / 3.0, 1.5, 2, 2.5, 3, 4, 5, 6, 7, 8, 10, 15, 20, 25, 30, 40, 50)
 
 
-def near_split(step):
-    """step = ratio_new / ratio_old; True if it is within 3% of a split ratio or its inverse (a reverse split)"""
+def near_split(step, tol=0.04):
+    """step = ratio_new / ratio_old; True if it is within tol of a split ratio or its inverse (a reverse split)"""
     f = step if step >= 1 else 1.0 / step
-    return any(abs(f / k - 1.0) <= 0.03 for k in SPLIT_RATIOS)
+    return any(abs(f / k - 1.0) <= tol for k in SPLIT_RATIOS)
 
 
 def api_usage(key):
@@ -85,22 +85,61 @@ def segments(pairs, tol=None):
     return out
 
 
-def self_checks(stored_n, matched_n, segs, truncated):
+def self_checks(stored_n, matched_n, segs, truncated, last_date=None):
+    """problems are plain strings; items that start with 'info:' are informational and do NOT make the ticker 'flagged'"""
     flags = []
     if truncated:
         flags.append("A WINDOW RETURNED 5,000 ROWS (truncated)")
     if stored_n and matched_n / stored_n < 0.98:
         flags.append("vendor has only %.1f%% of the stored days" % (100.0 * matched_n / stored_n))
     ratios = [r for _, r in segs]
-    dec = [(segs[i][0], ratios[i - 1], ratios[i]) for i in range(1, len(ratios)) if ratios[i] < ratios[i - 1] * (1 - 1e-4) and not near_split(ratios[i] / ratios[i - 1])]
+    dec = [(segs[i][0], ratios[i - 1], ratios[i]) for i in range(1, len(ratios)) if ratios[i] < ratios[i - 1] * (1 - 1e-4) and not near_split(ratios[i] / ratios[i - 1], 0.08)]
     if dec:
         flags.append("%d segment(s) where the ratio DECREASES and it is not a reverse split (first %s: %.4f -> %.4f)" % (len(dec), dec[0][0], dec[0][1], dec[0][2]))
-    if ratios and not (0.90 <= ratios[-1] <= 1.0005):
-        flags.append("latest ratio %.4f outside 0.90-1.0005" % ratios[-1])
-    steps = [(segs[i][0], ratios[i] / ratios[i - 1]) for i in range(1, len(ratios)) if ratios[i] / ratios[i - 1] > 1.15 and not near_split(ratios[i] / ratios[i - 1])]
-    if steps:
-        flags.append("UNEXPLAINED STEP(S) above x1.15 that are not split ratios (a spin-off or a vendor level shift): " + ", ".join("%s x%.3f" % (d, s) for d, s in steps[:6]))
+    # the stored history was fetched at one date and later dividends accumulate, so recent stored prices sit slightly ABOVE raw: a latest ratio up to 1.05 is normal
+    if ratios and not (0.90 <= ratios[-1] <= 1.05):
+        flags.append("latest ratio %.4f outside 0.90-1.05" % ratios[-1])
+    recent = None
+    if last_date:
+        try:
+            recent = datetime.date.fromisoformat(str(last_date)[:10]) - datetime.timedelta(days=60)
+        except ValueError:
+            recent = None
+    big, info = [], []
+    for i in range(1, len(ratios)):
+        st = ratios[i] / ratios[i - 1]
+        if st > 1.15:
+            is_recent = recent is not None and datetime.date.fromisoformat(segs[i][0]) >= recent
+            if is_recent or (not near_split(st) and st > 4):
+                big.append((segs[i][0], st))
+            elif not near_split(st):
+                info.append((segs[i][0], st))
+    if big:
+        flags.append("UNEXPLAINED OR RECENT STEP(S): above x4 and not a split ratio, or within the last 60 stored days (a vendor level shift, a data error, or a corporate action after the history was fetched: the stored series may be stale): " + ", ".join("%s x%.3f" % (d, st) for d, st in big[:6]))
+    if info:
+        flags.append("info: step(s) between x1.15 and x4 that are not split ratios (spin-offs and similar corporate actions): " + ", ".join("%s x%.3f" % (d, st) for d, st in info[:6]))
     return flags
+
+
+def retriage(sb, apply):
+    """re-evaluates the self-checks of every 'flagged' ticker from the change points already stored: no vendor calls, no credits"""
+    secs = {s["id"]: s["ticker"] for s in sb.table("securities").select("id,ticker").execute().data}
+    logs = sb.table("asquoted_fetch_log").select("security_id,status,flags,stored_rows,matched_rows,last_date").eq("status", "flagged").execute().data or []
+    tally, still = {"ok": 0, "flagged": 0}, []
+    for r in logs:
+        rows = sb.table("price_adjustment_factors").select("effective_date,ratio").eq("security_id", r["security_id"]).order("effective_date").execute().data
+        segs = [(str(x["effective_date"])[:10], float(x["ratio"])) for x in rows]
+        flags = self_checks(r.get("stored_rows") or 0, r.get("matched_rows") or 0, segs, "truncated" in (r.get("flags") or ""), r.get("last_date"))
+        problem = any(not f.startswith("info:") for f in flags)
+        tally["flagged" if problem else "ok"] += 1
+        if problem:
+            still.append((secs.get(r["security_id"], r["security_id"]), "; ".join(flags)))
+        if apply:
+            sb.table("asquoted_fetch_log").upsert({"security_id": r["security_id"], "status": "flagged" if problem else "ok", "flags": "; ".join(flags) or None}, on_conflict="security_id").execute()
+    print("RETRIAGE of %d flagged tickers (%s): now ok %d | still flagged %d" % (len(logs), "WRITTEN" if apply else "dry run", tally["ok"], tally["flagged"]))
+    for t, f in sorted(still):
+        print("  %-6s %s" % (t, f[:230]))
+    return tally, still
 
 
 def process(sb, key, sec, state, apply, requester=None):
@@ -129,8 +168,8 @@ def process(sb, key, sec, state, apply, requester=None):
     if not pairs:
         return {"status": "error", "flags": "no common days with the vendor"}
     segs = segments(pairs)
-    flags = self_checks(len(stored), len(pairs), segs, truncated)
-    res = {"status": "flagged" if flags else "ok", "flags": "; ".join(flags) or None, "requests_used": len(windows), "stored_rows": len(stored), "vendor_rows": len(raw), "matched_rows": len(pairs), "change_points": len(segs), "first_date": stored[0][0], "last_date": stored[-1][0], "last_ratio": segs[-1][1], "segs": segs}
+    flags = self_checks(len(stored), len(pairs), segs, truncated, stored[-1][0])
+    res = {"status": "flagged" if any(not f.startswith("info:") for f in flags) else "ok", "flags": "; ".join(flags) or None, "requests_used": len(windows), "stored_rows": len(stored), "vendor_rows": len(raw), "matched_rows": len(pairs), "change_points": len(segs), "first_date": stored[0][0], "last_date": stored[-1][0], "last_ratio": segs[-1][1], "segs": segs}
     if apply:
         sb.table("price_adjustment_factors").delete().eq("security_id", sec["id"]).execute()
         rows = [{"security_id": sec["id"], "effective_date": d, "ratio": r} for d, r in segs]
@@ -148,13 +187,16 @@ def main(argv=None, sb=None, key=None, requester=None):
     ap.add_argument("--all", action="store_true")
     ap.add_argument("--max-requests", type=int, default=700)
     ap.add_argument("--apply", action="store_true")
+    ap.add_argument("--retriage", action="store_true", help="re-evaluate the self-checks of flagged tickers from the stored change points (no vendor calls)")
     a = ap.parse_args(argv)
-    if not a.tickers and not a.all:
-        ap.error("give --tickers ... or --all")
+    if not a.tickers and not a.all and not a.retriage:
+        ap.error("give --tickers ... or --all (or --retriage)")
     if sb is None:
         from supabase import create_client
         sb = create_client(os.environ["SUPABASE_URL"], os.environ["SUPABASE_KEY"])
-        key = os.environ["TWELVE_DATA_API_KEY"]
+        key = os.environ.get("TWELVE_DATA_API_KEY")
+    if a.retriage:
+        return retriage(sb, a.apply)
     secs = sb.table("securities").select("id,ticker").order("ticker").execute().data
     if a.tickers:
         want = {t.upper() for t in a.tickers}
