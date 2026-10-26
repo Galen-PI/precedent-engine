@@ -159,23 +159,32 @@ def get_prices(ticker: str, start_date: str, end_date: str) -> list[dict]:
 
 
 def compute_abnormal_return(ticker: str, event_date: str, window_days: int) -> float | None:
-    """Identical logic to tag_reaction_character.py's compute_abnormal_return()."""
-    start = event_date
-    end = (date.fromisoformat(event_date) + timedelta(days=window_days + 10)).isoformat()
+    """Abnormal return against SPY over the label window, on the SAME convention as compute_full_reaction
+    (changed 2026-10-26): base = the PRIOR trading day's close (the event day's own move is INCLUDED);
+    end = the window_days-th trading day on or after the event date. Before this change the base was the
+    event-day close, so the label excluded the event-day move and disagreed with abnormal_return_20d in
+    event_market_reactions_corrected for 15.3% of events (see CHANGELOG and docs/PROJECT_STATUS.md)."""
+    _dt = __import__("datetime")
+    d0 = _dt.date.fromisoformat(event_date)
+    start = (d0 - _dt.timedelta(days=10)).isoformat()  # pad back so a prior close exists
+    end = (d0 + _dt.timedelta(days=int(window_days * 1.6) + 12)).isoformat()  # pad for weekends and holidays
 
     company_prices = get_prices(ticker, start, end)
     spy_prices = get_prices("SPY", start, end)
     if len(company_prices) < 2 or len(spy_prices) < 2:
         return None
 
-    company_prices = company_prices[: window_days + 1]
-    spy_prices = spy_prices[: window_days + 1]
-    if len(company_prices) < 2 or len(spy_prices) < 2:
+    idx = next((i for i, p in enumerate(company_prices) if p["price_date"] >= event_date), None)
+    spy_idx = next((i for i, p in enumerate(spy_prices) if p["price_date"] >= event_date), None)
+    if idx is None or spy_idx is None or idx == 0 or spy_idx == 0:
+        return None  # no prior close, or no price on or after the event date
+    # require the FULL window (a truncated window silently produced short-window labels before the 2026-09-28 fix)
+    if idx + window_days >= len(company_prices) or spy_idx + window_days >= len(spy_prices):
         return None
 
-    company_return = (company_prices[-1]["adjusted_close"] / company_prices[0]["adjusted_close"]) - 1
-    spy_return = (spy_prices[-1]["adjusted_close"] / spy_prices[0]["adjusted_close"]) - 1
-    return company_return - spy_return
+    c0, c1 = company_prices[idx - 1]["adjusted_close"], company_prices[idx + window_days]["adjusted_close"]
+    s0, s1 = spy_prices[spy_idx - 1]["adjusted_close"], spy_prices[spy_idx + window_days]["adjusted_close"]
+    return (c1 / c0 - 1) - (s1 / s0 - 1)
 
 
 def classify(abnormal_return: float) -> str:
