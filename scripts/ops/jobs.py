@@ -91,6 +91,10 @@ def analyze(job, status=None):
     out["age"] = age
     if hdr and job.get("item"):
         out["bar"] = "%s %d/%d" % (bar(done, total), done, total)
+    pm = list(re.finditer(r"^PROGRESS (\d+)/(\d+)", text, re.M))   # the convention for ANY script: print a line  PROGRESS done/total  now and then
+    if pm and not out["bar"]:
+        done, total = int(pm[-1].group(1)), int(pm[-1].group(2))
+        out["bar"] = "%s %d/%d" % (bar(done, total), done, total)
     if status and status.get("ended"):
         code = status.get("exit", "?")
         out.update(state="FINISHED OK" if code == "0" else "FAILED (exit %s)" % code, colour=G if code == "0" else R)
