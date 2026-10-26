@@ -86,6 +86,14 @@ def paged(sb, table, cols, order, size=1000):
     return out
 
 
+def flush(sb, runs, rows):
+    """terms first, then the run rows, so a run row never exists without its terms; called every 100 laws so a stopped session loses at most 100"""
+    for i in range(0, len(rows), 500):
+        sb.table("government_decision_subjects").upsert(rows[i:i + 500], on_conflict="decision_id,subject_type,subject").execute()
+    for i in range(0, len(runs), 500):
+        sb.table("government_decision_subject_runs").upsert(runs[i:i + 500], on_conflict="decision_id").execute()
+
+
 def main(argv=None, sb=None, key=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--apply", action="store_true")
@@ -117,12 +125,11 @@ def main(argv=None, sb=None, key=None):
             now = datetime.datetime.now(datetime.timezone.utc).isoformat()
             runs.append({"decision_id": r["id"], "status": res["status"], "n_subjects": len(terms), "note": res.get("note"), "fetched_at": now})
             rows += [{"decision_id": r["id"], "subject_type": ty, "subject": nm, "fetched_at": now} for ty, nm in terms]
-    if a.apply:
-        if rows:
-            for i in range(0, len(rows), 500):
-                sb.table("government_decision_subjects").upsert(rows[i:i + 500], on_conflict="decision_id,subject_type,subject").execute()
-        for i in range(0, len(runs), 500):
-            sb.table("government_decision_subject_runs").upsert(runs[i:i + 500], on_conflict="decision_id").execute()
+            if len(runs) >= 100:
+                flush(sb, runs, rows)
+                runs, rows = [], []
+    if a.apply and runs:
+        flush(sb, runs, rows)
     print("\nok %d | none %d | error %d | median terms per law %s" % (tally["ok"], tally["none"], tally["error"], sorted(nterms)[len(nterms) // 2] if nterms else "n/a"))
     return tally
 
