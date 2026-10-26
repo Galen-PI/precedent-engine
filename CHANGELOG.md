@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-26-19 | 2026-10-26 | tagger convention | Tagger convention found and fixed: reaction labels excluded the event-day move |
 | 2026-10-26-18 | 2026-10-26 | correction | CORRECTION TO ADDENDA 26, 27 AND 28 (2026-10-26) |
 | 2026-10-26-17 | 2026-10-26 | addendum 29 | FIRST EXPLORATION RESULTS: THE TAGS DO NOT MATCH THE CURRENT RETURN COLUMNS; the 'calmer t |
 | 2026-10-26-16 | 2026-10-26 | addendum 28 | THE PERCENTS, THE SEALED SET AND THE EXPLORER (scripts/models/reaction_explorer.py; table  |
@@ -189,6 +190,13 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-26-19 | date: 2026-10-26 | label: tagger convention | source-line: new | approx: no -->
+### 2026-10-26-19 — Tagger convention found and fixed: reaction labels excluded the event-day move
+WHAT: The reaction labels (rewarded / punished / muted) disagreed with abnormal_return_20d in event_market_reactions_corrected for 15.3% of the 10,703 explore-set events (1,636; 36 with the wrong sign). CAUSE (code reading, tag_reaction_character.py lines 271-300 against compute_full_reaction): the tagger's compute_abnormal_return took the FIRST PRICE ON OR AFTER THE EVENT DATE as its base (the event-day close), so the event day's own move was excluded; compute_full_reaction, which writes the saved columns, uses the PRIOR close (the written rule since 2026-09-11). Live test (explore set): the tags agree with the columns 78.3% (muted) / 89.0% (punished) / 89.0% (rewarded) but agree 96.7% / 98.5% / 98.0% with the event-day-baseline version. A random-data simulation of the old function disagrees with the saved-column logic in 13.1% of cases (real data 15.3%). Planted test: a +8% jump on the event day is 'rewarded' under the new function and 'muted' under the old. A second copy of the function (tag_multientity_reactions.py, 'identical logic') had the same defect; three other scripts define their own compute_abnormal_return (validate_factor_attribution_covid.py; test_sector_peer_ripple.py and populate_sector_peer_ripple.py, which already use the prior-day baseline).
+FIX: scripts/audit/patch_tagger_baseline.py (version 2, all-or-nothing) replaced both copies (commit 6615ec5). Unit tests: 1,500 + 800 + 800 random series, equal to the saved-column logic to 1e-12. LIVE CHECK (scripts/audit/check_tagger_convention.py, pre-set rule: at least 95% label agreement and median |difference| below 0.001): 100 of 100 labels agree, median difference 0.000000, maximum 0.0095: PASS (with n of 100 the 95% lower bound on agreement is about 96%). CALLS SCORED: agreement at least 95% (80%): held; median under 0.0005 (85%): held; at least 90 of 100 computable (80%): held.
+UNPROCESSED EVENTS (same day): the Oct 3 promotion cohort has 3,133 of 3,139 events with no reaction row and no tag; the Oct 15 waves 3,662 of 3,662; 862 older events lack a row (807 untagged, 34 without an entity link). Tagging was never run after those promotions (README of 10-08: 15,928 tagged of 19,892).
+OPEN: relabel the existing tags from the saved columns (backup table, proposal table, read about 40 cases including all 36 wrong-sign events, guarded apply, post-check) and re-derive diverged_from_fundamentals by the existing rule using the SAME company's firm state; repair event_entity_reactions (multi-entity rows were computed with the old convention); read get_untagged_events before running the tagger on the unprocessed events (it must not double-tag diverged events); rerun the significance audit on the corrected labels. The labels now INCLUDE the event-day move (they measure the full reaction; the old labels measured days +1 to +20 after the event-day close). NAMING: five functions share the name compute_abnormal_return (one thing, one name).
 
 <!-- entry: 2026-10-26-18 | date: 2026-10-26 | label: correction | source-line: 3727+3728 | approx: no -->
 ### 2026-10-26-18 — CORRECTION TO ADDENDA 26, 27 AND 28 (2026-10-26)
