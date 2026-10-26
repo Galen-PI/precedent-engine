@@ -8,7 +8,7 @@ CLASSES (tested in this order; the order is a choice made here, because B is unr
   OTHER  none of the above (read by hand).     THIN  fewer than 15 matched days.     TRANSITION  the last bad window ends between 2001-01-01 and 2001-05-31 (no clean grid).
 GRID: pre-2001 = within $0.004 of a multiple of 1/32; from 2001-06-01 = within $0.002 of a whole cent.
 SAFE TO INTERRUPT: results are written every 10 tickers with --apply and a rerun skips tickers already classified (--redo recomputes); vendor rate limits wait 61 s and retry, the DAILY credit limit stops the run cleanly; pacing 8 s per request (the plan allows 8 a minute). A dry run (no --apply) STILL SPENDS credits and writes nothing.
-Usage:   python3 -u scripts/ingestion/classify_loss_tickers.py [--apply] [--only T1 T2] [--limit N] [--redo]
+Usage:   python3 -u scripts/ingestion/classify_loss_tickers.py [--apply] [--only T1 T2] [--limit N] [--redo] [--after 2005-01-01]   (ALWAYS give --after 2005-01-01 until the pre-2005 rule question is settled)
          scripts/ops/bg.sh lossclass python3 -u scripts/ingestion/classify_loss_tickers.py --apply
 """
 import os, sys, time, argparse, datetime
@@ -70,6 +70,7 @@ def main(argv=None, sb=None, key=None, fetcher=P.fetch):
     ap.add_argument("--redo", action="store_true")
     ap.add_argument("--only", nargs="*", default=[])
     ap.add_argument("--limit", type=int, default=0)
+    ap.add_argument("--after", default=None, help="only LOSS tickers whose valid_from is later than this date (YYYY-MM-DD), plus every never_valid ticker")
     a = ap.parse_args(argv)
     if sb is None:
         from supabase import create_client
@@ -77,6 +78,8 @@ def main(argv=None, sb=None, key=None, fetcher=P.fetch):
     key = key or os.environ.get("TWELVE_DATA_API_KEY")
     vf = C.paged(sb, "asquoted_levels_valid_from", "security_id,ticker,status,valid_from,first_eligible,last_bad_window_end", "ticker", lambda q: q)
     loss = [r for r in vf if r["status"] == "never_valid" or (r["valid_from"] and r["first_eligible"] and str(r["valid_from"])[:10] > str(r["first_eligible"])[:10])]
+    if a.after:
+        loss = [r for r in loss if r["status"] == "never_valid" or (r["valid_from"] and str(r["valid_from"])[:10] > a.after)]
     done = set() if a.redo else {r["security_id"] for r in C.paged(sb, "asquoted_loss_classification", "security_id", "security_id", lambda q: q)}
     todo = [r for r in loss if r["security_id"] not in done and (not a.only or r["ticker"] in a.only)]
     if a.limit:
