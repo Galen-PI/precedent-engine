@@ -186,13 +186,20 @@ def process(sb, key, sec, state, apply, requester=None):
 
 
 def main(argv=None, sb=None, key=None, requester=None):
+    global TOL
     ap = argparse.ArgumentParser()
     ap.add_argument("--tickers", nargs="*")
     ap.add_argument("--all", action="store_true")
     ap.add_argument("--max-requests", type=int, default=700)
     ap.add_argument("--apply", action="store_true")
     ap.add_argument("--retriage", action="store_true", help="re-evaluate the self-checks of flagged tickers from the stored change points (no vendor calls)")
+    ap.add_argument("--tol", type=float, default=None, help="segment tolerance for THIS run (default TOL = 5e-5); about 1e-9 stores one exact ratio per day (addendum 4 of the valid-from registration: the class C repair)")
+    ap.add_argument("--force", action="store_true", help="refetch the named --tickers even when they are already done (requires --tickers; the old change points are deleted and replaced)")
     a = ap.parse_args(argv)
+    if a.force and not a.tickers:
+        ap.error("--force needs --tickers (it refetches tickers that are already done)")
+    if a.tol is not None:
+        TOL = a.tol
     if not a.tickers and not a.all and not a.retriage:
         ap.error("give --tickers ... or --all (or --retriage)")
     if sb is None:
@@ -206,7 +213,7 @@ def main(argv=None, sb=None, key=None, requester=None):
         want = {t.upper() for t in a.tickers}
         secs = [s for s in secs if s["ticker"] in want]
     done = {r["security_id"] for r in (sb.table("asquoted_fetch_log").select("security_id,status").execute().data or []) if r["status"] in DONE}
-    todo = [s for s in secs if s["id"] not in done]
+    todo = secs if a.force else [s for s in secs if s["id"] not in done]
     cap = a.max_requests
     if requester is None:
         u = api_usage(key)

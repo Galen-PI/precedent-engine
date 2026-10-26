@@ -47,6 +47,7 @@ def main(argv=None, sb=None):
     ap.add_argument("--redo", action="store_true")
     ap.add_argument("--show", nargs="*", default=[])
     ap.add_argument("--limit", type=int, default=0)
+    ap.add_argument("--only", nargs="*", default=[], help="assess only these tickers (e.g. after a factor refetch)")
     ap.add_argument("--since", default=None, help="only closes on or after this date are eligible (addendum 3: 2001-06-01); the rule is then judged on the penny grid only")
     a = ap.parse_args(argv)
     if sb is None:
@@ -55,7 +56,7 @@ def main(argv=None, sb=None):
     ok = {r["security_id"] for r in C.paged(sb, "asquoted_fetch_log", "security_id,status", "security_id", lambda q: q.eq("status", "ok"))}
     secs = [s for s in C.paged(sb, "securities", "id,ticker", "ticker", lambda q: q) if s["id"] in ok]
     done = set() if a.redo or not a.apply else {r["security_id"] for r in C.paged(sb, "asquoted_levels_valid_from", "security_id", "security_id", lambda q: q)}
-    todo = [s for s in secs if s["id"] not in done]
+    todo = [s for s in secs if s["id"] not in done and (not a.only or s["ticker"] in a.only)]
     if a.limit:
         todo = todo[:a.limit]
     print("tickers with a finished factor table %d | already in the table %d | to assess %d | %s" % (len(secs), len(done), len(todo), "WRITING" if a.apply else "DRY RUN (nothing written)"), flush=True)
