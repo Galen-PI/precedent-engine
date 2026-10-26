@@ -4,12 +4,16 @@ changelog_tools.py -- retires the SCRIPTS.md monolith and runs the changelog (wr
   split [--apply]            reads SCRIPTS.md and builds CHANGELOG.md (every dated entry, NEWEST FIRST, a stable ID per entry, an index), docs/OPERATIONS.md (the old Part 1 reference text, verbatim, with a banner) and a retirement stub; DRY RUN unless --apply. It VERIFIES that every non-blank line of the original survives. With --apply it copies the original to docs/archive/SCRIPTS_monolith_2026-10-26.md first (refuses to overwrite anything that exists unless --force).
   add --title T [--label L] [--date YYYY-MM-DD]     adds an entry at the TOP of CHANGELOG.md from standard input (body), assigns the next ID of that date, rebuilds the index.
   check                      verifies CHANGELOG.md (IDs unique, newest first, index matches the entries).
+  checkpoint --reason R      (body from standard input) adds a CHECKPOINT entry to CHANGELOG.md with the date AND TIME, and replaces the 'latest checkpoint' block of docs/START_NEW_DAY.md (created if missing): what was done, what is in flight, the exact next step. Written at every milestone, whenever the conversation may need compaction, and at the end of the day.
+  retitle                    recomputes the index titles of entries that have an 'Original heading' line (cosmetic; bodies are never touched).
 ID = date-sequence (2026-10-26-12): the sequence counts the entries of that date, oldest first. An entry without an exact date in its heading inherits the date of the entry before it in the source file and is marked 'date approximate'.
 """
-import re, sys, os, argparse, datetime, shutil, collections
+import re, sys, os, argparse, datetime, shutil, collections, subprocess
 
 SRC, CHANGELOG, OPS = "SCRIPTS.md", "CHANGELOG.md", "docs/OPERATIONS.md"
 ARCHIVE = "docs/archive/SCRIPTS_monolith_2026-10-26.md"
+START_NEW_DAY = "docs/START_NEW_DAY.md"
+CP0, CP1 = "<!-- CHECKPOINT-START -->", "<!-- CHECKPOINT-END -->"
 HEAD = re.compile(r"^(#{1,3}) (.*)$")
 DATE = re.compile(r"(20\d\d-\d\d-\d\d)")
 START_DATE = re.compile(r"^(?:Earlier\s+)?(20\d\d-\d\d-\d\d)")
@@ -52,7 +56,13 @@ def entry_date(text, is_corr, prev):
 
 
 def clean_title(h, body=()):
-    t = re.sub(r"^20\d\d-\d\d(-\d\d)?(/\d\d)?\s*(\((late|evening|afternoon|night|later)\)\s*|(late|evening|night)\s+)?(\([^)]*addendum[^)]*\)\s*)?[:\u2014\u2013\-]+\s*", "", h).strip()
+    t = h.strip()
+    t = re.sub(r"^20\d\d-\d\d(-\d\d)?(/\d\d)?", "", t).strip()
+    t = re.sub(r"^\((?:late|evening|afternoon|night|later)[^)]*\)\s*", "", t)
+    t = re.sub(r"^(?:evening|night|late)\s+", "", t)
+    m = re.match(r"^\(addendum \d+(?: to note \d+)?(?:,\s*([^)]*))?\)\s*[:\u2014\u2013-]*\s*", t)
+    if m:
+        t = ((m.group(1) + ": ") if m.group(1) else "") + t[m.end():]
     t = t.strip(" :\u2014\u2013-")
     if len(t) < 4:
         t = next((x.strip() for x in body if x.strip()), h)
@@ -218,10 +228,8 @@ def cmd_split(apply, force):
     return ordered, text
 
 
-def cmd_add(title, label, date):
+def add_entry(title, label, date, body):
     text = open(CHANGELOG, encoding="utf-8").read(); ents = parse_changelog(text)
-    body = sys.stdin.read().rstrip("\n").split("\n")
-    date = date or datetime.date.today().isoformat()
     n = 1 + max([int(e["id"].rsplit("-", 1)[1]) for e in ents if e["date"] == date] or [0])
     new = {"id": "%s-%02d" % (date, n), "date": date, "label": label or "", "src_line": "new", "approx": False, "title": title, "heading": None, "body": body}
     head, rest = text.split(MARK_E, 1)
@@ -230,7 +238,92 @@ def cmd_add(title, label, date):
     i0, i1 = head.index(MARK_I0), head.index(MARK_I1)
     head = head[:i0] + MARK_I0 + "\n" + "\n".join(render_index(all_ents)) + "\n" + head[i1:]
     open(CHANGELOG, "w", encoding="utf-8").write(head + MARK_E + "\n" + block + rest)
-    print("added %s" % new["id"])
+    return new["id"]
+
+
+def cmd_add(title, label, date):
+    body = sys.stdin.read().rstrip("\n").split("\n")
+    print("added %s" % add_entry(title, label, date or datetime.date.today().isoformat(), body))
+
+
+SND_HEADER = """# START NEW DAY
+
+**The first file to read in a new session, or after a compaction.** Then docs/PROJECT_STATUS.md (current state), docs/NAMING.md, CHANGELOG.md (index first), docs/OPERATIONS.md, docs/SCRIPTS_REFERENCE.md (generated).
+
+## How to resume (for the assistant)
+1. START OF EVERY SESSION: say (a) the time now (run date -u) and the age of the LATEST CHECKPOINT below; (b) if /mnt/transcripts is mounted, how many earlier transcript segments exist and when the last compaction was (the transcripts carry an exact ISO timestamp per message; journal.txt catalogues them); (c) a fullness ESTIMATE of this conversation, labelled as an estimate: you have no gauge, but earlier segments were compacted at a median of 1.75 MB (middle half 1.65 to 1.94 MB, 31 segments), so estimate from how much text has been exchanged and the time since the last compaction; then five lines of what you understood and the next step; wait for the user to confirm before doing anything.
+1b. BEFORE WRITING ANY CHECKPOINT: review the whole visible conversation since the last checkpoint; the tool appends the git log and git status itself; after a compaction, read the tail of the newest transcript and journal.txt and grep /mnt/transcripts for details instead of trusting the summary alone.
+2. Do not trust any number in any document as current: re-check it against the live database. SQL for the user uses dollar-quoting ($$text$$); every long SQL goes through scripts/ops/lint_sql.py first; a multi-statement SQL run is one transaction.
+3. If you are not sure how a script works, ask the user to paste the real file. Never guess an interface.
+4. Never bulk-confirm or bulk-correct before reading the cases: state the rule first, keep a backup table, read a stratified sample, apply guarded.
+5. Every numeric prediction is a point, a range and an anchor label (DATA, LITERATURE or NONE); score it afterwards.
+6. Every step is its own block labelled FOREGROUND (this terminal), BACKGROUND (second terminal) or SQL editor. Files arrive with a tolerant hash gate: check() { [ "$(sed -e '$a\\' "$2" | sha256sum | cut -d' ' -f1)" = "$1" ] && echo "OK     $2" || { echo "FAILED $2"; return 1; }; }
+7. The eight forward-test files are FROZEN until both verdicts are recorded (scripts/hooks/pre-commit enforces it). Sealed companies (table explore_sealed_tickers) stay out of every exploratory look.
+8. Be honest about sample size and uncertainty, including about your own findings; when something does not add up, say so and dig.
+
+## Checkpoints
+A checkpoint is written at every milestone, whenever the conversation may need compaction, when the user says "checkpoint", and at the end of the day:
+    python3 scripts/audit/changelog_tools.py checkpoint --reason "..." << 'EOF'  (body)  EOF
+It adds a CHANGELOG entry (the history) AND replaces the block below (the latest state).
+
+""" + CP0 + """
+(no checkpoint yet)
+""" + CP1 + "\n"
+
+
+def git_lines(args, limit):
+    try:
+        out = subprocess.run(["git"] + args, capture_output=True, text=True, timeout=30).stdout.strip().split("\n")
+    except Exception:
+        return ["(git not available)"]
+    out = [x for x in out if x.strip()]
+    return out[:limit] + (["... and %d more" % (len(out) - limit)] if len(out) > limit else [])
+
+
+def cmd_checkpoint(reason):
+    now = datetime.datetime.now().astimezone()
+    stamp = now.strftime("%Y-%m-%d %H:%M %z"); utc = now.astimezone(datetime.timezone.utc).strftime("%H:%M UTC")
+    body = sys.stdin.read().rstrip("\n").split("\n")
+    prev = None
+    if os.path.exists(START_NEW_DAY):
+        m = re.search(r"### Latest checkpoint: (\d{4}-\d\d-\d\d \d\d:\d\d [+-]\d{4})", open(START_NEW_DAY, encoding="utf-8").read())
+        prev = m.group(1) if m else None
+    commits = git_lines(["log", "--since=" + (prev or "24 hours ago"), "--date=format:%Y-%m-%d %H:%M", "--pretty=format:%h %ad %s"], 60)
+    status = git_lines(["status", "--short"], 20)
+    body = body + ["", "COMMITS SINCE THE PREVIOUS CHECKPOINT (%s), from git log, objective:" % (("since " + prev) if prev else "last 24 hours; no earlier checkpoint")] + ["  " + x[:150] for x in (commits or ["(none)"])] + ["", "UNCOMMITTED (git status --short):"] + ["  " + x for x in (status or ["(clean)"])]
+    eid = add_entry("CHECKPOINT %s (%s)" % (now.strftime("%Y-%m-%d %H:%M"), reason), "checkpoint", now.date().isoformat(), ["Written %s (%s). Reason: %s." % (stamp, utc, reason), ""] + body)
+    txt = open(START_NEW_DAY, encoding="utf-8").read() if os.path.exists(START_NEW_DAY) else SND_HEADER
+    if CP0 not in txt or CP1 not in txt:
+        txt = txt.rstrip("\n") + "\n\n" + CP0 + "\n(no checkpoint yet)\n" + CP1 + "\n"
+    a, b = txt.index(CP0), txt.index(CP1)
+    block = ["### Latest checkpoint: %s (%s) | CHANGELOG %s | reason: %s" % (stamp, utc, eid, reason), ""] + body
+    txt = txt[:a] + CP0 + "\n" + "\n".join(block) + "\n" + txt[b:]
+    os.makedirs(os.path.dirname(START_NEW_DAY), exist_ok=True)
+    open(START_NEW_DAY, "w", encoding="utf-8").write(txt)
+    print("checkpoint %s written to %s and %s" % (eid, CHANGELOG, START_NEW_DAY))
+
+
+def cmd_retitle():
+    text = open(CHANGELOG, encoding="utf-8").read(); lines = text.split("\n"); changed = []
+    for i, ln in enumerate(lines):
+        if ln.startswith("### ") and i > 0 and META.match(lines[i - 1]) and i + 1 < len(lines) and lines[i + 1].startswith("> Original heading: `"):
+            eid = META.match(lines[i - 1]).group(1)
+            orig = lines[i + 1][len("> Original heading: `"):-1]; hm = HEAD.match(orig)
+            if not hm:
+                continue
+            j, body = i + 2, []
+            while j < len(lines) and not META.match(lines[j]):
+                body.append(lines[j]); j += 1
+            new = clean_title(hm.group(2), body); cur = ln.split(" \u2014 ", 1)[1] if " \u2014 " in ln else ""
+            if new != cur:
+                lines[i] = "### %s \u2014 %s" % (eid, new); changed.append((eid, cur, new))
+    text2 = "\n".join(lines); ents = parse_changelog(text2)
+    head, rest = text2.split(MARK_E, 1); i0, i1 = head.index(MARK_I0), head.index(MARK_I1)
+    head = head[:i0] + MARK_I0 + "\n" + "\n".join(render_index(ents)) + "\n" + head[i1:]
+    open(CHANGELOG, "w", encoding="utf-8").write(head + MARK_E + rest)
+    for eid, cur, new in changed:
+        print("%s: %s  ->  %s" % (eid, cur[:60], new[:70]))
+    print("retitled %d of %d entries" % (len(changed), len(ents)))
 
 
 def cmd_check():
@@ -250,7 +343,11 @@ if __name__ == "__main__":
     s = sub.add_parser("split"); s.add_argument("--apply", action="store_true"); s.add_argument("--force", action="store_true")
     a = sub.add_parser("add"); a.add_argument("--title", required=True); a.add_argument("--label", default=""); a.add_argument("--date", default="")
     sub.add_parser("check")
+    c = sub.add_parser("checkpoint"); c.add_argument("--reason", required=True)
+    sub.add_parser("retitle")
     r = ap.parse_args()
     if r.cmd == "split": cmd_split(r.apply, r.force)
     elif r.cmd == "add": cmd_add(r.title, r.label, r.date)
+    elif r.cmd == "checkpoint": cmd_checkpoint(r.reason)
+    elif r.cmd == "retitle": cmd_retitle()
     else: sys.exit(cmd_check())
