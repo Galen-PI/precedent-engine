@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-26-21 | 2026-10-26 | relabel | Reaction labels relabeled to the prior-close convention (explore set: 1,636 mismatches, 15 |
 | 2026-10-26-20 | 2026-10-26 | checkpoint | CHECKPOINT 2026-10-26 20:00 (milestone: tagger fixed, labels relabeled and confirmed; next |
 | 2026-10-26-19 | 2026-10-26 | tagger convention | Tagger convention found and fixed: reaction labels excluded the event-day move |
 | 2026-10-26-18 | 2026-10-26 | correction | CORRECTION TO ADDENDA 26, 27 AND 28 (2026-10-26) |
@@ -191,6 +192,16 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-26-21 | date: 2026-10-26 | label: relabel | source-line: new | approx: no -->
+### 2026-10-26-21 — Reaction labels relabeled to the prior-close convention (explore set: 1,636 mismatches, 15.3%, down to 0)
+RULE (stated before any result): new label = rewarded if the saved abnormal_return_20d (prior-close, against SPY) is above +3%, punished if below -3%, otherwise muted; then diverged_from_fundamentals REPLACES rewarded when the firm state of the SAME company (the event_pre_context row for the reaction's company, latest computed_at, label not null) is weakening or deteriorating, and REPLACES punished when it is strong or improving.
+TABLES: event_tags_backup_20261026 (full copy of event_tags, 17,703 rows); scratch_reaction_relabel_20261026 (15,897 rows: event_id, ticker, ar20, firm_state, old_tag, base_tag, new_tag, changes; 2,435 proposed changes; scratch table, to be dropped when no longer needed for audit, with the drop date written in the changelog).
+READING: 70 cases read before any write (all 36 wrong-sign events; 10 muted to moved; 8 moved to muted; 10 diverged changes; 6 near-threshold controls): every case followed the rule. The 9 held events (diverged to plain) were read separately: 6 direction flips (the old direction was the opposite under the event-day baseline, so the old diverged label no longer applies), 2 multi-entity events where the old backfill used another company's firm state (ABBV, WFC), 1 null firm state (AMD); the rule's answer was judged right and applied.
+APPLY (SQL, guarded): UPDATE only where the current tag equals the proposal's old tag; a DO block inside the same transaction checks that every proposal event has its new tag, that no event carries two reaction tags and that the total of reaction-tag rows equals the backup's (any failure rolls everything back). Applied in two runs: first excluding the held class (1,637 explore-set changes; about 2,420 globally), then the 9 held events. RESULT, explore set (10,703 events): rewarded 2,520, punished 2,529, muted 4,024, diverged 1,630; every label consistent with the saved column (0 mismatches; it was 1,636). CALLS SCORED: the exact counts of both runs held (90% each); muted to moved exactly 933 (90%).
+TRANSITIONS (explore set, before the hold): muted to diverged 222, punished 381, rewarded 330; punished to muted 245, rewarded 11, diverged 7; rewarded to muted 251, punished 12, diverged 7; diverged to muted 171, punished 6, rewarded 3.
+REVERT (one transaction, dollar-quoting in the SQL editor): DELETE FROM event_tags WHERE tag_id IN (SELECT id FROM tags WHERE name IN ($$rewarded$$, $$punished$$, $$muted$$, $$diverged_from_fundamentals$$)); then INSERT INTO event_tags SELECT * FROM event_tags_backup_20261026 WHERE tag_id IN (SELECT id FROM tags WHERE name IN ($$rewarded$$, $$punished$$, $$muted$$, $$diverged_from_fundamentals$$));
+NOT YET DONE: event_entity_reactions (multi-entity rows on the old convention); the 7,568 unprocessed events; pre-context and the diverged step for them; the significance audit rerun on corrected labels.
 
 <!-- entry: 2026-10-26-20 | date: 2026-10-26 | label: checkpoint | source-line: new | approx: no -->
 ### 2026-10-26-20 — CHECKPOINT 2026-10-26 20:00 (milestone: tagger fixed, labels relabeled and confirmed; next: record the relabel, entity-reaction repair, tagger run)
