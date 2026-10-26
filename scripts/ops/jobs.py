@@ -5,7 +5,7 @@ It finds jobs two ways: (1) jobs started with scripts/ops/bg.sh, which record ho
 Usage:   python3 scripts/ops/jobs.py          once        |        watch -c -n 20 python3 scripts/ops/jobs.py          refreshes every 20 seconds
 READ-ONLY: it never starts, stops or changes anything.
 """
-import os, re, sys, glob, time, subprocess, datetime
+import os, re, sys, glob, time, subprocess, datetime, argparse
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")
 CACHE = os.path.join(ROOT, "data_cache")
@@ -125,7 +125,32 @@ def read_status(path):
     return kv
 
 
-def main():
+def summarize(rows, show_all=False):
+    """-> (headline, colour, visible rows, hidden count). ATTENTION = a stalled job, or a failed / stopped job from the last 24 hours. Finished jobs older than 6 hours and failed / stopped ones older than 24 hours are hidden unless show_all."""
+    hour = 3600.0
+    age = lambda r: r["age"] if r["age"] is not None else 0.0
+    bad = lambda r: r["state"] == "STALLED" or ((r["state"].startswith("FAILED") or r["state"] in ("STOPPED", "NO LOG")) and age(r) <= 24 * hour)
+    attention = [r for r in rows if bad(r)]
+    n_run = sum(1 for r in rows if r["state"] == "RUNNING")
+    n_ok = sum(1 for r in rows if r["state"] == "FINISHED OK")
+    if attention:
+        headline, colour = "ATTENTION: " + "; ".join("%s %s" % (r["name"], r["state"]) for r in attention), R
+    else:
+        headline, colour = "ALL CLEAR: %d running, %d finished OK" % (n_run, n_ok), G
+    def show(r):
+        if show_all or bad(r) or r["state"] in ("RUNNING", "STALLED"):
+            return True
+        return r["state"] == "FINISHED OK" and age(r) <= 6 * hour
+    visible = [r for r in rows if show(r)]
+    rank = lambda r: (0 if bad(r) else 1 if r["state"] == "RUNNING" else 2, age(r))
+    visible.sort(key=rank)
+    return headline, colour, visible, len(rows) - len(visible)
+
+
+def main(argv=None):
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--all", action="store_true", help="also show finished jobs older than 6 hours and old failures")
+    a = ap.parse_args(argv)
     rows, claimed = [], set()
     for sp in sorted(glob.glob(os.path.join(CACHE, "jobs", "*.status"))):
         st = read_status(sp)
@@ -140,14 +165,17 @@ def main():
         log = newest(job["logs"])
         if pids_matching(job["pattern"]) or (log and time.time() - os.path.getmtime(log) < RECENT_HOURS * 3600):
             rows.append(analyze(job))
-    print("JOBS (as of %s)" % datetime.datetime.now().strftime("%a %H:%M:%S"))
+    headline, colour, visible, hidden = summarize(rows, a.all)
+    print("JOBS (as of %s)   %s%s%s" % (datetime.datetime.now().strftime("%a %H:%M:%S"), colour, headline, X))
     if not rows:
         print("  no background jobs found")
-    for r in rows:
+    for r in visible:
         print("  %s%-20s %-30s%s %s" % (r["colour"], r["name"], r["state"], X, r["bar"]))
         if r["detail"]:
             print("      %s%s%s" % (D, r["detail"], X))
         print("      %slast: %s%s" % (D, r["line"], X))
+    if hidden:
+        print("  (%d older finished jobs hidden; python3 scripts/ops/jobs.py --all shows them)" % hidden)
     return rows
 
 
