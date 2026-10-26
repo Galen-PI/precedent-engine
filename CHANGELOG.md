@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-26-22 | 2026-10-26 | guard | Guard fired: the tagger's dry run finds 7,282 events, the exact SQL count is 7,568 |
 | 2026-10-26-21 | 2026-10-26 | relabel | Reaction labels relabeled to the prior-close convention (explore set: 1,636 mismatches, 15 |
 | 2026-10-26-20 | 2026-10-26 | checkpoint | CHECKPOINT 2026-10-26 20:00 (milestone: tagger fixed, labels relabeled and confirmed; next |
 | 2026-10-26-19 | 2026-10-26 | tagger convention | Tagger convention found and fixed: reaction labels excluded the event-day move |
@@ -192,6 +193,12 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-26-22 | date: 2026-10-26 | label: guard | source-line: new | approx: no -->
+### 2026-10-26-22 — Guard fired: the tagger's dry run finds 7,282 events, the exact SQL count is 7,568
+WHAT: the planned guard worked. The exact SQL count of events with at least one entity link and no reaction tag (diverged counted as tagged) is 7,568 (7,602 untagged minus 34 without an entity link). The tagger's own dry run (python3 scripts/tagging/tag_reaction_character.py --dry-run) reported 7,282: a gap of 286. The tagger is NOT run for real until the gap is explained.
+HYPOTHESES: (1) get_untagged_events attaches tickers through the securities table and may drop events whose linked entities have no securities row (a legitimate filter); (2) its unordered 1,000-row pagination of event_tags and event_entity_relationships loses rows (needs an ORDER BY patch first). DIAGNOSTIC: split the 7,568 by whether any linked entity has a securities row; read lines 156 to 230 of the function (the part not yet seen).
+ALSO SEEN in the dry run: skips for renamed or reorganized companies (EXE for Chesapeake 2009, HWM for Alcoa 2005: insufficient price data), the known predecessor-ticker gap; and the first new-convention label (CPRT 2026-09-10, -16.0%, punished).
 
 <!-- entry: 2026-10-26-21 | date: 2026-10-26 | label: relabel | source-line: new | approx: no -->
 ### 2026-10-26-21 — Reaction labels relabeled to the prior-close convention (explore set: 1,636 mismatches, 15.3%, down to 0)
