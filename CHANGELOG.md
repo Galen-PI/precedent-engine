@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-26-25 | 2026-10-26 | correction | Correction: the multi-entity entity-reaction step is INSIDE the tagger loop (the checkpoin |
 | 2026-10-26-24 | 2026-10-26 | checkpoint | CHECKPOINT 2026-10-26 20:39 (milestone: tagger run 1 crashed on the HTTP/2 request limit;  |
 | 2026-10-26-23 | 2026-10-26 | checkpoint | CHECKPOINT 2026-10-26 20:08 (milestone: tagger guard resolved (7,282 = exact count); next: |
 | 2026-10-26-22 | 2026-10-26 | guard | Guard fired: the tagger's dry run finds 7,282 events, the exact SQL count is 7,568 |
@@ -195,6 +196,12 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-26-25 | date: 2026-10-26 | label: correction | source-line: new | approx: no -->
+### 2026-10-26-25 — Correction: the multi-entity entity-reaction step is INSIDE the tagger loop (the checkpoint just committed says otherwise)
+WHAT: the checkpoint written at about 20:42 (item 1 of AFTER IT FINISHES) says the entity-reaction step runs only after the main loop, so crashed runs would skip it. That was read from grep line numbers and is WRONG. Lines 538 to 585 of scripts/tagging/tag_reaction_character.py show the step is inside the per-event loop (for events with two or more linked entities, after the reaction-row save and before tagged_count), each row written with an upsert on (event_id, entity_id). Only the closing print is after the loop.
+CONSEQUENCE: no catch-up gap from crashed runs; the tagger never revisits events it already tagged, so it cannot touch the old 124 entity-reaction rows. A crash inside one multi-entity event's entity block could still leave that event with partial entity rows (very small chance; check with the multi-entity count query after the run). The repair of the old rows is a separate step: scripts/audit/repair_entity_reactions.py. IGNORE item (1) of the checkpoint; the next checkpoint replaces it.
+LESSON: do not infer code structure from line numbers of a grep; print the lines (the project rule about asking to see the real file).
 
 <!-- entry: 2026-10-26-24 | date: 2026-10-26 | label: checkpoint | source-line: new | approx: no -->
 ### 2026-10-26-24 — CHECKPOINT 2026-10-26 20:39 (milestone: tagger run 1 crashed on the HTTP/2 request limit; relaunched with automatic restarts)
