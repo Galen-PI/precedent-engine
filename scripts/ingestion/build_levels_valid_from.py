@@ -3,7 +3,7 @@
 build_levels_valid_from.py -- applies, with NO new thresholds, the rule registered in results/PREREG_asquoted_levels_valid_from_2026-10-26.md: for each ticker with a finished as-quoted factor table, the date from which its as-quoted CLOSES (levels) can be trusted at the cent level.
 RULE (as registered). Eligible closes: as-quoted close of at least $1, dated before 2001-01-01 (on the grid = within $0.004 of a multiple of 1/32) or from 2001-06-01 (on the grid = within $0.002 of a whole cent); 2001-01-01 to 2001-05-31 skipped. A WINDOW is 20 consecutive eligible closes; BAD if fewer than 70% (at most 13 of 20) are on the grid. valid_from = the first eligible close after the end of the LAST bad window; no bad window = valid from the first eligible close; the last bad window ending inside the final 250 eligible closes = never_valid; fewer than 20 eligible closes = unassessed.
 Writes asquoted_levels_valid_from (one row per ticker) only with --apply; a rerun skips tickers already in it (--redo recomputes). A dry run recomputes everything and writes nothing.
-Usage:   python3 -u scripts/ingestion/build_levels_valid_from.py [--apply] [--redo] [--show DRI GL] [--limit N]
+Usage:   python3 -u scripts/ingestion/build_levels_valid_from.py [--apply] [--redo] [--show DRI GL] [--limit N] [--since 2001-06-01]
          scripts/ops/bg.sh validfrom python3 -u scripts/ingestion/build_levels_valid_from.py --apply
 """
 import os, sys, argparse, datetime
@@ -13,11 +13,11 @@ import check_asquoted_accuracy as C
 WIN, BAD_MAX_HITS, TAIL = 20, 13, 250
 
 
-def assess(closes):
+def assess(closes, since=None):
     """closes: [(date, as-quoted close)] ascending -> dict(status, valid_from, last_bad_end, n_eligible, n_bad, n_removed, first_eligible)"""
     el = []
     for d, p in closes:
-        if p < 1.0:
+        if p < 1.0 or (since and d < since):
             continue
         if d < "2001-01-01":
             el.append((d, int(C.dgrid(p, C.GRID32) <= C.TOL16)))
@@ -47,6 +47,7 @@ def main(argv=None, sb=None):
     ap.add_argument("--redo", action="store_true")
     ap.add_argument("--show", nargs="*", default=[])
     ap.add_argument("--limit", type=int, default=0)
+    ap.add_argument("--since", default=None, help="only closes on or after this date are eligible (addendum 3: 2001-06-01); the rule is then judged on the penny grid only")
     a = ap.parse_args(argv)
     if sb is None:
         from supabase import create_client
@@ -64,9 +65,9 @@ def main(argv=None, sb=None):
             print("PROGRESS %d/%d" % (idx, len(todo)), flush=True)
         stored = [(str(r["price_date"])[:10], float(r["adjusted_close"])) for r in C.paged(sb, "market_prices", "price_date,adjusted_close", "price_date", lambda q: q.eq("security_id", s["id"])) if r.get("adjusted_close")]
         fac = [(str(r["effective_date"])[:10], float(r["ratio"])) for r in C.paged(sb, "price_adjustment_factors", "effective_date,ratio", "effective_date", lambda q: q.eq("security_id", s["id"]))]
-        r = assess(C.asquoted(stored, fac))
+        r = assess(C.asquoted(stored, fac), since=a.since)
         res[s["ticker"]] = r
-        batch.append({"security_id": s["id"], "ticker": s["ticker"], "status": r["status"], "valid_from": r["valid_from"], "last_bad_window_end": r["last_bad_end"], "n_eligible": r["n_eligible"], "n_removed": r["n_removed"], "n_bad_windows": r["n_bad"], "first_eligible": r["first_eligible"], "assessed_at": datetime.datetime.now(datetime.timezone.utc).isoformat()})
+        batch.append({"security_id": s["id"], "ticker": s["ticker"], "status": r["status"], "valid_from": r["valid_from"], "last_bad_window_end": r["last_bad_end"], "n_eligible": r["n_eligible"], "n_removed": r["n_removed"], "n_bad_windows": r["n_bad"], "first_eligible": r["first_eligible"], "assessed_at": datetime.datetime.now(datetime.timezone.utc).isoformat(), "rule_version": ("since_" + a.since) if a.since else "v1"})
         if a.apply and len(batch) >= 20:
             C.run_query(sb.table("asquoted_levels_valid_from").upsert(batch, on_conflict="security_id")); batch = []
     if a.apply and batch:
