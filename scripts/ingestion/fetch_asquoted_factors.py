@@ -93,9 +93,13 @@ def self_checks(stored_n, matched_n, segs, truncated, last_date=None):
     if stored_n and matched_n / stored_n < 0.98:
         flags.append("vendor has only %.1f%% of the stored days" % (100.0 * matched_n / stored_n))
     ratios = [r for _, r in segs]
-    dec = [(segs[i][0], ratios[i - 1], ratios[i]) for i in range(1, len(ratios)) if ratios[i] < ratios[i - 1] * (1 - 1e-4) and not near_split(ratios[i] / ratios[i - 1], 0.08)]
+    drops = [(segs[i][0], ratios[i - 1], ratios[i]) for i in range(1, len(ratios)) if ratios[i] < ratios[i - 1] * (1 - 1e-4) and not near_split(ratios[i] / ratios[i - 1], 0.08)]
+    dec = [d for d in drops if d[2] < d[1] * (1 - 5e-3)]
+    small = [d for d in drops if d[2] >= d[1] * (1 - 5e-3)]
     if dec:
-        flags.append("%d segment(s) where the ratio DECREASES and it is not a reverse split (first %s: %.4f -> %.4f)" % (len(dec), dec[0][0], dec[0][1], dec[0][2]))
+        flags.append("%d segment(s) where the ratio DECREASES by more than 0.5%% and it is not a reverse split (first %s: %.4f -> %.4f)" % (len(dec), dec[0][0], dec[0][1], dec[0][2]))
+    if small:
+        flags.append("info: %d small decrease(s) under 0.5%% (scale noise where recent rows were spliced onto the stored history), first %s: %.4f -> %.4f" % (len(small), small[0][0], small[0][1], small[0][2]))
     # the stored history was fetched at one date and later dividends accumulate, so recent stored prices sit slightly ABOVE raw: a latest ratio up to 1.05 is normal
     if ratios and not (0.90 <= ratios[-1] <= 1.05):
         flags.append("latest ratio %.4f outside 0.90-1.05" % ratios[-1])
