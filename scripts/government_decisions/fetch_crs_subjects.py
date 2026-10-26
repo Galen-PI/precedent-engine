@@ -45,7 +45,7 @@ def sd_of(row):
     return sd if isinstance(sd, dict) else {}
 
 
-def fetch_subjects(key, sd, raw=None, page=250, max_pages=6):
+def fetch_subjects(key, sd, raw=None, page=250, max_pages=40):
     c, t, n = sd.get("congress"), sd.get("bill_type"), sd.get("bill_number")
     if not (c and t and n):
         return {"status": "error", "note": "missing congress / bill_type / bill_number in structured_data"}
@@ -63,14 +63,14 @@ def fetch_subjects(key, sd, raw=None, page=250, max_pages=6):
         policy = policy or (subj.get("policyArea") or {}).get("name")
         terms += got
         total = (data.get("pagination") or {}).get("count", total)
-        if not got or total is None or len(terms) >= total:
+        if not got or total is None or len(terms) + (1 if policy else 0) >= total:   # the API's count INCLUDES the policy area
             break
         offset += page
     out = ([("policy_area", policy)] if policy else []) + [("legislative_subject", x) for x in dict.fromkeys(terms)]
     if not out:
         return {"status": "none", "note": "the bill has no subject terms"}
-    incomplete = total is not None and len(terms) < total
-    return {"status": "ok", "terms": out, "note": "%d legislative subjects%s" % (len(set(terms)), " (INCOMPLETE: %d of %d)" % (len(terms), total) if incomplete else "")}
+    incomplete = total is not None and len(terms) + (1 if policy else 0) < total
+    return {"status": "ok", "terms": out, "note": "%d legislative subjects%s" % (len(set(terms)), " (INCOMPLETE: %d of %d)" % (len(terms) + (1 if policy else 0), total) if incomplete else "")}
 
 
 def paged(sb, table, cols, order, size=1000):
