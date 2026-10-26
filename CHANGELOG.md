@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-26-24 | 2026-10-26 | checkpoint | CHECKPOINT 2026-10-26 20:39 (milestone: tagger run 1 crashed on the HTTP/2 request limit;  |
 | 2026-10-26-23 | 2026-10-26 | checkpoint | CHECKPOINT 2026-10-26 20:08 (milestone: tagger guard resolved (7,282 = exact count); next: |
 | 2026-10-26-22 | 2026-10-26 | guard | Guard fired: the tagger's dry run finds 7,282 events, the exact SQL count is 7,568 |
 | 2026-10-26-21 | 2026-10-26 | relabel | Reaction labels relabeled to the prior-close convention (explore set: 1,636 mismatches, 15 |
@@ -194,6 +195,28 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-26-24 | date: 2026-10-26 | label: checkpoint | source-line: new | approx: no -->
+### 2026-10-26-24 — CHECKPOINT 2026-10-26 20:39 (milestone: tagger run 1 crashed on the HTTP/2 request limit; relaunched with automatic restarts)
+Written 2026-10-26 20:39 +0000 (20:39 UTC). Reason: milestone: tagger run 1 crashed on the HTTP/2 request limit; relaunched with automatic restarts.
+
+WRITTEN BY THE ASSISTANT at about 20:42 UTC (sandbox clock). ESTIMATE: this segment is very full (about 85%, range 70 to 95%) because of several large tool outputs; expect a compaction soon. Last compaction 18:22:32 UTC.
+STATE: tagger convention fixed (6615ec5); explore-set labels relabeled and confirmed, 0 mismatches (d191e38); checkpoint tools (dcd7736); results map committed (10a0f81: docs/RESULTS_MAP.md, 130 files, 57 not named in any changelog entry, 0 dangling); the session journal archive (docs/archive/SESSION_JOURNAL_2026-09-21_to_2026-10-26.md) is committed only if git log shows it (the upload trimmed 2 blank lines; verified on non-blank lines).
+THE RUN: the guard was resolved (dry run 7,282 = exact count of untagged events with a linked security; 286 link only to entities with no security, 34 have no link). Run 1 of the live tagger crashed at 20:26:00Z after 890 events: the HTTP/2 connection allows 10,000 requests and each event costs about 12 (798 x 12 + 92 skipped x 4 = 9,944). The crash was at the delete (line 530), BEFORE the insert, so no event was half-written: tagged_without_row stayed 55, tagged 16,752 = 15,955 + 797, rows 16,697. Real rate 56.6 events/min. Relaunched at about 20:37 as bg job tagger2 with a restart wrapper (up to 12 runs, exit 1 if none finishes cleanly): log data_cache/tagger2.log; run 1 log kept as data_cache/tagger_run1_crashed_20261026.log, its status as data_cache/tagger_run1_crashed.status. Model: about 9 wrapper runs, about 136 minutes (range 131 to 153), finishing about 23:00 UTC; skipped events are re-tried on every restart. If it ends with exit 1, rerun the same wrapper (resume-safe). Monitor: python3 scripts/ops/jobs.py.
+AFTER IT FINISHES, IN ORDER: (1) print lines 538 to 585 of scripts/tagging/tag_reaction_character.py: the multi-entity entity-reaction step runs only AFTER the main loop, so every crashed run skips it; confirm it covers ALL events lacking entity rows, else write a catch-up; entity_reaction_rows was 124 at the crash; (2) verification SQL (tagged events, reaction rows, tagged_without_row expected 55 plus events whose full reaction cannot be computed, rows_without_tag 0) and the label-versus-column consistency query (expect 0 mismatches); (3) only if tagged_without_row is above 55: dry-run the tagger's --backfill-magnitudes mode (its body not yet seen; paste it if unclear); (4) document the skipped events as exclusions with reasons (so far all corporate-history cases: EXE 15, DAL 8, HWM 7, CHTR 3, HCA 2, GM 2, CPAY 2, EG 1; EA 3 unexplained); (5) repair the 124 event_entity_reactions rows (computed on the old convention): backup table, script that prints all 124 rows old versus new, read them, guarded update; (6) populate_pre_context.py for the new events, then the diverged step with a deterministic same-company firm-state join; (7) rerun scripts/models/audit_pattern_significance.py on the corrected labels; (8) documents: PROJECT_STATUS v1 (inventory and ledger now in hand), README, PROJECT_PLAN status table, file renames, Project knowledge refresh, repo-root tidy, drop dates for backup tables. The explore set grows with the new events; its cache needs --refresh and the quoted explore-set counts will change.
+FACTS (2026-10-26): database 151 tables + 32 views (59 tables on 2026-09-24); about 61 are audit, backup, snapshot or scratch tables by name (about 190 MB of about 3.0 GB; hand sums, plus or minus 10%); top six: market_prices 817 MB, company_sentiment_timeline 416, vol_estimators 383, stock_day_z 294, event_ripple_timeline 269, filing_ai_classifications 162. Flag ledger complete: 112 = 21 lead + 62 null + 15 proven + 2 retired + 12 untested. The SQL editor caps listings at 100 rows: treat exactly 100 rows as truncated. Phase 4 'news' tables hold about 1,200 articles against 1.33 million sentiment rows and 250,000 macro_long rows (supports the External Conditions rename; NOT decided). Rule to adopt: the changelog entry that produces a results file names it.
+DATED: Wed 2026-10-28 after the FOMC meeting: runbook 3c; after 2026-10-31 (Mon 11-02): October sentiment top-up (runbook 8); January runbook after 2027-01-05. Forward-test files stay FROZEN (git hook).
+RE-VERIFY LIVE: events 23,554; reaction-tagged 16,752; reaction rows 16,697; event_entity_reactions 124 (all at the 20:26 crash; the run changes them). Label convention: 20 trading days, baseline PRIOR close (event-day move included), SPY benchmark, +-3%; diverged = rewarded with a weakening or deteriorating firm state, or punished with a strong or improving one, the SAME company's, latest computed.
+OTHER OPEN: the first-link 'primary company' of a multi-entity event is nondeterministic (unordered read); get_untagged_events pagination unordered (patch only if a count disagrees); five functions named compute_abnormal_return; three runtime checkpoint files in the repo root; README, PROJECT_PLAN and THEORY stale; scratch_reaction_relabel_20261026 needs a drop date.
+HOW THE USER WORKS: pastes the output after each block; every step is its own labelled block; the assistant cannot write to the repo; heredoc gate checks before any file is installed.
+
+COMMITS SINCE THE PREVIOUS CHECKPOINT (since 2026-10-26 20:08 +0000), from git log, objective:
+  b1bc076 2026-10-26 20:39 Session journal archive (31 segments, 2026-09-21 to 2026-10-26); the upload trimmed 2 blank lines, content verified on non-bl
+  10a0f81 2026-10-26 20:32 Results map (generated: every results file joined to the changelog entries that mention it)
+  29a9c11 2026-10-26 20:08 Checkpoint: tagger guard resolved; pilot next
+
+UNCOMMITTED (git status --short):
+  ?? results/tag_review_v1_galen.txt
 
 <!-- entry: 2026-10-26-23 | date: 2026-10-26 | label: checkpoint | source-line: new | approx: no -->
 ### 2026-10-26-23 — CHECKPOINT 2026-10-26 20:08 (milestone: tagger guard resolved (7,282 = exact count); next: pilot the live tagger on one ticker)
