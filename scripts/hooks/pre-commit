@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# pre-commit (versioned; enable once with:  git config core.hooksPath scripts/hooks )
+# 1) BLOCKS any commit that changes one of the FROZEN forward-test files, unless FROZEN_OK=1 is set (use it only after BOTH forward-test verdicts are recorded; see results/JANUARY_2027_RUNBOOK.md steps 7, 11, 11b, 11c).
+# 2) runs scripts/ops/check_prereg.py on every NEWLY ADDED results/PREREG_*.md (appending addenda to an existing one is not checked).
+# Bypass for an emergency:  git commit --no-verify   (and say why in the commit message).
+FROZEN="models/earnings_band_model.json models/earnings_role_band_model.json models/band_calibration.json scripts/card/earnings_roles.py scripts/card/earnings_role_band_test.py scripts/card/day_card.py scripts/card/earnings_surprise_test.py scripts/card/earnings_forward_test.py"
+fail=0
+changed=$(git diff --cached --name-only)
+for f in $FROZEN; do
+  if echo "$changed" | grep -qx "$f" && [ "${FROZEN_OK:-0}" != "1" ]; then
+    echo "BLOCKED: $f is a FROZEN forward-test file (the freeze voids the forward test if it changes). After BOTH verdicts are recorded: FROZEN_OK=1 git commit ..."; fail=1
+  fi
+done
+for f in $(git diff --cached --name-only --diff-filter=A | grep -E '^results/PREREG_.*\.md$'); do
+  python3 scripts/ops/check_prereg.py "$f" || fail=1
+done
+exit $fail
