@@ -1,119 +1,104 @@
 # precedent-engine
+
 Stock Research & Market Event Analysis Platform
 
-A historical market research platform connecting company financials, news, real-world corporate events, macroeconomic conditions, and stock-price movements — built to investigate how markets have historically reacted to similar events, with calibrated, sample-size-aware confidence rather than guesswork.
+A historical market research platform that connects company financials, corporate events, news, macroeconomic and government conditions, and stock-price reactions, to investigate how markets have historically responded to events.
 
-Company → Financials → News → Events → Macro Conditions → Stock Price → Analysis
+Company → Financials → Events → External Conditions → Price Reaction → Pattern → (forward tests)
 
-Core discipline: this platform is explicitly not trying to predict outcomes. It surfaces historical probabilities with visible sample sizes ("in N comparable cases, X% moved this direction") rather than forecasts. Nothing is treated as a real pattern until it clears a minimum sample-size threshold (n=30–50) — small-sample "patterns" are actively guarded against throughout the pipeline.
+**The stance.** This platform is not trying to predict outcomes. It reports historical probabilities with visible sample sizes ("in N comparable cases, X% moved this way"), and it holds itself to the same standard it applies to the data: every finding states its sample, its uncertainty and what would overturn it, including findings about its own earlier work.
 
+---
 
-## Current State (see PROJECT_PLAN.md for the full breakdown)
-- **499 securities tracked**, approaching full S&P 500 coverage
-- **19,892 real, verified corporate events recorded**, spanning 1994–2026, across a 24-category event taxonomy (acquisitions, leadership changes, regulatory actions, capital raises, restructurings, spinoffs, and more) — every event traces back to its exact source SEC filing(s), nothing inferred or hallucinated
-- **102,962 filing classifications reviewed or in review** (8,965 still in the backlog) — every bulk auto-confirmation policy in this pipeline is backed by a real, measured accuracy check before being trusted at scale, and every classification decision is logged with the AI's confidence and reasoning
-- **3,365,653 rows of daily price data**, 497/499 securities, 1994–2026 coverage
-- **81 macro/population series tracked, 57,510 real data releases** — rates, inflation, employment, GDP, oil, consumer sentiment, labor market health (jobless claims, JOLTS, wages), housing (new/existing home activity, mortgage rates, all 50 states' price indexes), and consumer financial health (savings rate, credit, retail sales, gas prices) — each series individually verified against the live FRED API before ingestion, not assumed
-- **16,488 event_pre_context rows** carrying "status effect" context (yield curve inversion, labor market regime, housing regime) threaded onto company events at the moment they happened — not a snapshot, a persistent condition the event occurred within
-- **424 global/geopolitical events tracked** (167 reviewed with severity + reviewer notes)
-- **103 Track B news candidates confirmed** as real events (promotion into the main events table not yet built)
+## Where it stands (as of 2026-10-28)
 
-Every event in this database traces back to its exact source SEC filing(s) — nothing is inferred or hallucinated. Every bulk auto-confirmation policy in this pipeline is backed by a real, measured accuracy check before being trusted at scale.
+*Every number in this table was measured on 2026-10-28: the database figures by the query saved as scripts/sql/readme_snapshot.sql, the repository figures (scripts, commits, changelog entries) by counting files and commits. Re-check before relying on one: the table is regenerated at each milestone, not edited by hand.*
 
+| area | what exists |
+|---|---|
+| **Universe** | 499 securities (today's index members only, a survivorship limit), 497 with prices; 160 sealed for out-of-sample exploration |
+| **Events** | **23,554** events, 1994-01-05 to 2026-09-11, in a 24-type taxonomy; **22,339 (94.8%)** trace to a source SEC filing |
+| **Filings** | 155,141 8-K filings and 49,892 10-K/10-Q filings; 150,539 AI classifications, **95,485 (63.4%)** with a human verdict, the rest governed by written policy |
+| **Prices** | 3,371,150 daily rows, 1994-01-03 to 2026-10-13 |
+| **Financials** | 28,533 quarterly and 8,473 annual statements (2006-12-31 to 2026-08-31), 37,006 metric rows; point-in-time only from about 2010 |
+| **External conditions** | 57,510 macro releases and 250,055 long-history macro rows; 310 FOMC meetings; 1,334,852 company-sentiment rows; 424 global events; 8,024 government decisions (3,035 with text); 2,176 laws with stage dates; 1,204 news articles |
+| **Reactions** | **22,470** events with a measured 20-day reaction against SPY; 23,309 pre-context rows; 940,758 ripple-timeline rows (21,599 events) |
+| **Labels** | rewarded 5,918, punished 6,079, muted 8,144, diverged 2,384 (the diverged label is under revision; see limits) |
+| **Accounting** | every one of the 23,554 events is either measured or has a recorded reason (1,084 unmeasured, all explained); 1,017 are excluded from analysis, 325 are under review, 643 carry a note |
+| **Findings** | 112 flags in the ledger: **15 proven, 21 lead, 62 null, 2 retired, 12 untested** |
+| **System** | Supabase Postgres: 157 tables and 33 views, 3.2 GB; 259 Python scripts in 17 folders; 486 commits since 2026-08-19; 189 dated changelog entries |
 
-## Architecture
-Data Sources: SEC EDGAR XBRL (financials, primary events) · GDELT BigQuery (global events, company sentiment) · FRED API (macro, labor, housing, population) · Twelve Data (prices)
+## The eight phases
 
-      ↓
+Each phase answers one question and is done when a query says so (definitions and checks: docs/NAMING.md; current state: docs/PROJECT_STATUS.md).
 
-Phase 1-2: Financial Foundation  →  financial_statements, financial_metrics, financial_condition_score
+| # | phase | the question |
+|---|---|---|
+| 1 | Data Foundation | Is the raw data correct and complete? |
+| 2 | Financial Analysis | Given correct raw data, what do the financials say? |
+| 3 | Corporate Events | What happened, and can we prove it? |
+| 4 | External Conditions | What was the world telling the market? (macro, news, sentiment, government, the Fed, global events) |
+| 5 | Price Reaction Engine | How did the market respond, net of what the whole market did? (four of five gate checks pass; the ripple timeline is being audited) |
+| 6 | Historical Pattern Engine | Does this actually recur, or only look like it does? (a cleanup gate comes first) |
+| 7 | Dashboard / Website | Can a person see and use it? (not started) |
+| 8 | Autotrader | Can the system act on its own analysis, safely? (not started; gated on phase 6) |
 
-      ↓
+## What has held and what has not
 
-Phase 3: Corporate Events        →  sec_8k_filings → filing_ai_classifications (AI + human review) → events
+By the flag ledger (details and dates: docs/PROJECT_STATUS.md section 5; the proven findings have not yet been re-run on the cleaned analysis set):
 
-      ↓
+- **Held:** an event premium and burst of movement on days 0 and 1; bursts for acquisitions, leadership changes and strategic partnerships (capital raises show none); the own-event day width (about 1.6 times a normal day); calibrated range bands; the FOMC announcement-day market move (about 1.14 times).
+- **Did not hold:** direction prediction; tag-level significance (0 of 13 tags survive a proper null; the earlier "6 of 13" was tested against the wrong null and is retracted); the apparent magnitude lift (it was plain volatility); round-number effects; Federal Reserve change days and executive-order days as registered.
 
-Phase 4: Macro / News / Global Events  →  macro_data_releases (rates, inflation, employment, GDP, oil, sentiment, labor market, housing, consumer financial health) · company_sentiment_timeline (GDELT) · global_events (GDELT macro/geopolitical candidates) · news_ai_classifications (Track B)
+## Known limits
 
-      ↓
+Measured on 2026-10-28 and stated in full in docs/PROJECT_STATUS.md section 3.5:
 
-Phase 5: Price Reaction Engine   →  event_market_reactions_corrected (per-event abnormal returns vs. SPY) · financial_market_reactions (abnormal returns for every financial filing) · event_pre_context (status-effect threading: yield curve, labor market, housing regimes attached to the specific event they occurred within)
+1. **1,215 events (5.2%) have no source filing:** 233 multi-year rollup summaries (excluded) and 982 others, mostly real events of the hand-built pilot history or macro-derived events. All are flagged or excluded.
+2. **Price series carry a few artifacts at corporate actions** (spin-offs, special dividends). Nine reaction rows are affected so far; detection below a 60% one-day step is still to be built.
+3. **Quarterly financial data are point-in-time only from about 2010.** Firm-state labels before then, or computed by the quarter-end rule, carry look-ahead; the `diverged` label is unstable (about 65% of its members survive honest inputs) and is not used as a feature until redefined.
+4. **The effective sample is smaller than the row count:** about 70% of reaction rows are independent within their company, and dependence across companies on the same date is not yet measured.
+5. **709 events have no price history** (events of predecessor tickers, and securities without prices) and are permanently excluded.
 
-      ↓
+## How the work is done
 
-Phase 6: Pattern Engine          →  pattern_significance_tests, same_entity_sequence_chain_position — cross-sectional comparison, n=30-50 threshold enforced
+- Tests are **pre-registered** before they run, with predictions that carry a range and an anchor; every call is scored afterwards.
+- The **forward tests are frozen** until their verdicts are recorded (the next reading is after 2027-01-05); a git hook enforces it.
+- **30% of companies are sealed** from exploration; exploration creates no flag.
+- Every change is a dated entry in CHANGELOG.md; every status is a check that can be run; every bulk operation has a backup and a read of the cases before it is applied.
 
-      ↓
+## Where things live
 
-Phase 7+: Dashboard / Live Feed  →  not yet built
+| to find | look in |
+|---|---|
+| the first file for a new session | docs/START_NEW_DAY.md |
+| the current state, tests, to-do and inconsistencies | docs/PROJECT_STATUS.md |
+| names, the eight phases and their "done when" checks | docs/NAMING.md |
+| the design and the prediction contract | PROJECT_PLAN.md |
+| the findings log | THEORY.md (being rewritten, anchored to the ledger) |
+| history, newest first | CHANGELOG.md |
+| how to run the pipelines | docs/OPERATIONS.md |
+| every script's interface (generated) | docs/SCRIPTS_REFERENCE.md |
+| where every results file came from (generated) | docs/RESULTS_MAP.md |
+| registrations, tests, samples | results/ |
+| scheduled jobs | .github/workflows (nightly-classify.yml, marketaux_daily.yml) |
 
-See PROJECT_PLAN.md for phase-by-phase status and SCRIPTS.md for the real, verified interface of every script in the pipeline.
+Built with Python, Supabase (Postgres), the Anthropic API (classification), SEC EDGAR, Twelve Data (prices), FRED, GDELT and Marketaux. Credentials live in environment variables (SUPABASE_URL, SUPABASE_KEY, and the API keys), never in the repository.
 
+---
 
-## Getting Started
-Onboard a new company (full pipeline: register → financials → 8-K history → prices → classify → review → promote):
+## Retired (as of 2026-10-28)
 
-    python scripts/onboard_pipeline.py TICKER
+What this README used to say, and where it went. The unedited original is docs/archive/README_pre_rewrite_2026-10-28.md.
 
-This logs every step's result to onboarding_runs / onboarding_run_steps, so a run can be handed off and checked asynchronously. See SCRIPTS.md for the manual step-by-step version if you need finer control.
-
-Check the review backlog:
-
-    SELECT COUNT(*) FROM filing_ai_classifications WHERE human_verdict IS NULL;
-
-Promote confirmed real events into the actual database:
-
-    python scripts/classification/promote_events.py --live
-
-The classification and tagging pipeline runs on a scheduled, cost-capped GitHub Action (`.github/workflows/nightly-classify.yml`) in addition to manual runs — see SCRIPTS.md for how the model version and per-run limits are configured.
-
-
-## Recent Findings (updated 2026-10-08)
-
-- **A 2026-09-24 mass auto-confirm had a duplicate-detection gap**: the
-  process was built to catch materiality miscalls but never built to
-  catch an AI explicitly reasoning "this is a duplicate of an existing
-  event" while its verdict still said `real_event`. Found and corrected
-  37 genuine errors across the full batch via direct reasoning-text
-  search, confirmed clean via exhaustive re-check — this specific gap is
-  now closed.
-- **Model migration to Claude Haiku 5.5**: confirmed via Anthropic's own
-  pricing page a flat 10x cost reduction across every tier vs. Haiku 4.5
-  ($0.10/$0.50 vs $1/$5 per million tokens). All classification/tagging
-  scripts now import a single shared `MODEL_VERSION` constant
-  (`scripts/shared/model_config.py`) rather than hardcoding their own,
-  after finding 9 scripts had silently drifted onto the old model.
-  Also found and fixed a real crash risk from the switch: Haiku 5.5 can
-  spend its whole token budget on (unsolicited) thinking and never emit
-  a text response — every script now explicitly passes
-  `thinking: {type: "disabled"}`.
-- **`global_event_episodes` formally retired.** Four algorithmic
-  iterations to group multi-day GDELT theme spikes into coherent
-  "episodes" each fixed one case while breaking another; the real root
-  cause (needs theme share of total coverage, not absolute count) was
-  identified but never implemented. The simpler, already-proven
-  alternative — hand-reviewed `global_events.severity` — is the real,
-  intended path; the episode script is kept for reference only.
-- **`reaction_character` tagging computes ONE reaction per event from the
-  FIRST-linked entity only**, even for events linked to many companies.
-  Sized at 49 of 15,928 tagged events (0.3%) — small in count but
-  concentrated in large macro/systemic events where it matters most.
-  **Until fixed, treat `systemic_shock`/`geopolitical`/`government_action`
-  results from any model or significance test as unreliable.**
-- **Table-naming trap**: `sec_filings` contains only 10-K/10-Q filings;
-  `sec_8k_filings` contains the actual 8-K data. Names are swapped from
-  their real contents.
-
-
-## Non-Negotiable Discipline
-- No number is trusted without re-verifying against the live database.
-- No script interface is guessed — the real file is checked before writing against it.
-- No bulk confirm/correct without reading a real sample first.
-- Sample size and uncertainty are stated plainly, everywhere.
-- Inconsistencies get dug into, not waved off.
-- Company names, CIKs, and tickers are never fabricated — always pulled from SEC's own data.
-- Every bulk auto-decision policy is backed by a measured accuracy check on real data before being trusted.
-- A column's null-rate percentage alone never proves it's a usable signal — sample real rows before trusting any column as a feature.
-- A table or column name is never trusted at face value — its real type (view vs. base table), real contents, and real behavior are checked directly before relying on it.
-- A partial-column database write uses the operation that actually does a partial update (e.g. `update()`), never one with full-row-replace semantics (e.g. `upsert()`) unless every column is genuinely being supplied — confirmed the hard way when a batched `upsert()` attempt would have silently nulled out unrelated columns on success.
+| it said | why retired | now |
+|---|---|---|
+| "Current State" counts of 2026-10-08 (19,892 events; 102,962 classifications; 16,488 pre-context rows) | superseded: events grew to 23,554, classifications to 150,539, pre-context to 23,309 | the snapshot table above |
+| "Every event traces back to its exact source SEC filing" | false for 1,215 events (5.2%) | the known limits above |
+| "103 Track B news candidates confirmed" | not verified; the news tables hold about 1,200 articles | docs/PROJECT_STATUS.md |
+| "Recent Findings (2026-10-08)" | stale; several were corrected later | docs/PROJECT_STATUS.md section 5.3 and CHANGELOG.md |
+| "Getting Started" and the command list | a manual, not a snapshot; paths have moved (onboarding is now scripts/onboarding/onboard_pipeline.py) | docs/OPERATIONS.md |
+| "Non-Negotiable Discipline" list | grew to 15 standing rules | docs/PROJECT_STATUS.md section 1 |
+| "read SCRIPTS.md" | SCRIPTS.md was retired into the changelog and the generated reference | CHANGELOG.md, docs/SCRIPTS_REFERENCE.md |
+| "Phase 4: News Ingestion" | too narrow for what it holds | Phase 4: External Conditions |
+| global_event_episodes | retired in October (the table is empty) | global_events severity and reviewer notes |
