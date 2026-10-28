@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-28-06 | 2026-10-28 | documents | THEORY rewritten as a reading of the flag ledger; README findings section corrected |
 | 2026-10-28-05 | 2026-10-28 | documents | PROJECT_PLAN rewritten as the current design: no status, no volatile numbers (v2) |
 | 2026-10-28-04 | 2026-10-28 | documents | README rewritten as a true snapshot; PROJECT_STATUS v1; the snapshot query saved |
 | 2026-10-28-03 | 2026-10-28 | checkpoint | CHECKPOINT 2026-10-28 16:01 (late afternoon 2026-10-28: point-in-time and exclusions table |
@@ -209,6 +210,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-28-06 | date: 2026-10-28 | label: documents | source-line: new | approx: no -->
+### 2026-10-28-06 — THEORY rewritten as a reading of the flag ledger; README findings section corrected
+WHAT: THEORY.md rewritten (153 lines, down from 1,166) as a reading of the flag ledger (112 flags: 15 proven, 21 lead, 62 null, 12 untested, 2 retired; every flag key placed in its status section, checked programmatically): the picture in five sentences, the proven and lead tables with their recorded evidence, the nulls by what they ruled out (a null is not an absence), the untested rows, what was retired or corrected (including the 2026-10-03 retraction of the validated magnitude prediction), ten stale or inconsistent ledger rows listed for repair, and what would change the picture. The previous version is docs/archive/THEORY_pre_rewrite_2026-10-28.md. README.md: the held-and-not-held section CORRECTED against the ledger (the label direction result is proven, not a failure; the FOMC move is 1.11 to 1.14, not 1.14; the 0-of-13 tag claim has no ledger row and is no longer cited to it) and the THEORY pointer updated. FOUND: 3 of the 15 proven flags only say a type uses the pooled number; fed_state is stale (the Fed raised the target range to 3.75-4.00% on 2026-09-16).
 
 <!-- entry: 2026-10-28-05 | date: 2026-10-28 | label: documents | source-line: new | approx: no -->
 ### 2026-10-28-05 — PROJECT_PLAN rewritten as the current design: no status, no volatile numbers (v2)

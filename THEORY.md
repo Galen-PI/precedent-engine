@@ -1,1166 +1,153 @@
-# Theory & Findings Log
+# THEORY: what the data has said (v2, 2026-10-28)
 
-Consolidated record of what's been tested against this database and what came of it —
-validated findings, honest null results, and promising-but-unconfirmed leads. Kept
-separate from `PROJECT_PLAN.md` (which tracks build/phase status) and `SCRIPTS.md` (which
-tracks script interfaces) — this file tracks what the data has actually said so far.
+**What this file is.** The findings log, anchored to the flag ledger (the tables `flag_ledger` and `flag_ledger_evidence`: 112 flags, with their full notes, pass rules and by-era numbers). Every claim below carries its flag key; **the ledger is the source of truth and this file is a reading of it.** Numbers are as recorded on the dates shown. **None has yet been re-run on the cleaned analysis set** (docs/PROJECT_STATUS.md, gate G7). The previous version of this file (1,166 lines, a chronological log with its corrections) is docs/archive/THEORY_pre_rewrite_2026-10-28.md.
 
-A null result is recorded with the same weight as a positive one. Finding out a feature
-doesn't predict `reaction_character` is real, useful information — it tells future work
-where not to spend more time, and prevents re-discovering the same null a second time.
-
----
-
-## Validated Findings
-
-### Storm / compounding effect — event magnitude, not direction
-**Status: validated, standing.** When a company has other large events happening nearby
-in time (within ±40 days, excluding bundled/summary events on both sides), its reaction
-to *this* event tends to be larger in magnitude — a higher `|abnormal_return|`. Cleared
-six independent tests: a flat monotonic climb, held within event type (ruling out
-crisis-severity confounding), a magnitude-weighted threshold pattern, a same-vs-opposite-
-direction check (using each event's real biggest neighbor), an independent replication in
-the separate `financial_market_reactions` table (not just `event_ripple_timeline`), and
-held-out validation on 2+ years of genuinely unseen data (2022-01-01 cutoff). Also tested
-directly against the volatility-confound alternative explanation (large neighbors still
-produce an elevation above each company's OWN baseline, not just the global average).
-
-**Important distinction, clarified 2026-09-29**: this is a claim about MAGNITUDE
-(bigger reaction), not DIRECTION (which of rewarded/punished/muted). See the null result
-below — a storm elevating reaction size doesn't automatically make direction predictable,
-and testing the two together produced a null. The magnitude finding itself was not
-re-tested or challenged by that null result; they're different claims.
-
-Implemented as `storm_tier` in `multi_feature_model.py` (`get_storm_lookup()`).
-
-### Sector-peer ripple effect
-**Status: validated, scoped build not yet started.** Companies in the same sector as a
-company experiencing a large-reaction event show elevated `|abnormal_return|` themselves,
-even without their own direct event. z=17.49 at the largest tested sample (n=1,215 peers).
-Real, robust effect — recommended for a scoped build (large-reaction events only), not a
-full unscoped rebuild across the whole ripple timeline. See GitHub issue #21.
-
-### COVID-era factor attribution — first step
-**Status: modest positive signal, first step only, not fully built.** Event magnitude,
-company size, and sentiment jointly explain 13.8% of abnormal-return variance
-(R²=0.138) across the 8 confirmed COVID-era global events × 15 companies (n=120, 100%
-complete). Magnitude coefficient -0.615 (bigger events = worse returns, as expected),
-sentiment +0.013 (better sentiment = better returns, as expected), size ≈0 (limited
-variation in this large-cap sample). Real signal, worth building factors 4/5
-(proximity/connections, public response) — see GitHub issue #22.
+**How to read a status.**
+- **proven:** passed its pre-set rule (usually in each era, out of sample or against a placebo).
+- **lead:** passed in part, only post hoc, or inside a screen; worth a pre-set test, not a claim.
+- **null:** failed its registered rule. A null is *not an absence*: it means "not shown by this test at this resolution", and several nulls hold small real effects (the notes say which).
+- **untested:** no verdict yet (a forward test still running, or not buildable).
+- **retired:** no longer carried.
 
 ---
 
-## Null Results
+## 1. Where it stands
 
-Recorded with the same rigor as positive findings — these are real answers, not failures.
-
-### Flat sentiment level predicting `reaction_character`
-**Status: null, tested at scale.** GDELT `avg_tone`, bucketed negative/neutral/positive
-over the 7 days before an event, does not predict rewarded/punished/muted above a dumb
-baseline. Tested at n=4,386 (445 companies), cutoff 2024-01-01. Negative and positive
-buckets both performed WORSE than baseline; neutral was statistically indistinguishable
-from it.
-
-### Sentiment trend (worsening/flat/improving)
-**Status: null.** Splitting the 7-day pre-event window into early/late halves and
-measuring the trend direction, instead of a flat average, also failed to beat baseline —
-all three buckets underperformed the dumb baseline.
-
-### Storm × sentiment interaction, as a full-model feature
-**Status: null when added to the full model, despite one suggestive standalone cell.**
-A standalone walk-forward test isolating just this interaction found one promising cell —
-storm-condition + neutral-sentiment (43.8-49.2% vs ~38% baseline depending on trend
-sub-split, roughly n=61-80) — but this was one cell out of an 18-cell grid, at ~1.7
-standard deviations, below the conventional 2-SD bar. Adding `storm_x_sentiment` as an
-actual feature to `multi_feature_model.py` (alongside, not replacing, the separate
-`sentiment` and `storm_tier` features) produced NO improvement: 34.2% test accuracy vs
-34.4% baseline (cutoff 2022-01-01), essentially flat. The specific promising cell
-(`storm_x_sentiment_storm_neutral`) did not appear in the model's top-10 coefficients for
-any class. Read as: a narrow effect that may be real in isolation but gets swamped by
-larger, blunter signals (`event_type_systemic_shock`, `regime_*`) once embedded in a
-41-feature model under L2 regularization.
-
-### Full multi-feature model (`event_type`, `firm_state`, `regime`, `sentiment`,
-### `storm_tier`, `storm_x_sentiment`) predicting `reaction_character`
-**Status: null, re-confirmed 2026-09-29 on a substantially larger and cleaner dataset.**
-Cutoff 2022-01-01. Earlier run (before this session's stale-URL sweep, price refresh, and
-~4,000 new promoted events): 4,043 labeled rows, 34.2-34.9% test accuracy vs ~34-35%
-baseline. Re-run 2026-09-29 on the corrected dataset: **5,580 labeled rows (+38%), 35.3%
-test accuracy vs 35.7% baseline** — still does not beat baseline. Sample health is good
-(103 samples/feature, well above the 10-20 rule of thumb; train-test gap 8.0 points, not
-alarming). This is a MORE credible null than the earlier run, not a weaker one — it closes
-off the "maybe it's just dirty/insufficient data" explanation, since the same conclusion
-held after materially more and better data. `storm_tier_large`'s coefficients (-0.202 for
-muted, +0.118 for rewarded) are directionally consistent with the standing storm finding
-(storms push away from muted) even though the overall model doesn't clear baseline.
-
----
-
-## Null Results, continued
-
-### Chain position (same_entity_sequence position/length) predicting reaction_character
-**Status: null, but scoped narrower than it may sound -- read carefully before citing.**
-Built a richer version of the existing chain_position_opening/middle/closing tags (chain
-length bucketed short/medium/long crossed with position-as-fraction early/middle/late) and
-tested it standalone. Real, honest scale problem found immediately: only 39 entities have
-ANY same_entity_sequence chain (409 events total, 2.4% of the database), and of those,
-97% fall into "long" chains (5+) -- there are effectively zero length-2/3/4 chains in this
-data, so the length dimension couldn't really be tested. Only one bucket (long_late, the
-closing/resolution phase of a long chain) cleared n=30 in the walk-forward test: predicted
-punished at 45.1% training confidence, actual held-out hit rate 21.7% -- a real miss,
-meaningfully worse than the 43.3% dumb baseline, not just a non-improvement.
-
-**Important scope note (2026-09-29):** `same_entity_sequence`, despite its name, is NOT a
-systematic same-company narrative link -- per `suggest_event_tags_batch.py`'s real prompt,
-it's the AI judging ONE event's text in isolation for whether it explicitly self-references
-a specific prior/later event (e.g. "following the prior merger," the same person returning
-to a new role). It is same-COMPANY only, and requires a documented textual connection, not
-inferred proximity. **This null result says nothing about the different, cross-entity
-"Cascade Effect" hypothesis below** -- they share the word "chain" in this codebase's
-naming (`compute_chain_position.py`) but are not the same idea. See Open Questions below
-for the real, still-untested version.
-
----
-
-## Open / Promising Leads (not yet conclusive)
-
-- **The one storm+neutral-sentiment cell** (see null result above) — real enough to keep
-  an eye on, not real enough to trust. Possible next step: test it in isolation as the
-  ONLY non-baseline feature, rather than alongside 40 others, to see if it survives being
-  fully isolated from competing signal.
-- **`financial_market_reactions` as an alternative modeling target** — a complete,
-  ~99%-populated dataset of abnormal returns for nearly every financial filing (35,826
-  rows, 496/497 securities), independent of the `events`/`reaction_character` system.
-  Confirmed 2026-09-29 to already be in active use (`test_financial_market_reactions.py`,
-  and as an independent-replication check for the storm finding above) — but the actual
-  RESULTS of `test_financial_market_reactions.py`'s own predictive test have not yet been
-  re-read this session. Worth checking directly rather than assuming either a positive or
-  null outcome.
-
----
-
-## Open Questions (not yet started)
-
-### The Cascade Effect -- multi-hop, event-nature-based propagation
-**Status: real design work started 2026-09-29, converged on a workable next step. Not yet
-built or tested.** Raised 2026-09-29: does Event 1 propagate to cause Event 2 at a
-DIFFERENT entity, which then causes Event 3 at a third -- a real, directional, multi-hop
-cascade. Distinct from the sector-peer ripple finding (same-WINDOW magnitude correlation,
-not directional causation) and the storm/compounding finding (a company's OWN reaction
-size, not propagation to others). Deliberately given a distinct name from this codebase's
-existing "chain" terminology (same_entity_sequence, chain_position, follow_on), which all
-turned out to mean same-company narrative continuity, not cross-entity propagation.
-
-**Real existing infrastructure found and reused, not reinvented:**
-- `event_relationships` (116 real rows) already has a `comparison_signal` type (39
-  instances) that is genuinely cross-entity: one shared macro root cause -> several
-  different companies' own distinct, independently-documented reactions (e.g. COVID panic
-  -> Boeing's CEO ouster, SLB's restructuring, Pfizer's vaccine-revenue turnaround). This
-  IS real Tier-1 material (macro trigger -> company reaction) and does not need to be
-  rebuilt.
-- Confirmed `events` rows CAN exist with zero entity link (the Fed's 2020-03-15 emergency
-  rate cut has no linked ticker) -- genuinely exogenous triggers are already representable
-  in this schema without new columns.
-- `follow_on`/`same_entity_sequence` (70 combined instances) are same-company only and
-  irrelevant to this hypothesis -- confirmed by reading all 15 real `follow_on` examples,
-  every one was same-ticker-to-same-ticker.
-
-**First real design attempt, and why it failed:** tried using SECTOR membership +/-40 days
-as a structured screen for candidate Company-A-event -> Company-B-event pairs (same sector,
-different ticker). Sized at three thresholds: 135,770 raw candidates (unscoped), 14,769
-(Company A restricted to |20d abnormal return| > p90 = 13.2%), 3,070 (BOTH sides restricted
-to p90+). Read a real random sample of 25 of the 3,070 "both large" pairs individually.
-**Result: essentially none were genuine A-causes-B links.** Nearly every pair was two
-DIFFERENT companies independently reacting to the SAME known systemic event (2008 crisis,
-COVID) in the same rough window -- exactly what `comparison_signal` already captures, not
-new propagation. The "require both sides large" filter inadvertently just re-selects
-crisis-clustering periods, since that's when large reactions cluster across every sector
-simultaneously.
-
-**Real reframing (2026-09-29), based on reading the failed sample:** the problem wasn't
-timing/sector proximity -- it was that both sides of nearly every failed pair were
-company-INITIATED, PROACTIVE decisions (an acquisition, a promotion, a strategic
-restructuring). Two companies making independent proactive choices in the same window
-looks like coincidence because it largely is one. The one real working precedent
-(`comparison_signal`'s COVID/Fed link) worked specifically because the Fed's action is
-genuinely exogenous -- no company decision involved at all.
-
-**Also confirmed: `event_pre_context.size_bucket` has ZERO real variance** (15,976 of
-15,976 populated rows all read `large_or_mega_cap_tracked_universe`) -- this project's
-tracked universe is exclusively large/mega-cap by design (GICS sector anchors). A
-company-SIZE-based tier ("large company -> medium company -> small company") is **not
-buildable with this data.** The real, correct tiering dimension is event NATURE
-(exogenous/forced vs. company-initiated/proactive), not company size.
-
-**Revised real tier structure:**
-- **Tier 0** -- genuinely exogenous, zero company decision involved (Fed/regulatory
-  actions, macro conditions, natural disasters, geopolitical events). May have no entity
-  link at all, per the confirmed Fed-cut precedent.
-- **Tier 1** -- a company's REACTIVE event, forced by a Tier 0 trigger, not a company's own
-  initiative. This is what `comparison_signal` already captures for the two big known
-  crises (2008, COVID).
-- **Tier 2** -- does Company A's Tier-1 REACTIVE event (not proactive) cause a DIFFERENT
-  Company B's own REACTIVE event? This is the genuinely untested piece. Hypothesis:
-  restricting BOTH sides to reactive/forced events (not just large-magnitude ones) should
-  perform better than the failed sector-timing attempt, which had no such restriction.
-
-**Real sizing check on the reframed approach:** a crude text-pattern search (title/
-description containing "in response to," "following," "forced," "mandated," "compelled,"
-"as a result of," "amid") matched 374 of 16,746 events (2.2%). Read a real random sample
-of 20 by hand: roughly 8-9 (40-45%) were genuinely externally-triggered (macro conditions,
-commodity prices, sanctions/geopolitical, regulatory rulings, government legal action);
-the other 10-11 were false positives -- same-company events using "following" to reference
-the COMPANY'S OWN prior action (a CEO departure following the company's own divestiture,
-an appointment following the company's own acquisition) -- structurally identical to the
-already-null same_entity_sequence pattern, just caught by different wording. At ~40-45%
-real precision, the 374 crude matches imply roughly **150-170 genuinely externally-
-triggered candidate events** -- a real, human-reviewable starting pool.
-
-**Concrete next step, not yet done:** read through the estimated ~150-170 real Tier-1
-candidates (filtering out the same-company-reference false positives first), then for each
-one, search for a DIFFERENT company's own reactive event (same reactive-language filter,
-not a magnitude filter) in the following window. This is the real, still-untested version
-of Tier 2. Deliberately scoped as a dedicated future session -- read-and-classify work
-at this scale, not a quick query.
-
----
-
-## Consumer Confidence Trend -- real, mixed result after multi-cutoff robustness testing (2026-09-30)
-
-**Status: one real, fairly robust partial signal (falling->punished); one
-apparent signal (rising->muted) that did NOT survive robustness testing and is
-likely cutoff-specific, not a genuine effect. Not added to the full model.**
-Raised while scoping Government Decisions/Population Sentiment: does consumer
-confidence TREND (University of Michigan Consumer Sentiment, this month vs. the
-prior month) predict `reaction_character`? Added UMCSENT to the real FRED
-ingestion (392 real observations, 1994-2026) and built a standalone walk-forward
-test, same pattern as every other feature tested this session.
-
-**First result, single cutoff 2024-01-01, looked genuinely promising:**
-falling->punished +5.0pp (n=858), rising->muted +3.8pp (n=559), stable->rewarded
--2.4pp (n=268). **Real, important correction after testing 4 more cutoffs
-(2021-06, 2022-06, 2023-01, 2025-01), same n=4,139 dataset throughout:**
-
-- **Falling -> punished holds up reasonably well**: beats baseline at 4 of 5
-  cutoffs (+1.4pp, +3.8pp, +5.0pp, +5.0pp), flat/tied (not a miss) at the
-  earliest cutoff (36.4% vs 36.8%). The one part of this finding that looks
-  real, though the effect size growing at later cutoffs is itself worth more
-  investigation -- could be a genuinely strengthening relationship, or a
-  time-varying confound (e.g. the 2022+ rate environment) masquerading as one.
-- **Rising bucket is NOT robust -- real, important finding.** The training
-  data's own "most common reaction for rising confidence" changes across
-  cutoffs: punished (2021), punished (2022), rewarded (2023), muted (2024),
-  muted (2025). Two cutoffs were real misses (-4.4pp, -3.1pp), one was a large
-  miss (-6.0pp), and only the two most recent cutoffs showed a beat. This
-  pattern -- the predicted label itself shifting with the training window --
-  is a real, textbook sign of instability, not a genuine standalone effect.
-  The original "rising->muted, +3.8pp" report was real FOR THAT ONE SPLIT, but
-  does not generalize and should not be treated as a validated finding.
-- **Stable bucket confirmed as a genuine non-predictor**: underperforms
-  baseline at every single cutoff tested (31.0%, 31.0%, 32.1%, 29.2%),
-  consistently, not just in the original test.
-
-**Real, honest overall conclusion:** this is NOT a clean validated finding the
-way storm/sector-peer-ripple are. It's a real, partial, asymmetric result --
-falling confidence plausibly does correlate with punished reactions, with
-reasonable (not full) robustness; rising and stable confidence show no reliable
-pattern. Worth keeping as an open, partially-promising lead, not treating as
-settled. Real next steps, not done: investigate why falling->punished's effect
-size grows at later cutoffs (real strengthening vs. confound); test for overlap
-with `regime`/`firm_state` before considering any version of this for the full
-model.
-
-## CORRECTED 2026-10-02: the "sentiment excludes pre-2015 events" claim below was WRONG
-
-**Real, important correction, left visible rather than deleted, so the mistake
-and the fix are both on record.** The entry below claimed sentiment's 2015
-cutoff structurally excludes 53% of this project's events from
-multi_feature_model.py. **This was asserted without checking
-get_sentiment_bucket()'s real fallback behavior first, and it's wrong.** When
-no real GDELT tone data exists for a window, that function returns the string
-`"no_data"` -- not `None`. `"no_data"` passes the `sentiment is None` check
-completely and becomes just another valid one-hot category, same as
-"negative"/"neutral"/"positive". **Sentiment does NOT act as a hard exclusion
-filter at all.**
-
-Proven directly: built a sentiment-free variant
-(`multi_feature_model_no_sentiment.py`) and added matching pre-2015/post-2015
-debug counts to BOTH scripts, run back to back on the same real database
-state. Identical result either way: 2,639 pre-2015 rows, 6,187 post-2015
-rows, 8,826 total. Removing sentiment changed nothing -- proof the original
-claim was false, not a close call.
-
-**What's still real and unchanged from the entry below:** the `firm_state`
-(financial_condition_score) finding -- its real, sharp 2004-2008 coverage
-gap, confirmed directly against real `financial_metrics` row counts by year,
-tracking the SEC's real XBRL mandate phase-in. That part holds. The
-"sentiment causes a 2015+ cutoff" framing around it does not, and is struck
-below rather than restated.
-
----
-
-~~## Real, Major Structural Finding: multi_feature_model.py Is Effectively 2015+ Only (2026-10-02)~~
-
-~~**Read this before interpreting ANY multi_feature_model.py result in this
-document, past or future.**~~ -- WRONG, see correction above. Sentiment's
-`"no_data"` fallback means it never actually excludes anything; the real
-dataset is shaped by `firm_state`/`storm_tier`/`reaction` availability, not
-sentiment's date coverage.
-
-~~`company_sentiment_timeline` has ZERO rows before 2015-02-17 -- not reduced
-coverage, a hard, complete cutoff.~~ -- this fact about the raw table is
-still true, but it does NOT propagate into the model as an exclusion, because
-of the `"no_data"` fallback above. Struck as a claim about the model's
-behavior; the raw table fact itself is harmless trivia, not a finding.
-
-**Real, secondary finding from the same investigation, still valid:**
-`firm_state` (financial_condition_score, built from SEC XBRL data) shows a
-sharp, real, explainable spike in missing coverage specifically in 2004-2008
-(839-928 missing events/year, vs 37-66/year before 2004 and a declining
-trickle after 2009) -- confirmed directly against real `financial_metrics`
-row counts by year (2006: 1 row; 2007: 180; 2008: 593; 2009: 1,040; climbing
-steadily after) that this tracks the SEC's real XBRL mandate phase-in (2009
-for large accelerated filers, phasing to smaller companies through 2011) --
-genuine quarterly XBRL data barely existed industry-wide before 2007-2009.
-Not a bug in this project's pipeline -- a real, external, historical
-data-availability constraint. `storm_tier`'s missing-coverage pattern is much
-milder by comparison (a modest 2004-2009 bump, 76-112/year, settling to a
-steady ~30-75/year baseline) and doesn't need the same real-world
-explanation -- consistent with ordinary price-data edge cases, not a
-structural external cause.
-
-~~**Real, honest implication, not yet acted on:** a genuinely clean test of
-whether any of these features matter across the FULL tracked history...~~ --
-moot; building the sentiment-free variant to test this is exactly what
-proved the original claim wrong (see correction above).
-
-## Methodology Standard
-
-Every finding above followed the n=30-50 minimum sample threshold and, where claimed
-"validated," genuine out-of-sample testing (train/test date split, no re-tuning on the
-held-out window). See `PROJECT_PLAN.md` Section 6 for the full prediction-contract
-discipline (universe, horizon, benchmark, base rate, similarity keys, magnitude/dispersion,
-out-of-sample window) this project holds every claimed pattern to.
-
-## Sentiment-free model tested across the real full 1994-2026 history (2026-10-02)
-
-Real follow-up to the correction above. Ran `multi_feature_model_no_sentiment.py`
-(event_type, firm_state, regime, storm_tier, confidence_trend -- no sentiment,
-no storm_x_sentiment) at two real cutoffs, same 8,826-row dataset both times:
-
-- **2015-01-01** (inverted split, train 2,587 / test 6,239): test accuracy
-  34.3% vs. 37.3% baseline -- a real -3.0pp gap, below baseline.
-- **2020-01-01** (balanced split, train 5,272 / test 3,554): test accuracy
-  34.4% vs. 33.3% baseline -- a real +1.1pp gap, small and not treated as a
-  validated finding.
-
-**Real, honest conclusion: the result flips sign depending on where the
-cutoff falls, which is itself the informative part.** A genuinely robust
-finding wouldn't swing from below to above baseline just from moving the
-split point. `confidence_trend` does not appear in either run's top-10
-coefficients. Testing across the real, full 1994-2026 history -- not just the
-modern era -- still does not produce a validated signal, consistent with
-every other full-model result this session (sentiment, trend, chain-position,
-storm x sentiment interior cells). Only storm/sector-peer-ripple (both
-magnitude, not direction, findings) and the partial, still-caveated
-falling-confidence->punished standalone result have cleared that bar so far.
-
-## RETRACTED 2026-10-03: the "VALIDATED magnitude prediction" entry below is WRONG
-
-**Real, major, complete retraction -- read this before the entry below, which
-is left intact so the mistake is on the record, not hidden.** The entry below
-claimed the magnitude model beats baseline consistently across 5 real
-cutoffs, +9.2 to +13.4pp. **This was measured against the wrong baseline and
-does not hold.**
-
-Real chain of discovery, 2026-10-03: investigating why `regime` showed +0.0pp
-at the 2018-01-01 cutoff specifically (flagged as a real open question),
-found that 73.5-100% of the TEST set at EVERY tested cutoff belongs to a
-regime category the model never saw in TRAIN (regimes are sequential,
-non-overlapping eras -- any chronological split puts whatever era began after
-the cutoff entirely into test, unseen). Confirmed directly: at the 2022-01-01
-cutoff, literally 100% of test rows were all-zero regime vectors, and the
-"regime alone" model predicted a single constant class ("large") for every
-one of them -- not real discrimination, a fallback to the intercept.
-
-That constant guess happened to beat the reported baseline only because the
-reported baseline itself was wrong: every result in the entry below compared
-against the TRAINING period's majority class, not the TEST period's true
-majority class. The real label distribution shifted over time (more "large"
-reactions in later years) -- a real, classic non-stationarity problem.
-Measured against the HONEST baseline (the test period's own true majority,
-achievable with zero features at all), the FULL 5-feature model -- not just
-regime alone -- UNDERPERFORMS at every single one of the 5 cutoffs:
-
-| Cutoff | Model | Honest baseline | Real result |
-|---|---|---|---|
-| 2018-01-01 | 53.5% | 55.7% | -2.3pp |
-| 2020-01-01 | 54.8% | 57.5% | -2.7pp |
-| 2022-01-01 | 55.1% | 56.3% | -1.2pp |
-| 2023-01-01 | 54.3% | 56.5% | -2.2pp |
-| 2024-01-01 | 55.3% | 58.1% | -2.8pp |
-
-**Real, honest conclusion: there is no validated edge here. The magnitude
-model, as tested, does not beat an honest baseline at any cutoff tested.**
-
-**What does NOT survive this retraction:** the entry below, and everything
-built directly on its premise -- the feature ablation study, both
-within-regime tests (storm_tier and event_type), the "mostly regime" framing
-and its correction, the confidence_trend x firm_state interaction finding,
-and the event_type collapse negative result. All of that sub-analysis was
-internally consistent on its own terms, but it was explaining why a model
-performed well that, in fact, never did. None of those sub-findings should be
-cited as validated going forward -- they were diagnosing an artifact, not a
-real effect.
-
-**What DOES survive:** the original sector-peer-ripple validation (z=17.49)
-used a completely different, legitimate methodology -- direct peer
-comparison within a fixed time window, not a chronological train/test split
-with a shifting majority class. That finding is unaffected by this specific
-flaw and still stands on its own evidence. The storm/compounding finding
-(magnitude clusters near concurrent events) is a separate, differently-
-validated claim and is also unaffected.
-
-**Real, honest lesson for all future walk-forward tests in this project:**
-always compute the baseline from the TEST period's own true class
-distribution, never the training period's. When class balance can drift over
-time (as it demonstrably does here), a train-period baseline is not a fair
-comparison and can make a model with zero real skill look like it's
-beating the pack, just by drifting toward the same trend the data already
-drifted toward. This should become a standing check on every future model
-result in this project, not a one-off fix.
-
----
-
-
-
-**Real, genuinely validated finding -- the strongest, most robust result of this
-entire session.** Raised directly from a real observation: `reaction_character`
-(rewarded/punished/muted) compresses a continuous number into a 3-way label with
-no sense of scale, and the one finding that validated cleanly all session
-(storm/sector-peer-ripple) is explicitly a MAGNITUDE finding, not a direction
-finding -- consistent with the well-known reality that price direction is close
-to a random walk in efficient markets while volatility/magnitude genuinely
-clusters and is forecastable.
-
-Built `multi_feature_model_magnitude.py`: same real features as the sentiment-free
-model (event_type, firm_state, regime, storm_tier, confidence_trend), but the
-target is real |abnormal_return_20d| bucketed at the genuine dataset median
-(0.0421168336824002) into large/small -- a real balanced 50/50 baseline by
-construction, not an arbitrary or favorable cutoff.
-
-**Real result, same 8,815-row dataset, tested at 5 independent cutoffs:**
-
-| Cutoff | Test accuracy | Baseline | Beat |
-|---|---|---|---|
-| 2018-01-01 | 53.5% | 44.3% | +9.2pp |
-| 2020-01-01 | 54.8% | 42.5% | +12.3pp |
-| 2022-01-01 | 55.1% | 43.7% | +11.4pp |
-| 2023-01-01 | 54.3% | 43.5% | +10.8pp |
-| 2024-01-01 | 55.3% | 41.9% | +13.4pp |
-
-Every single cutoff beats baseline by a double-digit margin, same direction,
-tight range (+9.2 to +13.4pp) -- no sign flips, no misses, nothing resembling
-the instability that sank the `confidence_trend` rising-bucket claim. Train-test
-gap stayed small (2-3 points) at every cutoff tested -- not overfitting.
-
-**Real bug found and fixed during this build, worth remembering:** the
-coefficient-printing code used `model.coef_[0]` for BOTH classes unconditionally
-in the binary case, producing identical (not mirrored) output for "large" and
-"small" -- confirmed and fixed (sklearn's binary LogisticRegression stores one
-row, representing log-odds of `classes_[1]` relative to `classes_[0]`; the first
-class needs the negated row, not a copy). Model accuracy itself was never
-affected -- this was a real display bug, not a fitting bug -- but it would have
-led to exactly backwards interpretation of which features predict large vs.
-small reactions had it gone unnoticed.
-
-**Real, corrected, trustworthy coefficients (cutoff 2022-01-01):**
-Predicts LARGE reactions: `event_type_systemic_shock` (+0.753), `storm_tier_large`
-(+0.356), `regime_financial_crisis_2008_2009` (+0.313), `regime_covid_panic_2020`
-(+0.240). Predicts SMALL reactions: `event_type_cybersecurity_incident`,
-`event_type_capital_raise`, `event_type_legal_settlement` -- more routine
-corporate actions.
-
-**Real, independent cross-validation, not just internal consistency:**
-`storm_tier_large` predicting larger reactions matches the separately-validated
-storm/compounding finding exactly. `regime_financial_crisis_2008_2009` pushing
-toward larger reactions matches the direction model's own earlier finding
-(crisis regime -> less muted, more extreme reactions) from a completely
-different model and target. Two independent confirmations of the same real
-pattern, not a coincidence.
-
-**Real, honest next steps, not yet done:** test for overlap with storm_tier
-specifically (does magnitude prediction collapse to just "is this a storm
-event" dressed up differently, or does it carry real independent signal beyond
-that one feature); consider whether this is ready to become a real, stored
-`expected_magnitude_bucket` feature (same treatment as storm_tier's
-productionization) now that it's cleared 5/5 cutoffs.
-
-## Real follow-up: feature ablation on the magnitude finding, and a genuine regime/storm confound (2026-10-02)
-
-Built `magnitude_feature_ablation.py` to test single features alone and
-leave-one-out from the validated 5-feature magnitude model (cutoff 2022-01-01,
-same real dataset throughout).
-
-**Real, humbling finding: `regime` alone (+12.6pp) outperforms the full
-5-feature model (+11.4pp).** Adding the other four features slightly diluted
-it rather than adding to it. The headline magnitude-prediction result is, more
-precisely, mostly `regime` doing the work -- "some macro eras produce bigger
-reactions than others" -- not five features meaningfully combining. Real,
-single-feature results: regime +12.6pp, firm_state +7.7pp, storm_tier +4.6pp,
-event_type +4.2pp, confidence_trend +0.0pp alone.
-
-**Leave-one-out:** removing `regime` or `confidence_trend` genuinely hurts
-accuracy (-0.9pp, -0.6pp) -- real, non-redundant contributions. Removing
-`event_type`, `firm_state`, or `storm_tier` barely changes anything (-0.3 to
--0.5pp) -- largely redundant once regime is already in the model.
-`confidence_trend` is a real, interesting case: zero standalone power but
-genuine value in combination -- a real interaction effect, not a direct
-predictor.
-
-**Real, direct check on the storm_tier/regime overlap this implies:** queried
-the real "large" storm-tier rate by regime. Confirmed a genuine concentration
--- the two real crisis regimes (`covid_panic_2020` 40.4%, `financial_crisis_
-2008_2009` 40.6%) show roughly DOUBLE the large-storm rate of every other
-regime (which cluster tightly at 20-26%). This means part of storm_tier's
-original validation (sector-peer ripple, z=17.49 -- never controlled for
-regime) plausibly overlaps with crisis-period clustering, not a fully
-independent mechanism. **Not a full collapse, though** -- even in crisis
-regimes "large" storms are only 40%, not near 100%, and non-crisis regimes
-still show a real, substantial 20-26% large-storm rate, not zero. Storms
-genuinely happen outside crisis periods too. A real, partial confound, not
-storm_tier being regime in disguise.
-
-**Real, honest overall takeaway:** the magnitude-prediction finding is real
-and still beats baseline consistently (confirmed above), but its true
-substance is simpler than first presented -- mostly a regime/macro-era
-effect, with storm_tier and firm_state contributing less independent value
-than their individual validations suggested once tested together. This is
-exactly the kind of thing worth knowing before citing the magnitude finding
-as "five features matter" rather than "the macro era matters most, with a
-couple of real secondary contributors."
-
-## Real correction: "regime does most of the work" was itself incomplete (2026-10-02)
-
-The ablation entry above tested single-feature performance at only ONE cutoff
-(2022-01-01, where regime alone hit +12.6pp, beating the full 5-feature
-model's +11.4pp). Tested regime alone across the same 5 cutoffs used to
-validate the full model -- it is NOT uniformly dominant:
-
-| Cutoff | Regime alone | Full 5-feature model |
+| status | flags | note |
 |---|---|---|
-| 2018-01-01 | +0.0pp (flat, no signal) | +9.2pp |
-| 2020-01-01 | +13.8pp | +12.3pp |
-| 2022-01-01 | +12.6pp | +11.4pp |
-| 2023-01-01 | +13.0pp | +10.8pp |
-| 2024-01-01 | +16.3pp | +13.4pp |
+| proven | 15 | 12 are substantive findings; 3 only say a type "uses the pooled number" (Section 3) |
+| lead | 21 | |
+| null | 62 | |
+| untested | 12 | two are frozen forward tests, evaluated after 2027-01-05 |
+| retired | 2 | |
+| **total** | **112** | the five statuses agree with the database |
 
-**Real, honest correction: regime alone completely fails at the earliest
-cutoff, while the full feature set still beats baseline there (+9.2pp).** The
-other four features aren't just redundant padding around regime -- they're
-doing real, necessary work specifically in the earlier era where regime's own
-signal doesn't hold. The true shape of this finding: regime dominates from
-~2020 onward, the other features (mainly firm_state and event_type, per the
-leave-one-out results) provide real coverage for the pre-2020 period regime
-can't explain on its own. "Mostly regime" was an oversimplification based on
-checking only one cutoff -- the same mistake almost made with confidence_trend,
-caught here before it was stated as a firm conclusion rather than after.
+## 2. The picture, in five sentences
 
-## Real resolution: storm_tier within a single, fixed regime (2026-10-02)
+1. **The size of a stock's move is predictable around known dates:** event days run about 1.3 to 1.6 times a normal day, earnings days about 2.5 to 2.7 times, and scheduled FOMC announcements lift the whole market about 1.1 to 1.14 times.
+2. **Bands built from those widths calibrate out of sample** to about 90% coverage, by group and by market-stress level.
+3. **Direction is only weakly readable:** the labeler's good-or-bad reading of an event's text gets the sign of the two-day move right about 58% of the time against about 54% by chance, and it explains almost none of the squared miss; every price-side direction signal tested was null.
+4. **Macro, government and law flags are mostly null at the level tested;** the exceptions are Energy on oil-shock days (proven, same day only) and a cluster of yield-shock leads (Banks up, Health Care down).
+5. **Nothing here is a trading edge:** every proven result is about the size of moves or explains them after the fact, and the cost-adjusted expected-value test is a Phase 8 gate that has not been run.
 
-Direct test of the storm_tier/regime confound raised above: does storm_tier
-still predict magnitude when regime is held completely fixed (every row the
-same macro era), or does its signal collapse once regime can't vary
-underneath it? Tested storm_tier alone within two real, large, non-crisis
-regimes separately (70/30 chronological split within each):
+---
 
-- WITHIN `post_crisis_recovery_2009_2015` (n=3,037): storm_tier alone =
-  55.7% vs 56.5% baseline (-0.8pp) -- no real signal here.
-- WITHIN `rate_normalization_2016_2019` (n=2,251): storm_tier alone = 52.8%
-  vs 44.2% baseline (+8.6pp) -- a real, substantial beat here.
+## 3. Proven (15)
 
-**Real, honest, nuanced resolution -- not a clean yes/no.** If storm_tier's
-apparent power were PURELY a regime artifact, it should show zero signal in
-BOTH single-regime tests, since regime can't vary within either one. It
-doesn't -- it's real and substantial in one era. But it's also not a stable,
-universal effect on its own -- it goes flat/slightly negative in the other
-era. This mirrors the exact same pattern just found for regime itself (strong
-at 4/5 cutoffs, flat at the 5th): **storm_tier carries real, independent,
-context-dependent signal, not a pure regime confound, but also not a reliably
-present effect across every macro era.** The original sector-peer-ripple
-validation (z=17.49) is real and holds, but "storm matters, uniformly,
-everywhere" was never quite the right way to state it -- "storm matters, in
-some real but not all contexts" is the more honest version, now directly
-confirmed rather than assumed.
-
-## Real, final piece: firm_state and event_type tested the same within-regime way (2026-10-02)
-
-Completed the within-regime test for all 5 features, not just storm_tier.
-Same two fixed regimes, same 70/30 chronological split within each:
-
-- **`firm_state`**: exactly 0.0pp in BOTH `post_crisis_recovery_2009_2015`
-  and `rate_normalization_2016_2019`. Genuinely flat, not context-dependent
-  like storm_tier -- just absent once regime is held fixed. Its earlier
-  standalone +7.7pp (single cutoff, all regimes mixed) looks like a pure
-  regime proxy, not independent signal.
-- **`event_type`**: small but real and CONSISTENT -- +1.1pp and +2.1pp in
-  both regimes, same direction both times. Weaker in magnitude than
-  storm_tier's best showing, but more stable than storm_tier (which flipped
-  sign between the two regimes).
-
-**Real, complete, final characterization of all 5 features in the magnitude
-model:**
-- `regime`: the dominant driver, but itself context-dependent (strong at
-  4/5 cutoffs, completely flat at the earliest one).
-- `storm_tier`: real but inconsistent -- substantial signal in one regime,
-  none in another.
-- `event_type`: small, real, and the most CONSISTENT of the non-regime
-  features across contexts tested.
-- `confidence_trend`: zero alone, but genuine value in combination with
-  other features (a real interaction effect, not yet isolated to which
-  combination specifically).
-- `firm_state`: appears to be a pure regime proxy once tested properly --
-  no independent signal found in either within-regime test.
-
-This is a real, much more complete and honest picture than "mostly regime,
-the rest is redundant" -- each feature behaves differently, and only
-`firm_state` looks like genuine redundancy rather than real, if uneven,
-independent signal.
-
-## Real correction: storm_tier's within-regime signal was overstated with only 2 of 7 regimes tested (2026-10-02)
-
-Tested storm_tier within the remaining 5 regimes (2 smallest, financial_crisis
-n=75 and covid_panic n=133, left untested -- too small for a reliable split).
-Full real picture across 5 tested regimes:
-
-| Regime | storm_tier alone | n |
-|---|---|---|
-| post_crisis_recovery_2009_2015 | -0.8pp | 3,037 |
-| rate_normalization_2016_2019 | +8.6pp | 2,251 |
-| covid_recovery_stimulus_2020_2021 | -0.0pp | 921 |
-| rate_hiking_cycle_2022_2023 | -2.4pp | 953 |
-| ai_boom_2023_2026 | -0.7pp | 1,445 |
-
-**Real, important correction to the entry above.** Only 1 of 5 regimes shows
-real signal. The earlier "storm_tier carries real, context-dependent signal"
-framing was based on just 2 regimes (1 positive, 1 null) and does not hold up
-with the fuller picture. With 5 regimes tested, getting exactly one positive
-result raises a genuine multiple-comparisons concern -- this could easily be
-noise rather than a real, regime-specific effect. **Honest, corrected
-conclusion: storm_tier mostly does NOT predict magnitude once regime is held
-fixed. One regime (rate_normalization_2016_2019) shows a real beat that may
-or may not be genuine -- not strong enough evidence either way to call it
-validated.** This meaningfully weakens (does not reverse) the original
-sector-peer-ripple validation's implied independence from regime -- that
-finding (z=17.49) still used a different, real, directly-tested methodology
-and stands on its own evidence, but storm_tier's role as a magnitude-predicting
-FEATURE in this specific model looks much more like regime-adjacent noise than
-first presented after only 2 of 7 regimes were checked.
-
-## Real correction: event_type's within-regime "consistency" also doesn't survive the full 5-regime test (2026-10-02)
-
-Same correction pattern as storm_tier above. Full real picture across all 5
-tested regimes:
-
-| Regime | event_type alone | n |
-|---|---|---|
-| post_crisis_recovery_2009_2015 | +1.1pp | 3,037 |
-| rate_normalization_2016_2019 | +2.1pp | 2,251 |
-| covid_recovery_stimulus_2020_2021 | -1.4pp | 921 |
-| rate_hiking_cycle_2022_2023 | -0.7pp | 953 |
-| ai_boom_2023_2026 | -2.1pp | 1,445 |
-
-**2 positive, 3 negative, none large.** The earlier claim that event_type was
-"the most consistent of the non-regime features" was based on only the first
-2 regimes tested, which happened to both be positive -- an accident of test
-order, not a real pattern. The fuller picture shows genuinely mixed results,
-no more consistent than storm_tier.
-
-**Real, final, honest state of the magnitude model's feature anatomy, now
-properly complete:** `regime` is the one real, substantial driver (though
-itself imperfect -- flat at one of 5 cutoffs). `confidence_trend` adds real
-value specifically combined with `firm_state`. Every other individual
-feature -- `storm_tier`, `event_type`, `firm_state` alone -- shows weak,
-inconsistent, largely non-significant results once regime is properly held
-fixed across all tested contexts, not a handful of cherry-picked ones. The
-full model's actual validated performance (+9.2 to +13.4pp across 5 cutoffs)
-is real and unaffected by any of this -- what changed through this whole
-investigation is understanding that the performance comes mostly from
-regime plus the real confidence_trend-firm_state interaction, not five
-independently meaningful features as first presented.
-
-## Real negative result: collapsing event_type into fewer "demonstrated" buckets did not help (2026-10-02)
-
-Found real, meaningful per-category deviations from the 50% baseline
-magnitude rate: `financial_result` +10.5pp (n=512), `strategic_partnership`
-+6.5pp (n=715), `restructuring` +5.3pp (n=613) clearly separated on the high
-side; the two LARGEST categories (`acquisition` n=4,667, `leadership_change`
-n=4,535 -- over half the dataset) sit almost exactly at baseline (49.1%,
-48.8%), diluting the aggregate event_type test.
-
-Built a real, 2-bucket collapsed version (the 3 demonstrated high-magnitude
-types vs. everything else) and tested it against the raw, full ~15-category
-one-hot version at the validated cutoff. **Real, honest negative result: the
-collapsed version did WORSE (+3.0pp) than the raw version (+4.2pp), not
-better.** Even categories sitting near the 50% baseline on average apparently
-carry small, real, cumulative information a logistic regression can exploit
-across many fine-grained categories -- collapsing them away lost more than it
-cleaned up. Aggressively simplifying a noisy-looking categorical feature is
-not automatically an improvement; recorded honestly as a real negative
-result, not reframed as a partial win.
-
-## Real audit: re-checked confidence_trend against the honest baseline -- it survives (2026-10-03)
-
-Direct follow-up to the magnitude-model retraction above: audited whether the
-same wrong-baseline flaw (comparing to the TRAINING period's majority class
-instead of the TEST period's true majority) affected other walk-forward
-tests in this project. Found the exact same flaw in
-`walk_forward_consumer_confidence.py` -- fixed it to compute baseline from
-the real test set's own true majority, then re-ran all 5 original cutoffs.
-
-**Real, good news this time: falling confidence -> punished survives the
-honest re-test.** Beats the honest baseline at all 5 cutoffs: +1.5, +1.9,
-+2.1, +3.9, +5.2pp. Smaller margins than originally reported (the old,
-flawed baseline was consistently less favorable here, same underlying class-
-drift issue as the magnitude model, just not enough to erase this particular
-effect), but genuinely positive and consistent every time -- unlike the
-magnitude finding, this one does not collapse under honest scrutiny.
-
-The other two corrections already on record are reinforced, not weakened:
-`stable` misses the honest baseline at all 5 cutoffs now (even more clearly
-than before). `rising` still flips its predicted label across cutoffs
-(punished/punished/rewarded/muted/muted), 3 misses and 2 hits -- the
-"not robust" verdict from the earlier correction holds exactly as stated.
-
-**Real, standing takeaway: this specific finding (falling confidence trend
-predicting punished reactions) is the first result in this project to be
-explicitly re-verified against an honest, non-drifting baseline and survive.**
-Worth treating as the most trustworthy walk-forward result in THEORY.md for
-that reason, alongside storm/sector-peer-ripple's differently-validated
-(z-score, not baseline-comparison) methodology.
-
-## Real audit continues: chain_position re-checked against honest baseline (2026-10-03)
-
-Found the identical wrong-baseline flaw in `walk_forward_chain_position.py`
-(and 8 other walk-forward scripts in this project -- `walk_forward_2feature.py`,
-`walk_forward_sentiment_by_storm.py`, `walk_forward_combined.py`,
-`walk_forward_test.py`, `walk_forward_sentiment_v2.py`,
-`walk_forward_event_type.py`, `walk_forward_sentiment_trend.py`,
-`walk_forward_sentiment_direction.py`, `walk_forward_sentiment.py` -- all
-confirmed via direct grep for the same pattern, not yet individually
-re-verified). `walk_forward_sentiment_3d.py` and
-`walk_forward_continuous_score.py` did not match the pattern -- not yet
-confirmed safe, just not yet checked for a different-looking version of the
-same issue.
-
-Fixed and re-ran `walk_forward_chain_position.py` (real, small, honestly-
-flagged sample: 393 labeled events, only one bucket -- `long_late`, n=46 --
-ever reaches the readiness threshold). **Real, more precise result with the
-honest baseline: 21.7% vs. 52.0% honest baseline, a real -30.3pp MISS.** The
-original "null" characterization undersold this -- chain position (long_late,
-specifically) isn't just uninformative, it actively predicts the wrong
-reaction more often than chance in the one bucket with enough data to judge.
-Real, honest caveat: n=46 is small, single cutoff, not yet tested for
-robustness across multiple cutoffs the way confidence_trend and the
-magnitude model were -- treat as a real, worth-noting signal, not yet a
-validated one.
-
-Real, standing to-do: the 8 other flagged scripts have not yet been
-individually re-run with the honest-baseline fix. Their original "null"
-verdicts should not be fully trusted until checked -- the same flaw that
-manufactured a fake positive (magnitude model) could equally be hiding a
-real signal in any of these.
-
-## Real audit continues: event_type (standalone) confirmed null under honest baseline (2026-10-03)
-
-Fixed and re-ran `walk_forward_event_type.py` (full real scale, n=15,916,
-cutoff 2022-01-01). **Real, confirming result -- not an artifact either
-way.** Aggregate: 35.0% vs. 34.9% honest baseline, essentially flat. Most
-individual categories sit within +/-3pp of the honest baseline. Two real
-standouts -- `strategic_partnership` misses by -10.7pp, `governance_action`
-by -6.6pp -- but nothing resembling a hidden positive signal the old baseline
-was masking. The original "event_type alone is weak/null" conclusion holds
-under honest re-verification. One of 9 remaining scripts checked; 7 to go.
-
-## Real audit continues: storm_x_sentiment re-checked against honest baseline -- the finding behind multi_feature_model.py's feature (2026-10-03)
-
-This is the real, original source of `multi_feature_model.py`'s `storm_x_sentiment`
-feature, cited there as "storm-condition + neutral-sentiment ... best cell:
-+10.7pp vs baseline, n=61." Fixed and re-ran at full real scale
-(cutoff 2022-01-01, n=4,207 total, far larger than the n=61 the original
-comment cited -- likely from an earlier, smaller snapshot of the data).
-
-**Real, honest result, all 6 real cells (storm state x sentiment bucket):**
-
-| Storm state | Sentiment | Hit rate | Honest baseline | Real result |
-|---|---|---|---|---|
-| isolated | negative | 44.4% | 33.9% | **+10.5pp** (n=63) |
-| isolated | positive | 37.4% | 33.9% | +3.5pp (n=337) |
-| isolated | neutral | 32.6% | 33.9% | -1.3pp (n=362) |
-| storm | neutral | 40.5% | 35.0% | +5.5pp (n=388) |
-| storm | negative | 34.8% | 35.0% | -0.2pp (n=69) |
-| storm | positive | 31.2% | 35.0% | -3.8pp (n=349) |
-
-**Real, honest conclusion: the original storm+neutral claim survives, in the
-same direction, but shrinks substantially** (+5.5pp honest vs. +10.7pp
-originally claimed on a much smaller n=61 sample) -- consistent with the
-general pattern this audit keeps finding: real effects tend to be smaller
-than first reported once measured against the test period's true baseline,
-not absent, but overstated. **A new, real candidate signal emerges that
-wasn't highlighted in the original finding: isolated events with negative
-sentiment show the single largest beat in this table (+10.5pp, n=63)** --
-worth treating as a real, promising lead for future investigation, with the
-same honest caveat as any single-cutoff result (not yet robustness-tested
-across multiple cutoffs).
-
-4 of 9 flagged scripts re-verified so far: confidence_trend (survives),
-chain_position (reclassified as a real, substantial miss), event_type
-(confirmed null), storm_x_sentiment (survives at reduced magnitude, plus a
-new candidate cell found).
-
-## Real, new tool: multi-horizon testing, and a real finding opposite the original hypothesis (2026-10-03)
-
-Built `multi_horizon_confidence_test.py` to test whether confidence_trend's
-real effect is concentrated at shorter time horizons (the hypothesis: market
-attention to news fades quickly, so short-horizon reactions might be more
-predictable than the 20-day window used throughout this project). Real data
-source: `event_ripple_timeline`, which has real daily coverage at day-offsets
-1, 3, 5, 10, 20, 30 (39 is the real max; 45/60 would need the ripple build
-extended, not attempted here).
-
-**Two real, self-caught mistakes on the way to a trustworthy version, both
-worth recording:** the first version accidentally changed the real population
-at the same time as the horizon (switched to a much larger, different real
-table), producing numbers that didn't match the known falling->punished
-result at all -- the mismatch itself was the tell. The second version fixed
-the population but used fresh percentile thresholds per horizon instead of
-the original test's fixed +/-3% cutoff, which artificially normalizes away
-the real horizon-scaling effect being tested. Fixed both: same real
-population as the validated confidence_trend test (2020+, n=4,177), same
-fixed +/-3% thresholds as `tag_reaction_character.py` at every horizon.
-Verified the day-20 case reproduces the known result (`falling: predicted=
-punished`, directionally correct) before trusting the other horizons.
-
-**Real, honest result -- opposite the original hypothesis.** The predicted
-label for "falling confidence" is `muted` at every short horizon (1, 3, 5,
-10 days) and only becomes `punished` at 20 and 30 days:
-
-| Horizon | falling predicted | hit rate | honest baseline | beat |
-|---|---|---|---|---|
-| 1 day | muted | 70.6% | 71.6% | -1.1pp |
-| 3 day | muted | 62.1% | 61.2% | +0.9pp |
-| 5 day | muted | 54.5% | 53.6% | +0.9pp |
-| 10 day | muted | 42.3% | 42.6% | -0.3pp |
-| 20 day | **punished** | 38.4% | 37.4% | +1.0pp |
-| 30 day | **punished** | 42.1% | 40.7% | +1.4pp |
-
-At short horizons most events simply haven't crossed the +/-3% bar yet
-(naturally smaller daily moves), so "muted" there reflects "too soon to
-tell," not a real prediction. **The real falling->punished effect only
-emerges once the market has had 20-30 days to fully digest and react** --
-the opposite of "news fades fast, so short horizons are more predictable."
-Markets appear to process this particular kind of signal slowly, not
-immediately. A real, legitimate, counter-intuitive finding, not a failed
-test -- worth treating as a genuine result about how long this effect takes
-to materialize, not evidence the hypothesis was wrong to test.
-
-## Real correction to the multi-horizon entry above: "effect emerges slowly" was a mechanical artifact, not a real finding (2026-10-03)
-
-**Real, important retraction, pushed back on correctly rather than accepted
-at face value.** The entry above concluded confidence_trend's effect "takes
-time to emerge" (muted at short horizons, punished only at 20-30 days). This
-does not hold up.
-
-The honest baseline numbers already printed in that test ARE the overall
-"muted" rate for the WHOLE population at each horizon, independent of
-confidence_trend entirely: 71.6% (1 day) -> 61.2% (3 day) -> 53.6% (5 day) ->
-42.6% (10 day), smoothly shrinking as the window grows, for every event
-regardless of any feature. This is a real, trivial, mechanical fact: a FIXED
-+/-3% threshold applied to CUMULATIVE returns of different lengths will
-naturally be crossed less often in a shorter window, simply because
-cumulative returns compound over time -- nothing to do with markets
-"processing slowly." The muted-then-punished pattern in the falling-bucket
-table was this mechanical artifact wearing a costume, not a genuine result
-about information-processing speed. Retracted.
-
-**Real, honest state: the multi-horizon question (does confidence_trend's
-effect concentrate at a particular time distance from the event) remains
-genuinely untested.** A fixed threshold confounds window length with signal;
-the first percentile-based attempt had an unrelated population bug that was
-never cleanly resolved. A properly controlled version (same real population,
-a horizon-appropriate real threshold that doesn't mechanically favor longer
-windows, and a verified day-20 sanity check that actually passes) has not
-yet been built. Real, standing to-do, not completed today.
-
-## Real audit continues: sentiment trend (early/late split) confirmed null under honest baseline (2026-10-03)
-
-Fixed and re-ran `walk_forward_sentiment_trend.py` (real worsening/flat/
-improving split of pre-event sentiment, cutoff 2022-01-01, n=4,121). All
-three buckets land within +/-3pp of the honest baseline: worsening 0.0pp,
-flat +0.7pp, improving -2.6pp. Confirms the original null conclusion, not an
-artifact. 5 of 9 flagged scripts re-verified: confidence_trend (survives),
-chain_position (reclassified, real miss), event_type (confirmed null),
-storm_x_sentiment (survives, reduced), sentiment_trend (confirmed null).
-
-## Real audit continues: flat sentiment (v2) shows small, real beats once honestly tested (2026-10-03)
-
-Fixed and re-ran `walk_forward_sentiment_v2.py` (flat 7-day average GDELT
-tone, cutoff 2022-01-01, n=4,562). Real, small, mixed result: positive
-essentially flat (-0.6pp), neutral modest (+2.4pp), negative modest (+3.9pp,
-largest). Not dramatic, but a real, if small, improvement over the original
-"null" framing -- negative sentiment specifically shows a genuine, if
-modest, beat. Worth a real multi-cutoff robustness check before trusting
-further, same discipline applied to confidence_trend. 6 of 9 flagged scripts
-re-verified.
-
-## Real audit continues: walk_forward_test.py -- the script explicitly labeled "the real Phase 6 deliverable" (2026-10-03)
-
-Found and fixed the same baseline flaw in `walk_forward_test.py`, whose own
-docstring calls it "the real Phase 6 deliverable" -- a genuine walk-forward
-harness testing `firm_state_label`, `regime_id`, and `size_bucket`
-individually. Real, incidental find while reading it: `reaction_tags`
-includes a fourth real tag, `diverged_from_fundamentals`, not referenced
-anywhere else in this project's recent work -- worth knowing it exists.
-
-**firm_state_label**, honest re-test (n=9,326, cutoff 2022-01-01): every
-bucket within +/-3.3pp of the honest baseline (stable +1.4, deteriorating
-+0.7, strong -3.3, improving +1.0, weakening +0.5). Genuinely null,
-reinforcing the independent finding from the magnitude-model ablation that
-firm_state is mostly a regime proxy with little real standalone signal --
-two separate tests now agree.
-
-**regime_id**: hits the exact same chronological unseen-category problem
-already found and retracted in the magnitude model (every test-set regime
-was never seen in training). Real, important difference worth learning
-from: this script handles it correctly -- reports "NOT READY" honestly
-rather than silently defaulting to a constant prediction the way the
-magnitude model's code did. Good design, not a flaw to fix here.
-
-**size_bucket**: confirms the already-known zero-variance finding (all
-rows are the same bucket) -- trivially flat result (35.0% vs 35.0%), no new
-information.
-
-7 of 9 flagged scripts re-verified (this script covers 3 feature tests at
-once). 2 remaining: `walk_forward_2feature.py`, `walk_forward_combined.py`.
-
-## Real audit continues: firm_state x event_type (2-feature combo) confirmed null under honest baseline (2026-10-03)
-
-Fixed and re-ran `walk_forward_2feature.py` (firm_state x event_type,
-cutoff 2022-01-01). Real, clean, confirming result: aggregate across all
-real combos (n=2,779 pooled) is 34.9% vs. 34.9% honest baseline -- exactly
-flat. Individual cells with dramatic-looking rates (58.3%, 9.1%, etc.) are
-all correctly flagged "not ready" by the script's own discipline -- tiny
-samples, noise, not real signal. 8 of 9 flagged scripts re-verified. 1
-remaining: `walk_forward_combined.py`.
-
-## Real audit complete: all 9 flagged walk-forward scripts re-verified against the honest baseline (2026-10-03)
-
-Fixed and re-ran `walk_forward_combined.py` (3-feature combo). Confirmed
-the script's own documented expectation: only 1 of 2,786 test events had a
-(firm_state, regime, event_type) combination ever seen in training -- too
-sparse to mean anything, the "100.0%" aggregate is a single event, not a
-real finding. This is why the project moved to the 2-feature version.
-
-**This closes the full real audit sparked by the magnitude-model retraction
-earlier today.** All 9 scripts flagged with the wrong-baseline pattern have
-now been fixed and individually re-verified. Real, complete summary:
-
-- **Survives, real signal:** `confidence_trend` (falling->punished, +1.5 to
-  +5.2pp across 5 cutoffs), `storm_x_sentiment` (storm+neutral +5.5pp,
-  isolated+negative +10.5pp -- new candidate cell found).
-- **Reclassified as a real, stronger finding than "null":** `chain_position`
-  (long_late bucket actively misses by -30.3pp, not just uninformative).
-- **Confirmed genuinely null, not hiding anything:** `event_type` alone,
-  `sentiment_trend` (early/late split), `firm_state_label` alone,
-  `firm_state x event_type` (2-feature), `firm_state x regime x event_type`
-  (3-feature, too sparse).
-- **Small, real, not-yet-robustness-tested beats:** flat sentiment (v2) --
-  negative +3.9pp, neutral +2.4pp.
-- **Retracted entirely:** the magnitude-prediction finding and everything
-  built on its premise (see the 2026-10-03 retraction above).
-
-Real, standing lesson confirmed across this whole audit: the wrong-baseline
-flaw did NOT uniformly inflate false positives -- it left some real findings
-intact (confidence_trend, storm_x_sentiment), correctly-nulled others
-(event_type, sentiment_trend), and fully manufactured one large false
-positive (magnitude). Checking is the only way to know which; assuming
-either direction would have been wrong.
-
-## Real, successful reframing: time-to-threshold instead of classification-at-a-snapshot (2026-10-03)
-
-Two prior multi-horizon attempts hit real, different problems: a fixed
-+/-3% threshold mechanically confounds window length with signal (shorter
-windows have smaller cumulative returns regardless of any real feature);
-a percentile threshold removes that confound but stops measuring the same
-thing the original validated finding used, so it couldn't reproduce it as
-a sanity check. Neither classification-at-a-fixed-snapshot framing worked
-cleanly.
-
-**Real reframing that avoids both problems by construction:** instead of
-asking "at day N, is this event punished," ask "for events that DO
-eventually cross the real -3% bar, how many days does it take -- and does
-falling confidence make that happen faster?" Same real, externally
-meaningful threshold used throughout, no different bar per horizon needed,
-so the mechanical confound cannot occur. Built
-`time_to_threshold_confidence_test.py`, same real population as the
-validated confidence_trend test (n=4,177, 2020+), real daily coverage
-(day_offset 1-39, 564,015 real rows).
-
-**Real, honest, single-run result:**
-
-| Bucket | Median days to -3% | Mean days | Real crossing rate |
+| flag | the claim | recorded evidence | tested |
 |---|---|---|---|
-| falling | 5 | 8.7 | 70.9% |
-| rising | 6 | 9.9 | 68.7% |
-| stable | 5 | 9.2 | 75.3% |
+| `event_burst_day0_1` | Isolated events: move size on the filing day and the day after, against days 25 to 39 | ratio 1.306 (n 6,871, 2004-2018) and 1.331 (n 3,836, 2019-2026); the card uses 1.3 | 10-16 |
+| `event_premium_20d` | Ordinary event types move more over 20 days than volatility predicts | after the 10-19 repair, matched excess +0.055 (SE 0.009) for 2004-2018 and +0.052 for 2004-2026, positive in every era, mostly the two-day burst; caveats: current-index survivorship, naive SEs | 10-16 (repaired 10-19) |
+| `event_daily_range_coverage` | A daily range from 64-day volatility under-covers on days 0 and +1 | coverage 73.9% and 72.3% on days 0-1 against 80.3% and 80.9% ordinary; a multiplier of 1.25 (frozen) restores it within 1.6 points | 10-16 |
+| `event_day_width_own_events` | Own-event days are wider than ordinary days beyond what volatility and the same day's other stocks imply | band multiplier 1.60 over 41,542 own-event days (day 0 1.78, day +1 1.40); walk-forward gain positive in 22 of 22 years; by type 1.03 (capital raise) to 2.21 (accounting investigation) | 10-19 |
+| `event_earnings_window_width` | Earnings releases (8-K item 2.02) widen days 0 and +1 | 2.72x (day 0) and 2.47x (day +1), gain positive in 21 of 21 years; earnings days are 3.16% of stock-days but hold 19.5% of the unexplained squared miss | 10-20 |
+| `earnings_role_bands_walk_forward` | Bands set by each company's reaction-day habit beat pooled earnings bands | interval-score ratio 0.890 / 0.869 / 0.857 by era (0.868 overall, 56,176 test observations); coverage 89.9 / 88.5 / 90.1% on reaction days; shuffled-habit placebo about 1.00. Caveat: "last 4 quarters" was chosen after a test on the same years. Forward test frozen (Section 6) | 10-21 |
+| `band_edge_calibration_90` | A per-group empirical 90th-percentile edge calibrates the band out of sample | all six groups inside the 88-92% rule: ordinary 90.21%, event 89.15%, earnings day 0 89.49%, day +1 88.70%, earnings plus event 88.47% (n 3,044), Regulation FD 89.83% | 10-20 |
+| `band_stress_scale_median` | Scaling the band by the median squared miss, with one edge, holds coverage across stress levels | 89.63% to 91.08% in all 12 era-by-bin cells (2,187,937 ordinary stock-days); the card still uses the mean-based scale, and the all-groups version was not adopted (`band_median_scale_all_groups`, null) | 10-20 |
+| `event_label_direction_sign` | The labeler's good-or-bad reading of an event's text predicts the sign of the day 0-1 abnormal return beyond event type | hit rate 57.7% [56.2, 59.2] (n 4,212, 2004-2018) and 57.8% (n 1,311, 2019-2026) against within-type nulls of about 53.9% and 53.7%; far placebo clean (days 26-39: 49.8% against 50.2%). Small: it explains almost none of the squared miss (`event_label_signed_pull_center`, null) | 10-19, promoted 10-20 |
+| `fomc_announcement_day_market_move` | The whole market moves more on scheduled FOMC announcement days (size, not direction) | 1.140 [1.067, 1.218] (2004-2014, n 88) and 1.112 [1.044, 1.186] (2015-2026, n 92); day +1 is larger (1.215 and 1.199, exploratory); placebos 0.974 and 0.945 | 10-23 |
+| `macro_oil_shock_energy_same_day` | Energy stocks move more than the rest on days WTI moves 3% or more | 1.293 (t 9.2) and 1.319 (t 8.2); placebo sectors 0.94 to 1.01. Same day only, not knowable in advance; at industry level the effect is weak or absent before 2000; the older estimator reads about 4-6% low | 10-16 |
+| `event_type_capital_raise_no_burst` | Capital-raise filings show no day 0-1 burst | 1.024 (n 505) and 1.098 (n 355) against about 1.31 and 1.33 pooled (z -7.1 and -3.2); explains the retired 20-day discount | 10-16 |
+| `event_type_acquisition` | *(uses the pooled number)* acquisition burst is not distinct from pooled | 1.277 (n 2,127) and 1.319 (n 936) | 10-16 |
+| `event_type_leadership_change` | *(uses the pooled number)* | 1.250 (n 1,699) and 1.276 (n 1,442) | 10-16 |
+| `event_type_strategic_partnership` | *(uses the pooled number)* | 1.252 (n 300) and 1.381 (n 131) | 10-16 |
 
-Falling confidence events reach the real punishment threshold somewhat
-faster than rising ones (5 vs. 6 median days, 8.7 vs. 9.9 mean) -- a real,
-modest, directionally-consistent result with the already-validated
-falling->punished finding. Not a clean story, though: `stable` ties falling
-on speed and has the highest crossing rate of the three, so this isn't
-"falling is fast, everything else is slow." Real, honest state: a single
-run, not yet robustness-tested against other reference points (e.g.
-comparing across different real time periods the way confidence_trend's
-main finding was). Worth that follow-up before treating this as validated,
-but a genuinely clean, confound-free way to ask the original question that
-the first two framings couldn't achieve.
+## 4. Leads (21)
 
-## Real, sharper finding: the time-to-threshold effect is asymmetric -- punishment only, not reward (2026-10-03)
-
-Extended `time_to_threshold_confidence_test.py` to also check the +3%
-REWARDED bar, not just -3% PUNISHED, completing the symmetric picture.
-
-**Real, clean result -- the reward side shows NO real asymmetry at all:**
-
-| Bucket | Median days to +3% | Mean days | Real crossing rate |
+| flag | the claim | recorded evidence | why only a lead |
 |---|---|---|---|
-| falling | 6 | 9.8 | 64.3% |
-| rising | 6 | 9.8 | 63.9% |
-| stable | 7 | 11.1 | 67.8% |
+| `eightk_item_7_01_width` | Regulation FD 8-K filings widen days 0 and +1 | 1.36x over 34,283 flagged days; gain +0.098 / +0.082 / +0.093; 20 of 21 years | passed inside a screen of 10 item codes; mixes routine materials with guidance; the card uses 1.36x with a weak-lead label |
+| `guidance_type_filing_day_width` | 8.01 and 7.01 filings with guidance language widen more than other filings | 2.37x [1.83, 2.86] (n 50); ratio to the others 1.94 [1.48, 2.37] | crude keyword class (about 54% precision on a read of 50); small n |
+| `event_corporate_action_20d` | Corporate-action filings: 20-day move | all years +0.080 (SE 0.027) after repair | heterogeneous type, many looks |
+| `event_type_restructuring` | Restructuring burst | 1.712 (n 339) and 1.671 (n 163); z against pooled 4.2 and 2.3 | misses the 2.5 bar in 2019-2026 by 0.2; the eras agree |
+| `event_type_corporate_action` | Non-split corporate-action burst | 1.634 and 1.424; z 3.9 and 0.75 | fails in 2019-2026 |
+| `event_type_accounting_investigation` | Restatement and non-reliance burst | 1.419 (n 113, 2004-2018 only) | not distinct from pooled |
+| `event_type_governance_action` | Governance burst | 1.323 (n 144) and 1.492 (n 72) | not distinct from pooled; older events are routine |
+| `event_type_legal_settlement` | Settlement burst | 1.198 (n 571) and 1.341 (n 173) | within about 2 SE of pooled |
+| `event_utility_commission_burst_smaller` | Utility-commission matters burst 23-30% less than other events | pooled -0.266 (t -3.22, 138 events); second era only 27 events | post hoc; needs forward data |
+| `ipo_spinoff_band_multiplier_walkforward` | A fitted multiplier of about 1.9 would restore coverage for spin-off event days (the card uses 1.0, about 71% coverage) | walk-forward coverage 83.9% and 90.7% against an 86-94% window; interval-score ratio 0.881 and 0.797 | PARTIAL; not adopted (about 2.3% of event days) |
+| `labeler_size_timing_validity` | The labeler's size and timing hints order event-day width correctly | size large 2.17, moderate 1.59, small 1.25; timing new 1.71, previously announced 1.32 | a validity check against a descriptive prediction, not a finding |
+| `longhist_oil_shock_oil_industry` | Oil industry on oil-shock days, 1986-2026 | calibrated 1.085 (1986-1999, beats 39 of 40 shifted copies), 1.185, 1.524: rising by era | the pre-set every-era line (1.15) is missed in the first era |
+| `longhist_yield_shock_banks` | Banks on yield days of 10bp or more | calibrated 1.059 / 1.189 / 1.187; pooled 1.139, beating all 40 shifted copies | 1962-1985 is only about +6%, below the 1.10 line |
+| `longhist_yield_shock_banks_equal_weighted` | Equal-weighted Banks, same days | 1.100 / 1.059 / 1.108 | post hoc; the line is not met in 1986-2007 |
+| `longhist_yield_shock_health_dampening` | Health Care moves LESS on yield days | calibrated 0.938 / 0.958 / 0.908; pooled 0.936, below all 40 shifted copies | post-hoc origin; needs its own pre-set test |
+| `macro_yield_shock_financials` | Financials on yield days of 10bp or more | 1.059 (t 2.7) and 1.100 (t 3.6) | misses the 1.10 line in 2004-2018 |
+| `macro_yield_shock_real_estate` | Real Estate, same days | 1.057 (t 1.8) and 1.076 (t 1.9) | below the line and below t 2.5 |
+| `macro_yield_shock_defensives_post_hoc` | Staples and Health Care move less on big-yield days | Staples 0.927 and 0.901; Health Care 0.950 and 0.917 | observed after the fact, not pre-registered |
+| `macro_jobs_report_payems` | Jobs-report days move the market more | 1.285 (z 2.8), 1.101, 1.125; pooled about +16% (SE about 5%) | rule failed; one of about 27 numbers looked at; sits in the opening gap |
+| `unrecorded_sector_theme` | A big ordinary miss with a volume spike often comes with same-sector misses (a narrow sector theme) | 10.9% against 3.5% placebo: +7.4 points [+6.3, +8.6] (n 6,730) | below the 10-point rule, above the 2-point reading guide; two post-hoc fixes after the first run |
+| `storm_tier_large` | A large prior reaction (storm tier) and the next event's reaction | 6.90% against 5.45%, isolated events | **the weakest lead:** not re-tested since 10-13, its evidence unit is inferred, and the original result file was not found |
 
-Falling and rising are essentially indistinguishable on the reward side --
-same median, same mean, crossing rates within 0.4pp of each other. There is
-no "rising confidence speeds up reward" effect to match the punishment-side
-finding.
+## 5. Nulls (62), by what they ruled out
 
-**Real, sharper, more precise conclusion: confidence_trend's real effect is
-specific to punishment, not a general speed effect.** Falling confidence
-genuinely correlates with faster, more frequent punishment (5 vs. 6 median
-days, 70.9% vs. 68.7% crossing rate) -- but there's no mirror-image
-acceleration of reward when confidence rises. This is a real, economically
-sensible asymmetry, consistent with well-documented market behavior where
-negative sentiment moves prices faster and more reliably than equivalent
-positive sentiment (loss aversion / negativity bias), not just noise. A
-cleaner, more interesting, and more precise finding than a simple symmetric
-"confidence predicts reaction speed" story would have been.
+*A null failed its registered rule; it is not proof of zero. The notes in the ledger give the resolution (the smallest effect each test could have seen).*
 
-## Real, honest robustness check: the punishment-speed asymmetry weakens over time, doesn't hold uniformly (2026-10-03)
+- **An event's own reaction: direction and dynamics (10).** `direction_overreaction_reversal` (reversal fractions 52.3% against 50.6%), `time_to_threshold_asymmetry` (not stable across periods), `event_lasting_days_6_20`, `event_pre_days_m4_m1`, `event_date_lag` (no general lag; only Regulatory is a lead), `magnitude_model_features` (the +9 to +13 point lift was entirely volatility), `tag_specific_ranges` (tags give wider, not narrower, ranges), `storm_x_sentiment`, `size_effect_in_universe`, `volatility_estimator_variants` (nothing beats the 64-day estimate).
+- **Event types with no stable number (2).** `event_type_financial_result` and `event_type_regulatory` flip between eras.
+- **Government-direct events (3).** `event_gov_direct_burst`, `event_gov_direct_enforcement_burst`, `event_gov_direct_size_split`: no burst difference (up to about +17% not excluded for enforcement).
+- **Earnings surprise (2).** `earnings_surprise_sign_revenue`: hit rate 53.4% (2009-2018) and 52.9% (2019-2026), permutation p under 0.001, so real but under the 54% bar; operating income reads about 1.4 points higher on the same events (post hoc, and its forward test is frozen). `earnings_surprise_size_revenue`: high-to-low 1.02x, no relation.
+- **8-K items (4).** `eightk_item_1_01_width` (1.06x), `eightk_item_5_02_width` (1.01x), `eightk_item_8_01_width` (1.17x, fading after the first era), `eightk_items_2_03_5_03_5_07_width` (about 1.0x). Item 7.01 is a lead.
+- **Band mechanics (8).** `band_coverage_fixed_edge_1_645` (over-covers: ordinary 93.3%), `band_median_scale_all_groups` (fails earnings groups in 2013-2019), `event_band_class_calibration_audit` (no class flagged; spin-off event days cover about 71%), `spread_exjump_window`, `vol_regime_blend_base_spread`, `shared_structure_statistical_factors` (real but small, about 4.3% of the unexplained miss), `unrecorded_group_move_peers` (group moves 4.6% against 0.1% placebo, not material), `guidance_type_filing_ordinary_variance` (0.36% of the ordinary pool, not material).
+- **The label's signed pull (1).** `event_label_signed_pull_center`: the sign is real but explains almost none of the squared miss.
+- **News attention and tone (2).** `gdelt_article_spike_next_day_width` (matched shortfall +0.6 and +0.5 points, negligible), `gdelt_tone_shock_next_day_direction` (matched lift -0.7 and -0.7, so any effect above about 1 point is excluded; same-day tone correlates only about 0.01 with the same-day miss).
+- **Macro (6).** `macro_cpi`, `macro_housing_starts`, `macro_oil_shock_energy_next_day`, `macro_yield_shock_utilities`, `context_labor_stress` (9.31% fell to 5.78% once crises were excluded), `context_oil_spike_crash`.
+- **Long history, 1962-2026 (7).** `longhist_credit_widening_banks`, `longhist_equal_weight_size_transfer`, `longhist_masking_oil_alone_vs_with_other`, `longhist_masking_yield_banks_alone_vs_with_other`, `longhist_oil_size_gradient` (era-specific), `longhist_yield_shock_real_estate`, `longhist_yield_shock_utilities`.
+- **The Federal Reserve (4).** `fed_change_day_banks_amplification` (1.078, interval 0.994 to 1.168), `fed_change_day_financials_amplification` (1.065 and 1.038, placebos clean), `fomc_rate_sensitive_sector_contrast` (1.044 and 1.001: the FOMC-day effect is market-wide, with no sector leader), and `fomc_pre_announcement_drift`, which **replicated historically** (+0.449% over two days, t 3.03, 1994-2011) **and faded** (+0.118%, t 0.92, 2012-2026); its null status reflects the persistence part of the rule.
+- **Executive orders (2).** `eo_relevant_signing_day_market_move` (0.969 in 2004-2014, 1.009 in 2015-2026) and `eo_relevant_signing_market_wide_amplification` (0.994 pooled). **Watch item, post hoc:** 2025-2026 day +1 reads 1.158 (t +3.98); trade and tariff days (n 26) read 1.321 and 1.453 against 1.016 and 1.079 for the other orders; tariff orders are themselves market news, so this is descriptive only.
+- **Laws (9).** `law_introduction_sector_move` (1.016), `law_first_passage_sector_move` (0.992), `law_final_passage_sector_move` (0.977), `law_signing_sector_move` (1.005), `law_final_passage_tail_ge3`, `law_signing_tail_ge3`, `law_company_persistence_same_area`, `law_events_after_gov_direct`, `law_events_after_reg_legal_restructuring`.
+- **Human patterns (2).** `round_number_clustering_whole_dollar`: **the verdict is null only because the registered flat null model failed its calibration.** Whole-dollar closes land 3.19 times (2001-2013) and 1.71 times (2014-2026) as often as plain cents, a described fact. `round_number_threshold_move_size`: +1.07% and +1.25% in move size near round thresholds (t 2.18 and 2.47), unconfirmed, about 1% of a range.
 
-Split the time-to-threshold test across three real, distinct two-year
-sub-periods to check robustness, same discipline applied to every other
-finding tonight.
+## 6. Untested (12)
 
-| Period | falling (median/rate) | rising (median/rate) | Pattern holds? |
-|---|---|---|---|
-| 2020-2022 | 5 days / 70.7% | 6 days / 67.3% | Yes, clearly |
-| 2022-2024 | 6 days / 67.3% | 8 days / 67.1% | Speed yes, rate ~tied |
-| 2024-2026 | 6 days / 70.5% | 6 days / 73.6% | No -- speed ties, rate REVERSES |
+| flag | why |
+|---|---|
+| `earnings_role_bands_forward_test` | **frozen** 2026-10-22; evaluate once after prices exist through about 2027-01-05 |
+| `earnings_surprise_sign_operating_income_forward` | **frozen** 2026-10-20; evaluate once after the season; a non-pass with fewer than 500 events is inconclusive, not null |
+| `fed_state` | the pre-set sector-contrast test has not run; only four independent episodes |
+| `company_state_filing_dated` | needs filing dates; closely tied to gate G6 |
+| `flag_overlap_storm_testability` | counting step closed: the storm idea cannot be tested at the pair level on this universe (2 of 28 pairs testable, one of them mechanical) |
+| `cascade_effect` | only about 8 to 10 plausible chained cases |
+| `government_decisions_day_level` | partly tested (laws null, FOMC proven, executive orders null); the row is stale (Section 8) |
+| `law_driven_charge_events_titles`, `law_named_charge_event_reaction` | counting steps; 13 distinct charge events attributed to a law drew about 40 to 50% of the burst of contemporaneous events (descriptive, post hoc, clustered) |
+| `macro_other_series` | needs a real release calendar |
+| `news_sentiment_gdelt` | the row is stale: two GDELT tests ran on 2026-10-22 (both null) |
+| `local_flags` | not built |
 
-**Real, honest conclusion: the pattern is not uniform across time.** It held
-clearly in 2020-2022, partially in 2022-2024 (speed advantage survives,
-rate advantage does not), and both the speed and rate advantage disappear
-or reverse in 2024-2026 -- rising confidence actually shows a HIGHER
-crossing rate in the most recent period. The pooled, whole-period result
-(5 vs 6 median days, 70.9% vs 68.7% rate) is real as a description of the
-full 2020-2026 dataset, but it is not a stable, time-invariant effect --
-it's concentrated in the earlier part of the window and weakens or
-reverses more recently. Same pattern already seen elsewhere tonight
-(storm_tier's within-regime test, regime's own cutoff-sensitivity): a
-result that looks clean pooled or at a single reference point, more mixed
-once tested across genuinely separate real periods. Worth tracking as a
-real, partial lead, not citing as a settled, time-invariant finding.
+## 7. Retired, and corrected
 
-## Real, promising lead: crossing confidence_trend with real Fed policy stance explains some of the time-instability (2026-10-03)
+**Retired in the ledger (2).** `event_capital_raise_20d_discount` (fails the out-of-time rule; after the 10-19 repair 2004-2018 is about -0.019; explained by `event_type_capital_raise_no_burst`) and `event_type_ipo_spinoff` (the 1.95 reading was a spin-off price artifact; fewer than 40 clean events per era remain).
 
-Direct follow-up to the real hypothesis that missing macro context (what
-the Fed was actually doing, not just the raw confidence number) explains
-why the punishment-speed finding wasn't stable across time periods.
-Confirmed qualitatively first by reading real FOMC statement text from
-each of the three test windows -- genuinely different real regimes (2020:
-crisis/emergency cuts; 2022: active inflation-fighting hikes; 2024-2026:
-confident, controlled easing). Built a real, structured "policy stance"
-feature (hiking vs. cutting, from the real, already-fetched DFEDTARU rate
-changes -- not NLP-parsed statement tone) and crossed it with
-confidence_trend.
+**Claims retired or downgraded from the earlier log of this file:**
+- **2026-10-03, retracted:** the "validated magnitude prediction" (+9.2 to +13.4 points over baseline at five cutoffs) was measured against the training period's majority class instead of the test period's; against the honest baseline the model had no lift. Ledger row: `magnitude_model_features` (null).
+- **2026-10-03, retracted:** "the effect emerges slowly" (multi-horizon) was a mechanical artifact.
+- **2026-10-02, corrected:** the claim that sentiment excludes pre-2015 events was wrong.
+- **Downgraded:** the storm / compounding effect ("validated, standing", neighbours within 40 days) survives only as the lead `storm_tier_large`.
+- **Unconfirmed, never in the ledger:** the sector-peer ripple effect (z 17.49, n 1,215 peers) and the COVID-era factor attribution (R-squared 0.138, 8 events by 15 companies, n 120). Neither has been tested against the volatility confound that sank the magnitude model.
+- **2026-10-19, repaired:** the reactions view had skipped days 0 and +1 for 4,971 events, which had made the event premium look as if it shrank as the event set grew; that reading was mostly this defect (`event_premium_20d`).
+- **2026-10-22, scoring corrections:** several predictions recorded as "missed" were within sampling noise of their ranges; the ranges had been narrower than one standard error.
+- **Tag-level significance:** the first-reported "6 of 13 tags significant" was tested against the wrong null and is retracted (docs/PROJECT_STATUS.md, section 5.3). It has no ledger row.
 
-**Real, full-period result (2020-2026, n=3,757):**
+## 8. Where the ledger is stale or disagrees (to fix, not yet fixed)
 
-| confidence_trend + policy stance | n | median days to -3% | crossing rate |
-|---|---|---|---|
-| falling + cutting | 1,218 | 5 | 70.0% |
-| falling + hiking | 614 | 6 | 68.7% |
-| rising + hiking | 605 | 7 | 69.4% |
-| rising + cutting | 773 | 7 | 68.6% |
-| stable + cutting | 249 | 6 | 76.3% |
-| stable + hiking | 86 | 5 | 69.8% |
+1. **`fed_state`** says "easing 2024-09-18 to now," but the Fed **raised** the target range 25 basis points to 3.75-4.00% on 2026-09-16 (12-0, the first hike since July 2023). The `fed_change_day_financials_amplification` note already mentions the 2026 hike correctly. Check what `fed_state_daily` reports from 2026-09-16.
+2. **`news_sentiment_gdelt`** is "untested" although two GDELT tests ran on 2026-10-22; it also says `news_articles` has 738 rows (it has 1,204).
+3. **`government_decisions_day_level`** says FOMC days and executive orders are untested; both have since run.
+4. **Three proven type rows** (`event_type_acquisition`, `event_type_leadership_change`, `event_type_strategic_partnership`) carry first-run numbers in their notes (for example 1.277 and 1.271) while their evidence rows hold the rerun (1.277 and 1.319). Neither changes the claim.
+5. **"proven" for a type that only "uses the pooled number"** is a different claim from the substantive findings; the count of 15 hides this. The status vocabulary needs a separate label.
+6. **`fomc_pre_announcement_drift`** is null although the historical effect replicated; only the persistence part failed.
+7. **`storm_tier_large`:** the evidence unit is inferred and the original result file was not found.
+8. **Duplicated sentences** appear in the notes of `earnings_surprise_sign_operating_income_forward` and `longhist_oil_shock_oil_industry`.
+9. **Notes cite SCRIPTS.md addenda,** a file retired into the changelog and docs/SCRIPTS_REFERENCE.md.
+10. **The tag-significance audit has no ledger row.**
 
-**Real, honest, modest support for the hypothesis.** `falling + cutting` --
-where the Fed's own real actions corroborate the independent confidence
-signal -- shows the fastest, most acute punishment in the whole table.
-`falling + hiking` -- where the Fed is still tightening despite falling
-confidence, a more conflicted real signal -- is slower and less reliable.
-`rising` shows almost no difference between hiking and cutting (7 days
-both), consistent with the already-established finding that
-confidence_trend's real effect is specific to the punishment side, not
-symmetric. The differences here are real but modest (5 vs. 6 days, not
-dramatic), and this is a single run on the full period, not yet
-robustness-tested the way the main finding was.
+## 9. What would change this picture
 
-**Real, honest implication:** this doesn't fully explain the earlier
-robustness failure (2024-2026 specifically showed REVERSED results, and
-that period was dominated by "cutting" stance per the real FOMC text --
-worth checking directly whether the crossed feature behaves differently
-within just that sub-period before treating this as the full explanation).
-Promising, partial, real lead -- not yet a complete account of the
-instability.
+- **The two frozen forward tests** (both "untested" above), evaluated once after 2027-01-05, each against its pre-set rule.
+- **Re-running the 12 substantive proven findings on the cleaned analysis set** (excluded events removed, independent clusters reported): gate G7. A finding that survives has earned the word; one that does not is a finding about the data.
+- **Pre-set tests for the yield-shock leads** (Banks up, Health Care down), which pass their nulls from 1986 on but have only a post-hoc origin.
+- **A point-in-time firm state** (gate G6): until then no label that depends on firm state, including `diverged`, can be tested.
+- **The 2025-2026 executive-order watch item,** which needs its own pre-set forward test.
 
-## Real, standing design principle for Phase 6, captured before it starts (2026-10-03)
+## 10. The standard
 
-A real, repeated pattern across this whole session's investigations, worth
-writing down now rather than relying on memory once Phase 6 actually
-begins: **isolated features tested alone come back weak almost every
-time** -- confidence_trend alone, event_type alone, firm_state alone,
-storm_tier alone within a fixed regime, all genuinely weak or null in
-standalone tests. **The same features, deliberately crossed with the right
-real context, sharpen every time this was tried** -- confidence_trend x
-firm_state (a real interaction, zero standalone power each), storm_tier x
-sentiment (survived honest re-verification), confidence_trend x real Fed
-policy stance (the fastest, most acute punishment cell is exactly the
-economically sensible one, two real distress signals aligning). Not a
-coincidence pattern -- markets react to a SITUATION, not an isolated
-number, and the data keeps bearing that out directly.
-
-**Real, important trap already fallen into once, worth naming so it
-doesn't recur:** "combine multiple features into one model" is NOT the
-same thing as "context-aware." The retracted magnitude-prediction finding
-looked exactly like this pattern -- five features combined -- but turned
-out to be mostly one feature (regime) riding alone under a wrong baseline,
-dressed up as something richer by the combination itself. Throwing many
-features at one model and hoping combination does the work is a different,
-weaker thing than a specific, reasoned cross between two features chosen
-because there's a real, stated reason they should interact.
-
-**Real, concrete implication for Phase 6's design, not yet built:** the
-harness should be built around deliberate, hypothesis-driven crosses --
-two features picked because there's a real, stated economic or structural
-reason to expect them to interact -- not a kitchen-sink feature set fed
-into one model and left to sort itself out. Every real success this
-session (storm x sentiment, confidence x firm_state, confidence x policy
-stance) came from a specific, reasoned pairing. Every disappointment
-(the magnitude model) came from combination without that discipline. This
-should be the standing design test before any future feature gets added
-to Phase 6's real model: not "does adding this feature help," but "what is
-the specific, reasoned context this feature should be crossed with, and
-have we tested that cross directly."
+A claim is a pattern only when it declares universe, horizon, benchmark, base rate, similarity keys, magnitude with an interval, and an out-of-sample window; the sample size is stated as rows **and** independent clusters (a company's events within 28 days count once). See PROJECT_PLAN.md, section 3. A null is recorded with the same weight as a positive result: it says where not to spend time and prevents finding the same null twice.

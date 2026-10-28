@@ -45,10 +45,11 @@ Each phase answers one question and is done when a query says so (definitions an
 
 ## What has held and what has not
 
-By the flag ledger (details and dates: docs/PROJECT_STATUS.md section 5; the proven findings have not yet been re-run on the cleaned analysis set):
+By the flag ledger on 2026-10-28 (112 flags: 15 proven, 21 lead, 62 null, 12 untested, 2 retired; the readings and numbers are in THEORY.md). None has yet been re-run on the cleaned analysis set.
 
-- **Held:** an event premium and burst of movement on days 0 and 1; bursts for acquisitions, leadership changes and strategic partnerships (capital raises show none); the own-event day width (about 1.6 times a normal day); calibrated range bands; the FOMC announcement-day market move (about 1.14 times).
-- **Did not hold:** direction prediction; tag-level significance (0 of 13 tags survive a proper null; the earlier "6 of 13" was tested against the wrong null and is retracted); the apparent magnitude lift (it was plain volatility); round-number effects; Federal Reserve change days and executive-order days as registered.
+- **Held, about the size of moves (not their direction):** event days run about 1.3 to 1.6 times a normal day, earnings days about 2.5 to 2.7 times, and scheduled FOMC announcements lift the whole market about 1.1 to 1.14 times; bands built from those widths calibrate to about 90% out of sample; Energy stocks move more on oil-shock days (same day only). Capital-raise filings show no burst.
+- **Held, weakly (direction):** the labeler's good-or-bad reading of an event's text gets the sign of the two-day move right about 58% of the time against about 54% by chance, and it explains almost none of the squared miss.
+- **Did not hold:** price-side direction signals (overreaction reversal, the sign of the earnings surprise at about 53%, news tone), the apparent magnitude lift (it was plain volatility), law stages and executive-order signing days, Federal Reserve change days, and round-number effects as registered. The first-reported tag-level significance ("6 of 13") was tested against the wrong null and is retracted (docs/PROJECT_STATUS.md).
 
 ## Known limits
 
@@ -75,7 +76,7 @@ Measured on 2026-10-28 and stated in full in docs/PROJECT_STATUS.md section 3.5:
 | the current state, tests, to-do and inconsistencies | docs/PROJECT_STATUS.md |
 | names, the eight phases and their "done when" checks | docs/NAMING.md |
 | the design and the prediction contract | PROJECT_PLAN.md |
-| the findings log | THEORY.md (being rewritten, anchored to the ledger) |
+| the findings log, anchored to the flag ledger | THEORY.md |
 | history, newest first | CHANGELOG.md |
 | how to run the pipelines | docs/OPERATIONS.md |
 | every script's interface (generated) | docs/SCRIPTS_REFERENCE.md |
