@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-28-04 | 2026-10-28 | documents | README rewritten as a true snapshot; PROJECT_STATUS v1; the snapshot query saved |
 | 2026-10-28-03 | 2026-10-28 | checkpoint | CHECKPOINT 2026-10-28 16:01 (late afternoon 2026-10-28: point-in-time and exclusions table |
 | 2026-10-28-02 | 2026-10-28 | checkpoint | CHECKPOINT 2026-10-28 15:51 (afternoon 2026-10-28: data-quality findings measured (price s |
 | 2026-10-28-01 | 2026-10-28 | checkpoint | CHECKPOINT 2026-10-28 15:29 (midday 2026-10-28: tagger and pre-context finished; firm-stat |
@@ -207,6 +208,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-28-04 | date: 2026-10-28 | label: documents | source-line: new | approx: no -->
+### 2026-10-28-04 — README rewritten as a true snapshot; PROJECT_STATUS v1; the snapshot query saved
+WHAT: README.md rewritten (104 lines, committed from the GitHub editor as 213d877 and verified byte-identical to the drafted text) as a snapshot and representation of the project, not a manual: where it stands (every number measured on 2026-10-28), the eight phases, what has held and what has not, five known limits, how the work is done, where things live, and a Retired table (what the old README said and where it went; the unedited original is docs/archive/README_pre_rewrite_2026-10-28.md). docs/PROJECT_STATUS.md v1 installed (221 lines; the v0 draft stays in git history). scripts/sql/readme_snapshot.sql saved: the query that regenerates the README table. CORRECTED in the process: the old claim 'every event traces to its source filing' (false for 1,215 events) and the old counts of 2026-10-08.
 
 <!-- entry: 2026-10-28-03 | date: 2026-10-28 | label: checkpoint | source-line: new | approx: no -->
 ### 2026-10-28-03 — CHECKPOINT 2026-10-28 16:01 (late afternoon 2026-10-28: point-in-time and exclusions tables built; diverged v2 grid and churn; retroactive filed dates confirmed; no tags written)
