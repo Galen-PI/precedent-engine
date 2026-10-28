@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-28-05 | 2026-10-28 | documents | PROJECT_PLAN rewritten as the current design: no status, no volatile numbers (v2) |
 | 2026-10-28-04 | 2026-10-28 | documents | README rewritten as a true snapshot; PROJECT_STATUS v1; the snapshot query saved |
 | 2026-10-28-03 | 2026-10-28 | checkpoint | CHECKPOINT 2026-10-28 16:01 (late afternoon 2026-10-28: point-in-time and exclusions table |
 | 2026-10-28-02 | 2026-10-28 | checkpoint | CHECKPOINT 2026-10-28 15:51 (afternoon 2026-10-28: data-quality findings measured (price s |
@@ -208,6 +209,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-28-05 | date: 2026-10-28 | label: documents | source-line: new | approx: no -->
+### 2026-10-28-05 — PROJECT_PLAN rewritten as the current design: no status, no volatile numbers (v2)
+WHAT: PROJECT_PLAN.md rewritten (144 lines, down from 550) as the plan only: goal, thesis (carried over verbatim, plus a paragraph on what the evidence says so far), how evidence is judged (the prediction contract and walk-forward harness, updated: firm state point-in-time only from about 2010; the stored size bucket is a constant and carries no information; rows AND independent clusters; purge of overlapping windows), the enforcing machinery, a new architecture diagram with External Conditions and a quality layer, the eight phases (Phase 4 renamed External Conditions), the Phase 8 design condensed, universe, deferrals, and the news taxonomy. NO status or volatile numbers: those are in README.md and docs/PROJECT_STATUS.md. The plan's seven earlier corrections and addenda are in this changelog at their true dates (label PROJECT_PLAN); the unedited previous version is docs/archive/PROJECT_PLAN_pre_rewrite_2026-10-28.md (it also holds the retired status table, tier system, old next steps and old diagram).
 
 <!-- entry: 2026-10-28-04 | date: 2026-10-28 | label: documents | source-line: new | approx: no -->
 ### 2026-10-28-04 — README rewritten as a true snapshot; PROJECT_STATUS v1; the snapshot query saved
