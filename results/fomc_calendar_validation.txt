@@ -1,17 +1,17 @@
-FOMC CALENDAR: 310 rows (274 meetings, 35 conference calls); 244 announcements (statement dates, confirmed); 10 scheduled and not yet held
+FOMC CALENDAR: 310 rows (274 meetings, 35 conference calls); 245 announcements (statement dates, confirmed); 9 scheduled and not yet held
   rows with a flag (excluding the inferred start day of 2021+ meetings): 4
      meeting 2007-06-27 2007-06-28: URL DATE MORE THAN 3 DAYS FROM THE MEETING | ANNOUNCEMENT SET TO THE LAST DAY (the statement link pointed to a different date)  https://www.federalreserve.gov/newsevents/press/monetary/20070618a.htm
      meeting 2020-03-02 2020-03-02: UNSCHEDULED  /www.federalreserve.gov/newsevents/pressreleases/monetary20200303a.htm
      meeting 2020-03-15 2020-03-15: UNSCHEDULED  /www.federalreserve.gov/newsevents/pressreleases/monetary20200315a.htm
      cancelled 2020-03-17 2020-03-18: CANCELLED  
 
-(a) 2021-2026 announcement dates vs the independent transcription: 46 expected, 46 parsed; missing none; extra none
+(a) 2021-2026 announcement dates vs the independent transcription: 47 expected, 47 parsed; missing none; extra none
 
 (b) per year: meetings / conference calls / announcements   [regular years have 8 meetings; years outside 8 are listed after]
-   1994: 8/5/6 | 1995: 8/3/3 | 1996: 8/0/1 | 1997: 8/0/1 | 1998: 8/2/3 | 1999: 8/0/6 | 2000: 8/0/8 | 2001: 8/5/11 | 2002: 8/0/8 | 2003: 9/4/8 | 2004: 8/0/8 | 2005: 8/0/8 | 2006: 8/0/8 | 2007: 8/3/10 | 2008: 8/6/11 | 2009: 8/3/8 | 2010: 8/2/9 | 2011: 8/2/8 | 2012: 8/0/8 | 2013: 8/0/8 | 2014: 8/0/8 | 2015: 8/0/8 | 2016: 8/0/8 | 2017: 8/0/8 | 2018: 8/0/8 | 2019: 8/0/8 | 2020: 9/0/9 | 2021: 8/0/8 | 2022: 8/0/8 | 2023: 8/0/8 | 2024: 8/0/8 | 2025: 8/0/8 | 2026: 6/0/6
-   years with a meeting count other than 8: 2003 (9), 2020 (9), 2026 (6)
+   1994: 8/5/6 | 1995: 8/3/3 | 1996: 8/0/1 | 1997: 8/0/1 | 1998: 8/2/3 | 1999: 8/0/6 | 2000: 8/0/8 | 2001: 8/5/11 | 2002: 8/0/8 | 2003: 9/4/8 | 2004: 8/0/8 | 2005: 8/0/8 | 2006: 8/0/8 | 2007: 8/3/10 | 2008: 8/6/11 | 2009: 8/3/8 | 2010: 8/2/9 | 2011: 8/2/8 | 2012: 8/0/8 | 2013: 8/0/8 | 2014: 8/0/8 | 2015: 8/0/8 | 2016: 8/0/8 | 2017: 8/0/8 | 2018: 8/0/8 | 2019: 8/0/8 | 2020: 9/0/9 | 2021: 8/0/8 | 2022: 8/0/8 | 2023: 8/0/8 | 2024: 8/0/8 | 2025: 8/0/8 | 2026: 7/0/7
+   years with a meeting count other than 8: 2003 (9), 2020 (9), 2026 (7)
 
-(c) weekday of the announcements: Mon 2, Tue 68, Wed 159, Thu 10, Fri 3, Sun 2
+(c) weekday of the announcements: Mon 2, Tue 68, Wed 160, Thu 10, Fri 3, Sun 2
     announcements on a weekend: 2010-05-09, 2020-03-15
     meetings from 2000 without a statement link (expected none; each is a parse gap or a real exception): 1  ['2003-09-15']
 

@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-28-07 | 2026-10-28 | data | FOMC calendar: the 2026-10-28 meeting confirmed and loaded; independent list extended |
 | 2026-10-28-06 | 2026-10-28 | documents | THEORY rewritten as a reading of the flag ledger; README findings section corrected |
 | 2026-10-28-05 | 2026-10-28 | documents | PROJECT_PLAN rewritten as the current design: no status, no volatile numbers (v2) |
 | 2026-10-28-04 | 2026-10-28 | documents | README rewritten as a true snapshot; PROJECT_STATUS v1; the snapshot query saved |
@@ -210,6 +211,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-28-07 | date: 2026-10-28 | label: data | source-line: new | approx: no -->
+### 2026-10-28-07 — FOMC calendar: the 2026-10-28 meeting confirmed and loaded; independent list extended
+WHAT: the 2026-10-28 announcement was added to the independent transcription in build_fomc_calendar.py (from the Fed's published schedule; check (a) now 47 expected, 47 parsed, none missing, none extra), the calendar rebuilt after the Fed's page carried the statement, and loaded with load_fomc_meetings.py --apply (an upsert on kind, start_date, end_date). Backup first: fomc_meetings_backup_20261028 (310 rows; DROP AFTER 2026-11-28). Verified against the backup: 309 rows unchanged, 1 changed (confirmed, flags, statement_url: the Oct 27-28 row), none only in one table; the table stays at 310 rows (274 meetings, 35 conference calls, 1 cancelled; 245 confirmed announcements; 9 scheduled and not yet held). KNOWN, NOT FIXED: one spurious row, the meeting of 2003-09-15 (no statement; the Fed's 2003 schedule and the minutes show eight meetings, September's on the 16th); it carries no announcement, and no finished test counted it (the drift test's n for 1994-2011 is 144 = 18 years x 8). Rebuilding the CSV re-creates it, so the fix belongs in build_fomc_calendar.py, not in the table. fed_state_daily checked: tightening since 2026-09-16 (the Fed raised the target range to 3.75-4.00%), so the view is right and only its ledger note is stale.
 
 <!-- entry: 2026-10-28-06 | date: 2026-10-28 | label: documents | source-line: new | approx: no -->
 ### 2026-10-28-06 — THEORY rewritten as a reading of the flag ledger; README findings section corrected

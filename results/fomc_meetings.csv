@@ -299,7 +299,7 @@ year,kind,start_date,end_date,announcement_date,has_statement,statement_url,sour
 2026,meeting,2026-06-16,2026-06-17,2026-06-17,True,https://www.federalreserve.gov/newsevents/pressreleases/monetary20260617a.htm,https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm,True,START DAY INFERRED (two-day meeting)
 2026,meeting,2026-07-28,2026-07-29,2026-07-29,True,https://www.federalreserve.gov/newsevents/pressreleases/monetary20260729a.htm,https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm,True,START DAY INFERRED (two-day meeting)
 2026,meeting,2026-09-15,2026-09-16,2026-09-16,True,https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm,https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm,True,START DAY INFERRED (two-day meeting)
-2026,meeting,2026-10-27,2026-10-28,2026-10-28,True,,https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm,False,"SCHEDULED, NOT YET HELD"
+2026,meeting,2026-10-27,2026-10-28,2026-10-28,True,https://www.federalreserve.gov/newsevents/pressreleases/monetary20261028a.htm,https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm,True,START DAY INFERRED (two-day meeting)
 2026,meeting,2026-12-08,2026-12-09,2026-12-09,True,,https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm,False,"SCHEDULED, NOT YET HELD"
 2027,meeting,2027-01-26,2027-01-27,2027-01-27,True,,https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm,False,"SCHEDULED, NOT YET HELD"
 2027,meeting,2027-03-16,2027-03-17,2027-03-17,True,,https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm,False,"SCHEDULED, NOT YET HELD"
