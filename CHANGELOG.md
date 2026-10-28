@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-28-08 | 2026-10-28 | data | Phase 5 gate passes 5 of 5: ripple builder fixed (bundle rule, share class, skips recorded |
 | 2026-10-28-07 | 2026-10-28 | data | FOMC calendar: the 2026-10-28 meeting confirmed and loaded; independent list extended |
 | 2026-10-28-06 | 2026-10-28 | documents | THEORY rewritten as a reading of the flag ledger; README findings section corrected |
 | 2026-10-28-05 | 2026-10-28 | documents | PROJECT_PLAN rewritten as the current design: no status, no volatile numbers (v2) |
@@ -211,6 +212,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-28-08 | date: 2026-10-28 | label: data | source-line: new | approx: no -->
+### 2026-10-28-08 — Phase 5 gate passes 5 of 5: ripple builder fixed (bundle rule, share class, skips recorded); 314 events built
+WHAT: the Phase 5 gate was rebuilt as a runnable check (scripts/sql/phase5_gate.sql, from the done-when of NAMING.md); its component 5 accepts only an exclude or review reason, because the 10-28 query had counted a provenance note as a reason and read 31 gaps where the true count was 319. CAUSES, found by reading scripts/ripple/build_ripple_timeline.py: (1) the skip rule excluded every id in event_component_dates, 859 events, of which 284 have a single component row and are real single-date events (39 of 40 sampled read as one dated occurrence); 280 of them had reaction rows and no ripple; (2) get_ticker_and_sector took the first security of an entity, unordered: News Corp (NWS and NWSA, one entity and the only entity with two securities) had 30 events silently skipped (NWS has no prices before mid-2023) and 8 events computed on NWS; (3) a pair with too few prices was only counted, never recorded; (4) events were paged with a non-unique order. FIX (scripts/audit/patch_ripple_builder.py, 11 exact-match anchors, tested on a reconstruction in which the old builder reproduced the production symptom): the skip list is the view ripple_skip_events (events with 2 or more component rows plus every exclude reason, 1,291 events); the primary security is the reaction row's ticker, else the earliest-priced class; every skipped pair is written to results/ripple_skips_<date>.csv; unique paging order. DATA: 8 multi-row events recorded as review (reason bundle_multi_component_review: 5 narrative summaries, 3 single deals with several milestone dates; decide per case); backup event_ripple_timeline_backup_20261028 (8 events, 349 rows; DROP AFTER 2026-11-28), then deleted, then rebuilt. RESULT: events with a ripple 21,599 to 21,913 (+314), rows 940,758 to 954,599; NWSA 38 of 38 events under NWSA; share-class mismatches 0; gate component 5 gaps 319 to 0. CORRECTED: an earlier reading said 24 events had a share-class mismatch; 16 of those were Fox events linked on purpose to two separate entities (FOX and FOXA), and the delete predicate (same entity only) protected them; only News Corp was affected. OPEN: the gate accepts review as a documented reason and 333 events carry one (gate G5); the new ripple rows add about 3 percent more isolated events to the baseline of flags marked proven, so gate G7 re-runs them on the corrected table; README figures updated (954,599 rows, 21,913 events).
 
 <!-- entry: 2026-10-28-07 | date: 2026-10-28 | label: data | source-line: new | approx: no -->
 ### 2026-10-28-07 — FOMC calendar: the 2026-10-28 meeting confirmed and loaded; independent list extended

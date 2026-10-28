@@ -22,7 +22,7 @@ Company → Financials → Events → External Conditions → Price Reaction →
 | **Prices** | 3,371,150 daily rows, 1994-01-03 to 2026-10-13 |
 | **Financials** | 28,533 quarterly and 8,473 annual statements (2006-12-31 to 2026-08-31), 37,006 metric rows; point-in-time only from about 2010 |
 | **External conditions** | 57,510 macro releases and 250,055 long-history macro rows; 310 FOMC meetings; 1,334,852 company-sentiment rows; 424 global events; 8,024 government decisions (3,035 with text); 2,176 laws with stage dates; 1,204 news articles |
-| **Reactions** | **22,470** events with a measured 20-day reaction against SPY; 23,309 pre-context rows; 940,758 ripple-timeline rows (21,599 events) |
+| **Reactions** | **22,470** events with a measured 20-day reaction against SPY; 23,309 pre-context rows; 954,599 ripple-timeline rows (21,913 events) |
 | **Labels** | rewarded 5,918, punished 6,079, muted 8,144, diverged 2,384 (the diverged label is under revision; see limits) |
 | **Accounting** | every one of the 23,554 events is either measured or has a recorded reason (1,084 unmeasured, all explained); 1,017 are excluded from analysis, 325 are under review, 643 carry a note |
 | **Findings** | 112 flags in the ledger: **15 proven, 21 lead, 62 null, 2 retired, 12 untested** |
@@ -38,7 +38,7 @@ Each phase answers one question and is done when a query says so (definitions an
 | 2 | Financial Analysis | Given correct raw data, what do the financials say? |
 | 3 | Corporate Events | What happened, and can we prove it? |
 | 4 | External Conditions | What was the world telling the market? (macro, news, sentiment, government, the Fed, global events) |
-| 5 | Price Reaction Engine | How did the market respond, net of what the whole market did? (four of five gate checks pass; the ripple timeline is being audited) |
+| 5 | Price Reaction Engine | How did the market respond, net of what the whole market did? (passes its five-component gate as of 2026-10-28; 333 events carry a review reason and await a decision) |
 | 6 | Historical Pattern Engine | Does this actually recur, or only look like it does? (a cleanup gate comes first) |
 | 7 | Dashboard / Website | Can a person see and use it? (not started) |
 | 8 | Autotrader | Can the system act on its own analysis, safely? (not started; gated on phase 6) |
