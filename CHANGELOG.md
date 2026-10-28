@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-28-09 | 2026-10-28 | documents | PROJECT_STATUS v1.1 and the 2026-10-28 evening checkpoint: Phase 5 gate 5 of 5, FOMC loade |
 | 2026-10-28-08 | 2026-10-28 | data | Phase 5 gate passes 5 of 5: ripple builder fixed (bundle rule, share class, skips recorded |
 | 2026-10-28-07 | 2026-10-28 | data | FOMC calendar: the 2026-10-28 meeting confirmed and loaded; independent list extended |
 | 2026-10-28-06 | 2026-10-28 | documents | THEORY rewritten as a reading of the flag ledger; README findings section corrected |
@@ -212,6 +213,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-28-09 | date: 2026-10-28 | label: documents | source-line: new | approx: no -->
+### 2026-10-28-09 — PROJECT_STATUS v1.1 and the 2026-10-28 evening checkpoint: Phase 5 gate 5 of 5, FOMC loaded, open items recorded
+WHAT: docs/PROJECT_STATUS.md v1.1 (14 exact-match replacements; the patch is kept as scripts/audit/patch_status_v11.py): Phase 5 gate 5 of 5 (scripts/sql/phase5_gate.sql) and G1 done; the FOMC calendar loaded through the 2026-10-28 meeting (310 rows); 333 review events recorded (8 new: bundle_multi_component_review); new objects recorded (view ripple_skip_events; backups fomc_meetings_backup_20261028 and event_ripple_timeline_backup_20261028, BOTH to be dropped after 2026-11-28); database 3,160 MB. OPEN, recorded in the file: the spurious 2003-09-15 FOMC row (fix belongs in build_fomc_calendar.py), ten stale or inconsistent ledger rows (THEORY section 8), the 37 unread ripple skips, the 333 review events (G5), and G7 (rerun the proven flags on the corrected ripple table). THE DAY, 2026-10-28 (evening checkpoint): tagger and pre-context runs finished; data-quality audit and its tables (event_exclusions, event_analysis_set, event_firm_state_pit); README, PROJECT_PLAN v2 and THEORY v2 rewritten and installed, the README findings section corrected against the flag ledger; the Fed's 2026-09-16 rate hike confirmed (fed_state_daily is correct, only its ledger note is stale); the ripple builder fixed and 314 events built. No tag was written; the forward-test files remain frozen.
 
 <!-- entry: 2026-10-28-08 | date: 2026-10-28 | label: data | source-line: new | approx: no -->
 ### 2026-10-28-08 — Phase 5 gate passes 5 of 5: ripple builder fixed (bundle rule, share class, skips recorded); 314 events built

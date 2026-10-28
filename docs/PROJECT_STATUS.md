@@ -1,4 +1,4 @@
-# PROJECT STATUS (v1, 2026-10-28)
+# PROJECT STATUS (v1.1, 2026-10-28 evening)
 
 **What this file is.** The one place for the CURRENT state: what we have, what has been done (start to finish), what has been tested, what is left, what does not add up, and the calendar. History lives in CHANGELOG.md (entries cited as `CL <id>`), script interfaces in docs/SCRIPTS_REFERENCE.md (generated), how-to in docs/OPERATIONS.md, names and phase definitions in docs/NAMING.md, registrations in results/. Update this file at the end of every work session; never copy a live number here without its date.
 
@@ -38,8 +38,8 @@ Phase names, questions and "done when" checks are defined in docs/NAMING.md (the
 | 1 Data Foundation | `[PENDING]` (G8) | unmeasured; known gaps: EA and AVB have no prices; 8-K predecessor-CIK gaps; pre-2004 8-K coverage unreliable |
 | 2 Financial Analysis | `[PENDING]` (G8) | unmeasured; quarterly data point-in-time only from about 2010 (section 3.5) |
 | 3 Corporate Events | `[PENDING]` (G8) | unmeasured; 1,215 events (5.2%) have no source filing (section 3.5) |
-| 4 External Conditions | `[PENDING]` (G8) | unmeasured; FOMC calendar refresh due today (section 8) |
-| 5 Price Reaction Engine | the five-component gate query of 2026-10-28 (G1) | **4 of 5 components PASS; the ripple-timeline component has 31 undocumented gaps** [LIVE 10-28] |
+| 4 External Conditions | `[PENDING]` (G8) | unmeasured; FOMC calendar loaded through the 2026-10-28 meeting (310 rows; one spurious 2003-09-15 row, section 7) [LIVE 10-28] |
+| 5 Price Reaction Engine | the five-component gate, scripts/sql/phase5_gate.sql (G1) | **5 of 5 components PASS** [LIVE 10-28 evening]; the gate accepts a review reason as documentation and 333 events carry one (G5) |
 | 6 Historical Pattern Engine | the prediction contract (PROJECT_PLAN Section 6, D1 to D4) | **Gate A (section 6) comes first**; D1 and D2 built; D3 and D4 not built |
 | 7 Dashboard / Website | not started | not started |
 | 8 Autotrader | not started; gated on phase 6 | not started |
@@ -60,7 +60,7 @@ Old names to current names are in NAMING.md section 2 ("Phase 7 engine" is track
 | event_pre_context | **23,309** rows for 23,312 pairs (3 pairs appear twice with two relationship types); 0 pairs uncovered | [LIVE 10-28] |
 | event_firm_state_pit | 23,348 rows (rule pit_v1; 39 extra rows because some entities own two securities: join on security_id) | [LIVE 10-28] |
 | event_entity_reactions | 124 rows for the 49 multi-entity events | [LIVE 10-28] |
-| event_exclusions | 1,017 `exclude` (no_price_history 709, rollup_no_source 233, date_gap_over_year 69, price_step_in_window 6); 325 `review` (date_corrected_review 267, reaction_row_not_computable 55, price_step_in_window 3); 643 `note` (no_source_curated 323, no_listed_company 286, no_entity_link 34) | [LIVE 10-28] |
+| event_exclusions | 1,017 `exclude` (no_price_history 709, rollup_no_source 233, date_gap_over_year 69, price_step_in_window 6); 333 `review` (date_corrected_review 267, reaction_row_not_computable 55, price_step_in_window 3, bundle_multi_component_review 8 added 10-28 evening); 643 `note` (no_source_curated 323, no_listed_company 286, no_entity_link 34) | [LIVE 10-28] |
 | event_analysis_set (view) | **22,162 rows**, 22,162 distinct events: 7,409 in sealed companies, 270 under review, 323 with a note | [LIVE 10-28] |
 | explore set (non-sealed reaction-tagged) | 14,960 events: rewarded 3,921, punished 3,965, muted 5,444, diverged 1,630; label versus saved column: 0 mismatches | [LIVE 10-28] |
 | tickers | 498 plus SPY; **160 sealed** (explore_sealed_tickers) | [LIVE 10-26] |
@@ -68,6 +68,8 @@ Old names to current names are in NAMING.md section 2 ("Phase 7 engine" is track
 | database | 151 tables and 32 views, about 3.0 GB (hand sum of the 20 largest, plus or minus 10%); about 61 tables are audit, backup, snapshot or scratch tables by name (about 190 MB) | [LIVE 10-26 inventory] |
 
 **Tables created or changed 2026-10-28** (all additive; no tag was changed after the tagger finished): event_firm_state_pit, event_exclusions, event_analysis_set (view), scratch_diverged_new_20261028, scratch_diverged_v2_20261028, event_tags_backup_20261028 (full copy after the tagger finished), event_entity_reactions_backup_20261026 (122 rows). Scratch tables need a drop date recorded in the changelog. `[PENDING]` a fresh table inventory.
+
+**Added 2026-10-28 evening** (CHANGELOG 2026-10-28-07 and -08): the view ripple_skip_events (1,291 events the ripple builder skips: 2 or more component rows, plus every `exclude` reason); backups fomc_meetings_backup_20261028 (310 rows) and event_ripple_timeline_backup_20261028 (8 events, 349 rows), BOTH to be dropped after 2026-11-28; 8 new event_exclusions review rows; ripple timeline 21,913 events and 954,599 rows (was 21,599 and 940,758); fomc_meetings 310 rows with the 2026-10-28 meeting confirmed; results/ripple_skips_2026-10-28.csv (323 skipped pairs: 286 no security for the entity, 37 no prior close, each with its reason; the 37 are unread). Database 3,160 MB, 157 tables and 33 views at the snapshot, 159 and 34 after the two backups and the view [LIVE 10-28].
 
 **Numbers recorded in documents, not re-verified:** market_prices 3,365,653 rows [DOC 10-08: README]; sec_8k_filings 155,141 rows [CL 2026-10-21-20]; about 150,539 filings classified [DOC 10-15]; government_decisions 8,023; government tagging v1: 3,035 relevant decisions, 12,149 tags [CL 2026-10-23-09]; event_ripple_timeline 653,815 rows at 10-16 [CL 2026-10-16-02]; company_sentiment_timeline complete for 141 months [CL 2026-10-21-15]; fomc_meetings 310 rows [results/fomc_calendar_validation.txt]; as-quoted price factors for 492 tickers, 479 valid, 13 excluded [CL 2026-10-26-06].
 
@@ -161,19 +163,19 @@ Oct 22 tally: 54 range predictions, **56% strictly inside** (target about 80%), 
 **Gate A: before any Phase 6 statistic is trusted**
 | | item | state |
 |---|---|---|
-| G1 | Phase 5 gate as a runnable check | 4 of 5 components PASS; 31 events with a reaction row have no ripple timeline and no recorded reason: list them, rebuild or record |
+| G1 | Phase 5 gate as a runnable check | **DONE 10-28**: scripts/sql/phase5_gate.sql, 5 of 5 PASS. The first run read 319 gaps at component 5 (the earlier 31 counted a provenance note as a reason); the causes are fixed in the ripple builder (CHANGELOG 2026-10-28-08); 333 review events remain (G5) |
 | G2 | analysis-set view (event_analysis_set) | **DONE 10-28** (22,162 rows) |
 | G3 | independence audit and the effective-n rule | **DONE 10-28** (69.8% independent, rule 12); cross-company same-date dependence still unmeasured (MacKinlay anchor) |
 | G4 | systematic price-artifact detection below the 60% scan (spin-offs, special dividends, splits): peer-relative and event-free large moves, the adjustment-factor table, review, record in event_exclusions | open |
-| G7 | rerun the 15 proven flags and the significance audit on the analysis set; record in the ledger evidence | open |
+| G7 | rerun the 15 proven flags and the significance audit on the analysis set; record in the ledger evidence (rerun on the corrected ripple table: 314 events were added 10-28; 3 of the 15 only say a type uses the pooled number) | open |
 
 **Gate B: before claims go in writing**
 | | item | state |
 |---|---|---|
-| G5 | review groups: 267 corrected dates (read a stratified sample), provenance for the 323 curated events, the 514 fast quarterly filings, same-day duplicate events | open |
+| G5 | review groups (333 events carry a review reason): 267 corrected dates (read a stratified sample), the 55 not computable, the 3 price steps, the 8 multi-row bundles; plus provenance for the 323 curated events (280 have one stray bundle row and are real single-date events), the 514 fast quarterly filings, same-day duplicate events | open |
 | G6 | firm state done right: rebuild the point-in-time table with a capped availability date, report by era and number of terms, store the raw score, then decide the fate of `diverged` (no tag is written before the definition is settled; backup event_tags_backup_20261028 exists) | open |
 | G8 | Phase 1 to 4 gate checks from NAMING.md as pass/fail SQL | open |
-| G9 | documents: this file (v1 done), then README, PROJECT_PLAN, THEORY (ledger-anchored, with a Retired section), OPERATIONS refresh, regenerate SCRIPTS_REFERENCE | in progress |
+| G9 | documents: this file (v1.1), README, PROJECT_PLAN v2 and THEORY v2 (ledger-anchored, with a Retired section) done 10-28; OPERATIONS refresh and the SCRIPTS_REFERENCE regeneration open | in progress |
 | G10 | housekeeping (section 6.4), anytime | open |
 
 Phase 6 DESIGN (the D3 registration: a walk-forward split purging overlapping 20-day windows, purge window 28 days from G3) can be drafted now; running it waits for Gate A.
@@ -192,14 +194,14 @@ D3 walk-forward split at tag level; D4 similarity-key hierarchy (event type, era
 ## 7. Known inconsistencies and open questions
 
 **Resolved since v0:** tags versus columns (fixed 10-26); the unprocessed third (accounted for 10-28: every event is measured or has a recorded reason); phase naming (NAMING.md and the Phase 4 decision).
-1. **31 events** have a reaction row, no ripple timeline and no recorded reason (G1).
-2. **Documents stale or misleading:** README, PROJECT_PLAN, THEORY (THEORY lists the storm effect as validated; the ledger says lead). OPERATIONS partly stale; its "known bug" note on multi-entity tagging predates the fix.
+1. **Resolved 10-28:** the ripple gap (319 events: 280 real events wrongly skipped as bundles, 30 News Corp events lost to a share-class defect, 8 computed on the wrong class, 1 isolated miss; CHANGELOG 2026-10-28-08). **New open items:** (a) the FOMC calendar holds one spurious row, the meeting of 2003-09-15 (the Fed's schedule has eight meetings, September's on the 16th); no finished test counted it; the fix belongs in build_fomc_calendar.py; (b) ten stale or inconsistent ledger rows (THEORY section 8: fed_state says easing but the Fed raised the target range on 2026-09-16; news_sentiment_gdelt is untested though two tests ran; three proven type rows carry first-run numbers; and others); (c) the 37 "no prior close" skips in results/ripple_skips_2026-10-28.csv are unread; (d) 333 review events await a decision (G5).
+2. **Documents:** README, PROJECT_PLAN and THEORY were rewritten 10-28 (the README held-and-not-held section was corrected against the ledger the same day). OPERATIONS is partly stale (its "known bug" note on multi-entity tagging predates the fix); SCRIPTS_REFERENCE does not list files added since 10-26.
 3. **The data limits of section 3.5**, especially the point-in-time and `diverged` findings.
 4. **The same test counted three ways** (2, 4 and 6 of 13 tags): all superseded by 5.3 item 1.
 5. **Folders:** scripts/card holds 79 files but the hook names scripts/card paths, so it cannot move casually.
 6. **Repo root:** three runtime checkpoint files are tracked; two GDELT scripts write them, the sectors one is unexplained.
 7. **Changelog:** 15 entries have approximate dates (marked `~`); a few index titles are cosmetically wrong; the plan addenda carry the label PROJECT_PLAN and the date each was first committed.
-8. **Infrastructure:** the handoff planned to self-host Postgres; work continued on Supabase. `[PENDING]` current database size and host.
+8. **Infrastructure:** the handoff planned to self-host Postgres; work continued on Supabase. Database 3,160 MB on Supabase, 157 tables and 33 views on 2026-10-28 [LIVE]; the host and plan are not recorded here.
 9. **Prediction log:** results/prediction_log.csv is an empty header; the tally exists for 10-22 only.
 10. **Project knowledge** is a September snapshot without results/ or recent work.
 11. **Monitor:** a job without a status record keeps the old 24-hour rule (only jobs with a status record stay under ATTENTION until acknowledged).
@@ -210,7 +212,8 @@ D3 walk-forward split at tag level; D4 similarity-key hierarchy (event type, era
 
 | date | what | source |
 |---|---|---|
-| 2026-10-28 (today, after about 18:30 UTC) | FOMC meeting held (statement 18:00 UTC); run runbook 3c: build_fomc_calendar.py, READ the validation (the script's independent list ends 2026-09-16: if only 2026-10-28 is flagged, add it from the Fed's calendar page, not from the script's output), load_fomc_meetings.py (dry run), then --apply | runbook 3c |
+| 2026-10-28 | **DONE:** FOMC calendar rebuilt after the 18:00 UTC statement, 2026-10-28 added to the independent list, loaded with --apply (310 rows; 1 row changed) | CHANGELOG 2026-10-28-07 |
+| after 2026-11-28 | drop the scratch and backup tables: fomc_meetings_backup_20261028, event_ripple_timeline_backup_20261028, scratch_diverged_new_20261028, scratch_diverged_v2_20261028 (G10) | CHANGELOG |
 | after 2026-10-31 (Mon 11-02) | October sentiment top-up: `backfill_gdelt_sentiment.py 2026-10 2026-10 --ignore-checkpoint` | runbook 8 |
 | any time | anchor search session; first registration from the template (D3 walk-forward, the press-conference split or the tariff test) | runbook 15 |
 | 2027-01-04 | earliest the role-band forward test can read "matrices end" | runbook 5 |
@@ -218,4 +221,4 @@ D3 walk-forward split at tag level; D4 similarity-key hierarchy (event type, era
 | forward holdout | range product: events after 2026-07-31 scored against 80%; first readable verdict about 6 months after 2026-08-01 | [DOC 10-16] |
 
 ---
-*v1, 2026-10-28. Update at the end of every session and add a CHANGELOG entry. Next revision: fill the `[PENDING]` slots (table inventory, Phase 1-4 gate checks), the 31 ripple gaps, G4 and G7.*
+*v1.1, 2026-10-28 evening. Update at the end of every session and add a CHANGELOG entry. Next revision: fill the `[PENDING]` slots (table inventory, Phase 1-4 gate checks), then G4, G5 and G7.*
