@@ -170,6 +170,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 | 2026-10-03-02 | 2026-10-03 |  | 367-ticker gap: real, broad result -- 16 tickers resolved from 3 concept additions |
 | 2026-10-03-01 | 2026-10-03 |  | Real, broad fix for the 367-ticker quarterly gap: SalesRevenueGoodsNet (consumer-goods com |
 | 2026-10-02-01 | 2026-10-02 |  | firm_state gap investigation: real concurrency bug found and fixed, "regression" was a fal |
+| 2026-09-30-12 | 2026-09-30 | PROJECT_PLAN | Addendum: XOM's Quarterly Gap Confirmed, and a Much Bigger Related Finding (2026-09-30) |
 | 2026-09-30-11 | 2026-09-30 |  | Storm/compounding finding productionized: real event_pre_context columns |
 | 2026-09-30-10 | 2026-09-30 |  | Multi-entity reaction tagging gap closed (real fix backfilled, not a permanent code fix) |
 | 2026-09-30-09 | 2026-09-30 |  | EA's price-data absence explained (real, external, not a pipeline bug) |
@@ -181,6 +182,9 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 | 2026-09-30-03 | 2026-09-30 |  | BNY's real gap traced to its actual source: not our bug, a real XBRL tagging gap |
 | 2026-09-30-02 | 2026-09-30 |  | Added confidence_trend to multi_feature_model.py; fixed a real pagination bug; corrected m |
 | 2026-09-30-01 | 2026-09-30 |  | financial_metrics gap: re-run closed most of it (842->78), real small residual remains |
+| 2026-09-29-09 | 2026-09-29 | PROJECT_PLAN | Addendum: Population/Consumer Sentiment — Real Scope for Phase 4 (2026-09-29) |
+| 2026-09-29-08 | 2026-09-29 | PROJECT_PLAN | Addendum: Government Decisions — Real Scope for a Phase 4 Sub-Track (2026-09-29) |
+| 2026-09-29-07 | 2026-09-29 | PROJECT_PLAN | Addendum: Macro Data Placement — Phase 2 vs. Phase 4 (2026-09-29) |
 | 2026-09-29-06 | 2026-09-29 |  | Phase 2 spot-check: financial_metrics coverage gap |
 | 2026-09-29-05 | 2026-09-29 |  | Dead-column scan (Phase 1 checklist item) |
 | 2026-09-29-04 | 2026-09-29 |  | Derived financial chain verified, one real fix, one false alarm resolved |
@@ -189,9 +193,12 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 | 2026-09-29-01 | 2026-09-29 |  | Global Events: manual review track quietly scaled, algorithmic track still stalled |
 | 2026-09-28-02 | 2026-09-28~ |  | STILL OPEN / UNVERIFIED |
 | 2026-09-28-01 | 2026-09-28 |  | Stale-URL Sweep, Price Refresh, Tagger Fix |
+| 2026-09-22-03 | 2026-09-22 | PROJECT_PLAN | Addendum 3: Full Database Audit — Universe Scope Correction, a Critical Phase 6 Finding, a |
 | 2026-09-22-02 | 2026-09-22~ |  | Earlier (undated in source) — PROJECT_PLAN.md findings, folded in above |
 | 2026-09-22-01 | 2026-09-22 |  | Database Audit, GDELT Backfill, Reaction-Tagging Fixes |
+| 2026-09-15-01 | 2026-09-15 | PROJECT_PLAN | Addendum 2: Event Tagging Pipeline Built and Tested (same session, continued) |
 | 2026-09-11-01 | 2026-09-11 |  | `pattern_significance_tests` populated — 13 chi-square results, 4 tags statistically |
+| 2026-09-08-01 | 2026-09-08 | PROJECT_PLAN | Correction (verified this session): Anchor-Date Unification Is Already Resolved |
 <!-- INDEX-END -->
 
 ## Entries
@@ -3679,6 +3686,46 @@ gain, the rest genuinely lacking underlying data (early-history events, plus
 the same XBRL gaps already documented for XOM/BNY/the 367-ticker pattern).
 
 
+<!-- entry: 2026-09-30-12 | date: 2026-09-30 | label: PROJECT_PLAN | source-line: PLAN:515 | approx: no -->
+### 2026-09-30-12 — Addendum: XOM's Quarterly Gap Confirmed, and a Much Bigger Related Finding (2026-09-30)
+> Original heading: `Addendum: XOM's Quarterly Gap Confirmed, and a Much Bigger Related Finding (2026-09-30)`
+> Moved from PROJECT_PLAN.md on 2026-10-28 (the section was first committed to the plan on 2026-09-30). Text unchanged except that its headings are demoted three levels so they nest under this entry. The whole original file is in the git history and in docs/archive/PROJECT_PLAN_pre_rewrite_2026-10-28.md.
+
+Real Phase 1 checklist item, investigated: XOM's long-standing 2007-2016 quarterly
+gap. **Confirmed real** -- XOM has zero Q1/Q2/Q3 `financial_statements` rows for the
+entire decade, only an empty Q4 placeholder each year (revenue and net_income both
+null). This matches the old diagnosis (likely needs raw XBRL instance-document
+inspection, not the aggregated company-facts API) -- genuinely deep, slow work, not
+a quick fix. **Formally accepted as out-of-scope for now**, not silently left
+ambiguous -- a real decision, not an open question.
+
+**While checking, found a much bigger, previously undocumented pattern.** 1,223
+empty quarterly rows exist across 367 distinct securities (~73% of the tracked
+universe) -- all `fiscal_quarter=4`, no exceptions. Investigated whether this was a
+fixable Q4-derivation bug (Q4 is computed as Annual minus Q1+Q2+Q3, so a bug there
+would explain scattered failures with real Q1-Q3 data sitting unused) by checking
+BNY specifically (19 empty rows, the worst-affected ticker). **Real finding: it's
+not a derivation bug.** Most years (2010-2015, 2017, 2019-2025 -- including recent,
+modern filings) have ONLY the empty Q4 placeholder, with Q1/Q2/Q3 not present at
+all, not just unpopulated. A few scattered years (2009, 2016, 2018) have real,
+complete data. The empty-Q4-row count undercounts the true scope of the problem --
+the ingestion script apparently always writes a Q4 placeholder row even on failure,
+but genuinely skips writing any row at all for Q1/Q2/Q3 when nothing matches, so
+those failures are invisible to a null-check on existing rows.
+
+**Real working theory, not yet confirmed:** the top of the affected-ticker list is
+overwhelmingly banks/financial institutions (BNY, MTB, GS, TFC, SYF, RF, FITB,
+NTRS). Financial companies typically report revenue-equivalent figures under
+different XBRL concept names (net interest income, total interest and dividend
+income, etc.) than industrial/consumer companies' standard "Revenues" concept --
+plausible that the ingestion script's concept-matching list simply doesn't include
+the financial-sector-specific concept names, causing systematic quarterly gaps for
+that whole sector, unrelated to XOM's separate early-XBRL-era issue.
+
+**Real next step, in progress:** check `ingest_sec_financials_multi.py`'s actual
+concept-matching list against what a real affected bank's 10-Q XBRL data contains,
+to confirm or reject the financial-sector theory before attempting any fix.
+
 <!-- entry: 2026-09-30-11 | date: 2026-09-30 | label:  | source-line: 760 | approx: no -->
 ### 2026-09-30-11 — Storm/compounding finding productionized: real event_pre_context columns
 > Original heading: `### 2026-09-30 — Storm/compounding finding productionized: real event_pre_context columns`
@@ -4000,6 +4047,114 @@ separate task, not attempted tonight. Real, honest state: mostly closed, small
 unexplained residual remains.
 
 
+<!-- entry: 2026-09-29-09 | date: 2026-09-29 | label: PROJECT_PLAN | source-line: PLAN:470 | approx: no -->
+### 2026-09-29-09 — Addendum: Population/Consumer Sentiment — Real Scope for Phase 4 (2026-09-29)
+> Original heading: `Addendum: Population/Consumer Sentiment — Real Scope for Phase 4 (2026-09-29)`
+> Moved from PROJECT_PLAN.md on 2026-10-28 (the section was first committed to the plan on 2026-09-29). Text unchanged except that its headings are demoted three levels so they nest under this entry. The whole original file is in the git history and in docs/archive/PROJECT_PLAN_pre_rewrite_2026-10-28.md.
+
+Raised while scoping Phase 4's real sub-tracks. Real distinction from what already
+exists: `company_sentiment_timeline` (GDELT-based) measures NEWS COVERAGE TONE about
+a company directly -- it's a real, working, already-built signal, but it's not the
+same thing as genuine population/consumer sentiment, and it can't attach to a PERSON
+rather than a company.
+
+**The real concept, from the working example given (Elon Musk's public standing during
+his DOGE involvement, and the real, observed Tesla stock impact):** population
+perception of a PERSON associated with a company can drive real consumer behavior
+(purchase decisions, brand favorability) independent of the company's own news
+coverage. This is closer to "would the population buy from this company right now"
+than "how is this company being covered in the news" -- a genuinely different signal
+from what `company_sentiment_timeline` already captures.
+
+**Checked and confirmed not already built:** searched scripts for consumer confidence/
+buying confidence/executive sentiment/reputation-related work -- nothing found. This
+was real design thinking from an earlier Phase 4 scoping session, never implemented.
+
+**Real, hard sub-problem this needs, not present anywhere in the current schema:** a
+PERSON -> COMPANY link. The existing sentiment pipeline matches on organization names
+(GDELT company-name matching, `backfill_gdelt_sentiment.py`'s `TRACKED_COMPANIES`
+dict). Matching sentiment about a specific PERSON (an executive, a founder) to the
+company they're associated with is a genuinely new linking mechanism -- not a simple
+extension of the existing name-matching approach.
+
+**Real candidate data sources, not yet evaluated for feasibility:** Twitter/X (direct,
+real-time population expression, but real known complications -- rate limits, bot/
+inauthentic-account noise, cost -- these don't go away just because there's now a
+clearer purpose for them); potentially Google Trends-style purchase-intent search
+data; review-aggregator sentiment. None of these have been scoped for actual
+fetchability or cost in this project.
+
+**Connects to the Cascade Effect (see THEORY.md):** a genuine reputational event about
+a specific person is a plausible real Tier-0/Tier-1 trigger in that framework (forced/
+reactive company impact, not company-initiated) -- worth designing alongside that work
+rather than as a fully separate track.
+
+**Not started.** Real next steps when picked up: (1) evaluate real data source
+feasibility (Twitter API access/cost first, since it's the most direct fit), (2)
+design the person-to-company linking mechanism, (3) pick a real, bounded test case
+(the Musk/Tesla example itself is a genuine, well-documented candidate) to validate
+the approach on a single case before any broader build.
+
+<!-- entry: 2026-09-29-08 | date: 2026-09-29 | label: PROJECT_PLAN | source-line: PLAN:433 | approx: no -->
+### 2026-09-29-08 — Addendum: Government Decisions — Real Scope for a Phase 4 Sub-Track (2026-09-29)
+> Original heading: `Addendum: Government Decisions — Real Scope for a Phase 4 Sub-Track (2026-09-29)`
+> Moved from PROJECT_PLAN.md on 2026-10-28 (the section was first committed to the plan on 2026-09-29). Text unchanged except that its headings are demoted three levels so they nest under this entry. The whole original file is in the git history and in docs/archive/PROJECT_PLAN_pre_rewrite_2026-10-28.md.
+
+Raised while reviewing Phase 4: raw macro numbers (Fed rate levels, etc.) already exist
+in `macro_data_releases`, but a bare number isn't a Government Decisions *event* — the
+real value is the DECISION'S REASONING (why the Fed acted), because that reasoning is
+what actually connects to public opinion/sentiment, which is what plausibly shapes
+company confidence. A rate change with no narrative is just a Phase 2 fact restated with
+a label; it doesn't do Phase 4's real job.
+
+**Real, sized scope:** 31 genuine Fed rate decisions exist in `macro_data_releases`
+(DFEDTARU, `change_from_previous != 0`), 2015-2025 — not thousands of daily readings,
+real discrete policy moves. One (2020-03-16, the COVID emergency cut) is already a real
+event, hand-linked via `event_relationships`' `same_root_cause` type (see the Cascade
+Effect entry in `THEORY.md` for that precedent). **The other 30 are not yet real events.**
+
+**Real source needed, not yet built:** each decision's actual reasoning is real and
+public — the Fed publishes an FOMC statement after every rate decision, directly
+analogous to how an SEC 8-K is the real source for a company event. This needs
+fetching and reading, same discipline as every filing reviewed tonight — never
+fabricate the reasoning, trace it to the real statement text. Whether FOMC statements
+are fetchable via a stable URL pattern (parallel to SEC EDGAR's) hasn't been checked.
+
+**Why this matters more than a simple data-to-event conversion:** the real design
+intent is Decision (with real reasoning) -> Public Opinion / Sentiment -> Company
+Confidence. This should connect to `company_sentiment_timeline` (already real,
+GDELT-based) rather than exist as an isolated track — a genuine Fed-decision event with
+real reasoning is exactly the kind of Tier-0 exogenous trigger the Cascade Effect design
+(see `THEORY.md`) is built around, and could plausibly interact with the already-tested
+(currently null) `storm_x_sentiment` feature in a more targeted way than the general
+version tested tonight.
+
+**Not started.** Real next steps when picked up: (1) confirm FOMC statements are
+fetchable, (2) build the 30 real events with sourced reasoning, individually read
+before confirming, (3) link each to the existing `company_sentiment_timeline` data
+around its date as the "public opinion" layer, (4) only then consider whether this
+predicts company-level reactions better than the raw rate number alone.
+
+<!-- entry: 2026-09-29-07 | date: 2026-09-29 | label: PROJECT_PLAN | source-line: PLAN:416 | approx: no -->
+### 2026-09-29-07 — Addendum: Macro Data Placement — Phase 2 vs. Phase 4 (2026-09-29)
+> Original heading: `Addendum: Macro Data Placement — Phase 2 vs. Phase 4 (2026-09-29)`
+> Moved from PROJECT_PLAN.md on 2026-10-28 (the section was first committed to the plan on 2026-09-29). Text unchanged except that its headings are demoted three levels so they nest under this entry. The whole original file is in the git history and in docs/archive/PROJECT_PLAN_pre_rewrite_2026-10-28.md.
+
+`macro_data_releases` (real FRED data: DCOILWTICO, DGS10, DFEDTARL/DFEDTARU, PAYEMS,
+UNRATE, CPIAUCSL, PCEPI, GDPC1 — 9 series, 31,034 rows, 1994-01-01 through
+2026-09-16) has historically been described as Phase 4's "Track A," alongside Track
+B's news-narrative pipeline. **Real, current status: this data is already fully built
+and current — no ingestion gap exists.** Nothing here required new work.
+
+**Clarified split (conceptual, not a code change):** the raw macro *numbers* belong
+to Phase 2's domain — usable directly for financial analysis, comparing a company's
+performance against the macro backdrop, regardless of which pipeline physically
+ingests them. Phase 4 owns the *narrative* — how a release was covered, market
+sentiment/reaction framing around it. The table itself doesn't move or get
+duplicated; this is purely about which phase's own completion checklist claims
+"macro data exists and is current" as one of its real items, so future work doesn't
+have to guess where to look for it.
+
 <!-- entry: 2026-09-29-06 | date: 2026-09-29 | label:  | source-line: 881 | approx: no -->
 ### 2026-09-29-06 — Phase 2 spot-check: financial_metrics coverage gap
 > Original heading: `### 2026-09-29 — Phase 2 spot-check: financial_metrics coverage gap`
@@ -4172,6 +4327,56 @@ actually been accomplished a different way.
 ---
 
 
+<!-- entry: 2026-09-22-03 | date: 2026-09-22 | label: PROJECT_PLAN | source-line: PLAN:370 | approx: no -->
+### 2026-09-22-03 — Addendum 3: Full Database Audit — Universe Scope Correction, a Critical Phase 6 Finding, and a Major Unused Resource (this session, 2026-09-22)
+> Original heading: `Addendum 3: Full Database Audit — Universe Scope Correction, a Critical Phase 6 Finding, and a Major Unused Resource (this session, 2026-09-22)`
+> Moved from PROJECT_PLAN.md on 2026-10-28 (the section was first committed to the plan on 2026-09-22). Text unchanged except that its headings are demoted three levels so they nest under this entry. The whole original file is in the git history and in docs/archive/PROJECT_PLAN_pre_rewrite_2026-10-28.md.
+
+This addendum does not supersede Sections 1-9's architecture or philosophy — the mechanical-vs-behavioral distinction in Section 2, the phase structure, and the Phase 8 gating logic all remain correct and unchanged. It corrects several places where this document's own numbers had drifted from real database state, and reports one finding serious enough to affect how Phase 6's existing tag-based results (Section 5, Addendum 2's tag-count table) should be read.
+
+A systematic table-by-table review of the live database is in progress as of this addendum (34 of ~59 real tables reviewed so far, tracked in `table_review_checklist.md`; prioritized fix list in `database_fixes_and_review_backlog.md`). Everything below was verified directly against live data, not assumed from this document's prior text.
+
+###### Correction: the tracked universe is 497 securities, not 13
+
+Section 9's Tier 1 table and Section 8's Phase 8 scoping caveat both describe a 13-company "anchor node" universe. **This is significantly stale.** `securities` currently holds 497 real, onboarded securities (up from the 13 described here), with `events` at 12,517 rows (consistent with Addendum 2's 12,277 figure — that part of the doc is accurate and close to current). The onboarding pipeline described in Addendum 1 (`onboard_pipeline.py`, `promote_events.py`) has clearly been run at real scale well beyond what this document currently reflects. Worth a real pass to reconcile Section 9's tier table against which of the 497 are actually GICS-sector anchors vs. later Tier 2+ additions, since that distinction is no longer visible from the doc as written.
+
+###### CRITICAL: `reaction_character` tagging bug affects every tag-based finding in Section 5/Addendum 2
+
+Section 2 states plainly: *"A `reaction_character` tag says 'the market's psychological response to this class of surprise was X' — a claim about human behavior."* That claim depends on the tag genuinely reflecting one company's real reaction. **It currently does not, for any event linked to more than one company.**
+
+`tag_reaction_character.py` computes and applies exactly ONE reaction tag per event, using only the first-linked entity's price move — even when `event_entity_relationships` links an event to many companies. Confirmed directly: the COVID-19 market panic event links 17 companies (AAPL, BA, CVX, DIS, F, GE, HON, INTC, KO, MCD, MSFT, NVDA, PFE, SLB, SPG, UNH, XOM) and carries a single "rewarded" tag applied uniformly to all 17 — hiding the real, sector-divergent reactions (energy/travel vs. tech) a genuine per-company measurement would show. The 2008 financial crisis event (12 linked companies) shows the identical pattern. `event_entity_relationships.relationship_type` (primary/affected/actor/competitor) already exists and could distinguish which company an event is genuinely "about" — neither `tag_reaction_character.py` nor any downstream analysis currently uses this field.
+
+**Concrete, measured consequence**: this was confirmed to directly inflate `systemic_shock`'s apparent predictive strength in real model testing this session (see "Real progress on the walk-forward harness" below) — not because markets uniformly reward systemic shocks, but because every `systemic_shock` training row secretly reflects the same single first-linked-company outcome, relabeled onto every other company in the event.
+
+**Real implication for this document's own numbers**: Addendum 2's tag-count table and any `pattern_card.py` result touching `systemic_shock`, `geopolitical`, or `government_action` should be treated as unreliable until `tag_reaction_character.py` is rewritten to compute a genuine per-(event, entity) reaction for multi-entity events. Single-entity-event tags (the large majority) are not affected by this specific bug.
+
+###### `pattern_significance_tests` is stale and predates this finding
+
+Checked directly: this table's 13 stored chi-square results are all dated 2026-09-11, 11 days before this bug was found. Four tags currently show as statistically significant (`same_entity_sequence` n=393 p=0.000008, `high_confidence_causal_link` n=414 p=0.0002, `multi_stage_divestiture` n=88 p=0.016, `confounded_regulatory_action` n=38 p=0.026) — worth re-running `test_pattern_significance.py` once the reaction-tagging fix lands, to check whether any of these four partly depended on the same mislabeling mechanism, the way `systemic_shock`'s model coefficient did.
+
+###### Real progress on Section 6's walk-forward harness — partial, not complete
+
+Section 6 states the walk-forward evaluation harness is "the real, unbuilt Phase 6 deliverable." This session ran genuine train/test-split predictive tests (`multi_feature_model.py`, cutoff-date train/test separation, sample-to-feature ratio reporting, explicit overfitting checks) against `event_type`, `firm_state`, `regime`, and `sentiment` as predictors of `reaction_character`. **Seven independent tests (five single-feature, one combined-feature, one combined-feature-minus-bundled-events) all returned the same honest result: none of these four features beat a "guess the majority class" baseline on held-out data.** This is real out-of-sample testing — a genuine partial instance of the discipline Section 6 calls for — but it is not the full prediction-contract harness (no sector benchmark, no base-rate comparison, no formal walk-forward re-tuning-prevention check yet). The honest reading: Phase 6's harness scaffolding now has real working parts, and the four most obvious candidate features have been honestly tested and found wanting — which is itself a legitimate, trustworthy negative finding worth recording, not a wasted effort.
+
+###### Major unused resource found: `financial_market_reactions`
+
+A complete, ~99%-populated dataset (35,826 rows, 496/497 securities) computing real abnormal stock returns (0/1/5/20-day, vs. SPY) for essentially every quarterly/annual financial filing already exists as a view — independent of the `events`/`reaction_character` system entirely, anchored to filing date rather than event date. Nothing in this session's model testing, and nothing described in Sections 5-6 of this document, uses it. This is likely a stronger, more complete foundation for a genuine predictive test than continuing to refine the four already-tested event-based features — worth scoping as real Phase 6 follow-up work.
+
+###### Smaller corrections and findings, for completeness
+
+- **AVB/EA's price-data gaps were NOT a "Twelve Data limitation"** (this was assumed correct elsewhere in project history) — the real, confirmed cause is that SEC's ticker-to-CIK mapping didn't recognize these tickers at `onboard_pipeline.py`'s `register_entity` step. AVB (and EQR) are now explained by a real 2026-08 AvalonBay/Equity Residential merger (→ new ticker VMRK). **EA remains a genuine, unexplained open question** — still actively traded, no merger applies.
+- **`sec_filings` and `sec_8k_filings` are misleadingly named** — `sec_filings` contains only 10-K/10-Q data; the real 8-K-specific table (with item codes and the `promoted_to_event` tracking column referenced conceptually in Addendum 1) is `sec_8k_filings`. Confirmed by direct inspection, not assumed from names.
+- **Recurring pattern found: "always-same-value" dead tracking columns** — three confirmed so far (`event_pre_context.surprise_vs_consensus`, `financial_condition_score.fcf_margin_change`, `sec_8k_filings.promoted_to_event`), each a column that looks like real pipeline state but was never wired up, while the real work happens correctly through a different, verified mechanism. Worth a dedicated schema-wide scan for more before considering this class of issue fully found.
+- **`securities.sector` was NULL for 421 of ~497 securities all session** (not mentioned anywhere in this document) — fixed this session via real S&P 500 GICS data (`populate_sectors_gics.py`), not inferred. A first attempt using SIC-code-range mapping produced confirmed misclassifications and was abandoned in favor of real GICS data.
+- **`financial_statements.free_cash_flow`**: 4,489 rows have both real ingredients (`operating_cash_flow`, `capital_expenditures`) but the simple subtraction was never computed — a cheap, high-value, not-yet-applied backfill that would directly improve `firm_state`'s reliability as a tested feature (see above).
+- **`global_events` (a table from a separate GDELT-based macro/geopolitical event pipeline, not otherwise described in this document) already has real prior human review work** — `severity` and `reviewer_note` populated for 11 confirmed multi-day events (e.g. Jan 2025 LA wildfires, Jul 2025 Texas floods) — that handled a genuine multi-day-event grouping problem simply, by confirming each day individually with a connecting note. A separate, more complex algorithmic "episode grouping" mechanism attempted this session (`build_event_episodes.py`) went through four failed iterations and remains unresolved — worth strongly considering the simpler, already-proven approach instead of continuing that effort.
+
+###### Suggested update to Section 10's next-steps list
+
+Given the above, two items are worth adding to the existing sequence (Finish promotion → Apply tagging → Resolve Phase 5 → Re-run Phase 6 checks at larger n):
+1. **Fix `tag_reaction_character.py` for multi-entity events before trusting any re-run of Phase 6's pattern checks** — re-running at larger n without this fix would just produce a larger, still-unreliable sample for `systemic_shock`/`geopolitical`/`government_action`.
+2. **Scope a real test against `financial_market_reactions`** as a parallel or alternative Phase 6 target, alongside continuing to refine `reaction_character`-based testing.
+
 <!-- entry: 2026-09-22-02 | date: 2026-09-22 | label:  | source-line: 444 | approx: yes -->
 ### 2026-09-22-02 — Earlier (undated in source) — PROJECT_PLAN.md findings, folded in above
 > Original heading: `### Earlier (undated in source) — PROJECT_PLAN.md findings, folded in above`
@@ -4208,6 +4413,66 @@ Current Reference and Known Gotchas above.
   **Superseded 2026-09-29: coverage is now 445, so this was merged/expanded since.**
 
 
+<!-- entry: 2026-09-15-01 | date: 2026-09-15 | label: PROJECT_PLAN | source-line: PLAN:313 | approx: no -->
+### 2026-09-15-01 — Addendum 2: Event Tagging Pipeline Built and Tested (same session, continued)
+> Original heading: `Addendum 2: Event Tagging Pipeline Built and Tested (same session, continued)`
+> Moved from PROJECT_PLAN.md on 2026-10-28 (the section was first committed to the plan on 2026-09-15). Text unchanged except that its headings are demoted three levels so they nest under this entry. The whole original file is in the git history and in docs/archive/PROJECT_PLAN_pre_rewrite_2026-10-28.md.
+
+Follows directly from Addendum 1 (event promotion). Once promotion was live and running, this session moved to the next real gap it surfaced: ~11,255 newly-promoted events had zero tag suggestions generated at all -- `event_tag_suggestions` was untouched by the promotion work, sitting at the exact same 1,066/212/23/1 split as before promotion began.
+
+###### Real current state as of this addendum
+
+- **Total events: 12,277** (up from 1,214 at session start; ~185 confirmed real_events remain genuinely unpromoted -- see "Known remaining gaps" below)
+- **Tag counts (all tags, current real totals):**
+
+| Tag | Count | Tag | Count |
+|---|---|---|---|
+| muted | 711 | multi_stage_divestiture | 88 |
+| punished | 515 | leadership_reversal | 53 |
+| rewarded | 507 | cross_entity_ripple | 52 |
+| high_confidence_causal_link | 418 | confounded_corporate_action | 47 |
+| same_entity_sequence | 397 | confounded_regulatory_action | 38 |
+| chain_position_middle | 325 | chain_position_opening | 36 |
+| confounded_macro_conditions | 163 | chain_position_closing | 36 |
+| plausible_unconfirmed | 26 | confounded_earnings | 14 |
+| explicitly_not_attributed | 8 | sentiment_reveals_distinct_driver | 8 |
+| same_industry_comparison | 7 | diverged_from_fundamentals | 6 |
+| activist_investor_campaign | 6 | sentiment_confirms_confound | 5 |
+
+**Note on reaction_character totals (muted/punished/rewarded):** these are a mix of pre-existing tags from before this session and a partial run of `tag_reaction_character.py` tonight (see "Known remaining gaps" -- the full 11,219-event backfill was still in progress as of this addendum). **Note on sentiment_* totals (13 combined):** tonight's `resolve_sentiment_confounds.py` wrote 9 of these; the remaining 4 are most likely pre-existing (these two tags were part of the original 22-tag taxonomy, not newly created tonight -- only the deterministic script to compute them was built this session). Worth a quick verification query before relying on this number, not confirmed with certainty here.
+
+###### What got built and tested, in order
+
+**1. Real gap found in `suggest_event_tags.py` (pre-existing script, not built tonight):** 5 of the 22 real tags require data this script's AI-judgment prompt never provides:
+- `chain_position_opening/middle/closing` -- deterministic facts about event ORDER within a `same_entity_sequence` chain, not a text-judgment call
+- `sentiment_confirms_confound`/`sentiment_reveals_distinct_driver` -- explicitly require `company_sentiment_timeline` data per their own descriptions, never included in the prompt
+
+Fixed by excluding all 5 from the AI's tag list (`NOT_AI_SUGGESTABLE` set), so the AI can no longer be asked to guess at facts it structurally cannot know.
+
+**2. Built `compute_chain_position.py`** -- fully deterministic, no AI call. Sorts each entity's `same_entity_sequence`-tagged events chronologically, tags first as opening, last as closing, everything between as middle. Companies with only 1 sequence event get no position tag (no real "position" exists with just one link). Result: 397 real tags across 37 valid multi-event chains (2 entities skipped, only 1 sequence event each). Handles shared events (linked to 2+ companies) correctly -- verified that 2 such events received exactly one row per matching position, not duplicated, confirming the `(event_id, tag_id)` primary key dedupes correctly across independently-computed chains.
+
+**3. Built `suggest_event_tags_batch.py`** -- Batch API version of the AI-suggestion script (same reasoning as `classify_8k_filings_batch_v2.py`'s rebuild: the original made one synchronous call per event with no cost visibility, unworkable at 11,255-event scale). Same prompt, same calibration notes, same `NOT_AI_SUGGESTABLE` exclusion, same staging-table-only write pattern.
+
+**4. Real calibration testing before trusting it at scale (same discipline as filing classification):** tested against 3 companies with deliberately different event-writing styles -- AAPL (narrative/editorialized titles, leadership-succession-dense), EXC (procedural/regulatory titles), XOM (litigation-heavy). 107 total `same_entity_sequence` suggestions read by hand. Found 4 real misses (generic "multi-year trend" claims treated as documented chains, and 2 cases where the AI's own reasoning explicitly stated no textual link existed yet applied the tag anyway) -- 3 of 4 already caught by the existing confidence<0.75 auto-flag; 1 (AAPL, confidence 0.85) would have silently slipped through.
+
+**5. Fix: raised the auto-flag threshold specifically for `same_entity_sequence` to 0.87** (not a blanket change to all tags -- the other 106 suggestions across all 3 companies were well-justified even down to 0.65-0.72, so a blanket hike would have over-flagged genuinely good suggestions for no benefit). Retroactively re-flagged the one already-written miss below the new threshold.
+
+**6. Built `resolve_sentiment_confounds.py`** for the 2 remaining excluded tags. Real design decision made deliberately (not defaulting to a market-wide average for simplicity): a genuine sector baseline requires multiple same-sector companies with sentiment data, or "divergence" just measures noise between 1-2 companies. Real check of current data: only Information Technology (AAPL/AMD/MSFT/NVDA, 4 companies) and Energy (XOM/CVX, 2 companies) have any multi-company sentiment coverage at all -- every other sector has exactly 1 company. Script **dynamically discovers** which sectors qualify (minimum 3 total companies = 2+ real peers) every run, rather than hardcoding a list -- this was itself a real fix made mid-session after a first version with a hardcoded 2-sector list produced a weak result for Energy (both XOM and CVX got tagged "diverged" from each other during the COVID crash, which is a shaky conclusion from a 2-company/1-peer comparison). After the fix, Energy correctly auto-excludes itself (prints `[SKIP SECTOR]` with the real reason) and will automatically start qualifying once a 3rd Energy company gets sentiment data -- no code change needed later. Went live on Information Technology only: 9 real tags written.
+
+**7. Found and fixed a real bug in `tag_reaction_character.py` (pre-existing script, not built tonight):** `get_untagged_events()`'s `event_entity_relationships` query had no pagination, silently capped at Supabase's default 1,000-row limit -- with 12,000+ real rows in that table now, this caused the script to report only 70 events needing tags instead of the real ~11,567. Same bug class already documented elsewhere in this project's history (`classify_8k_filings.py`'s resumability check hit the identical 1,000-row cap). Fixed with the same `.range()` pagination pattern used elsewhere. First (buggy) run before the fix legitimately tagged 62 real events with real price data before being caught -- no data damage, just an incomplete backlog view. After the fix, correctly found 11,219 real events needing tags; full backfill was running in the background as of this addendum.
+
+###### Known remaining gaps (honest, as of this addendum)
+
+- **~185 confirmed real_events genuinely unpromoted.** Down from the original 328 found post-live-run; a further pass created 142 more, leaving primarily the ~46 rows with no resolvable `event_type` (need manual/AI assignment before they can ever be promoted) plus legitimate confirmed-duplicate skips.
+- **`tag_reaction_character.py`'s full 11,219-event backfill** was still running as of this addendum -- the `rewarded`/`punished`/`muted` counts in the table above are a partial snapshot, not final.
+- **`suggest_event_tags_batch.py`'s chained 66-ticker run** (budget-scoped to ~$1.80 of a $1.87 remaining balance, smallest-tickers-first) was also still running as of this addendum -- most of the 11,255-event AI-suggestion backlog remains unprocessed, gated on both this run finishing and a further budget refill for the rest.
+- **`sentiment_*` tags remain scoped to Information Technology only** -- by design, not oversight. Will expand automatically as more same-sector companies get sentiment data (ties to the real Section 9 GICS Tier 2 expansion plan).
+- **The `event_tag_suggestions` review queue** (17 flagged in the AAPL test batch, 46 in EXC's, etc.) has not yet been worked through with the same calibration-policy discipline used for `filing_ai_classifications` earlier this session. That's the natural next step once suggestion generation finishes.
+
+###### Readiness note for Phase 7/8
+
+Per Section 6 and 8 of the real project plan, Phase 8 (autotrader/backtest environment) is explicitly gated on Phases 1-7 being genuinely, not approximately, trustworthy -- and specifically on a tag surviving the walk-forward evaluation harness described in Section 6, which remains unbuilt. Tonight's work is real, substantial progress on Phase 3 (event volume, corrected taxonomy) and the tagging layer that feeds Phase 6 -- but it does NOT itself constitute Phase 6 completion. The honest sequence before Phase 7/8 planning should resume in earnest: finish the two backlogs above, work the tag-suggestion review queue, re-run Phase 5's price-reaction linking against the full new event volume, and only then revisit whether `pattern_card.py`'s sector-benchmark/base-rate/walk-forward gaps are worth building out now that n has grown substantially across most tag categories.
+
 <!-- entry: 2026-09-11-01 | date: 2026-09-11 | label:  | source-line: 411 | approx: no -->
 ### 2026-09-11-01 — `pattern_significance_tests` populated — 13 chi-square results, 4 tags statistically
 > Original heading: `### 2026-09-11`
@@ -4218,3 +4483,45 @@ tagging bug discovery — worth re-running `test_pattern_significance.py` once t
 to check whether any of the four partly depended on the same mislabeling mechanism that
 inflated `systemic_shock`.
 
+
+<!-- entry: 2026-09-08-01 | date: 2026-09-08 | label: PROJECT_PLAN | source-line: PLAN:274 | approx: no -->
+### 2026-09-08-01 — Correction (verified this session): Anchor-Date Unification Is Already Resolved
+> Original heading: `Correction (verified this session): Anchor-Date Unification Is Already Resolved`
+> Moved from PROJECT_PLAN.md on 2026-10-28 (the section was first committed to the plan on 2026-09-08). Text unchanged except that its headings are demoted three levels so they nest under this entry. The whole original file is in the git history and in docs/archive/PROJECT_PLAN_pre_rewrite_2026-10-28.md.
+
+Section 5's Phase 5 notes and Section 10's "immediate next steps" both previously listed unifying `event_market_reactions` and `financial_market_reactions`'s anchor-date logic as still pending. **This is stale — verified with real data this session that it was already fixed** (the `event_market_reactions` day-0 anchor was changed from `>=` to `>` to match `financial_market_reactions` exactly, done in an earlier session but never marked resolved in this doc).
+
+Verification query run this session: compared `abnormal_return_20d` between both views for every `financial_result` event with a match in both. Result: every comparison showed exact agreement (diff = 0.0000) except one (AMD Q3 2024, diff = 0.008), which is fully explained by the filed_date landing one calendar day after the event_date — a normal SEC filing-timing nuance, not measurement error.
+
+**Action taken:** remove this item from the "immediate next steps" list — it's done, not pending. Lesson for future sessions: verify a "known issue" against current real data before re-investigating it; documentation can silently drift out of sync with an already-applied fix.
+
+Addendum: Classification Backlog Clearance & Event Promotion Pipeline (this session)
+This session did not touch Phase 6/7/8 scoping (Sections 6, 8 above remain the current, correct plan). It addressed a much more foundational gap discovered while investigating why Phase 6's tag counts (rewarded n=52, punished n=54 per Section 5) seemed low relative to how much confirmed real-event material actually existed in filing_ai_classifications.
+
+Finding: the "not enough data" read on Phase 6 was a pipeline-throughput problem, not a data-scarcity problem. Tracing the full path end-to-end: 70,697 raw candidate filings -> 29,387+ AI-classified -> 22,720+ human-reviewed -> 11,282 confirmed real_event rows -> only 1,214 ever promoted into the actual events table. The bottleneck was a missing promotion step between "confirmed by a human" and "structured database row" -- not a shortage of underlying material.
+
+Work done this session:
+
+Cleared the human-review backlog (15,961 + a further 2,868 rows found mid-session) to zero, using an evidence-based calibration policy: measured real AI/human agreement rate per confidence+template-match bucket before trusting any bulk auto-confirm (two buckets came back at ~99-100% agreement across thousands of sampled rows and were safe to bulk-clear; everything else got individual review)
+Found corporate_action (per Section 5's 17-tag system context, a separate but related taxonomy issue) had drifted into an overloaded catch-all absorbing 2,380 mistyped rows -- restructuring, capital raises, governance actions, spinoffs, none of which its real definition covers. Added 4 new event types to event_types (capital_raise, governance_action, ipo_spinoff, restructuring) and retyped 2,522 affected rows
+Found and fixed a structural double-counting bug: NWS/NWSA (dual-class shares of the same company) file identical 8-Ks under both tickers with the same accession number, causing every News Corp filing to be fetched/classified/reviewed twice
+Built promote_events.py: turns confirmed real_event rows into actual events + event_entity_relationships + event_type_relationships rows, deduping by (filing_date, accession_number) rather than by ticker (fixes the NWS/NWSA case structurally). Duplicate detection uses same-entity + date-proximity as a heuristic, but every heuristic match gets a real LLM verification call before being trusted -- the unverified heuristic alone had a measured ~33% false-positive rate at sample scale, including one that would have silently blocked P&G's Gillette merger announcement (an event already referenced in this plan's own Section 9, Tier 1 P&G notes)
+New event_source_filings table added for traceability + idempotency -- every event now traces back to its real source filing(s), and the promotion script is safely re-runnable
+Proven safe across three real interruption types this session (manual interrupt, network connection drop, full machine restart) -- verified via integrity checks after each, zero data corruption in any case
+As of this addendum, the live promotion run is in progress: events growing from 1,214 toward an estimated 11,000+
+
+What this changes for Section 5's Phase status table:
+
+Phase 3 (Corporate Events): the ~85% figure should be revisited once the live run completes -- the event count is about to grow roughly 9x, though the underlying event quality discipline (primary-source verification, the check-and-balance architecture) is unchanged
+Phase 6 (Historical Pattern Engine): still genuinely ~15% -- this session did NOT touch the walk-forward harness, sector benchmarks, or base-rate comparison described in Section 6. What it did do is remove a real bottleneck upstream of Phase 6: once tagging (see below) catches up to the new event volume, pattern_card.py's n=30-50 checks will be running against a much larger, more representative pool than the current n=52/54 rewarded/punished figures reflect
+
+New, not-yet-started gap this session surfaced: event tagging has its own backlog. event_tag_suggestions (the AI-suggest/human-confirm pipeline analogous to filing_ai_classifications) had only 212 rows in review as of this session, against what will shortly be 11,000+ untagged events. This sits between Phase 3 and Phase 6 in the existing architecture diagram and needs the same calibration-first discipline applied to it next, before Phase 6's walk-forward harness work can proceed meaningfully.
+
+Revised Section 10 next steps, in order (supersedes the numbered list above for near-term work; Section 10's items 1, 4, 6, 7 remain valid and un-superseded):
+
+Finish the current live promotion run
+Apply calibrated tagging to the new event volume (same discipline as this session's filing-review clearance)
+Resolve remaining Phase 5 items per Section 5 (this session did not touch Phase 5)
+Re-run Phase 6's existing pattern checks against the much larger n before investing further in the walk-forward harness build-out, to confirm the larger sample actually changes which tags are viable candidates for it
+
+One new supporting script this session, in the same spirit as classify_8k_filings.py's proven check-and-balance pattern: onboard_pipeline.py chains the full company-onboarding sequence (register -> financials -> 8-K history -> prices -> classify -> calibrated auto-review -> scoped promotion) into one command, logging every step's real verification result to new onboarding_runs / onboarding_run_steps tables, so an onboarding run can be handed to someone without full project context and checked asynchronously rather than requiring live supervision. Not yet tested end-to-end on a real new company -- do that before relying on it for the Tier 2 expansion mentioned in Section 10.
