@@ -3,7 +3,7 @@
 jobs.py -- one screen that shows how every background job is doing: RUNNING (with a progress bar and an ETA), FINISHED OK, FAILED, STOPPED (it died without a finish line: the session stopped or it was killed) or STALLED (alive but the log has not moved).
 It finds jobs two ways: (1) jobs started with scripts/ops/bg.sh, which record how they ended; (2) the known scripts below, found by process name and log file, so jobs started the old way are visible too.
 Usage:   python3 scripts/ops/jobs.py          once        |        watch -c -n 20 python3 scripts/ops/jobs.py          refreshes every 20 seconds
-READ-ONLY: it never starts, stops or changes anything.
+READ-ONLY, with one exception: python3 scripts/ops/jobs.py --ack NAME moves the status record of a failed or stopped job to data_cache/jobs/acked/ (the log stays) so it stops raising ATTENTION.
 """
 import os, re, sys, glob, time, subprocess, datetime, argparse
 
@@ -71,7 +71,7 @@ def bar(done, total, width=20):
 def analyze(job, status=None):
     """job: a KNOWN entry; status: parsed bg.sh status file or None. Returns a dict for display."""
     log = os.path.join(CACHE, "%s.log" % status["name"]) if status else newest(job["logs"])
-    out = {"name": status["name"] if status else job["name"], "state": None, "colour": Y, "line": "", "bar": "", "detail": "", "age": None}
+    out = {"name": status["name"] if status else job["name"], "state": None, "colour": Y, "line": "", "bar": "", "detail": "", "age": None, "from_status": bool(status)}
     if not log or not os.path.exists(log):
         out.update(state="NO LOG", detail="no log file found")
         return out
@@ -108,7 +108,7 @@ def analyze(job, status=None):
         note = " (budget reached: run again after the daily reset)" if re.search(r"budget reached", run) else ""
         out.update(state="FINISHED OK", colour=G, detail="finished %s ago%s" % (fmt_dur(age), note))
         out["line"] = fin.group(0)[:110]
-    elif tb:
+    elif tb and not status:   # a bg.sh job without an end record was KILLED (its log may hold tracebacks the wrapper already handled): it falls through to STOPPED
         out.update(state="FAILED (traceback in the log)", colour=R, detail="stopped %s ago" % fmt_dur(age))
     else:
         out.update(state="STOPPED", colour=Y, detail="not running and no finish line: the session stopped or it was killed %s ago; rerun the same command (the job resumes)" % fmt_dur(age))
@@ -126,10 +126,10 @@ def read_status(path):
 
 
 def summarize(rows, show_all=False):
-    """-> (headline, colour, visible rows, hidden count). ATTENTION = a stalled job, or a failed / stopped job from the last 24 hours. Finished jobs older than 6 hours and failed / stopped ones older than 24 hours are hidden unless show_all."""
+    """-> (headline, colour, visible rows, hidden count). ATTENTION = a stalled job, or a failed / stopped job that has a status record (until acknowledged with --ack NAME), or one found without a status record from the last 24 hours. Finished jobs older than 6 hours are hidden unless show_all."""
     hour = 3600.0
     age = lambda r: r["age"] if r["age"] is not None else 0.0
-    bad = lambda r: r["state"] == "STALLED" or ((r["state"].startswith("FAILED") or r["state"] in ("STOPPED", "NO LOG")) and age(r) <= 24 * hour)
+    bad = lambda r: r["state"] == "STALLED" or ((r["state"].startswith("FAILED") or r["state"] in ("STOPPED", "NO LOG")) and (r.get("from_status") or age(r) <= 24 * hour))
     attention = [r for r in rows if bad(r)]
     n_run = sum(1 for r in rows if r["state"] == "RUNNING")
     n_ok = sum(1 for r in rows if r["state"] == "FINISHED OK")
@@ -150,12 +150,29 @@ def summarize(rows, show_all=False):
 def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--all", action="store_true", help="also show finished jobs older than 6 hours and old failures")
+    ap.add_argument("--ack", metavar="NAME", help="acknowledge a failed or stopped job: moves its status record to data_cache/jobs/acked/ so it stops raising ATTENTION (the log stays)")
     a = ap.parse_args(argv)
+    if a.ack:
+        src = os.path.join(CACHE, "jobs", a.ack + ".status")
+        names = sorted(os.path.basename(x)[:-len(".status")] for x in glob.glob(os.path.join(CACHE, "jobs", "*.status")))
+        if not os.path.exists(src):
+            print("no status record named %r; names: %s" % (a.ack, ", ".join(names) or "(none)"))
+            return []
+        st = read_status(src)
+        if not st.get("ended") and pid_alive(st.get("pid", 0)):
+            print("refusing: %s is still running (pid %s)" % (a.ack, st.get("pid")))
+            return []
+        dest_dir = os.path.join(CACHE, "jobs", "acked")
+        os.makedirs(dest_dir, exist_ok=True)
+        dest = os.path.join(dest_dir, "%s.%s.status" % (a.ack, datetime.datetime.now().strftime("%Y%m%d-%H%M%S")))
+        os.rename(src, dest)
+        print("acknowledged %s: its status record moved to %s (the log stays); it no longer raises ATTENTION" % (a.ack, os.path.relpath(dest, ROOT)))
+        return []
     rows, claimed = [], set()
     for sp in sorted(glob.glob(os.path.join(CACHE, "jobs", "*.status"))):
         st = read_status(sp)
         job = next((j for j in KNOWN if j["pattern"] in st.get("cmd", "")), {"name": st["name"], "pattern": st["name"], "finish": r"(?!)", "header": None, "stall_min": 10})
-        if time.time() - os.path.getmtime(sp) > RECENT_HOURS * 3600 and st.get("ended"):
+        if time.time() - os.path.getmtime(sp) > RECENT_HOURS * 3600 and st.get("ended") and st.get("exit") == "0":
             continue
         rows.append(analyze(job, st))
         claimed.add(job["pattern"])
