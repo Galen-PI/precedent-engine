@@ -143,7 +143,7 @@
 - **The two frozen forward tests** (both "untested" above), evaluated once after 2027-01-05, each against its pre-set rule.
 - **Re-running the 12 substantive proven findings on the cleaned analysis set** (excluded events removed, independent clusters reported): gate G7. A finding that survives has earned the word; one that does not is a finding about the data.
 - **Pre-set tests for the yield-shock leads** (Banks up, Health Care down), which pass their nulls from 1986 on but have only a post-hoc origin.
-- **A point-in-time firm state** (gate G6): until then no label that depends on firm state, including `diverged`, can be tested.
+- **State-dependent hypotheses** (gate G6 is done, with limits, on 2026-10-29): the point-in-time state now exists (event_firm_state_pit2: 14,176 states, the first on 2008-09-25, 48 percent of them resting on only one or two terms), so labels that depend on firm state can be tested for the first time, each as a NEW pre-registered hypothesis (prediction, rule and forward window written first) with states of three or more terms (7,414) as the primary analysis; `diverged` stays frozen.
 - **The 2025-2026 executive-order watch item,** which needs its own pre-set forward test.
 
 ## 10. The standard
