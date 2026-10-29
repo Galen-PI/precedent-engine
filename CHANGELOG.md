@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-29-08 | 2026-10-29 | database | event_firm_state_pit2 built (rule pit_v2): real filing dates; measured effect is small: +3 |
 | 2026-10-29-07 | 2026-10-29 | correction | G6 reads: stored filing dates are never early; 27,909 of 28,533 quarterly rows have a real |
 | 2026-10-29-06 | 2026-10-29 | checkpoint | CHECKPOINT 2026-10-29 14:30 (late morning 2026-10-29: G5 closed, Phase 5 gate re-passed on |
 | 2026-10-29-05 | 2026-10-29 | documents | README and PROJECT_STATUS v1.3: the 2026-10-29 refresh from measured numbers; G5 closed |
@@ -221,6 +222,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-29-08 | date: 2026-10-29 | label: database | source-line: new | approx: no -->
+### 2026-10-29-08 — event_firm_state_pit2 built (rule pit_v2): real filing dates; measured effect is small: +302 states
+WHAT: created the table event_firm_state_pit2 (23,348 rows, rule pit_v2) with the exact statement saved as scripts/sql/event_firm_state_pit_v2_build.sql; the original build of event_firm_state_pit (pit_v1), which had only ever been typed in the SQL editor, is now recorded as scripts/sql/event_firm_state_pit_v1_build.sql (recovered from the 2026-10-28 transcript; record only). The two differ only in the availability date: pit_v2 uses the real 10-Q or 10-K filing date from sec_filings where one exists (97.8 percent of quarterly rows), else LEAST(stored filed_date, period_end + 90 days); it also stores the old date (stored_filed_date) and where the new one came from (availability_source). pit_v1 is untouched. MEASURED against v1: 21,758 rows keep the same period, 1,487 gain a period row but only 302 of them have a score (rows with a state 13,874 to 14,176, +2.2 percent), 103 get a newer period, none lose a period or fall back, none change label at the same period; availability is never later than the stored date and up to 735 days earlier; 208 states rest on the capped date; the first event with a state moves from 2009-05-21 to 2008-09-25. CORRECTIONS: my impact read called the 1,487 'gains a state' when they gained a period (most have no composite score); my claim that the state would begin about 2007 was wrong (most 2007 to 2010 rows give no score). Tables 164. The G6 row of docs/PROJECT_STATUS.md is updated by scripts/audit/patch_status_g6_pit2.py (hash-gated). STILL OPEN in G6: the report by era and number of terms, then the fate of diverged.
 
 <!-- entry: 2026-10-29-07 | date: 2026-10-29 | label: correction | source-line: new | approx: no -->
 ### 2026-10-29-07 — G6 reads: stored filing dates are never early; 27,909 of 28,533 quarterly rows have a real date; correction to the 2006-2007 claim
