@@ -10,23 +10,23 @@ Company → Financials → Events → External Conditions → Price Reaction →
 
 ---
 
-## Where it stands (as of 2026-10-28)
+## Where it stands (as of 2026-10-29)
 
-*Every number in this table was measured on 2026-10-28: the database figures by the query saved as scripts/sql/readme_snapshot.sql, the repository figures (scripts, commits, changelog entries) by counting files and commits. Re-check before relying on one: the table is regenerated at each milestone, not edited by hand.*
+*Every number in this table was measured on 2026-10-29: the database figures by the query saved as scripts/sql/readme_snapshot.sql, the repository figures (scripts, commits, changelog entries) by counting files and commits. Re-check before relying on one: the table is regenerated at each milestone, not edited by hand.*
 
 | area | what exists |
 |---|---|
 | **Universe** | 499 securities (today's index members only, a survivorship limit), 497 with prices; 160 sealed for out-of-sample exploration |
-| **Events** | **23,554** events, 1994-01-05 to 2026-09-11, in a 24-type taxonomy; **22,339 (94.8%)** trace to a source SEC filing |
+| **Events** | **23,554** events, 1994-01-05 to 2026-09-11, in a 24-type taxonomy; **22,385 (95.0%)** are linked to a source SEC filing |
 | **Filings** | 155,141 8-K filings and 49,892 10-K/10-Q filings; 150,539 AI classifications, **95,485 (63.4%)** with a human verdict, the rest governed by written policy |
 | **Prices** | 3,371,150 daily rows, 1994-01-03 to 2026-10-13 |
 | **Financials** | 28,533 quarterly and 8,473 annual statements (2006-12-31 to 2026-08-31), 37,006 metric rows; point-in-time only from about 2010 |
 | **External conditions** | 57,510 macro releases and 250,055 long-history macro rows; 310 FOMC meetings; 1,334,852 company-sentiment rows; 424 global events; 8,024 government decisions (3,035 with text); 2,176 laws with stage dates; 1,204 news articles |
-| **Reactions** | **22,470** events with a measured 20-day reaction against SPY; 23,309 pre-context rows; 954,599 ripple-timeline rows (21,913 events) |
-| **Labels** | rewarded 5,918, punished 6,079, muted 8,144, diverged 2,384 (the diverged label is under revision; see limits) |
-| **Accounting** | every one of the 23,554 events is either measured or has a recorded reason (1,084 unmeasured, all explained); 1,017 are excluded from analysis, 325 are under review, 643 carry a note |
+| **Reactions** | **22,486** events with a measured 20-day reaction against SPY; 23,309 pre-context rows; 954,685 ripple-timeline rows (21,915 events) |
+| **Labels** | rewarded 5,918, punished 6,082, muted 8,144, diverged 2,380 (the diverged label is under revision; see limits) |
+| **Accounting** | every one of the 23,554 events is either measured or has a recorded reason (1,068 unmeasured, all explained); 1,527 are excluded from analysis, none are under review, 639 carry a note |
 | **Findings** | 112 flags in the ledger: **15 proven, 21 lead, 62 null, 2 retired, 12 untested** |
-| **System** | Supabase Postgres: 157 tables and 33 views, 3.2 GB; 259 Python scripts in 17 folders; 486 commits since 2026-08-19; 189 dated changelog entries |
+| **System** | Supabase Postgres: 163 tables and 34 views, 3.2 GB; 263 Python scripts in 17 folders; 498 commits since 2026-08-19; 200 dated changelog entries |
 
 ## The eight phases
 
@@ -38,7 +38,7 @@ Each phase answers one question and is done when a query says so (definitions an
 | 2 | Financial Analysis | Given correct raw data, what do the financials say? |
 | 3 | Corporate Events | What happened, and can we prove it? |
 | 4 | External Conditions | What was the world telling the market? (macro, news, sentiment, government, the Fed, global events) |
-| 5 | Price Reaction Engine | How did the market respond, net of what the whole market did? (passes its five-component gate as of 2026-10-28; 333 events carry a review reason and await a decision) |
+| 5 | Price Reaction Engine | How did the market respond, net of what the whole market did? (passes its five-component gate as of 2026-10-29; no event awaits a review decision) |
 | 6 | Historical Pattern Engine | Does this actually recur, or only look like it does? (a cleanup gate comes first) |
 | 7 | Dashboard / Website | Can a person see and use it? (not started) |
 | 8 | Autotrader | Can the system act on its own analysis, safely? (not started; gated on phase 6) |
@@ -53,12 +53,12 @@ By the flag ledger on 2026-10-28 (112 flags: 15 proven, 21 lead, 62 null, 12 unt
 
 ## Known limits
 
-Measured on 2026-10-28 and stated in full in docs/PROJECT_STATUS.md section 3.5:
+Measured on 2026-10-28 and 2026-10-29 and stated in full in docs/PROJECT_STATUS.md section 3.5:
 
-1. **1,215 events (5.2%) have no source filing:** 233 multi-year rollup summaries (excluded) and 982 others, mostly real events of the hand-built pilot history or macro-derived events. All are flagged or excluded.
-2. **Price series carry a few artifacts at corporate actions** (spin-offs, special dividends). Nine reaction rows are affected so far; detection below a 60% one-day step is still to be built.
+1. **1,169 events (5.0%) have no source-filing link.** For 813 of them the filings are recorded in a different table (`event_component_dates`): 575 multi-filing summaries, and 238 curated events of which 236 duplicate an event the pipeline had already promoted from the same 8-K. All but three of the 813 are excluded from analysis (two were read and kept as single occurrences; one has a 95-day filing gap). The other 356 have no filing recorded anywhere (mostly events without a reaction row).
+2. **Price series carry a few artifacts at corporate actions** (spin-offs, special dividends). Seven events carry a price-step exclusion (JCI's unadjusted 2007 separation was added on 2026-10-29), and two violent but real moves (HIG, LVS) were read and kept; detection below a 60% one-day step is still to be built.
 3. **Quarterly financial data are point-in-time only from about 2010.** Firm-state labels before then, or computed by the quarter-end rule, carry look-ahead; the `diverged` label is unstable (about 65% of its members survive honest inputs) and is not used as a feature until redefined.
-4. **The effective sample is smaller than the row count:** about 70% of reaction rows are independent within their company, and dependence across companies on the same date is not yet measured.
+4. **The effective sample is smaller than the row count:** about 70% of reaction rows were independent within their company when measured on 2026-10-28, before 508 events left the analysis set on 2026-10-29 (it will be re-measured at gate G7), and dependence across companies on the same date is not yet measured.
 5. **709 events have no price history** (events of predecessor tickers, and securities without prices) and are permanently excluded.
 
 ## How the work is done
@@ -95,7 +95,7 @@ What this README used to say, and where it went. The unedited original is docs/a
 | it said | why retired | now |
 |---|---|---|
 | "Current State" counts of 2026-10-08 (19,892 events; 102,962 classifications; 16,488 pre-context rows) | superseded: events grew to 23,554, classifications to 150,539, pre-context to 23,309 | the snapshot table above |
-| "Every event traces back to its exact source SEC filing" | false for 1,215 events (5.2%) | the known limits above |
+| "Every event traces back to its exact source SEC filing" | false for 1,215 events (5.2%) when retired, 1,169 on 2026-10-29 | the known limits above |
 | "103 Track B news candidates confirmed" | not verified; the news tables hold about 1,200 articles | docs/PROJECT_STATUS.md |
 | "Recent Findings (2026-10-08)" | stale; several were corrected later | docs/PROJECT_STATUS.md section 5.3 and CHANGELOG.md |
 | "Getting Started" and the command list | a manual, not a snapshot; paths have moved (onboarding is now scripts/onboarding/onboard_pipeline.py) | docs/OPERATIONS.md |
