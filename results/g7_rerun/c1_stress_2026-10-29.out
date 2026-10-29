@@ -1,0 +1,43 @@
+matrices: 496 stocks x 8250 days | ordinary stock-days: 2187937 | 44s
+
+OUT-OF-SAMPLE COVERAGE BY STRESS BIN (target 90%; the rule judges C in 88-92%)
+
+  A  current scale, one edge
+                         2009-2012       2013-2019       2020-2026       
+    calm (<0.8)           88.96% ( 124078) 88.06% ( 128082) 87.95% ( 187165)
+    normal (0.8-1.2)      90.23% ( 219124) 90.22% ( 467755) 89.66% ( 422658)
+    elevated (1.2-1.5)    93.09% (  37779) 93.37% ( 111921) 92.13% ( 111292)
+    high (>=1.5)          93.45% (   8850) 94.37% (  39820) 91.80% (  53674)
+    spread across bins (max - min, points): 2009-2012 4.5  2013-2019 6.3  2020-2026 4.2
+
+  B  current scale, edge per stress bin (today)
+                         2009-2012       2013-2019       2020-2026       
+    calm (<0.8)           90.34% ( 124078) 89.68% ( 128082) 89.87% ( 187165)
+    normal (0.8-1.2)      90.47% ( 219124) 90.41% ( 467755) 89.81% ( 422658)
+    elevated (1.2-1.5)    91.51% (  37779) 91.11% ( 111921) 89.37% ( 111292)
+    high (>=1.5)          92.72% (   8850) 92.97% (  39820) 89.23% (  53674)
+    spread across bins (max - min, points): 2009-2012 2.4  2013-2019 3.3  2020-2026 0.6
+
+  C  median scale, one edge
+                         2009-2012       2013-2019       2020-2026       
+    calm (<0.8)           89.76% ( 124078) 89.63% ( 128082) 90.35% ( 187165)
+    normal (0.8-1.2)      89.97% ( 219124) 89.73% ( 467755) 90.40% ( 422658)
+    elevated (1.2-1.5)    90.40% (  37779) 90.36% ( 111921) 90.63% ( 111292)
+    high (>=1.5)          90.90% (   8850) 90.63% (  39820) 91.08% (  53674)
+    spread across bins (max - min, points): 2009-2012 1.1  2013-2019 1.0  2020-2026 0.7
+
+MEAN 90% INTERVAL SCORE (own-volatility units; lower is better; the rule: C <= 1.01 x B in every era)
+  2009-2012  A 3.6900 | B 3.6831 | C 3.6323 | C/B = 0.9862 ok
+  2013-2019  A 4.0260 | B 4.0041 | C 3.9467 | C/B = 0.9857 ok
+  2020-2026  A 4.0743 | B 4.0697 | C 4.0020 | C/B = 0.9834 ok
+
+DESCRIPTIVE (no verdict): share of ordinary stock-days beyond 2.0 band units, by stress bin, all test years pooled. Under the median scale the extreme stocks that inflate the mean are
+counted as exceedances, so this share may rise with stress instead of flattening; coverage at the 90% edge above is what the rule judges.
+                       current scale median scale
+  calm (<0.8)                 4.31%        7.16%
+  normal (0.8-1.2)            3.56%        7.17%
+  elevated (1.2-1.5)          2.42%        6.81%
+  high (>=1.5)                2.39%        6.49%
+
+VERDICT under the pre-set rule: C (the median scale, one edge) EARNS ITS PLACE.
+total 46s

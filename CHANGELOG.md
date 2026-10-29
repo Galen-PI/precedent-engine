@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-29-13 | 2026-10-29 | documents | G7 controls reproduced (one stated deviation); Addenda 2 and 3 registered; by-type burst p |
 | 2026-10-29-12 | 2026-10-29 | documents | G7 pre-registration Addendum 1: corrected design, procedure map, and the controls; oil con |
 | 2026-10-29-11 | 2026-10-29 | documents | G7 pre-registration: predictions for the 15 proven flags, written before any re-run |
 | 2026-10-29-10 | 2026-10-29 | checkpoint | CHECKPOINT 2026-10-29 15:27 (afternoon 2026-10-29: pit_v2 built and G6 closed with limits, |
@@ -226,6 +227,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-29-13 | date: 2026-10-29 | label: documents | source-line: new | approx: no -->
+### 2026-10-29-13 — G7 controls reproduced (one stated deviation); Addenda 2 and 3 registered; by-type burst procedure recorded as files
+WHAT: the three positive controls of the G7 re-run were run after Addendum 1 was committed (a1125ea 16:01:25; output files 16:02:09 and 16:03:34). C1 (robust_stress_test.py) reproduced the ledger exactly (coverage cells 89.63 to 91.08 percent, C/B 0.9862, 0.9857, 0.9834, 2,187,937 ordinary stock-days). C2 (fomc_day_test.py) reproduced exactly (1.140 n 88; 1.112 n 92; 1.121 n 85 without 2020; placebos 0.974 and 0.945). C3 (the oil-shock SQL) reproduced exactly for 2004-2018 (Energy 1.293, t 9.2, 115 months) but not for 2019-2026 (1.324, t 8.5, 66 months against the ledger's 1.319, t 8.2, 64 months): sector_day_z now ends 2026-09-15, and recomputing from the listed monthly values shows that dropping August and September 2026 reproduces the ledger exactly. Scored as registered: p9 a miss, p10 0, p51 1 (a control missed its tolerance and the run was halted until the cause was found). Addendum 2 records this and a new rule (every run prints the latest date in each table it reads); Addendum 3 is the procedure for event_burst_day0_1 and the four event_type flags: the original query recovered from the 2026-10-16 16:27 session (scripts/sql/g7_bytype_burst_arm0_2026-10-16.sql), the cleaned Arm 1 with excluded events removed from the sample and the isolation test, and an Arm 1-null that must equal Arm 0 before Arm 1 is trusted. Applied by scripts/audit/patch_prereg_addenda23_1029.py (hash-gated, text only, no prediction edited). No event-level result has been computed.
 
 <!-- entry: 2026-10-29-12 | date: 2026-10-29 | label: documents | source-line: new | approx: no -->
 ### 2026-10-29-12 — G7 pre-registration Addendum 1: corrected design, procedure map, and the controls; oil control query recovered
