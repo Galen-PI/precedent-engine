@@ -1,4 +1,4 @@
-# PROJECT STATUS (v1.1, 2026-10-28 evening)
+# PROJECT STATUS (v1.2, 2026-10-29)
 
 **What this file is.** The one place for the CURRENT state: what we have, what has been done (start to finish), what has been tested, what is left, what does not add up, and the calendar. History lives in CHANGELOG.md (entries cited as `CL <id>`), script interfaces in docs/SCRIPTS_REFERENCE.md (generated), how-to in docs/OPERATIONS.md, names and phase definitions in docs/NAMING.md, registrations in results/. Update this file at the end of every work session; never copy a live number here without its date.
 
@@ -35,7 +35,7 @@ Phase names, questions and "done when" checks are defined in docs/NAMING.md (the
 
 | phase | gate check | state 2026-10-28 |
 |---|---|---|
-| 1 Data Foundation | `[PENDING]` (G8) | unmeasured; known gaps: EA and AVB have no prices; 8-K predecessor-CIK gaps; pre-2004 8-K coverage unreliable |
+| 1 Data Foundation | `[PENDING]` (G8) | unmeasured; known gaps: EA and AVB have no prices; 8-K predecessor-CIK gaps; pre-2004 8-K coverage unreliable; **ingestion is paused since 2026-10-22 by decision (history-first plan): the nightly classification schedule is disabled, 8-Ks after 2026-09-18 and prices after 2026-10-13 are not loaded, only the daily news job runs; the price refresh is a manual script** [LIVE 10-29] |
 | 2 Financial Analysis | `[PENDING]` (G8) | unmeasured; quarterly data point-in-time only from about 2010 (section 3.5) |
 | 3 Corporate Events | `[PENDING]` (G8) | unmeasured; 1,215 events (5.2%) have no source filing (section 3.5) |
 | 4 External Conditions | `[PENDING]` (G8) | unmeasured; FOMC calendar loaded through the 2026-10-28 meeting (310 rows; one spurious 2003-09-15 row, section 7) [LIVE 10-28] |
@@ -194,7 +194,7 @@ D3 walk-forward split at tag level; D4 similarity-key hierarchy (event type, era
 ## 7. Known inconsistencies and open questions
 
 **Resolved since v0:** tags versus columns (fixed 10-26); the unprocessed third (accounted for 10-28: every event is measured or has a recorded reason); phase naming (NAMING.md and the Phase 4 decision).
-1. **Resolved 10-28:** the ripple gap (319 events: 280 real events wrongly skipped as bundles, 30 News Corp events lost to a share-class defect, 8 computed on the wrong class, 1 isolated miss; CHANGELOG 2026-10-28-08). **New open items:** (a) the FOMC calendar holds one spurious row, the meeting of 2003-09-15 (the Fed's schedule has eight meetings, September's on the 16th); no finished test counted it; the fix belongs in build_fomc_calendar.py; (b) ten stale or inconsistent ledger rows (THEORY section 8: fed_state says easing but the Fed raised the target range on 2026-09-16; news_sentiment_gdelt is untested though two tests ran; three proven type rows carry first-run numbers; and others); (c) the 37 "no prior close" skips in results/ripple_skips_2026-10-28.csv are unread; (d) 333 review events await a decision (G5).
+1. **Resolved 10-28:** the ripple gap (319 events: 280 real events wrongly skipped as bundles, 30 News Corp events lost to a share-class defect, 8 computed on the wrong class, 1 isolated miss; CHANGELOG 2026-10-28-08). **New open items:** (a) the FOMC calendar holds one spurious row, the meeting of 2003-09-15 (the Fed's schedule has eight meetings, September's on the 16th); no finished test counted it; the fix belongs in build_fomc_calendar.py; (b) the ledger repair of 2026-10-29 fixed five of the ten stale rows (THEORY section 8 lists what was repaired and the five that remain, none urgent); (c) the 37 "no prior close" skips in results/ripple_skips_2026-10-28.csv are unread; (d) 333 review events await a decision (G5).
 2. **Documents:** README, PROJECT_PLAN and THEORY were rewritten 10-28 (the README held-and-not-held section was corrected against the ledger the same day). OPERATIONS is partly stale (its "known bug" note on multi-entity tagging predates the fix); SCRIPTS_REFERENCE does not list files added since 10-26.
 3. **The data limits of section 3.5**, especially the point-in-time and `diverged` findings.
 4. **The same test counted three ways** (2, 4 and 6 of 13 tags): all superseded by 5.3 item 1.
@@ -213,7 +213,8 @@ D3 walk-forward split at tag level; D4 similarity-key hierarchy (event type, era
 | date | what | source |
 |---|---|---|
 | 2026-10-28 | **DONE:** FOMC calendar rebuilt after the 18:00 UTC statement, 2026-10-28 added to the independent list, loaded with --apply (310 rows; 1 row changed) | CHANGELOG 2026-10-28-07 |
-| after 2026-11-28 | drop the scratch and backup tables: fomc_meetings_backup_20261028, event_ripple_timeline_backup_20261028, scratch_diverged_new_20261028, scratch_diverged_v2_20261028 (G10) | CHANGELOG |
+| after 2026-11-28 | drop the scratch and backup tables: fomc_meetings_backup_20261028, event_ripple_timeline_backup_20261028, flag_ledger_backup_20261029, scratch_diverged_new_20261028, scratch_diverged_v2_20261028 (G10) | CHANGELOG |
+| before 2027-01-05 | the forward-test windows need ingestion resumed: 8-K item 2.02 filings dated 2026-10-14 to 2026-12-31 and prices after 2026-10-13 (the frozen file was written BEFORE either was loaded). `[PENDING]` find which January runbook step does this; the runbook text has not been read | results/FROZEN_role_band_forward_test_2026-10-22.md |
 | after 2026-10-31 (Mon 11-02) | October sentiment top-up: `backfill_gdelt_sentiment.py 2026-10 2026-10 --ignore-checkpoint` | runbook 8 |
 | any time | anchor search session; first registration from the template (D3 walk-forward, the press-conference split or the tariff test) | runbook 15 |
 | 2027-01-04 | earliest the role-band forward test can read "matrices end" | runbook 5 |
@@ -221,4 +222,4 @@ D3 walk-forward split at tag level; D4 similarity-key hierarchy (event type, era
 | forward holdout | range product: events after 2026-07-31 scored against 80%; first readable verdict about 6 months after 2026-08-01 | [DOC 10-16] |
 
 ---
-*v1.1, 2026-10-28 evening. Update at the end of every session and add a CHANGELOG entry. Next revision: fill the `[PENDING]` slots (table inventory, Phase 1-4 gate checks), then G4, G5 and G7.*
+*v1.2, 2026-10-29. Update at the end of every session and add a CHANGELOG entry. Next revision: fill the `[PENDING]` slots (table inventory, Phase 1-4 gate checks, the runbook's ingestion step), then G4, G5 and G7.*

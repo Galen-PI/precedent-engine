@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-29-03 | 2026-10-29 | documents | Ledger repair (9 append-only notes) and docs brought in line: THEORY section 8, PROJECT_ST |
 | 2026-10-29-02 | 2026-10-29 | checkpoint | CHECKPOINT 2026-10-29 13:05 (morning 2026-10-29: the evening 2026-10-28 state installed (d |
 | 2026-10-29-01 | 2026-10-29 | checkpoint | Checkpoint: evening 2026-10-28, documents, FOMC, Phase 5 gate and the ripple fix |
 | 2026-10-28-09 | 2026-10-28 | documents | PROJECT_STATUS v1.1 and the 2026-10-28 evening checkpoint: Phase 5 gate 5 of 5, FOMC loade |
@@ -215,6 +216,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-29-03 | date: 2026-10-29 | label: documents | source-line: new | approx: no -->
+### 2026-10-29-03 — Ledger repair (9 append-only notes) and docs brought in line: THEORY section 8, PROJECT_STATUS v1.2
+WHAT: nine flag_ledger rows received append-only notes marked (ledger repair 2026-10-29); NO status or other column changed (15 proven, 21 lead, 62 null, 12 untested, 2 retired, verified after). Rows: fed_state (the Fed raised the target range to 3.75-4.00% on 2026-09-16; fed_state_daily correctly reads tightening), news_sentiment_gdelt (points to the two GDELT tests of 2026-10-22, both NO LANE; stays untested; table sizes corrected), government_decisions_day_level (FOMC days and executive orders have since been tested), event_type_acquisition, event_type_leadership_change and event_type_strategic_partnership (rerun numbers added; each note states that proven means uses the pooled number), and round_number_clustering_whole_dollar, round_number_threshold_move_size and fomc_rate_sensitive_sector_contrast (the retired SCRIPTS.md is now CHANGELOG.md plus docs/SCRIPTS_REFERENCE.md). Backup: flag_ledger_backup_20261029 (112 rows; DROP AFTER 2026-11-28). LEFT ON PURPOSE: the status vocabulary for proven-means-pooled (waits for G7), duplicated sentences in two notes (one is a frozen forward-test row), the storm_tier_large evidence unit, and a ledger row for the tag-significance audit (needs its primary numbers re-read). Documents: THEORY section 8 now lists what was repaired and the five items still open; docs/PROJECT_STATUS.md is v1.2: ingestion is recorded as PAUSED since 2026-10-22 by decision (the nightly classification schedule is disabled, 8-Ks after 2026-09-18 and prices after 2026-10-13 are not loaded, the price refresh is a manual script), and a [PENDING] row asks which January runbook step resumes ingestion before the forward tests are read. The patch is kept as scripts/audit/patch_docs_ledger_repair.py.
 
 <!-- entry: 2026-10-29-02 | date: 2026-10-29 | label: checkpoint | source-line: new | approx: no -->
 ### 2026-10-29-02 — CHECKPOINT 2026-10-29 13:05 (morning 2026-10-29: the evening 2026-10-28 state installed (documents, FOMC, Phase 5 gate 5 of 5, ripple fix); ingestion paused since 10-22 confirmed; checkpoint command corrected)

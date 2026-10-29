@@ -107,10 +107,10 @@
 | `company_state_filing_dated` | needs filing dates; closely tied to gate G6 |
 | `flag_overlap_storm_testability` | counting step closed: the storm idea cannot be tested at the pair level on this universe (2 of 28 pairs testable, one of them mechanical) |
 | `cascade_effect` | only about 8 to 10 plausible chained cases |
-| `government_decisions_day_level` | partly tested (laws null, FOMC proven, executive orders null); the row is stale (Section 8) |
+| `government_decisions_day_level` | partly tested (laws null, FOMC proven, executive orders null); its note was updated 2026-10-29 |
 | `law_driven_charge_events_titles`, `law_named_charge_event_reaction` | counting steps; 13 distinct charge events attributed to a law drew about 40 to 50% of the burst of contemporaneous events (descriptive, post hoc, clustered) |
 | `macro_other_series` | needs a real release calendar |
-| `news_sentiment_gdelt` | the row is stale: two GDELT tests ran on 2026-10-22 (both null) |
+| `news_sentiment_gdelt` | its note now points to the two GDELT tests of 2026-10-22 (both null) |
 | `local_flags` | not built |
 
 ## 7. Retired, and corrected
@@ -127,18 +127,16 @@
 - **2026-10-22, scoring corrections:** several predictions recorded as "missed" were within sampling noise of their ranges; the ranges had been narrower than one standard error.
 - **Tag-level significance:** the first-reported "6 of 13 tags significant" was tested against the wrong null and is retracted (docs/PROJECT_STATUS.md, section 5.3). It has no ledger row.
 
-## 8. Where the ledger is stale or disagrees (to fix, not yet fixed)
+## 8. Where the ledger is stale or disagrees
 
-1. **`fed_state`** says "easing 2024-09-18 to now," but the Fed **raised** the target range 25 basis points to 3.75-4.00% on 2026-09-16 (12-0, the first hike since July 2023). The `fed_change_day_financials_amplification` note already mentions the 2026 hike correctly. Check what `fed_state_daily` reports from 2026-09-16.
-2. **`news_sentiment_gdelt`** is "untested" although two GDELT tests ran on 2026-10-22; it also says `news_articles` has 738 rows (it has 1,204).
-3. **`government_decisions_day_level`** says FOMC days and executive orders are untested; both have since run.
-4. **Three proven type rows** (`event_type_acquisition`, `event_type_leadership_change`, `event_type_strategic_partnership`) carry first-run numbers in their notes (for example 1.277 and 1.271) while their evidence rows hold the rerun (1.277 and 1.319). Neither changes the claim.
-5. **"proven" for a type that only "uses the pooled number"** is a different claim from the substantive findings; the count of 15 hides this. The status vocabulary needs a separate label.
-6. **`fomc_pre_announcement_drift`** is null although the historical effect replicated; only the persistence part failed.
-7. **`storm_tier_large`:** the evidence unit is inferred and the original result file was not found.
-8. **Duplicated sentences** appear in the notes of `earnings_surprise_sign_operating_income_forward` and `longhist_oil_shock_oil_industry`.
-9. **Notes cite SCRIPTS.md addenda,** a file retired into the changelog and docs/SCRIPTS_REFERENCE.md.
-10. **The tag-significance audit has no ledger row.**
+**Repaired 2026-10-29** (append-only notes, no status changed; backup table flag_ledger_backup_20261029, to be dropped after 2026-11-28; see CHANGELOG): `fed_state` (the Fed raised the target range on 2026-09-16 and the view correctly reads tightening), `news_sentiment_gdelt` (its note now points to the two GDELT tests of 2026-10-22 and the table sizes; it stays untested), `government_decisions_day_level` (FOMC days and executive orders have since been tested), the three "uses the pooled number" rows (rerun numbers added; each note now says what proven means there), and the three rows that cited the retired SCRIPTS.md.
+
+**Still open:**
+1. **"proven" for a type that only "uses the pooled number"** (`event_type_acquisition`, `event_type_leadership_change`, `event_type_strategic_partnership`) is a different claim from the substantive findings. Each note now says so, but the status vocabulary still hides it inside the count of 15. Changing it may affect code that reads the status values, so the decision waits for gate G7.
+2. **`fomc_pre_announcement_drift`** is null although the historical effect replicated; its note already says "REPLICATES, FADED", so no edit was needed.
+3. **`storm_tier_large`:** the evidence unit is inferred and the original result file was not found (stated in its evidence row).
+4. **Duplicated sentences** remain in the notes of `earnings_surprise_sign_operating_income_forward` (a frozen forward-test row, left untouched on purpose) and `longhist_oil_shock_oil_industry` (cosmetic).
+5. **The tag-significance audit has no ledger row.** Adding one needs the audit's primary numbers, which have not been re-read (gate G7).
 
 ## 9. What would change this picture
 
