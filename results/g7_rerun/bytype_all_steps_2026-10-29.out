@@ -1,0 +1,117 @@
+# G7 by-type burst, steps 1 to 4 of Addendum 3 (pre-check, Arm 0, Arm 1-null, Arm 1). Pasted UNEDITED from the SQL editor by Galen Pike on 2026-10-29 (about 16:10 UTC); the assistant added only these '#' lines.
+# STEP 1 (data-window pre-check): SELECT (SELECT MAX(event_date::date) FROM events) AS events_last, (SELECT COUNT(*) FROM event_profile_base) AS profile_rows, (SELECT COUNT(*) FROM event_profile_base WHERE isolated) AS profile_isolated, (SELECT COUNT(DISTINCT event_id) FROM event_daily_abn) AS abn_events, (SELECT COUNT(DISTINCT event_id) FROM event_exclusions WHERE severity = $$exclude$$) AS excluded_events;
+| events_last | profile_rows | profile_isolated | abn_events | excluded_events |
+| ----------- | ------------ | ---------------- | ---------- | --------------- |
+| 2026-09-11  | 21849        | 12616            | 21915      | 1527            |
+
+# STEP 2, ARM 0 (scripts/sql/g7_bytype_burst_arm0_2026-10-16.sql, the original query on the view event_profile_base)
+| etype                    | era         | n    | ratio_day_0_1 | se    |
+| ------------------------ | ----------- | ---- | ------------- | ----- |
+| accounting_investigation | A_2004_2018 | 113  | 1.419         | 0.148 |
+| acquisition              | A_2004_2018 | 2132 | 1.276         | 0.032 |
+| acquisition              | B_2019_2026 | 939  | 1.322         | 0.044 |
+| ALL_POOLED               | A_2004_2018 | 6914 | 1.305         | 0.018 |
+| ALL_POOLED               | B_2019_2026 | 3846 | 1.332         | 0.023 |
+| capital_raise            | A_2004_2018 | 505  | 1.024         | 0.040 |
+| capital_raise            | B_2019_2026 | 355  | 1.098         | 0.072 |
+| corporate_action_other   | A_2004_2018 | 336  | 1.615         | 0.082 |
+| corporate_action_other   | B_2019_2026 | 176  | 1.430         | 0.123 |
+| corporate_action_split   | A_2004_2018 | 98   | 1.570         | 0.135 |
+| financial_result         | A_2004_2018 | 170  | 1.068         | 0.097 |
+| financial_result         | B_2019_2026 | 123  | 1.585         | 0.168 |
+| governance_action        | A_2004_2018 | 144  | 1.323         | 0.111 |
+| governance_action        | B_2019_2026 | 72   | 1.492         | 0.181 |
+| leadership_change        | A_2004_2018 | 1722 | 1.250         | 0.032 |
+| leadership_change        | B_2019_2026 | 1446 | 1.276         | 0.031 |
+| legal_settlement         | A_2004_2018 | 574  | 1.200         | 0.056 |
+| legal_settlement         | B_2019_2026 | 174  | 1.337         | 0.110 |
+| regulatory               | A_2004_2018 | 425  | 1.541         | 0.131 |
+| regulatory               | B_2019_2026 | 148  | 1.308         | 0.109 |
+| restructuring            | A_2004_2018 | 339  | 1.712         | 0.096 |
+| restructuring            | B_2019_2026 | 163  | 1.671         | 0.148 |
+| strategic_partnership    | A_2004_2018 | 301  | 1.252         | 0.080 |
+| strategic_partnership    | B_2019_2026 | 131  | 1.381         | 0.113 |
+
+# STEP 3, ARM 1-NULL (scripts/sql/g7_bytype_burst_arm1_null.sql, the rebuilt form with an empty exclusion list)
+# Compared with STEP 2 by the assistant: all 24 rows are identical in n, ratio and se, so the inline rebuild of the view is faithful and ARM 1 may be run.
+| etype                    | era         | n    | ratio_day_0_1 | se    |
+| ------------------------ | ----------- | ---- | ------------- | ----- |
+| accounting_investigation | A_2004_2018 | 113  | 1.419         | 0.148 |
+| acquisition              | A_2004_2018 | 2132 | 1.276         | 0.032 |
+| acquisition              | B_2019_2026 | 939  | 1.322         | 0.044 |
+| ALL_POOLED               | A_2004_2018 | 6914 | 1.305         | 0.018 |
+| ALL_POOLED               | B_2019_2026 | 3846 | 1.332         | 0.023 |
+| capital_raise            | A_2004_2018 | 505  | 1.024         | 0.040 |
+| capital_raise            | B_2019_2026 | 355  | 1.098         | 0.072 |
+| corporate_action_other   | A_2004_2018 | 336  | 1.615         | 0.082 |
+| corporate_action_other   | B_2019_2026 | 176  | 1.430         | 0.123 |
+| corporate_action_split   | A_2004_2018 | 98   | 1.570         | 0.135 |
+| financial_result         | A_2004_2018 | 170  | 1.068         | 0.097 |
+| financial_result         | B_2019_2026 | 123  | 1.585         | 0.168 |
+| governance_action        | A_2004_2018 | 144  | 1.323         | 0.111 |
+| governance_action        | B_2019_2026 | 72   | 1.492         | 0.181 |
+| leadership_change        | A_2004_2018 | 1722 | 1.250         | 0.032 |
+| leadership_change        | B_2019_2026 | 1446 | 1.276         | 0.031 |
+| legal_settlement         | A_2004_2018 | 574  | 1.200         | 0.056 |
+| legal_settlement         | B_2019_2026 | 174  | 1.337         | 0.110 |
+| regulatory               | A_2004_2018 | 425  | 1.541         | 0.131 |
+| regulatory               | B_2019_2026 | 148  | 1.308         | 0.109 |
+| restructuring            | A_2004_2018 | 339  | 1.712         | 0.096 |
+| restructuring            | B_2019_2026 | 163  | 1.671         | 0.148 |
+| strategic_partnership    | A_2004_2018 | 301  | 1.252         | 0.080 |
+| strategic_partnership    | B_2019_2026 | 131  | 1.381         | 0.113 |
+
+# STEP 4, ARM 1 (scripts/sql/g7_bytype_burst_arm1_cleaned.sql: excluded events removed from the sample AND from the isolation test). Pasted unedited about 16:20 UTC.
+| etype                    | era         | n    | ratio_day_0_1 | se    |
+| ------------------------ | ----------- | ---- | ------------- | ----- |
+| accounting_investigation | A_2004_2018 | 115  | 1.389         | 0.145 |
+| acquisition              | A_2004_2018 | 2180 | 1.272         | 0.031 |
+| acquisition              | B_2019_2026 | 961  | 1.333         | 0.043 |
+| ALL_POOLED               | A_2004_2018 | 7193 | 1.298         | 0.018 |
+| ALL_POOLED               | B_2019_2026 | 3982 | 1.331         | 0.022 |
+| capital_raise            | A_2004_2018 | 515  | 1.030         | 0.040 |
+| capital_raise            | B_2019_2026 | 355  | 1.098         | 0.072 |
+| corporate_action_other   | A_2004_2018 | 359  | 1.618         | 0.078 |
+| corporate_action_other   | B_2019_2026 | 183  | 1.456         | 0.121 |
+| corporate_action_split   | A_2004_2018 | 99   | 1.558         | 0.134 |
+| financial_result         | A_2004_2018 | 177  | 1.057         | 0.094 |
+| financial_result         | B_2019_2026 | 126  | 1.579         | 0.164 |
+| governance_action        | A_2004_2018 | 148  | 1.298         | 0.108 |
+| governance_action        | B_2019_2026 | 73   | 1.473         | 0.179 |
+| leadership_change        | A_2004_2018 | 1836 | 1.240         | 0.031 |
+| leadership_change        | B_2019_2026 | 1521 | 1.262         | 0.030 |
+| legal_settlement         | A_2004_2018 | 589  | 1.196         | 0.055 |
+| legal_settlement         | B_2019_2026 | 178  | 1.323         | 0.108 |
+| regulatory               | A_2004_2018 | 448  | 1.526         | 0.126 |
+| regulatory               | B_2019_2026 | 156  | 1.279         | 0.103 |
+| restructuring            | A_2004_2018 | 351  | 1.708         | 0.094 |
+| restructuring            | B_2019_2026 | 169  | 1.711         | 0.148 |
+| strategic_partnership    | A_2004_2018 | 318  | 1.237         | 0.076 |
+| strategic_partnership    | B_2019_2026 | 137  | 1.381         | 0.108 |
+
+# COMPARISON ARM 1 against ARM 0, computed by the assistant (n: Arm 0 to Arm 1; ratio change in standard errors of Arm 1). Every cell's n went UP or stayed equal.
+#   ALL_POOLED A  6914 to 7193 (+279, +4.0%)   1.305 to 1.298 (-0.39 SE) | B  3846 to 3982 (+136, +3.5%)   1.332 to 1.331 (-0.05 SE)
+#   acquisition A 2132 to 2180 (+48)           1.276 to 1.272 (-0.13 SE) | B   939 to 961  (+22)          1.322 to 1.333 (+0.26 SE)
+#   leadership  A 1722 to 1836 (+114, +6.6%)   1.250 to 1.240 (-0.32 SE) | B  1446 to 1521 (+75, +5.2%)   1.276 to 1.262 (-0.47 SE)
+#   strategic   A  301 to 318  (+17)           1.252 to 1.237 (-0.20 SE) | B   131 to 137  (+6)          1.381 to 1.381 (0.00 SE)
+#   capital_raise A 505 to 515 (+10)           1.024 to 1.030 (+0.15 SE) | B   355 to 355  (0)           1.098 to 1.098 (0.00 SE)
+# ARM 1 z statistics: burst 16.6 and 15.0; z versus pooled (1.298, 1.331, pooled treated as known): capital_raise -6.70 and -3.24; acquisition -0.84 and +0.05; leadership_change -1.87 and -2.30; strategic_partnership -0.80 and +0.46.
+# VERDICT: all five flags meet their registered rules on the cleaned data. Closest to a line: leadership_change in 2019-2026 (z -2.30 against the 2.5 line, though the rule needs BOTH eras, and 2004-2018 is -1.87) and capital_raise in 2019-2026 (z -3.24, 0.74 clear of 2.5).
+
+# ACTUAL VALUES for the registered rows of results/PREREG_g7_proven_rerun_2026-10-29.md (id | actual | se; prob rows 1 or 0), to be appended as the ACTUAL-TABLE at the end:
+p18 | 1.298 | 0.018
+p19 | 1.331 | 0.022
+p20 | 1 |
+p37 | 1.030 | 0.040
+p38 | 1.098 | 0.072
+p39 | -3.24 |
+p40 | 1 |
+p41 | 1.272 | 0.031
+p42 | 1.333 | 0.043
+p43 | 1 |
+p44 | 1.240 | 0.031
+p45 | 1.262 | 0.030
+p46 | 1 |
+p47 | 1.237 | 0.076
+p48 | 1.381 | 0.108
+p49 | 1 |
