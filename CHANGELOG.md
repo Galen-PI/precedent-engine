@@ -210,6 +210,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 | 2026-09-22-01 | 2026-09-22 |  | Database Audit, GDELT Backfill, Reaction-Tagging Fixes |
 | 2026-09-15-01 | 2026-09-15 | PROJECT_PLAN | Addendum 2: Event Tagging Pipeline Built and Tested (same session, continued) |
 | 2026-09-11-01 | 2026-09-11 |  | `pattern_significance_tests` populated — 13 chi-square results, 4 tags statistically |
+| 2026-09-08-02 | 2026-09-08 | PROJECT_PLAN | Baseline of the original plan: what changed from it, the phase percentages, the coverage t |
 | 2026-09-08-01 | 2026-09-08 | PROJECT_PLAN | Correction (verified this session): Anchor-Date Unification Is Already Resolved |
 <!-- INDEX-END -->
 
@@ -4654,6 +4655,78 @@ tagging bug discovery — worth re-running `test_pattern_significance.py` once t
 to check whether any of the four partly depended on the same mislabeling mechanism that
 inflated `systemic_shock`.
 
+
+<!-- entry: 2026-09-08-02 | date: 2026-09-08 | label: PROJECT_PLAN | source-line: new | approx: no -->
+### 2026-09-08-02 — Baseline of the original plan: what changed from it, the phase percentages, the coverage tiers, the old next steps (moved from PROJECT_PLAN v1)
+BASELINE OF THE ORIGINAL PLAN. Moved from PROJECT_PLAN.md (v1) into this changelog on 2026-10-29 so that the timeline shows where the project stood before the corrections and addenda that are already in this changelog at their true dates (the label PROJECT_PLAN). DATING: this entry carries the date 2026-09-08, the day PROJECT_PLAN.md was first committed (cab4344, 'consolidated with 7-company expansion'); the text below is the LAST version of these four sections before the 2026-10-28 rewrite, so it may include small edits made on 09-15 or 09-22 (see git log of PROJECT_PLAN.md). These four sections are HISTORY, not the current state: the current plan is PROJECT_PLAN.md (v2, 2026-10-28) and the current state is docs/PROJECT_STATUS.md. The unedited whole of the old plan is docs/archive/PROJECT_PLAN_pre_rewrite_2026-10-28.md. Sections 3 (what changed from the original plan), 5 (phase status with the original percentages), 9 (the coverage tier system) and 10 (the old immediate next steps), VERBATIM:
+
+## 3. What Changed From the Original Plan, and Why
+
+| Original plan | What actually happened | Why it's better |
+|---|---|---|
+| Alpha Vantage as a candidate data source | Rejected for cost; SEC EDGAR XBRL used as free, authoritative primary source for financials | Free, official, and forces primary-source discipline into the project's DNA from day one |
+| "Record meaningful events" (Phase 3) | Every event requires primary-source verification before entry; tracked hit rate via `candidate_review_log` (~20–33% depending on category) | Prevents the event database from silently filling with noise; hit-rate tracking is itself a real data quality signal |
+| Single news pipeline (Phase 4) | Split into **Track A** (FRED macro data — structured, backfillable) and **Track B** (Marketaux news — specifically for surprise/consensus framing FRED can't provide) | Recognizes that hard data and *narrative framing* are fundamentally different signals that needed different pipelines |
+| Event relationships implied uniform confidence | Explicit confidence calibration (e.g., 0.95 for direct textual confirmation vs. 0.8 for analyst-consensus inference) | Distinguishes confirmed fact from well-supported inference — critical for not overclaiming later |
+| Phase 6 pattern example: "12 similar events, 9 positive" | Same idea, but with an enforced n=30–50 threshold before treating any finding as a real pattern, and explicit repeated correction of premature single-instance ("n=1") claims | Real financial-pattern literature is full of spurious small-sample findings; this discipline was underestimated in the original plan |
+| Strict linear phase order (finish 2 before starting 3, etc.) | Phases progressed **iteratively and in parallel** | More realistic and more productive than a strict waterfall; phase "boundaries" turned out to be soft |
+| No mention of an automated classification layer | Built a full AI-assisted classification pipeline (Haiku-based), used for both Track B news AND Phase 3 8-K filing review, with an explicit **check-and-balance system**: mandatory confidence + reasoning, duplicate detection, random audit sampling, and a human-reviewed queue — nothing auto-promotes to the real `events` table | Wasn't conceived in the original plan at all; emerged from recognizing that pure manual review wouldn't scale, while pure automation couldn't be trusted blind. Proven twice now, at real scale, in two different contexts |
+| No explicit "Historical vs. Live" distinction | Introduced as a reframe for Phase 3/4's "never truly finishes" feeling: **Historical** work (bounded, can reach genuine 100%) vs. **Live** work (perpetual, ongoing maintenance) | Gives the team a real sense of completion on bounded sub-problems instead of an undifferentiated, endless backlog |
+
+## 5. Phase Status (Current, Honest — updated after the 7-company classifier expansion)
+
+| Phase | Original estimate | Actual status | Notes |
+|---|---|---|---|
+| 1. Data Foundation | 80% | **~98%** | Fully audited across all 13 tickers via a real completeness scan (not just null-rate). Found and fixed a genuine PLD REIT-revenue-concept gap (2011-2016 now complete). XOM's 2007-2016 quarterly thinness remains a known, tracked, genuinely-hard-to-fix gap — investigated via full XBRL concept scan, appears to require raw instance-document inspection (custom company extension concept), deliberately accepted rather than chased further right now |
+| 2. Financial Analysis | 60% | **100%** | Full 11-view chain traced and verified; zero real bugs found in final audit |
+| 3. Corporate Events | Early development | **~85%** | Original 6 companies: 63+ events, full 1.01 sweep complete. **All 7 new Tier 1 tickers (LIN, XOM, AEP, PG, GE, PLD, F) now have rich, fully-chained event histories** — hundreds of real events added via a proven AI classification pipeline (`classify_8k_filings.py`), spanning major M&A, leadership successions, litigation, and multi-year sagas across all 13 tracked companies. Tag system expanded from 13 to 17 tags (evidence-based additions) and exhaustively human-reviewed across all categories |
+| 4. News Ingestion | Not yet built | **~40%** | Track A (FRED) complete; Track B (Marketaux) built with working AI classification + audit loop. `classify_8k_filings.py` is now a second proven instance of the same check-and-balance architecture, validated at real scale (7 companies, ~2,000+ filings, real classifier misses caught and corrected via random audit and human review) |
+| 5. Price Reaction Engine | Not yet built | **~85%** | Abnormal-returns-vs-SPY working; ~~unification with `financial_market_reactions` still pending~~ -- see the correction below, this was already resolved even at the time this table was written. Anchor-date diagnostic came back reassuring (small, explainable, consistently-negative drift) |
+| 6. Historical Pattern Engine | Future | **~15%** | Tag governance established and exhaustively reviewed. `pattern_card.py` cleared n=30 for the first time this session (rewarded n=52, punished n=54) — but this result is understood to be circular (tags were assigned from the same abnormal-return data being tested), confirming the harness works end-to-end, not that anything is predictive. **New this session: `event_pre_context` layer built** (firm state, market regime, size bucket per event) — the actual pre-event-known feature set a genuine predictive test would need. `surprise_vs_consensus` remains explicitly unbuildable (no analyst estimate data ingested anywhere in the project) |
+| 7. Dashboard/Website | Not yet built | **0%** | Untouched — correctly deferred |
+| 8. Autotrader ("the brain") | Not yet built | **0%** | Untouched, correctly deferred until Phases 1–7 are genuinely trustworthy. See Section 8 below for the full scoped vision, and the new backtest-environment addendum |
+
+**Two real bugs found and permanently fixed this session, beyond the coverage expansion itself:**
+1. `classify_8k_filings.py`'s resumability check silently capped at Supabase's default 1,000-row query limit as the classification table grew past that size — fixed with explicit pagination, benefiting every future classification run regardless of scale.
+2. PLD's 2011-2016 quarterly financial gap was traced to two real REIT-specific revenue XBRL concepts (`OperatingLeasesIncomeStatementLeaseRevenue`, `RealEstateRevenueNet`) not in the ingestion candidate list — fixed and re-ingested.
+3. (Discovered later, same session) `populate_pre_context.py`'s market-cap lookup used the wrong column name (`close_price` instead of the real `close`) — silently returned NULL for all 337 rows despite reporting success; caught via direct verification query, not by trusting the script's own success message, then fixed and confirmed (335/337 populated correctly).
+
+## 9. Coverage Tier System (GICS-Based)
+
+Adopted the real, industry-standard Global Industry Classification Standard (GICS) — 11 sectors, 25 industry groups, 74 industries, 163 sub-industries, maintained by MSCI/S&P Dow Jones Indices.
+
+**Tier 1 — Cross-sector anchors (one per GICS sector, longest public history preferred as tiebreaker). STATUS: all 11 fully onboarded, ingested, AND now have rich event histories as of this session.**
+
+| GICS Sector | Anchor | Status | Notes |
+|---|---|---|---|
+| Information Technology | MSFT | Onboarded, events built | |
+| Health Care | PFE | Onboarded, events built | |
+| Financials | JPM | Onboarded, events built | |
+| Consumer Discretionary | F (Ford) | **Onboarded, 127 real events built this session** | Largest single haul: historic Mulally hire, Way Forward restructuring, live BlueOval SK battery saga |
+| Consumer Staples | PG | **Onboarded, 37 real events built this session** | Gillette ($54B), Coty ($15B), Lafley "boomerang CEO" saga |
+| Industrials | GE | **Onboarded, 116 real events built this session** | Richest single history: 2008 Berkshire rescue, Capital Exit Plan, full 3-way split through GE Aerospace rename |
+| Energy | XOM | **Onboarded, 41 real events built this session** | Real, tracked, hard-to-fix gap: 2007-2016 quarterly financial thinness, likely a custom XBRL extension concept requiring raw instance-document inspection to fully resolve — deliberately accepted for now |
+| Utilities | AEP | **Onboarded, 69 real events built this session** | Turk Plant 15-year saga, Akins installed-then-removed reversal, Icahn activism |
+| Materials | LIN | **Onboarded, 12 real events built this session** | Praxair/Linde merger saga, Lamba CEO succession |
+| Real Estate | PLD | **Onboarded, 65 real events built this session** | AMB-ProLogis 2011 founding merger; live SEGRO takeover bid as of latest data |
+| Communication Services | T (AT&T) | Onboarded (financials/prices only — event history not yet built) | |
+
+**Tier 1.5 — Within-sector comparison set** (existing, not abandoned): AAPL, NVDA, AMD sit in Information Technology alongside MSFT — a deliberate direct-competitor/within-sector comparison set, fully built out already.
+
+**Tier 2/3/4** (future, unchanged from original scoping): large-cap sector-filling → mid-cap → small-cap/recent-IPO, with Tier 4 only ever added when already chained to an existing graph node (a named supplier, competitor, or counterparty in an existing event) — never onboarded cold.
+
+**Important framing note (this session):** the current 13-company universe is explicitly described as **anchor nodes for a future, much larger universe** — not the final intended scope. This has real design implications already accounted for: `market_regimes` is universe-independent by construction (dated by calendar time, not tied to any company), and both AI classification pipelines (`classify_8k_filings.py`, `suggest_event_tags.py`) are already fully ticker-agnostic, so onboarding future companies means running the same proven scripts, not rebuilding anything. One expected future change: `same_industry_comparison` and `cross_entity_ripple` currently have few instances because the universe is deliberately sector-diverse (one anchor per GICS sector) — once more companies are added *within* the same sector, those tags should genuinely fire much more often, which would be the system working correctly, not a signal of anything wrong.
+
+**Immediate remaining Tier 1 work:** build T/AT&T's event history using the now-proven `classify_8k_filings.py` pipeline, the same way the other 7 were done this session.
+
+## 10. Immediate Next Steps
+
+1. **Root-cause XOM's quarterly gap properly**, if ever revisited: would require pulling raw XBRL instance documents from individual 10-Q filings (not the aggregated company-facts API), since the standard concept scan found nothing — likely a custom company-specific extension concept from XOM's early XBRL era.
+2. **Build T/AT&T's event history** — the one remaining Tier 1 anchor without a built-out event history, using the proven classifier pipeline.
+4. **Build the actual Phase 6 walk-forward evaluation harness** (Section 6) — `pattern_card.py` exists but doesn't yet implement the sector benchmark, base rate comparison, or walk-forward out-of-sample split. This is the real remaining Phase 6 deliverable.
+5. **Consider Tier 2 large-cap sector-filling tickers**, or continue deepening the current 13 with T's event history first.
+6. **Revisit the news-sequence chain-detection Phase 4 idea** once Track B has accumulated enough real article volume to test against.
+7. **The `surprise_vs_consensus` gap** — would require a new data source (analyst estimates) not currently part of any track; flag for a future dedicated scoping session, don't build a weaker silent substitute.
 
 <!-- entry: 2026-09-08-01 | date: 2026-09-08 | label: PROJECT_PLAN | source-line: PLAN:274 | approx: no -->
 ### 2026-09-08-01 — Correction (verified this session): Anchor-Date Unification Is Already Resolved
