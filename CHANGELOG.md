@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-29-12 | 2026-10-29 | documents | G7 pre-registration Addendum 1: corrected design, procedure map, and the controls; oil con |
 | 2026-10-29-11 | 2026-10-29 | documents | G7 pre-registration: predictions for the 15 proven flags, written before any re-run |
 | 2026-10-29-10 | 2026-10-29 | checkpoint | CHECKPOINT 2026-10-29 15:27 (afternoon 2026-10-29: pit_v2 built and G6 closed with limits, |
 | 2026-10-29-09 | 2026-10-29 | documents | G6 closed with limits; G7 scope enlarged to every flag; plan for revisiting the nulls |
@@ -225,6 +226,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-29-12 | date: 2026-10-29 | label: documents | source-line: new | approx: no -->
+### 2026-10-29-12 — G7 pre-registration Addendum 1: corrected design, procedure map, and the controls; oil control query recovered
+WHAT: Addendum 1 appended to results/PREREG_g7_proven_rerun_2026-10-29.md by scripts/audit/patch_prereg_addendum1_1029.py (hash-gated; text only, no prediction changed), BEFORE any run. It corrects my earlier plan: only the controls and flags with frozen or market-wide inputs can reproduce the ledger's numbers, because the database changed; event-level flags get two runs on pinned code, Arm 0 as-is and Arm 1 with the exclusions applied (including to the isolation test). It maps each of the 15 flags to its procedure and says which are confirmed, inferred or not yet located (event_premium_20d runs through the database function ratio_period; event_daily_range_coverage is not located; the burst and type flags are SQL on the view event_profile_base, created 2026-10-16). It sets tripwires (counts and latest dates printed by every run) and the run order (controls first). The macro_oil_shock_energy_same_day query, recovered from the 2026-10-16 20:30 session, is saved as scripts/sql/g7_control_oil_shock_energy_2026-10-16.sql: it reproduces Energy 1.293 (t 9.2, 115 months) and 1.319 (t 8.2, 64 months). Findings: stock_card.py and day_card.py are display scripts that read the ledger, not tests; the earnings role-band flag must be pinned to commit 63e08d84 because commit b68b1b1 (2026-10-22) refit the role model after the test.
 
 <!-- entry: 2026-10-29-11 | date: 2026-10-29 | label: documents | source-line: new | approx: no -->
 ### 2026-10-29-11 — G7 pre-registration: predictions for the 15 proven flags, written before any re-run
