@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-29-07 | 2026-10-29 | correction | G6 reads: stored filing dates are never early; 27,909 of 28,533 quarterly rows have a real |
 | 2026-10-29-06 | 2026-10-29 | checkpoint | CHECKPOINT 2026-10-29 14:30 (late morning 2026-10-29: G5 closed, Phase 5 gate re-passed on |
 | 2026-10-29-05 | 2026-10-29 | documents | README and PROJECT_STATUS v1.3: the 2026-10-29 refresh from measured numbers; G5 closed |
 | 2026-10-29-04 | 2026-10-29 | checkpoint | CHECKPOINT 2026-10-29 13:41 (mid-morning 2026-10-29: provenance found in event_component_d |
@@ -220,6 +221,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-29-07 | date: 2026-10-29 | label: correction | source-line: new | approx: no -->
+### 2026-10-29-07 — G6 reads: stored filing dates are never early; 27,909 of 28,533 quarterly rows have a real date; correction to the 2006-2007 claim
+WHAT: three read-only measurements for gate G6 and a correction of this morning's claim. FINDINGS: sec_filings holds only two form types (10-Q 38,004 and 10-K 11,888); the quarterly rows are fiscal quarters 1 to 4 (7,520, 7,322, 7,375 and 6,316), with Q4 covered by 10-Ks; 27,909 of 28,533 rows (97.8 percent) have a real filing date, 624 have none. The stored filed_date is never earlier than the real date (0 rows), is within 3 days for 26,119 rows and more than 30 days later for 1,790 rows (retroactive; none between 4 and 30 days): 1 in 2006, 173 in 2007, 620 in 2008, 547 in 2009, 261 in 2010, 49 in 2011, 139 in 2012 to 2024. CORRECTION: the status file and the late-morning checkpoint said 2006 and 2007 (181 rows) had no filing record and that Q4 rows were untested; both were wrong (the earlier 10-Q-only test missed the Q4 rows, which 10-Ks cover; 174 of those 181 rows have a real date). The G6 row of docs/PROJECT_STATUS.md is corrected by scripts/audit/patch_status_g6_correction.py (hash-gated). Calls missed: the variant form types (none exist), the 2009 and 2010 share of retroactive rows (half and a fifth, not most), and 2006 to 2007 having no real dates.
 
 <!-- entry: 2026-10-29-06 | date: 2026-10-29 | label: checkpoint | source-line: new | approx: no -->
 ### 2026-10-29-06 — CHECKPOINT 2026-10-29 14:30 (late morning 2026-10-29: G5 closed, Phase 5 gate re-passed on the final data, documents refreshed from measured numbers)
