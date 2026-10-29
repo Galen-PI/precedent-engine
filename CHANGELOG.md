@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-29-11 | 2026-10-29 | documents | G7 pre-registration: predictions for the 15 proven flags, written before any re-run |
 | 2026-10-29-10 | 2026-10-29 | checkpoint | CHECKPOINT 2026-10-29 15:27 (afternoon 2026-10-29: pit_v2 built and G6 closed with limits, |
 | 2026-10-29-09 | 2026-10-29 | documents | G6 closed with limits; G7 scope enlarged to every flag; plan for revisiting the nulls |
 | 2026-10-29-08 | 2026-10-29 | database | event_firm_state_pit2 built (rule pit_v2): real filing dates; measured effect is small: +3 |
@@ -224,6 +225,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-29-11 | date: 2026-10-29 | label: documents | source-line: new | approx: no -->
+### 2026-10-29-11 — G7 pre-registration: predictions for the 15 proven flags, written before any re-run
+WHAT: results/PREREG_g7_proven_rerun_2026-10-29.md registered BEFORE any result: for each of the 15 proven flags, the old numbers from flag_ledger_evidence, the registered rule (unchanged), the exposure to this week's fixes, a predicted value with a range, and the probability it still passes. Three market-wide flags are positive controls (band_stress_scale_median, fomc_announcement_day_market_move, macro_oil_shock_energy_same_day): a control that misses its tolerance stops the re-run. OVERALL CALLS: all 15 pass 43 percent (range 25 to 60), expected failures about 0.8, at least one fails 57 percent, a control misses 9 percent, about 6 of the 33 numeric predictions (80 percent intervals) are expected to land outside their ranges and 10 or more would mean my intervals are too narrow (25 percent). Modelling assumption: the fixes replaced about 3 to 4 percent of an event-level sample, so an estimate should move by about a fifth of its standard error plus a known direction. The file names what is not yet known (the re-run script for each flag, whether it can read the analysis set, whether the original tests used the exploration universe); those go in a dated addendum before any run. A fail is a recommendation; demotion is Galen's decision; every result, including unchanged, becomes an append-only ledger note. The first version of this file was refused by the pre-commit PREREG check (it did not follow results/TEMPLATE_PREREG.md) and was rewritten to the template, under the new name results/PREREG_g7_proven_rerun_2026-10-29.md, before any commit; no result had been computed.
 
 <!-- entry: 2026-10-29-10 | date: 2026-10-29 | label: checkpoint | source-line: new | approx: no -->
 ### 2026-10-29-10 — CHECKPOINT 2026-10-29 15:27 (afternoon 2026-10-29: pit_v2 built and G6 closed with limits, corrections to two earlier claims, the plan for revisiting the nulls)
