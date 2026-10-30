@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-30-36 | 2026-10-30 | documents | README and PROJECT_STATUS (v1.4) updated after the G7 re-runs of the 15 proven flags; tabl |
 | 2026-10-30-35 | 2026-10-30 | database | G7 ledger update applied: 16 dated notes appended and 5 premium evidence rows added; verif |
 | 2026-10-30-34 | 2026-10-30 | documents | G7 complete: Addendum 12 and the ACTUAL-TABLE (52 rows) appended to the proven-flags regis |
 | 2026-10-30-33 | 2026-10-30 | database | G7: event_daily_range_coverage re-run (the last flag): stored lists reproduced exactly, AR |
@@ -264,6 +265,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-30-36 | date: 2026-10-30 | label: documents | source-line: new | approx: no -->
+### 2026-10-30-36 — README and PROJECT_STATUS (v1.4) updated after the G7 re-runs of the 15 proven flags; table inventory and drop list refreshed
+WHAT: scripts/audit/update_docs_1030.py (all-or-nothing exact replacements, each old text asserted to occur once) updated README.md (the System and Findings rows, the as-of note, the What has held paragraph) and docs/PROJECT_STATUS.md to v1.4: version line, ledger and database rows (174 base tables, 34 views, 3,231 MB, counted 2026-10-30; 286 Python scripts in 17 folders; 543 commits since 2026-08-19; 246 changelog entries before this one), a new Added and changed 2026-10-30 paragraph (sec_8k_report_dates, event_timing, the rebuild copies, the ledger backups and update, the data-integrity findings, the inventory of 47 temporary-looking tables: 16 on the drop list, 5 KEPT, 26 older ones left to G10), the ledger section 5.1 (all 15 proven flags rerun and passing), the calibration section 5.4 (32 of 33 inside, Brier 0.122), the G7 row (15 proven flags DONE; leads, Tier 2, the significance audit and the independence re-measure still open; a PENDING slot for the Tier 1 outcomes), the infrastructure line, and the after-2026-11-28 drop row (now 16 tables and 2 functions, with a NEVER-drop list: event_market_reactions_v2_snapshot_20261019 which direction_test.py reads, new_events_20261015, new_events_wave2, events_ratio_backup_20261019, reactions_view_only_backup_20261019). The README table was NOT regenerated: only the System and Findings rows were updated, by hand, and the note says so; the next regeneration should rerun scripts/sql/readme_snapshot.sql. Misses in my chat calls: the snapshot query is one long UNION ALL (called a handful of statements), commits since 2026-08-19 (543, called 500 to 530), Python scripts (286, called 265 to 285).
 
 <!-- entry: 2026-10-30-35 | date: 2026-10-30 | label: database | source-line: new | approx: no -->
 ### 2026-10-30-35 — G7 ledger update applied: 16 dated notes appended and 5 premium evidence rows added; verified against the database

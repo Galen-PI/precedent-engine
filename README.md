@@ -10,9 +10,9 @@ Company → Financials → Events → External Conditions → Price Reaction →
 
 ---
 
-## Where it stands (as of 2026-10-29)
+## Where it stands (as of 2026-10-29; the System and Findings rows as of 2026-10-30)
 
-*Every number in this table was measured on 2026-10-29: the database figures by the query saved as scripts/sql/readme_snapshot.sql, the repository figures (scripts, commits, changelog entries) by counting files and commits. Re-check before relying on one: the table is regenerated at each milestone, not edited by hand.*
+*Every number in this table was measured on 2026-10-29, except the System and Findings rows, which were updated by hand on 2026-10-30 from direct counts: the database figures by the query saved as scripts/sql/readme_snapshot.sql, the repository figures (scripts, commits, changelog entries) by counting files and commits. Re-check before relying on one: the table is regenerated at each milestone (the next full regeneration should rerun readme_snapshot.sql).*
 
 | area | what exists |
 |---|---|
@@ -25,8 +25,8 @@ Company → Financials → Events → External Conditions → Price Reaction →
 | **Reactions** | **22,486** events with a measured 20-day reaction against SPY; 23,309 pre-context rows; 954,685 ripple-timeline rows (21,915 events) |
 | **Labels** | rewarded 5,918, punished 6,082, muted 8,144, diverged 2,380 (the diverged label is under revision; see limits) |
 | **Accounting** | every one of the 23,554 events is either measured or has a recorded reason (1,068 unmeasured, all explained); 1,527 are excluded from analysis, none are under review, 639 carry a note |
-| **Findings** | 112 flags in the ledger: **15 proven, 21 lead, 62 null, 2 retired, 12 untested** |
-| **System** | Supabase Postgres: 163 tables and 34 views, 3.2 GB; 263 Python scripts in 17 folders; 498 commits since 2026-08-19; 200 dated changelog entries |
+| **Findings** | 112 flags in the ledger: **15 proven, 21 lead, 62 null, 2 retired, 12 untested**; all 15 proven flags were re-run on the cleaned data on 2026-10-30 and all 15 still pass their registered rules (the event premium is +0.0433, not +0.055, once four price-artifact events are removed) |
+| **System** | Supabase Postgres: 174 base tables and 34 views, 3.2 GB (3,231 MB); 47 of the tables carry backup, audit, snapshot, scratch or October-date names; 286 Python scripts in 17 folders; 543 commits since 2026-08-19; 246 dated changelog entries (all counted 2026-10-30) |
 
 ## The eight phases
 
@@ -45,7 +45,7 @@ Each phase answers one question and is done when a query says so (definitions an
 
 ## What has held and what has not
 
-By the flag ledger on 2026-10-28 (112 flags: 15 proven, 21 lead, 62 null, 12 untested, 2 retired; the readings and numbers are in THEORY.md). None has yet been re-run on the cleaned analysis set.
+By the flag ledger (112 flags: 15 proven, 21 lead, 62 null, 12 untested, 2 retired; the readings and numbers are in THEORY.md). On 2026-10-30 all 15 proven flags were re-run on the cleaned analysis set and all 15 still pass their registered rules (results/PREREG_g7_proven_rerun_2026-10-29.md, Addendum 12): 32 of 33 numeric predictions landed inside their intervals, and the one number that moved materially is the event premium, +0.0433 after four price-artifact events were removed (it was +0.055). The 21 leads and the other nulls have not been re-run on the cleaned set.
 
 - **Held, about the size of moves (not their direction):** event days run about 1.3 to 1.6 times a normal day, earnings days about 2.5 to 2.7 times, and scheduled FOMC announcements lift the whole market about 1.1 to 1.14 times; bands built from those widths calibrate to about 90% out of sample; Energy stocks move more on oil-shock days (same day only). Capital-raise filings show no burst.
 - **Held, weakly (direction):** the labeler's good-or-bad reading of an event's text gets the sign of the two-day move right about 58% of the time against about 54% by chance, and it explains almost none of the squared miss.
