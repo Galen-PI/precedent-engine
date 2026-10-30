@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-30-19 | 2026-10-30 | documents | DECISION: day 0 stays the filing date for every flag and test; the 8-K timing tables are d |
 | 2026-10-30-18 | 2026-10-30 | database | G7: wider-isolation robustness result saved: the early-day reaction at filing lags 2 to 4  |
 | 2026-10-30-17 | 2026-10-30 | documents | G7: wider-isolation robustness test of the lag 2 to 4 early-day reactions registered befor |
 | 2026-10-30-16 | 2026-10-30 | database | G7: reaction-day profile result saved (alignment CONFIRMED, condition iii on the edge): th |
@@ -247,6 +248,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-30-19 | date: 2026-10-30 | label: documents | source-line: new | approx: no -->
+### 2026-10-30-19 — DECISION: day 0 stays the filing date for every flag and test; the 8-K timing tables are diagnostic only (timing thread, item 3)
+WHAT: docs/DECISION_day0_filing_date_2026-10-30.md records the decision of Galen Pike (2026-10-30, on the assistant's recommendation) that day 0 of an event stays the filing date (events.event_date) for every flag, test and re-run; sec_8k_report_dates and event_timing are diagnostic and may be used to describe or split a result by filing lag and acceptance window but not to move day 0 of any registered definition. EVIDENCE: lag 0 (39.7 percent of linked events) needs the acceptance time and its days 0 to 1 window already holds both reaction days; lag 1 (25.3 percent) peaks on day 0 in all four groups; lags 2 to 4 (30.3 percent) are mixtures of an early reaction (robust to a 14-day isolation window) and a second wave at the filing; lags of 5 or more (4.8 percent) are not visible (data start at day -4). CONSEQUENCES: the flags already re-run and those still to run keep their original definitions and nothing already run is repeated; the headline burst of 1.31 is a blend (1.405 same day to 1.099 at lag 4) and understates lags of 2 or more; the Tier 1 candidate event_pre_days_m4_m1 stays null (largely explained by the 8-K filing lag; January forward check dropped; ledger note at the end of G7). A lag-aware idea must be a new registered flag with a forward check on the January 2027 data. Revisit if such a flag passes its forward test, if event_daily_abn is rebuilt with more pre-event days, or if the January data fail to reproduce the lag 0 and lag 1 peak days. Open points listed in the note (the lag-1 after-close mechanism is described not explained; condition iii of the profile test passed on the edge).
 
 <!-- entry: 2026-10-30-18 | date: 2026-10-30 | label: database | source-line: new | approx: no -->
 ### 2026-10-30-18 — G7: wider-isolation robustness result saved: the early-day reaction at filing lags 2 to 4 is ROBUST (4 of 4 conditions)
