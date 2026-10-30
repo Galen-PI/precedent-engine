@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-30-10 | 2026-10-30 | database | sec_8k_report_dates created and loaded: report date and acceptance time for 155,969 8-Ks |
 | 2026-10-30-09 | 2026-10-30 | database | 8-K lag measured for the first time: 45 percent of 8-Ks are filed a day or more after the  |
 | 2026-10-30-08 | 2026-10-30 | database | G7 Tier 1: event_pre_days_m4_m1 meets its registered rule on the larger and the cleaned sa |
 | 2026-10-30-07 | 2026-10-30 | documents | G7 Tier 1: window nulls (event_pre_days_m4_m1, event_lasting_days_6_20) registered; Addend |
@@ -238,6 +239,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-30-10 | date: 2026-10-30 | label: database | source-line: new | approx: no -->
+### 2026-10-30-10 — sec_8k_report_dates created and loaded: report date and acceptance time for 155,969 8-Ks
+WHAT: the table sec_8k_report_dates (security_id, accession_number, filing_date, report_date, acceptance_datetime, items, created_at; PRIMARY KEY (security_id, accession_number)) was created in the SQL editor on 2026-10-30 (statement saved as scripts/sql/sec_8k_report_dates_create.sql) and loaded with 155,969 rows from data_cache/8k_report_dates.csv by scripts/ingestion/pull_8k_report_dates.py --from-csv --apply (about four minutes; nothing in sec_8k_filings was touched). Content: the SEC submissions feed's reportDate (the date of the earliest event reported) and acceptanceDateTime (when EDGAR accepted the filing) for every 8-K of the 498 companies, filing dates 1994-01-05 to 2026-10-30. Lag between the event and the filing: same day 55.0 percent, a day or more late 45.0 percent (earnings 2.02: 13.2 percent late; other required items: 76.2; voluntary only: 40.7); every filing has both fields. An acceptance time after the 4 PM Eastern close puts the market reaction on the NEXT trading day, so the filing date can be too early as well as too late as the true event day. Tables: 165.
 
 <!-- entry: 2026-10-30-09 | date: 2026-10-30 | label: database | source-line: new | approx: no -->
 ### 2026-10-30-09 — 8-K lag measured for the first time: 45 percent of 8-Ks are filed a day or more after the event; new script pull_8k_report_dates.py

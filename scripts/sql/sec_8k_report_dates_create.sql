@@ -1,0 +1,3 @@
+-- Created in the SQL editor on 2026-10-30 and recorded here the same day. Holds reportDate and acceptanceDateTime from the SEC submissions feed for every 8-K of the 498 companies
+-- (loaded by scripts/ingestion/pull_8k_report_dates.py --from-csv --apply). Joins to sec_8k_filings on (security_id, accession_number). Additive; sec_8k_filings is untouched.
+CREATE TABLE sec_8k_report_dates (security_id uuid NOT NULL, accession_number text NOT NULL, filing_date date NOT NULL, report_date date, acceptance_datetime timestamptz, items text, created_at timestamptz NOT NULL DEFAULT now(), PRIMARY KEY (security_id, accession_number));
