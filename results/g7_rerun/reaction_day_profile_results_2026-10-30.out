@@ -1,0 +1,107 @@
+# G7 reaction-day profile test (results/PREREG_g7_reaction_day_profile_2026-10-30.md). Pasted from the SQL editor by Galen Pike on 2026-10-30 (about 14:55 UTC); the assistant transcribed it into this file and added only the '#' lines (shape checked: 66 rows, 11 groups, 11 day columns; not every digit machine-compared against the paste). 66 rows: 11 groups x 3 parts x 2 statistics. Day -5 is NULL in every row (see the note at the end).
+| grp            | part       | stat    | n     | d_m5 | d_m4  | d_m3  | d_m2  | d_m1  | d_0   | d_p1  | d_p2  | d_p3  | d_p4  | d_p5  |
+| -------------- | ---------- | ------- | ----- | ---- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- |
+| ALL_LINKED     | all        | 1_ratio | 11151 | null | 1.039 | 1.055 | 1.042 | 1.065 | 1.350 | 1.275 | 1.029 | 1.014 | 1.000 | 0.987 |
+| ALL_LINKED     | all        | 2_se    | 11151 | null | 0.013 | 0.013 | 0.013 | 0.014 | 0.018 | 0.018 | 0.012 | 0.012 | 0.011 | 0.011 |
+| ALL_LINKED     | non_sealed | 1_ratio | 7399  | null | 1.024 | 1.057 | 1.043 | 1.084 | 1.339 | 1.304 | 1.039 | 1.022 | 1.005 | 0.991 |
+| ALL_LINKED     | non_sealed | 2_se    | 7399  | null | 0.014 | 0.015 | 0.015 | 0.018 | 0.021 | 0.022 | 0.015 | 0.015 | 0.014 | 0.013 |
+| ALL_LINKED     | sealed     | 1_ratio | 3752  | null | 1.067 | 1.052 | 1.039 | 1.028 | 1.371 | 1.219 | 1.010 | 0.998 | 0.991 | 0.980 |
+| ALL_LINKED     | sealed     | 2_se    | 3752  | null | 0.027 | 0.022 | 0.024 | 0.021 | 0.035 | 0.030 | 0.019 | 0.019 | 0.019 | 0.019 |
+| L0_after_close | all        | 1_ratio | 2358  | null | 1.002 | 1.047 | 0.994 | 0.982 | 1.104 | 1.629 | 1.028 | 1.004 | 0.984 | 0.978 |
+| L0_after_close | all        | 2_se    | 2358  | null | 0.024 | 0.027 | 0.025 | 0.024 | 0.031 | 0.056 | 0.030 | 0.024 | 0.024 | 0.022 |
+| L0_after_close | non_sealed | 1_ratio | 1585  | null | 0.984 | 1.032 | 0.978 | 0.969 | 1.058 | 1.696 | 1.030 | 0.974 | 0.980 | 0.970 |
+| L0_after_close | non_sealed | 2_se    | 1585  | null | 0.027 | 0.032 | 0.029 | 0.029 | 0.032 | 0.068 | 0.038 | 0.029 | 0.027 | 0.026 |
+| L0_after_close | sealed     | 1_ratio | 773   | null | 1.040 | 1.077 | 1.025 | 1.008 | 1.198 | 1.492 | 1.024 | 1.063 | 0.994 | 0.994 |
+| L0_after_close | sealed     | 2_se    | 773   | null | 0.047 | 0.050 | 0.048 | 0.045 | 0.069 | 0.099 | 0.044 | 0.044 | 0.046 | 0.038 |
+| L0_intraday    | all        | 1_ratio | 918   | null | 1.009 | 1.024 | 0.993 | 0.978 | 1.485 | 1.078 | 0.993 | 1.041 | 1.064 | 0.917 |
+| L0_intraday    | all        | 2_se    | 918   | null | 0.038 | 0.043 | 0.038 | 0.045 | 0.083 | 0.047 | 0.038 | 0.042 | 0.055 | 0.033 |
+| L0_intraday    | non_sealed | 1_ratio | 596   | null | 0.977 | 1.040 | 1.002 | 0.966 | 1.464 | 1.070 | 0.969 | 1.077 | 1.112 | 0.945 |
+| L0_intraday    | non_sealed | 2_se    | 596   | null | 0.041 | 0.060 | 0.047 | 0.055 | 0.091 | 0.060 | 0.049 | 0.056 | 0.075 | 0.044 |
+| L0_intraday    | sealed     | 1_ratio | 322   | null | 1.070 | 0.993 | 0.977 | 1.001 | 1.524 | 1.092 | 1.039 | 0.973 | 0.970 | 0.862 |
+| L0_intraday    | sealed     | 2_se    | 322   | null | 0.076 | 0.053 | 0.063 | 0.078 | 0.170 | 0.076 | 0.056 | 0.056 | 0.067 | 0.049 |
+| L0_pre_open    | all        | 1_ratio | 1223  | null | 1.068 | 1.082 | 1.042 | 1.071 | 1.919 | 1.221 | 1.072 | 1.030 | 0.988 | 1.029 |
+| L0_pre_open    | all        | 2_se    | 1223  | null | 0.046 | 0.040 | 0.035 | 0.042 | 0.074 | 0.038 | 0.036 | 0.034 | 0.033 | 0.035 |
+| L0_pre_open    | non_sealed | 1_ratio | 845   | null | 1.083 | 1.092 | 1.048 | 1.110 | 1.956 | 1.239 | 1.153 | 1.038 | 1.044 | 1.008 |
+| L0_pre_open    | non_sealed | 2_se    | 845   | null | 0.051 | 0.048 | 0.045 | 0.050 | 0.093 | 0.047 | 0.047 | 0.042 | 0.042 | 0.042 |
+| L0_pre_open    | sealed     | 1_ratio | 378   | null | 1.037 | 1.061 | 1.031 | 0.994 | 1.846 | 1.184 | 0.912 | 1.016 | 0.878 | 1.070 |
+| L0_pre_open    | sealed     | 2_se    | 378   | null | 0.091 | 0.073 | 0.054 | 0.074 | 0.120 | 0.066 | 0.053 | 0.058 | 0.050 | 0.064 |
+| L1_after_close | all        | 1_ratio | 902   | null | 0.946 | 0.949 | 0.944 | 1.072 | 1.361 | 1.238 | 0.989 | 0.960 | 0.998 | 0.964 |
+| L1_after_close | all        | 2_se    | 902   | null | 0.038 | 0.038 | 0.042 | 0.046 | 0.060 | 0.054 | 0.036 | 0.035 | 0.038 | 0.034 |
+| L1_after_close | non_sealed | 1_ratio | 580   | null | 0.982 | 0.957 | 0.986 | 1.097 | 1.373 | 1.212 | 1.001 | 0.921 | 1.028 | 0.981 |
+| L1_after_close | non_sealed | 2_se    | 580   | null | 0.049 | 0.050 | 0.059 | 0.064 | 0.075 | 0.069 | 0.048 | 0.041 | 0.053 | 0.043 |
+| L1_after_close | sealed     | 1_ratio | 322   | null | 0.879 | 0.934 | 0.863 | 1.025 | 1.338 | 1.288 | 0.965 | 1.035 | 0.942 | 0.932 |
+| L1_after_close | sealed     | 2_se    | 322   | null | 0.058 | 0.054 | 0.051 | 0.057 | 0.100 | 0.086 | 0.052 | 0.066 | 0.047 | 0.055 |
+| L1_intraday    | all        | 1_ratio | 499   | null | 0.949 | 1.025 | 1.075 | 1.057 | 1.394 | 1.107 | 1.005 | 1.083 | 1.078 | 0.963 |
+| L1_intraday    | all        | 2_se    | 499   | null | 0.043 | 0.051 | 0.065 | 0.056 | 0.097 | 0.062 | 0.046 | 0.061 | 0.048 | 0.043 |
+| L1_intraday    | non_sealed | 1_ratio | 302   | null | 0.917 | 1.021 | 1.066 | 1.032 | 1.295 | 1.088 | 1.059 | 1.041 | 1.066 | 0.978 |
+| L1_intraday    | non_sealed | 2_se    | 302   | null | 0.054 | 0.064 | 0.093 | 0.076 | 0.093 | 0.084 | 0.066 | 0.079 | 0.056 | 0.059 |
+| L1_intraday    | sealed     | 1_ratio | 197   | null | 1.000 | 1.031 | 1.087 | 1.095 | 1.548 | 1.137 | 0.921 | 1.149 | 1.096 | 0.938 |
+| L1_intraday    | sealed     | 2_se    | 197   | null | 0.071 | 0.083 | 0.084 | 0.080 | 0.200 | 0.089 | 0.061 | 0.093 | 0.088 | 0.059 |
+| L1_pre_open    | all        | 1_ratio | 978   | null | 1.023 | 1.037 | 1.026 | 1.031 | 1.756 | 1.150 | 1.034 | 1.033 | 1.048 | 1.001 |
+| L1_pre_open    | all        | 2_se    | 978   | null | 0.036 | 0.040 | 0.052 | 0.042 | 0.079 | 0.045 | 0.037 | 0.040 | 0.043 | 0.035 |
+| L1_pre_open    | non_sealed | 1_ratio | 646   | null | 0.994 | 1.017 | 1.004 | 1.014 | 1.716 | 1.117 | 1.011 | 1.019 | 1.036 | 1.027 |
+| L1_pre_open    | non_sealed | 2_se    | 646   | null | 0.042 | 0.046 | 0.049 | 0.051 | 0.096 | 0.047 | 0.043 | 0.044 | 0.053 | 0.045 |
+| L1_pre_open    | sealed     | 1_ratio | 332   | null | 1.080 | 1.076 | 1.068 | 1.064 | 1.835 | 1.216 | 1.078 | 1.059 | 1.071 | 0.949 |
+| L1_pre_open    | sealed     | 2_se    | 332   | null | 0.069 | 0.076 | 0.119 | 0.072 | 0.141 | 0.095 | 0.072 | 0.080 | 0.077 | 0.055 |
+| L1_rolled      | all        | 1_ratio | 386   | null | 1.002 | 1.020 | 1.044 | 1.172 | 1.448 | 1.209 | 1.003 | 1.056 | 0.993 | 0.989 |
+| L1_rolled      | all        | 2_se    | 386   | null | 0.059 | 0.061 | 0.088 | 0.088 | 0.113 | 0.073 | 0.057 | 0.058 | 0.062 | 0.065 |
+| L1_rolled      | non_sealed | 1_ratio | 260   | null | 1.008 | 1.034 | 1.054 | 1.249 | 1.410 | 1.218 | 1.072 | 1.117 | 1.017 | 1.000 |
+| L1_rolled      | non_sealed | 2_se    | 260   | null | 0.063 | 0.063 | 0.073 | 0.117 | 0.105 | 0.086 | 0.070 | 0.072 | 0.066 | 0.067 |
+| L1_rolled      | sealed     | 1_ratio | 126   | null | 0.990 | 0.996 | 1.027 | 1.037 | 1.513 | 1.192 | 0.882 | 0.949 | 0.950 | 0.970 |
+| L1_rolled      | sealed     | 2_se    | 126   | null | 0.121 | 0.127 | 0.207 | 0.127 | 0.252 | 0.133 | 0.095 | 0.092 | 0.127 | 0.136 |
+| L2_all         | all        | 1_ratio | 1355  | null | 1.032 | 1.007 | 1.086 | 1.285 | 1.272 | 1.277 | 1.056 | 1.007 | 0.900 | 0.963 |
+| L2_all         | all        | 2_se    | 1355  | null | 0.036 | 0.033 | 0.041 | 0.060 | 0.050 | 0.053 | 0.033 | 0.042 | 0.026 | 0.030 |
+| L2_all         | non_sealed | 1_ratio | 900   | null | 1.015 | 1.039 | 1.043 | 1.349 | 1.250 | 1.369 | 1.073 | 1.068 | 0.886 | 0.982 |
+| L2_all         | non_sealed | 2_se    | 900   | null | 0.040 | 0.040 | 0.045 | 0.083 | 0.052 | 0.071 | 0.036 | 0.058 | 0.029 | 0.036 |
+| L2_all         | sealed     | 1_ratio | 455   | null | 1.066 | 0.950 | 1.165 | 1.168 | 1.313 | 1.107 | 1.024 | 0.896 | 0.926 | 0.929 |
+| L2_all         | sealed     | 2_se    | 455   | null | 0.072 | 0.055 | 0.080 | 0.077 | 0.107 | 0.073 | 0.066 | 0.051 | 0.053 | 0.054 |
+| L3_all         | all        | 1_ratio | 1132  | null | 1.054 | 1.100 | 1.171 | 1.021 | 1.210 | 1.147 | 1.034 | 0.966 | 1.014 | 1.010 |
+| L3_all         | all        | 2_se    | 1132  | null | 0.036 | 0.041 | 0.046 | 0.039 | 0.044 | 0.043 | 0.032 | 0.031 | 0.032 | 0.035 |
+| L3_all         | non_sealed | 1_ratio | 744   | null | 1.019 | 1.084 | 1.208 | 1.075 | 1.240 | 1.232 | 1.014 | 0.991 | 0.970 | 1.033 |
+| L3_all         | non_sealed | 2_se    | 744   | null | 0.040 | 0.050 | 0.060 | 0.052 | 0.053 | 0.055 | 0.039 | 0.037 | 0.038 | 0.045 |
+| L3_all         | sealed     | 1_ratio | 388   | null | 1.117 | 1.130 | 1.103 | 0.920 | 1.155 | 0.990 | 1.070 | 0.920 | 1.094 | 0.966 |
+| L3_all         | sealed     | 2_se    | 388   | null | 0.071 | 0.072 | 0.069 | 0.052 | 0.078 | 0.067 | 0.057 | 0.058 | 0.056 | 0.054 |
+| L4_all         | all        | 1_ratio | 1204  | null | 1.210 | 1.177 | 1.065 | 1.060 | 1.070 | 1.128 | 1.037 | 1.038 | 1.016 | 1.023 |
+| L4_all         | all        | 2_se    | 1204  | null | 0.062 | 0.044 | 0.037 | 0.035 | 0.036 | 0.039 | 0.033 | 0.038 | 0.034 | 0.036 |
+| L4_all         | non_sealed | 1_ratio | 805   | null | 1.167 | 1.202 | 1.099 | 1.085 | 1.103 | 1.086 | 1.028 | 1.088 | 1.018 | 1.002 |
+| L4_all         | non_sealed | 2_se    | 805   | null | 0.055 | 0.055 | 0.047 | 0.044 | 0.044 | 0.044 | 0.042 | 0.049 | 0.044 | 0.041 |
+| L4_all         | sealed     | 1_ratio | 399   | null | 1.298 | 1.124 | 0.996 | 1.009 | 1.004 | 1.213 | 1.057 | 0.936 | 1.011 | 1.067 |
+| L4_all         | sealed     | 2_se    | 399   | null | 0.151 | 0.073 | 0.057 | 0.054 | 0.061 | 0.079 | 0.052 | 0.054 | 0.054 | 0.070 |
+
+# DECISION RULE (fixed before the result), read from the all-companies rows by the assistant:
+#   (i)  L0_after_close peak day +1 (day 0 1.104, day +1 1.629): MET. L0_pre_open peak day 0 (1.919 against 1.221 on day +1): MET.
+#   (ii) L1_rolled peak day 0 (1.448; day -1 1.172, day +1 1.209): MET. L1_pre_open peak day 0 (1.756): MET.
+#   (iii) day -k ratio of 1.10 or more with z of 2 or more in at least two of: L2_all day -2 1.086 (SE 0.041, z 2.10: z met, ratio below 1.10); L3_all day -3 1.100 (SE 0.041, z 2.44: MET as displayed, ON THE EDGE because the output is rounded to three decimals); L4_all day -4 1.210 (SE 0.062, z 3.39: MET). Two of three are met on the displayed values, by the narrowest possible margin.
+#   VERDICT: reaction-day alignment CONFIRMED by the registered rule, with condition (iii) on the edge. The NOT-CONFIRMED trigger (L0_after_close peak not on day +1) did not occur.
+#   SAMPLE CHECK: every L0 and L1 group has at least 386 events (the smallest is L1_rolled); ALL_LINKED (day 0 + day +1) / 2 = 1.3125 against 1.311: passes.
+# WHAT THE PROFILES SHOW (descriptive, read by the assistant; peak days agree in the non-sealed and sealed sets in all 7 lag-0 and lag-1 groups):
+#   Lag 0: before the open day 0 1.919 then 1.221; during the session day 0 1.485 then 1.078; after the close day 0 1.104 (z 3.4) and day +1 1.629. The acceptance window places the reaction day for same-day filings.
+#   Lag 1: day 0 is the peak in ALL FOUR groups, including filings accepted after the close and not rolled (day 0 1.361, day +1 1.238; day -1 1.072), against my prediction of day +1. For lag 1 the filing date is the reaction day whatever the acceptance time. L1_rolled day -1 is 1.172 (SE 0.088) overall, 1.249 non-sealed, 1.037 sealed: not replicated, do not read much into it.
+#   Lags 2 to 4: the reaction is spread over several days. L2: day -1 1.285, day +1 1.277, day 0 1.272, day -2 only 1.086. L3: day 0 1.210, day -2 1.171, day +1 1.147, day -3 1.100. L4: day -4 1.210, day -3 1.177, day +1 1.128. For L2 and L3 the early reaction falls on a trading day AFTER the report date (day -(k-1)), and a second wave arrives with the filing: the mixture of early and at-filing news now seen directly.
+#   TOTAL EXCESS over days -4 to +4 (sum of ratio minus 1; descriptive, derived from this table by the assistant, post-seen and NOT a registered quantity): L0_pre_open 1.49, L0_intraday 0.67, L0_after_close 0.77, L1_pre_open 1.14, L1_intraday 0.77, L1_after_close 0.46, L1_rolled 0.95, L2 0.92, L3 0.72, L4 0.80. Late-filed events carry about as much total reaction as same-day ones; it is spread over more days.
+# NOTE ON DAY -5: it is NULL for every event in this sample (the table minimum of -5 comes from a few stray rows). Per event the daily data effectively start at day -4. Earlier statements in this work that the data run from day -5 should read day -4; lags of 5 or more cannot be re-centered, and for lag 4 day -4 is the earliest visible day.
+
+# ACTUAL VALUES for the registered rows p1 to p22 of results/PREREG_g7_reaction_day_profile_2026-10-30.md (id | actual | se; prob rows 1 or 0), to be appended as the ACTUAL-TABLE at the end:
+p1 | 1.919 | 0.074
+p2 | 1.071 | 0.042
+p3 | 1.485 | 0.083
+p4 | 1.104 | 0.031
+p5 | 1.629 | 0.056
+p6 | 1.448 | 0.113
+p7 | 1.172 | 0.088
+p8 | 1.756 | 0.079
+p9 | 1.031 | 0.042
+p10 | 1.238 | 0.054
+p11 | 1.086 | 0.041
+p12 | 1.100 | 0.041
+p13 | 1.210 | 0.062
+p14 | 1 |
+p15 | 1 |
+p16 | 1 |
+p17 | 1 |
+p18 | 1 |
+p19 | 0 |
+p20 | 1 |
+p21 | 1 |
+p22 | 1 |
+# SCORE: numeric 10 of 13 inside their 80 percent intervals (misses p7 L1_rolled day -1 1.172 against 0.96 to 1.16; p10 L1_after_close day +1 1.238 against 1.38 to 1.95; p11 L2 day -2 1.086 against 1.12 to 1.40). Probabilities: p14 to p18 true, p19 false (called 0.60), p20 true on the edge (0.75), p21 true, p22 true (called 0.55).
