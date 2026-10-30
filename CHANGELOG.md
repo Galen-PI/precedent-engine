@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-30-22 | 2026-10-30 | database | G7: earnings_role_bands_walk_forward re-run: ARM 0 reproduces the original exactly, ARM 1  |
 | 2026-10-30-21 | 2026-10-30 | documents | G7: Addendum 7a corrects the description of the earlier ARM 1 patch: the committed copy re |
 | 2026-10-30-20 | 2026-10-30 | documents | G7: Addendum 7 (earnings_role_bands_walk_forward procedure) committed before the run; ARM  |
 | 2026-10-30-19 | 2026-10-30 | documents | DECISION: day 0 stays the filing date for every flag and test; the 8-K timing tables are d |
@@ -250,6 +251,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-30-22 | date: 2026-10-30 | label: database | source-line: new | approx: no -->
+### 2026-10-30-22 — G7: earnings_role_bands_walk_forward re-run: ARM 0 reproduces the original exactly, ARM 1 is identical, the flag still passes; p11 to p14 hit
+WHAT: the re-run of earnings_role_bands_walk_forward (scripts/card/earnings_role_band_test.py, pinned worktree at 63e08d8; procedure Addendum 7 and 7a of results/PREREG_g7_proven_rerun_2026-10-29.md; files results/g7_rerun/role_band_arm0_2026-10-30.out, role_band_arm1_2026-10-30.out, the three diffs and actuals_role_band_2026-10-30.txt). ARM 0 (unpatched) reproduced the original printout with 0 diff lines (33,023 isolated earnings events, 29,737 with a forward habit; ROLES/POOLED 0.890, 0.869, 0.857; coverage 88.5 to 91.9 percent; placebo 1.005, 1.004, 1.003). ARM 1 (g7_patch_arm1_event_width_v2.py skipped 716 of the ev_ent rows, the 1,527 excluded events in scope) was identical to ARM 0 in every printed line; all three tripwires met. The flag still PASSES its registered rule in both arms (verdict ROLE BANDS IMPROVE) and the registered rows p11 to p14 hit (0.869, 0.857, 88.5, true). Fingerprints matched: audit_matrices.npz sha256 7bd617a4...63e6 and 497 price-cache files written on 2026-10-21; the placebo is seeded (SEED 20261021). Recorded: sealed versus non-sealed is not reported (the script has no company-set split); the highest coverage cell stays at 91.9 percent, 0.1 below the 92 percent limit; the explanation for ARM 1 having no visible effect (the 716 rows are almost all events with no price history) is unverified. Misses in my chat calls: the runtime (45 s against 50 to 90) and tripwire 3's wording (the data_cache link always shows as untracked). G7: 11 of 15 flags re-run by my count; 4 remain (event_earnings_window_width, event_label_direction_sign, event_premium_20d, event_daily_range_coverage).
 
 <!-- entry: 2026-10-30-21 | date: 2026-10-30 | label: documents | source-line: new | approx: no -->
 ### 2026-10-30-21 — G7: Addendum 7a corrects the description of the earlier ARM 1 patch: the committed copy refuses a second application and prints the removed-row count

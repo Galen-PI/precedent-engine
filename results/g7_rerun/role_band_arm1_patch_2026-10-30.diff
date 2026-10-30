@@ -1,0 +1,26 @@
+diff --git a/scripts/card/event_width_test.py b/scripts/card/event_width_test.py
+index 58b13fe..aad86f2 100644
+--- a/scripts/card/event_width_test.py
++++ b/scripts/card/event_width_test.py
+@@ -80,7 +80,13 @@ def load_event_info(sb, master, cache_ids):
+         print("no event_direction_labels (%s); label fields skipped" % str(e)[:60], flush=True)
+     use_labels = len(labels) >= 1000
+     cand = defaultdict(lambda: defaultdict(list))
++    _g7_ex = {r["event_id"] for r in paged(sb, "event_exclusions", "event_id,severity", ["event_id"]) if r.get("severity") == "exclude"}
++    print("G7 ARM 1: %d excluded events are removed from the recorded event days" % len(_g7_ex), flush=True)
++    _g7_dropped = 0
+     for r in paged(sb, "ev_ent", "event_id,entity_id,d,ptype", ["event_id", "entity_id"]):
++        if r["event_id"] in _g7_ex:
++            _g7_dropped += 1
++            continue
+         i = bisect.bisect_left(master, str(r["d"])[:10])
+         if i >= len(master):
+             continue
+@@ -89,6 +95,7 @@ def load_event_info(sb, master, cache_ids):
+             for off in (0, 1):
+                 if i + off < len(master):
+                     cand[sid][i + off].append((off, r["event_id"], r["ptype"], size, timing))
++    print("G7 ARM 1: %d ev_ent rows were skipped as excluded events" % _g7_dropped, flush=True)
+     info = {}
+     for sid, days in cand.items():
+         info[sid] = {}
