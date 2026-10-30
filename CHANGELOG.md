@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-30-17 | 2026-10-30 | documents | G7: wider-isolation robustness test of the lag 2 to 4 early-day reactions registered befor |
 | 2026-10-30-16 | 2026-10-30 | database | G7: reaction-day profile result saved (alignment CONFIRMED, condition iii on the edge): th |
 | 2026-10-30-15 | 2026-10-30 | documents | G7: reaction-day profile test registered before any run (peak day by filing lag and accept |
 | 2026-10-30-14 | 2026-10-30 | checkpoint | CHECKPOINT 2026-10-30 14:41 (orientation after the 8-K timing work and a context compactio |
@@ -245,6 +246,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-30-17 | date: 2026-10-30 | label: documents | source-line: new | approx: no -->
+### 2026-10-30-17 — G7: wider-isolation robustness test of the lag 2 to 4 early-day reactions registered before any run (timing thread, item 2)
+WHAT: results/PREREG_g7_reaction_day_isolation_2026-10-30.md registered BEFORE any result, in the repo's template (14 predictions: 9 numeric at 80 percent, 5 probabilities). QUESTION: the reaction-day profile showed early-day reactions at filing lags 2 to 4 (L2 day -1 1.285; L3 day -2 1.171; L4 days -4 and -3 1.210 and 1.177); the isolation rule only removes neighbouring events from 5 days before the filing, so a neighbouring event of the same company 6 to 14 days earlier could produce them. TEST: the same profile query for lags 2, 3 and 4 with the isolation widened to 14 calendar days before the filing (18 rows, day -5 dropped because it is null). PREDICTIONS: about 90 percent of the events kept; modest shrinkage if the reactions are real (L4 day -4 1.19, day -3 1.16; L3 day -2 1.15; L2 day -1 1.27); a neighbour artifact would instead predict L4 day -4 near 1.08. DECISION RULE fixed in advance: ROBUST if at least three of (L4 day -4 at 1.12 or more, L4 day -3 at 1.12 or more, L3 day -2 at 1.10 or more, L2 day -1 at 1.20 or more), each with t>=2; NOT ROBUST if at most one; MIXED if two. Probability of ROBUST 0.75. If NOT ROBUST the lag-split result (earlier isolation) gets the same check before its lag 3 and 4 numbers are cited. The day-0 decision (day 0 stays the filing date) is unaffected whatever the result, because it rests on lags 0 and 1. The test creates no flag.
 
 <!-- entry: 2026-10-30-16 | date: 2026-10-30 | label: database | source-line: new | approx: no -->
 ### 2026-10-30-16 — G7: reaction-day profile result saved (alignment CONFIRMED, condition iii on the edge): the acceptance window places the reaction day for same-day filings only; lag 1 reacts on the filing date whatever the acceptance time
