@@ -1,0 +1,36 @@
+# G4 base-rate counts of 2026-10-30 (read-only; non-sealed tickers only; no individual candidate was looked at). Transcribed from the SQL editor output; shape checked.
+# QUERY 1: Part B candidates by threshold. t1 = one-day adjusted return, t2 = move relative to SPY in units of the stock own 64-day volatility; n_all = candidates; n_no_8k_within_5_days = those with no 8-K filing within 5 calendar days; tickers_no_8k = distinct tickers among those.
+| t1 | t2 | n_all | n_no_8k_within_5_days | tickers_no_8k |
+| 0.15 | 6 | 712 | 122 | 78 |
+| 0.15 | 8 | 450 | 57 | 41 |
+| 0.15 | 10 | 271 | 29 | 22 |
+| 0.15 | 15 | 75 | 11 | 9 |
+| 0.15 | 25 | 12 | 3 | 3 |
+| 0.20 | 6 | 331 | 60 | 48 |
+| 0.20 | 8 | 238 | 34 | 29 |
+| 0.20 | 10 | 163 | 18 | 16 |
+| 0.20 | 15 | 62 | 10 | 8 |
+| 0.20 | 25 | 12 | 3 | 3 |
+| 0.30 | 6 | 93 | 20 | 19 |
+| 0.30 | 8 | 73 | 14 | 13 |
+| 0.30 | 10 | 61 | 11 | 10 |
+| 0.30 | 15 | 35 | 7 | 6 |
+| 0.30 | 25 | 10 | 3 | 3 |
+| 0.40 | 6 | 31 | 7 | 7 |
+| 0.40 | 8 | 25 | 6 | 6 |
+| 0.40 | 10 | 23 | 6 | 6 |
+| 0.40 | 15 | 17 | 5 | 5 |
+| 0.40 | 25 | 8 | 3 | 3 |
+| 0.60 | 6 | 9 | 2 | 2 |
+| 0.60 | 8 | 7 | 2 | 2 |
+| 0.60 | 10 | 6 | 2 | 2 |
+| 0.60 | 15 | 6 | 2 | 2 |
+| 0.60 | 25 | 6 | 2 | 2 |
+# QUERY 2: change points of price_adjustment_factors by the size of the ratio jump k (k = ratio over the previous ratio of the same ticker), and how many fall on a day whose stored one-day move is large.
+| band | change_points | no_price_row_that_day | stored_move_10pct_or_more | stored_move_15pct_or_more | stored_move_30pct_or_more |
+| 1 abs ln k under 0.10 | 33065 | 0 | 251 | 84 | 2 |
+| 2 abs ln k 0.10 to 0.25 | 38 | 0 | 3 | 2 | 0 |
+| 3 abs ln k 0.25 to 0.50 | 102 | 0 | 2 | 0 | 0 |
+| 4 abs ln k 0.50 or more | 460 | 0 | 13 | 9 | 7 |
+# DERIVED (by the assistant, from the two tables): Part B at (0.15, 6): 712 candidates, 122 without an 8-K, 590 with one; with a move of 30 percent or more: 93 (20 without an 8-K); 15 to 30 percent: 619 (102 without an 8-K, 517 with one). Part C1: 600 change points with abs ln k of 0.10 or more, of which 18 fall on a day with a stored move of 10 percent or more (7 of 30 percent or more).
+# KNOWN CASES read on 2026-10-30 (prices and factor rows): KDP stored close 54.96 (2018-07-09) to 18.14 (2018-07-10), a factor row on 2018-07-10 with ratio 0.8174; KLAC stored close 0.3561 (2014-11-25) to 0.8430 (2014-11-26), factor rows 2014-11-13 ratio 0.004230 and 2014-11-26 ratio 0.012520. close and adjusted_close are identical in these rows.

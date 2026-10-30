@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-30-38 | 2026-10-30 | documents | G4 price-artifact detection: registration, base-rate counts and the scan SQL committed bef |
 | 2026-10-30-37 | 2026-10-30 | checkpoint | CHECKPOINT 2026-10-30 18:28 (fourth checkpoint of 2026-10-30: G7 of the 15 proven flags co |
 | 2026-10-30-36 | 2026-10-30 | documents | README and PROJECT_STATUS (v1.4) updated after the G7 re-runs of the 15 proven flags; tabl |
 | 2026-10-30-35 | 2026-10-30 | database | G7 ledger update applied: 16 dated notes appended and 5 premium evidence rows added; verif |
@@ -266,6 +267,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-30-38 | date: 2026-10-30 | label: documents | source-line: new | approx: no -->
+### 2026-10-30-38 — G4 price-artifact detection: registration, base-rate counts and the scan SQL committed before any candidate was listed
+WHAT: results/PREREG_g4_price_artifacts_2026-10-30.md (passes scripts/ops/check_prereg.py), results/g4_price_artifacts/base_rates_2026-10-30.txt and scripts/sql/g4_scan_2026-10-30.sql, committed BEFORE any candidate was listed. READS THAT SHAPED IT: the full G4 row (no pass test of its own); price_adjustment_factors has security_id, effective_date and ratio, 53,052 rows (about 100 change points per ticker: ex-dividend and split dates; my call of 1 to 4 million rows was wrong); close and adjusted_close are identical in the known cases, so the stored series is already on the vendor adjusted scale; KDP 2018-07-10 (stored x0.330) and KLAC 2014-11-26 (stored x2.368) BOTH have a change point on that very date, so the artifact is a mismatch between the change point and the move, not a missing adjustment (my theory of a missing change point was wrong). COUNTS (non-sealed): 712 Part B candidates at 15 percent and z of 6 (122 without an 8-K within 5 days; my call was 3,000 to 12,000), 93 of 30 percent or more, 18 of 600 large change points on a day with a stored move of 10 percent or more. DESIGN: event-free is a label, not a filter (KDP sits beside the merger filings); tier 1 reviewed in full; tier 2 sampled (60, seeded) with escalation at 3 artifacts; the user confirms every label; sealed tickers untouched; one view g4_part_b_candidates is created in the editor after this commit. Predictions p1 to p11 registered. NEXT: create the view, run S0 to S5, review.
 
 <!-- entry: 2026-10-30-37 | date: 2026-10-30 | label: checkpoint | source-line: new | approx: no -->
 ### 2026-10-30-37 — CHECKPOINT 2026-10-30 18:28 (fourth checkpoint of 2026-10-30: G7 of the 15 proven flags complete and documented, ledger updated and verified, inventory and drop list refreshed, G4 groundwork)
