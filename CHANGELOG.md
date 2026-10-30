@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-30-25 | 2026-10-30 | checkpoint | CHECKPOINT 2026-10-30 15:58 (second checkpoint of 2026-10-30: the timing thread's conclusi |
 | 2026-10-30-24 | 2026-10-30 | database | G7: event_earnings_window_width re-run: ARM 0 reproduces the original exactly, ARM 1 moves |
 | 2026-10-30-23 | 2026-10-30 | documents | G7: Addendum 8 (event_earnings_window_width procedure) committed before the run |
 | 2026-10-30-22 | 2026-10-30 | database | G7: earnings_role_bands_walk_forward re-run: ARM 0 reproduces the original exactly, ARM 1  |
@@ -253,6 +254,56 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-30-25 | date: 2026-10-30 | label: checkpoint | source-line: new | approx: no -->
+### 2026-10-30-25 — CHECKPOINT 2026-10-30 15:58 (second checkpoint of 2026-10-30: the timing thread's conclusion, the day-0 decision, G7 at 12 of 15, the remaining three flags and the working procedure)
+Written 2026-10-30 15:58 +0000 (15:58 UTC). Reason: second checkpoint of 2026-10-30: the timing thread's conclusion, the day-0 decision, G7 at 12 of 15, the remaining three flags and the working procedure.
+
+CHECKPOINT 2026-10-30, second of the day (about 15:55 UTC); it replaces the 14:41 checkpoint (data_cache/share/checkpoint_body_2026-10-30_timing.txt), which predates everything listed under 'SINCE THE FIRST CHECKPOINT'.
+
+STATE OF THE REPO (all pushed): top commit 72103f6 (event_earnings_window_width re-run); before it 28caf8a (Addendum 8), 9500bc7 (earnings_role_bands re-run), a4fa88a (Addendum 7a), a1cce8d (Addendum 7 and the ARM 1 patch v2), 6428b55 (DECISION note), 6545508 (isolation result), ef1d0b6 (isolation registration), 25d10c0 (reaction-day profile result), e36044c (profile registration), 554d4b1 (the first checkpoint). Changelog 235 entries, CHECK OK. Untracked: results/tag_review_v1_galen.txt (the user's own, leave alone).
+REGISTRATION: results/PREREG_g7_proven_rerun_2026-10-29.md carries Addenda 1 to 6, 7, 7a and 8; sha256 cb7896ccdc81f811e6b61a42cacb38094c5aacbb9669eca4d0bca89c5d377bef (283 lines). The next addendum is appended by a patch script (see scripts/audit/patch_prereg_addendum8_1030.py as the template) that asserts this hash and replaces the placeholder '(further dated addenda go here: the remaining procedures)' (it stays at the end).
+
+SINCE THE FIRST CHECKPOINT (details are in the changelog entries 2026-10-30-15 to -24 and the files under results/g7_rerun/ and docs/):
+1. Reaction-day profile (registered before the run): alignment CONFIRMED, condition iii on the edge. For same-day filings the acceptance window places the reaction day (before the open day 0 1.919; during the session day 0 1.485; after the close day +1 1.629). For lag 1, day 0 (the filing date) is the peak in all four groups, including after-close filings (my prediction of day +1 was wrong). Lags 2 to 4: an early reaction on the trading days after the report date plus a second wave with the filing. Numeric 10 of 13 inside their 80 percent intervals.
+2. Wider-isolation test (14 days before the filing): ROBUST, 4 of 4 conditions (L4 day -4 1.202, day -3 1.154; L3 day -2 1.169; L2 day -1 1.270; 90 to 93 percent of events kept). Numeric 9 of 9. The four registrations of 2026-10-30 together: 36 of 41 numeric intervals (88 percent against 80 nominal, a little wide).
+3. DECISION (docs/DECISION_day0_filing_date_2026-10-30.md, by Galen Pike on the assistant's recommendation): day 0 stays the filing date for every flag and test; sec_8k_report_dates and event_timing are diagnostic only (splits by lag or acceptance window are allowed, moving day 0 is not); a lag-aware idea must be a NEW registered flag with a forward check on the January 2027 data. The Tier 1 candidate event_pre_days_m4_m1 stays null (ledger note: largely explained by the 8-K filing lag, residual +0.024 z 1.81 not distinguishable from zero; January forward check dropped), to be written at the end of G7.
+4. G7 flag re-runs, each with a dated addendum committed BEFORE the run, a pinned git worktree, ARM 0 (the original procedure) and ARM 1 (excluded events removed):
+   - earnings_role_bands_walk_forward (scripts/card/earnings_role_band_test.py, pin 63e08d84): ARM 0 reproduced the original printout with 0 diff lines; ARM 1 (716 ev_ent rows skipped) identical in every printed line; still PASSES (ratios 0.890, 0.869, 0.857; coverage 88.5 to 91.9 percent; placebo 1.005, 1.004, 1.003); p11 to p14 hit. Thin margin on record: the highest coverage cell is 91.9 percent, 0.1 below the 92 percent limit.
+   - event_earnings_window_width (scripts/card/earnings_thread_test.py, pin 10cd146, the script's only commit): ARM 0 0 diff lines; ARM 1 moves 10 recorded event days (41,579 to 41,569) and the 2013-2019 gain 2.0072 to 2.0071; still PASSES (gains +1.3260, +2.0072, +1.7741 nats, 21 of 21 years; multipliers 2.72 and 2.47); p15 to p17 hit. Units are nats (my suspicion that they were mislabeled was wrong).
+   G7 is now 12 of 15 flags re-run by my count (3 controls, the 5 by-type flags, band_edge_calibration_90, event_day_width_own_events, earnings_role_bands, event_earnings_window_width); all 12 passed their registered rules. The earlier by-type, band and width results are in the older entries.
+5. Facts to carry: the daily event data effectively start at day -4 (day -5 is null for every event); matrices end 2026-10-13, ev_ent latest day 2026-09-11, sec_8k_filings through 2026-09-18 (155,141 rows, 41,459 with item 2.02), ingestion paused since 10-22; new tables sec_8k_report_dates (155,969 rows) and event_timing (22,385 rows), tables now 166; 49 percent of event 8-Ks are accepted after 16:00 ET and only 5.9 percent after 17:30 (rolled to the next business day).
+
+THE REMAINING THREE G7 FLAGS (each needs its own dated addendum BEFORE it runs; nothing about them is confirmed yet):
+ - event_label_direction_sign: probably scripts/card/direction_test.py (ea2a09f, 2026-10-19), which reads the FROZEN reaction snapshot and the labels, one event per ticker per week; inferred, the ledger note names no script; check whether the labels include excluded events; insulated from reaction-table fixes by design, ARM 1 still applies to the event set.
+ - event_premium_20d: runs through the plpgsql function ratio_period(lo, hi) (created 2026-10-16 16:27) which INSERTs only the missing events into events_ratio (stored values are never refreshed; it excludes event_component_dates and spin titles; it reads event_market_reactions_corrected and reactions_view_only). A faithful re-run needs a rebuild into a NEW table; the combining query and the events_ratio definition are NOT recovered (look in the 2026-10-16 16:27 session transcript).
+ - event_daily_range_coverage: script not located.
+
+PROCEDURE THAT WORKED FOR EACH FLAG (reuse it): (1) search the transcripts for what is known (script header, inputs, ledger note); (2) ONE read-only paste for what is still unknown: git log of the script AND of its output (the folder date in results/ is NOT the run date), the tail of the original output, the script's imports and every line that reads an input, the last commit of each imported module; (3) check import-time statements and model files at the pin; (4) write the addendum (every input listed, ARM 0 identical to the original, ARM 1 with the patch, tripwires, thin margins stated in advance) with a patch script that asserts the registration's hash, test it on a copy and the repo checker, commit it; (5) ONE block that commits the addendum and, only if pushed, sets up the worktree (git worktree add /tmp/g7_pin_X <commit>; symbolic link data_cache) and runs ARM 0 with a normalized diff against the original; (6) ARM 1: scripts/audit/g7_patch_arm1_event_width_v2.py on the worktree copy of event_width_test.py (a prerequisite: the script must load recorded events through ew.load_event_info; otherwise a different patch is needed), tripwires checked in the block; (7) save block: actuals file, remove the data_cache LINK first, then git worktree remove --force, check data_cache is intact, changelog, commit. The pin by date table of the 2026-10-30 morning is NOT reliable: use the script's own commit (git log -- script), and its imports' state at that commit.
+
+NOTES DEBT: the flag_ledger table is not updated (evidence rows and append-only notes, one batch at the end of G7; backup flag_ledger_backup_20261029 exists); the proven-flags ACTUAL-TABLE is not appended and scripts/ops/score_predictions.py has not been run (the actual values are in results/g7_rerun/actuals_*.txt and the *_results_*.out files); README and docs/PROJECT_STATUS.md are stale since 10-29 (tables 166, entries 235, G7 12 of 15, the decision note); G4 (price artifacts, Gate A) not started; G8 and G10 open; G9 in progress. Earlier unresolved: the 2003-09-15 FOMC row (needs build_fomc_calendar.py), the ADBE 2026-05-29 sec_filings row, why curated duplicates are absent from ev_ent.
+
+PLAN, IN ORDER: (a) the three remaining G7 flags, hardest last; (b) the end-of-G7 batch: ledger evidence and notes, ACTUAL-TABLE and score_predictions.py, README and STATUS refresh; (c) G4; (d) G8, G9, G10; Phase 6 design (the D3 purged walk-forward registration, 28-day purge) can start any time. Mon 2026-11-02: October sentiment top-up (runbook step 8). After 2026-11-28 drop flag_ledger_backup_20261029, event_exclusions_backup_20261029, event_exclusions_backup_20261029b, event_source_links_added_20261029, fomc_meetings_backup_20261028, event_ripple_timeline_backup_20261028, scratch_diverged_new_20261028, scratch_diverged_v2_20261028. January: results/JANUARY_2027_RUNBOOK.md (ingestion resumes before the forward tests at step 7).
+
+CALIBRATION SINCE THE FIRST CHECKPOINT: hits: nearly every call on the worktree, fingerprint, diff-line and sample-size questions; misses: the committed ARM 1 patch has a guard (called absent at 60 percent; the transcript copy was an earlier draft), the matrices' last date (called 10-19; it is 10-13), the OHLC cache dates (called before 10-20; 10-21 14:16 to 14:25), the units of the earnings-window gain (called percent; it is nats), a few runtimes. Pattern unchanged: anchor on a remembered number or on a rule's wording; run a base-rate query or read the file before calling.
+
+STANDING RULES UNCHANGED: one step per block labelled FOREGROUND or SQL editor; SQL with $$ quoting through the linter (its VALUES rule is hard-wired to 6-field rows: a lateral VALUES list with another width is a false positive, check it directly) and given inline; never guess a script's interface (read the file, or search the transcripts first); paste blocks hash-checked, with a changelog entry, commit and push with retries; every numeric prediction is a point, a range and an anchor and is scored; honest sample sizes.
+
+COMMITS SINCE THE PREVIOUS CHECKPOINT (since 2026-10-30 14:41 +0000), from git log, objective:
+  72103f6 2026-10-30 15:55 G7: event_earnings_window_width re-run (ARM 0 exact, ARM 1 moves 10 days, still passes)
+  28caf8a 2026-10-30 15:45 G7 Addendum 8: event_earnings_window_width procedure, before the run
+  9500bc7 2026-10-30 15:41 G7: earnings_role_bands_walk_forward re-run (ARM 0 exact, ARM 1 identical, still passes)
+  a4fa88a 2026-10-30 15:35 G7 Addendum 7a: correction to the description of the earlier ARM 1 patch
+  a1cce8d 2026-10-30 15:33 G7 Addendum 7: earnings_role_bands_walk_forward procedure and ARM 1 patch v2, before the run
+  6428b55 2026-10-30 15:00 DECISION: day 0 stays the filing date; the 8-K timing tables are diagnostic only
+  6545508 2026-10-30 14:59 G7: wider-isolation robustness result saved (the early-day reaction at lags 2 to 4 is robust)
+  ef1d0b6 2026-10-30 14:56 G7: wider-isolation robustness test of the lag 2 to 4 early-day reactions registered before any run
+  25d10c0 2026-10-30 14:53 G7: reaction-day profile result saved (alignment confirmed; condition iii on the edge)
+  e36044c 2026-10-30 14:45 G7: reaction-day profile test registered before any run
+  554d4b1 2026-10-30 14:41 checkpoint 2026-10-30: 8-K timing work, correction to entry 13, plan and notes debt
+
+UNCOMMITTED (git status --short):
+  ?? results/tag_review_v1_galen.txt
 
 <!-- entry: 2026-10-30-24 | date: 2026-10-30 | label: database | source-line: new | approx: no -->
 ### 2026-10-30-24 — G7: event_earnings_window_width re-run: ARM 0 reproduces the original exactly, ARM 1 moves 10 days, the flag still passes; p15 to p17 hit
