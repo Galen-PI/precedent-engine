@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-30-20 | 2026-10-30 | documents | G7: Addendum 7 (earnings_role_bands_walk_forward procedure) committed before the run; ARM  |
 | 2026-10-30-19 | 2026-10-30 | documents | DECISION: day 0 stays the filing date for every flag and test; the 8-K timing tables are d |
 | 2026-10-30-18 | 2026-10-30 | database | G7: wider-isolation robustness result saved: the early-day reaction at filing lags 2 to 4  |
 | 2026-10-30-17 | 2026-10-30 | documents | G7: wider-isolation robustness test of the lag 2 to 4 early-day reactions registered befor |
@@ -248,6 +249,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-30-20 | date: 2026-10-30 | label: documents | source-line: new | approx: no -->
+### 2026-10-30-20 — G7: Addendum 7 (earnings_role_bands_walk_forward procedure) committed before the run; ARM 1 patch v2 written and tested
+WHAT: Addendum 7 of results/PREREG_g7_proven_rerun_2026-10-29.md (appended by scripts/audit/patch_prereg_addendum7_1030.py, which refuses unless the registration is exactly the version after Addendum 6 and checks that no registered prediction changed) fixes the procedure for earnings_role_bands_walk_forward (scripts/card/earnings_role_band_test.py) BEFORE it runs. FACTS: the script is read-only (console only), has one commit (2f031f2, 2026-10-21 15:21:44) and its original printout (results/2026-10-19/earnings_role_band_test.out, 29 lines) was committed three minutes later (fb841e3), so the printout belongs to this version; it must be pinned to 63e08d84 because b68b1b1 (2026-10-22) refit the role model and changed day_card.py, an import. EVERY INPUT listed and checked: five modules from the pin (import-time statements are constants only); audit_matrices.npz (35,221,184 bytes, 2026-10-20 14:16, sha256 7bd617a4...63e6, 496 stocks x 8,250 days, 1994-01-03 to 2026-10-13); the OHLC cache (497 pickles written 2026-10-21 14:16 to 14:25, before the original run); the tables securities, event_direction_labels (unused by the result), ev_ent (22,338 rows, latest day 2026-09-11) and sec_8k_filings (155,141 rows through 2026-09-18; 41,459 with item 2.02); event_exclusions for ARM 1; no model file is read. ARM 0 must reproduce the original printout line by line apart from the elapsed-time items; ARM 1 applies a new patch, scripts/audit/g7_patch_arm1_event_width_v2.py, to the worktree copy of event_width_test.py only (it refuses a second application, a path outside /tmp and a target that does not match exactly once, and prints the number of skipped ev_ent rows, expected 716). The old patch, as printed in the 10-30 session record, does NOT stop a second application (tested on a copy; a second run repeats the same filter and doubles the printed lines without changing a result), contrary to the wording of Addendum 4; whether the committed copy differs is checked in the same block. THIN MARGIN recorded: the highest coverage cell of the original printout (ROLES on other days, 2020-2026) is 91.9 percent, 0.1 below the 92 percent upper limit; p13 prices only the lowest cell (88.5) and p14 is not edited. Misses in my chat calls before the checks: the matrices' last date (I said 2026-10-19; it is 2026-10-13) and the OHLC cache dates (I said before 10-20; they are 10-21 14:16 to 14:25).
 
 <!-- entry: 2026-10-30-19 | date: 2026-10-30 | label: documents | source-line: new | approx: no -->
 ### 2026-10-30-19 — DECISION: day 0 stays the filing date for every flag and test; the 8-K timing tables are diagnostic only (timing thread, item 3)
