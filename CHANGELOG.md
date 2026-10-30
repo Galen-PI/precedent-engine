@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-30-05 | 2026-10-30 | database | G7: event_day_width_own_events re-run: Arm 0 reproduces the 10-20 log exactly; Arm 1 chang |
 | 2026-10-30-04 | 2026-10-30 | documents | G7 Addendum 5: event_day_width_own_events procedure registered (pin 798e1e7f, same Arm 1 f |
 | 2026-10-30-03 | 2026-10-30 | database | G7: band_edge_calibration_90 re-run: Arm 0 reproduces the 10-20 printout exactly, Arm 1 (7 |
 | 2026-10-30-02 | 2026-10-30 | correction | G7 Addendum 4a: first band_calibrate Arm 0 attempt failed on a missing model file; cause,  |
@@ -233,6 +234,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-30-05 | date: 2026-10-30 | label: database | source-line: new | approx: no -->
+### 2026-10-30-05 — G7: event_day_width_own_events re-run: Arm 0 reproduces the 10-20 log exactly; Arm 1 changes about 10 event stock-days; the claim stays SUPPORTED
+WHAT: scripts/card/event_width_test.py (with decomp_validation.py) run in a git worktree pinned to 798e1e7f (Addendum 5). ARM 0 reproduced results/2026-10-19/event_width_full.log: the diff was empty apart from timing lines (first line: 498 securities, 8,250 days, 491 mapped, 22,283 labels; E1-W0 +0.2555, +0.4764, +0.4084; E3-W2 +0.2185, +0.5407, +0.3548; E5 +0.2298, +0.4822, +0.2977; 41,542 own-event days; multiplier 1.60; all three verdicts EARN THEIR PLACE and the claim SUPPORTED). ARM 1 (scripts/audit/g7_patch_arm1_event_width.py on the worktree copy; the 716 ev_ent rows of excluded events skipped) gave E1-W0 +0.4770 in 2013-2019, E3-W2 +0.5410, E5 +0.4828, years positive unchanged, own-event days 41,532 (minus 10), ordinary 3,203,642 (plus 10), multiplier 1.60, verdicts unchanged. Scored as registered: p24 1.60 (hit), p25 0.5410 (hit), p26 true. Misses in my chat calls: the change in own-event days (I called minus 300 to 1,400; it is minus 10) and the sign of the descriptive 'by day 2020-2026' row (it did not flip). Observation: 716 removed ev_ent rows changed only about 10 event stock-days (0.02 percent), as in the band_calibrate run (14 stock-days); hypothesis, to be checked in the database: most of the 716 rows belong to the 709 events excluded for no price history, which never produce an event day, so for these two flags the exclusions were close to untestable (immune, not robust). Files: results/g7_rerun/event_width_arm0_2026-10-30.out, event_width_arm1_2026-10-30.out, the patch diff, the Arm 0 versus Arm 1 diff, actuals_event_width_2026-10-30.txt.
 
 <!-- entry: 2026-10-30-04 | date: 2026-10-30 | label: documents | source-line: new | approx: no -->
 ### 2026-10-30-04 — G7 Addendum 5: event_day_width_own_events procedure registered (pin 798e1e7f, same Arm 1 filter, every input listed)

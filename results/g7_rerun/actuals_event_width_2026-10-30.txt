@@ -1,0 +1,5 @@
+# ACTUAL VALUES for the registered rows p24 to p26 of results/PREREG_g7_proven_rerun_2026-10-29.md (ARM 1, pinned worktree at 798e1e7f; id | actual | se; prob rows 1 or 0), to be appended as the ACTUAL-TABLE at the end.
+# Arm 0 reproduced results/2026-10-19/event_width_full.log (identical apart from timing lines); Arm 1 changed about 10 event stock-days of 41,542.
+p24 | 1.60 |
+p25 | 0.5410 |
+p26 | 1 |
