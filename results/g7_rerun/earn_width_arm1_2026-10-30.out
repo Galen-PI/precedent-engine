@@ -1,0 +1,28 @@
+G7 ARM 1: 1527 excluded events are removed from the recorded event days
+G7 ARM 1: 716 ev_ent rows were skipped as excluded events
+matrices: 496 stocks x 8250 days | item 2.02 filings read: 41459 (distinct stock-dates: 41046) | earnings stock-days flagged: day 0 40157, day +1 39872 | recorded event days: 41569 | 18s
+
+CALIBRATED BAND MULTIPLIER vs an ordinary day (sqrt of the ratio of mean squared stress-adjusted miss; days in brackets)
+                            all years        2006-2012        2013-2019        2020-2026
+  earn_day0             2.72x (38248)    2.61x (11187)    2.89x (12300)    2.69x (12887)
+  earn_day1             2.47x (37994)    2.25x (11068)    2.68x (12197)    2.54x (12883)
+  event_only            1.59x (33378)    1.52x (11125)    1.81x (10115)     1.46x (9449)
+  event+earnings         2.87x (3787)     2.59x (1105)     2.93x (1181)     3.07x (1291)
+
+GAIN IN LOG SCORE PER EARNINGS STOCK-DAY, walk-forward (nats; positive = better than treating them as ordinary days)
+                                      2006-2012  2013-2019  2020-2026 | years positive
+  PRIMARY day 0 + day +1 together       +1.3260    +2.0071    +1.7741 | 21 of 21
+  day 0 alone                           +1.6383    +2.2395    +1.9295 | 21 of 21
+  day +1 alone                          +1.0103    +1.7728    +1.6188 | 21 of 21
+
+VERDICT under the pre-set rule (earnings days with no recorded event, day 0 and +1 together): EARNS ITS PLACE
+
+ENRICHMENT AND MASS (test years 2006 on)
+  stock-days that are earnings days (no recorded event): 3.16% of all stock-days without a recorded event
+  big misses (beyond 2 stress-units) with no recorded event that fall on earnings days: 19.1%  -> 6.0x more often than chance
+  share of ALL the unexplained squared miss: on earnings days 19.5% | in big no-event misses 42.0% | in big no-event misses ON earnings days 16.6%
+  so earnings days hold 40% of the 'big, no event' mass
+
+NOTE: the 8-K table has no filing time, so some flagged days are filed after the reaction (the SNPS row in the sample: its drop came before its release).
+      The test treats day 0 and +1 as one window; it does not know the sign, which would need the surprise (not in the database).
+total 18s

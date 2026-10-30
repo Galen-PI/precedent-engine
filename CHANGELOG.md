@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-30-24 | 2026-10-30 | database | G7: event_earnings_window_width re-run: ARM 0 reproduces the original exactly, ARM 1 moves |
 | 2026-10-30-23 | 2026-10-30 | documents | G7: Addendum 8 (event_earnings_window_width procedure) committed before the run |
 | 2026-10-30-22 | 2026-10-30 | database | G7: earnings_role_bands_walk_forward re-run: ARM 0 reproduces the original exactly, ARM 1  |
 | 2026-10-30-21 | 2026-10-30 | documents | G7: Addendum 7a corrects the description of the earlier ARM 1 patch: the committed copy re |
@@ -252,6 +253,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-30-24 | date: 2026-10-30 | label: database | source-line: new | approx: no -->
+### 2026-10-30-24 — G7: event_earnings_window_width re-run: ARM 0 reproduces the original exactly, ARM 1 moves 10 days, the flag still passes; p15 to p17 hit
+WHAT: the re-run of event_earnings_window_width (scripts/card/earnings_thread_test.py, pinned worktree at 10cd146; procedure Addendum 8 of results/PREREG_g7_proven_rerun_2026-10-29.md; files results/g7_rerun/earn_width_arm0_2026-10-30.out, earn_width_arm1_2026-10-30.out, the three diffs and actuals_earn_width_2026-10-30.txt). ARM 0 (unpatched) reproduced the original printout with 0 diff lines (41,459 filings, 41,046 distinct stock-dates, 41,579 recorded event days; multipliers 2.72x and 2.47x; PRIMARY gains +1.3260, +2.0072, +1.7741 nats, 21 of 21 years positive; big no-event misses 6.0x more likely on earnings days). ARM 1 (g7_patch_arm1_event_width_v2.py skipped 716 ev_ent rows of the 1,527 excluded events) differs in 12 diff lines: recorded event days 41,579 to 41,569 (-10), the event-only stock-days -10 (-3 in 2006-2012, -7 in 2013-2019), and the 2013-2019 PRIMARY gain +2.0072 to +2.0071; multipliers and earnings-day counts unchanged. All three tripwires met. The flag still PASSES (EARNS ITS PLACE, gain at least 0.005 against 1.33 to 2.01) and the registered rows p15 to p17 hit (2.0071, 2.72, true). Fingerprints matched (audit_matrices.npz sha256 7bd617a4...63e6; the first printed line identical). Units checked: the gain is in nats (consistent with a multiplier near 2.7); my suspicion that the registration's unit was mislabeled was wrong. Recorded: sealed versus non-sealed not reported (no company-set split in the script); the explanation that the 716 rows are mostly outside the valid data is unverified. G7: 12 of 15 flags re-run by my count; 3 remain (event_label_direction_sign, event_premium_20d, event_daily_range_coverage).
 
 <!-- entry: 2026-10-30-23 | date: 2026-10-30 | label: documents | source-line: new | approx: no -->
 ### 2026-10-30-23 — G7: Addendum 8 (event_earnings_window_width procedure) committed before the run

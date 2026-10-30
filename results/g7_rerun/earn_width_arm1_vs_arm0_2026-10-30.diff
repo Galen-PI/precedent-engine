@@ -1,0 +1,12 @@
+1c1
+< matrices: 496 stocks x 8250 days | item 2.02 filings read: 41459 (distinct stock-dates: 41046) | earnings stock-days flagged: day 0 40157, day +1 39872 | recorded event days: 41579
+---
+> matrices: 496 stocks x 8250 days | item 2.02 filings read: 41459 (distinct stock-dates: 41046) | earnings stock-days flagged: day 0 40157, day +1 39872 | recorded event days: 41569
+7c7
+<   event_only            1.59x (33388)    1.52x (11128)    1.81x (10122)     1.46x (9449)
+---
+>   event_only            1.59x (33378)    1.52x (11125)    1.81x (10115)     1.46x (9449)
+12c12
+<   PRIMARY day 0 + day +1 together       +1.3260    +2.0072    +1.7741 | 21 of 21
+---
+>   PRIMARY day 0 + day +1 together       +1.3260    +2.0071    +1.7741 | 21 of 21
