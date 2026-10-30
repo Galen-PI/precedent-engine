@@ -1,0 +1,37 @@
+G7 ARM 1: 1527 excluded events; 713 of 22283 labels removed before the sample is built
+labels: 21570 total | by label: {'unclear': 14176, 'good': 3040, 'bad': 2590, 'mixed': 1764, 'narrative_excluded': 4}
+good/bad events with no reaction row: 0 | excluded for other window problems: 0 | unusable closes: 2 | usable: 5624 | after one-per-ticker-per-week: 5521
+self-check against the stored abnormal_return_1d: 5624 events, median abs difference 0.000000, share within 0.001: 100.0%
+
+PRIMARY OUTCOME: abnormal return over days 0 and +1
+  2004-2018: 4210 events (2231 good, 1979 bad) | hit rate  57.7% [95% CI  56.2% -  59.2%] | within-type null mean  53.9%, permutation p = 0.000
+  2019-2026: 1311 events (750 good, 561 bad) | hit rate  57.8% [95% CI  55.1% -  60.5%] | within-type null mean  53.7%, permutation p = 0.001
+
+VERDICT under the pre-set line (both eras: >= 800 events, hit rate >= 55%, CI lower end > 50%, permutation p <= 0.05): PASS
+
+DESCRIPTIVE (thinned sample, all eras)
+  good  n=2981  mean abnormal return +0.70%  median +0.37%
+  bad   n=2540  mean abnormal return -0.80%  median -0.42%
+  hit rate by timing:
+     new                    n=4140  hit rate  58.3%
+     previously_announced   n=1275  hit rate  56.2%
+     unknown                n=106   hit rate  54.7%
+  hit rate by size hint:
+     moderate               n=2686  hit rate  58.0%
+     small                  n=1499  hit rate  55.9%
+     large                  n=1266  hit rate  59.8%
+     unknown                n=70    hit rate  51.4%
+  hit rate by event type (types with >= 25 good/bad events):
+     acquisition                n=1369  good 1296 bad 73   | hit rate  54.1% | share of events with positive abnormal return  53.6%
+     legal_settlement           n=972   good 280  bad 692  | hit rate  57.1% | share of events with positive abnormal return  47.4%
+     regulatory                 n=954   good 340  bad 614  | hit rate  61.5% | share of events with positive abnormal return  45.2%
+     corporate_action           n=593   good 564  bad 29   | hit rate  64.9% | share of events with positive abnormal return  62.4%
+     restructuring              n=423   good 25   bad 398  | hit rate  54.1% | share of events with positive abnormal return  45.2%
+     financial_result           n=328   good 38   bad 290  | hit rate  59.5% | share of events with positive abnormal return  40.5%
+     strategic_partnership      n=325   good 288  bad 37   | hit rate  55.4% | share of events with positive abnormal return  54.5%
+     accounting_investigation   n=220   good 4    bad 216  | hit rate  53.2% | share of events with positive abnormal return  48.6%
+     leadership_change          n=114   good 26   bad 88   | hit rate  57.0% | share of events with positive abnormal return  46.5%
+     capital_raise              n=100   good 85   bad 15   | hit rate  53.0% | share of events with positive abnormal return  54.0%
+     cybersecurity_incident     n=77    good 0    bad 77   | hit rate  61.0% | share of events with positive abnormal return  39.0%
+  secondary window day 0 only: n=5520 hit rate  55.9%
+  secondary window 5 days: n=5521 hit rate  54.8%

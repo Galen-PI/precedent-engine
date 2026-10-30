@@ -1,0 +1,15 @@
+diff --git a/scripts/card/direction_test.py b/scripts/card/direction_test.py
+index 02c79b5..2779f7e 100644
+--- a/scripts/card/direction_test.py
++++ b/scripts/card/direction_test.py
+@@ -74,6 +74,10 @@ def week_key(d):
+ 
+ def load_events(sb):
+     labels = {r["event_id"]: r for r in paged(sb, "event_direction_labels", "event_id,ticker,ptype,event_date,label,size,timing", ["event_id"])}
++    _g7_ex = {r["event_id"] for r in paged(sb, "event_exclusions", "event_id,severity", ["event_id"]) if r.get("severity") == "exclude"}
++    _g7_before = len(labels)
++    labels = {k: v for k, v in labels.items() if k not in _g7_ex}
++    print("G7 ARM 1: %d excluded events; %d of %d labels removed before the sample is built" % (len(_g7_ex), _g7_before - len(labels), _g7_before), flush=True)
+     ids = [i for i, r in labels.items() if r["label"] in ("good", "bad")]
+     react = {}
+     for i in range(0, len(ids), 100):

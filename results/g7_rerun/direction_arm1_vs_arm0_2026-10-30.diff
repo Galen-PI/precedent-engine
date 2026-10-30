@@ -1,0 +1,42 @@
+1,3c1,3
+< labels: 22283 total | by label: {'unclear': 14597, 'good': 3147, 'bad': 2700, 'mixed': 1839, 'narrative_excluded': 4}
+< good/bad events with no reaction row: 0 | excluded for other window problems: 0 | unusable closes: 217 | usable: 5626 | after one-per-ticker-per-week: 5523
+< self-check against the stored abnormal_return_1d: 5626 events, median abs difference 0.000000, share within 0.001: 100.0%
+---
+> labels: 21570 total | by label: {'unclear': 14176, 'good': 3040, 'bad': 2590, 'mixed': 1764, 'narrative_excluded': 4}
+> good/bad events with no reaction row: 0 | excluded for other window problems: 0 | unusable closes: 2 | usable: 5624 | after one-per-ticker-per-week: 5521
+> self-check against the stored abnormal_return_1d: 5624 events, median abs difference 0.000000, share within 0.001: 100.0%
+6c6
+<   2004-2018: 4212 events (2232 good, 1980 bad) | hit rate  57.7% [95% CI  56.2% -  59.2%] | within-type null mean  53.9%, permutation p = 0.000
+---
+>   2004-2018: 4210 events (2231 good, 1979 bad) | hit rate  57.7% [95% CI  56.2% -  59.2%] | within-type null mean  53.9%, permutation p = 0.000
+12,13c12,13
+<   good  n=2982  mean abnormal return +0.70%  median +0.37%
+<   bad   n=2541  mean abnormal return -0.80%  median -0.42%
+---
+>   good  n=2981  mean abnormal return +0.70%  median +0.37%
+>   bad   n=2540  mean abnormal return -0.80%  median -0.42%
+15c15
+<      new                    n=4142  hit rate  58.3%
+---
+>      new                    n=4140  hit rate  58.3%
+19c19
+<      moderate               n=2687  hit rate  58.0%
+---
+>      moderate               n=2686  hit rate  58.0%
+21c21
+<      large                  n=1267  hit rate  59.7%
+---
+>      large                  n=1266  hit rate  59.8%
+27,28c27,28
+<      corporate_action           n=594   good 565  bad 29   | hit rate  64.8% | share of events with positive abnormal return  62.3%
+<      restructuring              n=424   good 25   bad 399  | hit rate  54.2% | share of events with positive abnormal return  45.0%
+---
+>      corporate_action           n=593   good 564  bad 29   | hit rate  64.9% | share of events with positive abnormal return  62.4%
+>      restructuring              n=423   good 25   bad 398  | hit rate  54.1% | share of events with positive abnormal return  45.2%
+35,36c35,36
+<   secondary window day 0 only: n=5522 hit rate  55.8%
+<   secondary window 5 days: n=5523 hit rate  54.8%
+---
+>   secondary window day 0 only: n=5520 hit rate  55.9%
+>   secondary window 5 days: n=5521 hit rate  54.8%

@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-30-27 | 2026-10-30 | database | G7: event_label_direction_sign re-run: ARM 0 reproduces the original exactly, ARM 1 remove |
 | 2026-10-30-26 | 2026-10-30 | documents | G7: Addendum 9 (event_label_direction_sign procedure) and the direction ARM 1 patch commit |
 | 2026-10-30-25 | 2026-10-30 | checkpoint | CHECKPOINT 2026-10-30 15:58 (second checkpoint of 2026-10-30: the timing thread's conclusi |
 | 2026-10-30-24 | 2026-10-30 | database | G7: event_earnings_window_width re-run: ARM 0 reproduces the original exactly, ARM 1 moves |
@@ -255,6 +256,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-30-27 | date: 2026-10-30 | label: database | source-line: new | approx: no -->
+### 2026-10-30-27 — G7: event_label_direction_sign re-run: ARM 0 reproduces the original exactly, ARM 1 removes 2 usable events, the flag still passes; p27 to p29 hit
+WHAT: the re-run of event_label_direction_sign (scripts/card/direction_test.py, pinned worktree at ea2a09f; procedure Addendum 9 of results/PREREG_g7_proven_rerun_2026-10-29.md; files results/g7_rerun/direction_arm0_2026-10-30.out, direction_arm1_2026-10-30.out, the three diffs and actuals_direction_2026-10-30.txt). ARM 0 (unpatched) reproduced the original printout with 0 diff lines (22,283 labels; 5,626 usable; 5,523 after thinning; 57.7 percent on 4,212 events and 57.8 percent on 1,311; permutation p 0.000 and 0.001; PASS). ARM 1 (g7_patch_arm1_direction_v1.py removed 713 of the 22,283 labels, those of the 1,527 excluded events, before the sample is built) differs in 42 diff lines (8 hunks, 13 changed printed lines): good plus bad 5,847 to 5,630 (exactly the 217 of the pre-check); unusable closes 217 to 2 (so 215 of the excluded events were already dropped as unusable); usable events 5,626 to 5,624; 2004-2018 4,212 to 4,210 events; 2019-2026 unchanged; both hit rates unchanged at the printed precision (57.7 and 57.8 percent), p 0.000 and 0.001, verdict PASS. All tripwires met. The flag still PASSES and the registered rows p27 to p29 hit (57.7, 57.8, true). Only 713 of the 1,527 excluded events carry a label (47 percent against 94.6 percent of all events). The test reads a frozen copy of the reaction table (2026-10-19), so reaction repairs and the 2026-10-29 date corrections are not part of it by design. Not reported: sealed versus non-sealed (no company-set split). Misses in my chat calls: the number of commits (two; it is three), the place of the output's commit, the labels removed (called 1,300 to 1,527; 713), the patch diff length (15 lines) and the diff against ARM 0 (called 14 diff lines or fewer; 42). G7: 13 of 15 flags re-run by my count; 2 remain (event_premium_20d, event_daily_range_coverage).
 
 <!-- entry: 2026-10-30-26 | date: 2026-10-30 | label: documents | source-line: new | approx: no -->
 ### 2026-10-30-26 — G7: Addendum 9 (event_label_direction_sign procedure) and the direction ARM 1 patch committed before the run
