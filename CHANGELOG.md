@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-30-13 | 2026-10-30 | database | event_timing created: report date, trading-day lag and acceptance window for 22,385 events |
 | 2026-10-30-12 | 2026-10-30 | database | G7: the 8-K filing lag explains most of the pre-window rise (SUPPORTED by the registered r |
 | 2026-10-30-11 | 2026-10-30 | documents | G7: lag-split test of the pre-window candidate registered before any run (decision rule fi |
 | 2026-10-30-10 | 2026-10-30 | database | sec_8k_report_dates created and loaded: report date and acceptance time for 155,969 8-Ks |
@@ -241,6 +242,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-30-13 | date: 2026-10-30 | label: database | source-line: new | approx: no -->
+### 2026-10-30-13 — event_timing created: report date, trading-day lag and acceptance window for 22,385 events; 49 percent of event 8-Ks are accepted after the close
+WHAT: the derived table event_timing (one row per event with a source 8-K that has a SEC report date; k_star is the lag aligned to the first trading day on or after a non-trading report date) was created in the SQL editor on 2026-10-30 from event_source_filings, securities and sec_8k_report_dates; statement saved as scripts/sql/event_timing_create.sql. It stores facts only, no judgment. First check: 22,385 rows (= events), 1,093 report dates on a non-trading day (4.9 percent), acceptance window (Eastern) pre_open 7,300 (32.6 percent), intraday 4,070 (18.2), after_close 11,015 (49.2); lag 1 has 5,658 events, of which 543 (9.6 percent) have a non-trading report date and 892 (15.8) a Friday report date. SURPRISE: almost half of the 8-Ks behind our events are accepted after the 4 PM close and only 18 percent during the trading day. Hypothesis, untested: EDGAR dates a Form 8-K accepted after 5:30 PM Eastern to the next business day, so an evening event filed that evening shows as lag 1 while its market reaction falls on the filing date, which would explain the lag-1 result (no pre-window rise, high burst). The calendar alone explains little of it (weekend or holiday report dates are 9.6 percent of lag 1). Misses in my chat calls: the acceptance windows (I called intraday 33 to 52 percent and after-close 25 to 45). Tables: 166.
 
 <!-- entry: 2026-10-30-12 | date: 2026-10-30 | label: database | source-line: new | approx: no -->
 ### 2026-10-30-12 — G7: the 8-K filing lag explains most of the pre-window rise (SUPPORTED by the registered rule); the burst falls with the lag; lag 1 breaks my prediction
