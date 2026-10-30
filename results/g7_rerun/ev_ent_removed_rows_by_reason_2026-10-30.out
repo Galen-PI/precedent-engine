@@ -1,0 +1,7 @@
+# The 716 ev_ent rows that ARM 1 removes (band_calibrate and event_width runs), by the reason their event was excluded. Pasted unedited from the SQL editor by Galen Pike on 2026-10-30; the assistant added only these '#' lines.
+# Query: SELECT x.reason, COUNT(*) AS ev_ent_rows, COUNT(DISTINCT e.event_id) AS events FROM ev_ent e JOIN event_exclusions x ON x.event_id = e.event_id AND x.severity = $$exclude$$ GROUP BY x.reason ORDER BY 2 DESC;
+| reason               | ev_ent_rows | events |
+| -------------------- | ----------- | ------ |
+| no_price_history     | 708         | 708    |
+| price_step_in_window | 7           | 7      |
+| rollup_no_source     | 1           | 1      |

@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-30-06 | 2026-10-30 | database | G7 finding: the day-level tests were insulated from the exclusions by construction (ev_ent |
 | 2026-10-30-05 | 2026-10-30 | database | G7: event_day_width_own_events re-run: Arm 0 reproduces the 10-20 log exactly; Arm 1 chang |
 | 2026-10-30-04 | 2026-10-30 | documents | G7 Addendum 5: event_day_width_own_events procedure registered (pin 798e1e7f, same Arm 1 f |
 | 2026-10-30-03 | 2026-10-30 | database | G7: band_edge_calibration_90 re-run: Arm 0 reproduces the 10-20 printout exactly, Arm 1 (7 |
@@ -234,6 +235,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-30-06 | date: 2026-10-30 | label: database | source-line: new | approx: no -->
+### 2026-10-30-06 — G7 finding: the day-level tests were insulated from the exclusions by construction (ev_ent); event_premium_20d runs through ratio_period, which writes to events_ratio
+WHAT: the 716 ev_ent rows removed by ARM 1 belong to excluded events by reason: no_price_history 708, price_step_in_window 7, rollup_no_source 1 (saved in results/g7_rerun/ev_ent_removed_rows_by_reason_2026-10-30.out). None of the 236 curated duplicates or 271 bundle duplicates has a row in ev_ent, and the 2026-10-16 session describes ev_ent as non-bundled company events: the day-level tests (band_calibrate.py, event_width_test.py) were insulated from the exclusions by construction, which is why ARM 1 changed only 14 and about 10 stock-days; their value was the exact ARM 0 reproduction. Why the curated duplicates are also absent from ev_ent is not verified (a guess: ev_ent needs a source-filing date). ALSO FOUND, from the 2026-10-16 16:27 transcript: event_premium_20d runs through the plpgsql function ratio_period(lo date, hi date), which INSERTS into the table events_ratio (only events not already there, so stored values are never refreshed), reads event_market_reactions_corrected and reactions_view_only, event_realized_vol and vol_estimators, and already excludes every event in event_component_dates and spin-off titles; the stored ratios may therefore predate the 2026-10-26 tagger baseline fix, and a faithful re-run needs a rebuild into a NEW table, since calling the function as written would write to events_ratio. The combining query and the definition of events_ratio are not yet recovered. Ranking of the remaining flags by exposure to the cleanup: the Tier 1 nulls event_pre_days_m4_m1 and event_lasting_days_6_20 read the same ripple view as the by-type run (the one place the exclusions changed the sample, by about 4 percent) and are the likeliest to move.
 
 <!-- entry: 2026-10-30-05 | date: 2026-10-30 | label: database | source-line: new | approx: no -->
 ### 2026-10-30-05 — G7: event_day_width_own_events re-run: Arm 0 reproduces the 10-20 log exactly; Arm 1 changes about 10 event stock-days; the claim stays SUPPORTED
