@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-30-21 | 2026-10-30 | documents | G7: Addendum 7a corrects the description of the earlier ARM 1 patch: the committed copy re |
 | 2026-10-30-20 | 2026-10-30 | documents | G7: Addendum 7 (earnings_role_bands_walk_forward procedure) committed before the run; ARM  |
 | 2026-10-30-19 | 2026-10-30 | documents | DECISION: day 0 stays the filing date for every flag and test; the 8-K timing tables are d |
 | 2026-10-30-18 | 2026-10-30 | database | G7: wider-isolation robustness result saved: the early-day reaction at filing lags 2 to 4  |
@@ -249,6 +250,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-30-21 | date: 2026-10-30 | label: documents | source-line: new | approx: no -->
+### 2026-10-30-21 — G7: Addendum 7a corrects the description of the earlier ARM 1 patch: the committed copy refuses a second application and prints the removed-row count
+WHAT: a dated correction (Addendum 7a of results/PREREG_g7_proven_rerun_2026-10-29.md, appended by scripts/audit/patch_prereg_addendum7a_1030.py, which refuses unless the registration is exactly the version after Addendum 7) to entry 2026-10-30-20 and Addendum 7. The read-only check made in that save block shows that the COMMITTED scripts/audit/g7_patch_arm1_event_width.py DOES refuse a second application (line 12: the filter is already present) and DOES print the number of ev_ent rows removed (line 17); the copy I printed from the 2026-10-30 session record was an earlier draft, so the two reasons given in Addendum 7 and in entry 2026-10-30-20 for writing v2 are wrong for the committed patch, and Addendum 4's statement was right. The procedure is unchanged: ARM 1 for earnings_role_bands_walk_forward uses g7_patch_arm1_event_width_v2.py as registered (committed, tested on a faithful copy, removes the same rows); tripwires unchanged (716 skipped rows). My call before the check (committed copy has no guard, 60 percent) was wrong. No prediction edited.
 
 <!-- entry: 2026-10-30-20 | date: 2026-10-30 | label: documents | source-line: new | approx: no -->
 ### 2026-10-30-20 — G7: Addendum 7 (earnings_role_bands_walk_forward procedure) committed before the run; ARM 1 patch v2 written and tested
