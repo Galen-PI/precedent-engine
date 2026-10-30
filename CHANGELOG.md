@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-30-29 | 2026-10-30 | database | G7: event_premium_20d builds done; 2,940 repeated rows found (reaction sources overlap); r |
 | 2026-10-30-28 | 2026-10-30 | documents | G7: Addendum 10 (event_premium_20d rebuild procedure) and its SQL committed before the bui |
 | 2026-10-30-27 | 2026-10-30 | database | G7: event_label_direction_sign re-run: ARM 0 reproduces the original exactly, ARM 1 remove |
 | 2026-10-30-26 | 2026-10-30 | documents | G7: Addendum 9 (event_label_direction_sign procedure) and the direction ARM 1 patch commit |
@@ -257,6 +258,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-30-29 | date: 2026-10-30 | label: database | source-line: new | approx: no -->
+### 2026-10-30-29 — G7: event_premium_20d builds done; 2,940 repeated rows found (reaction sources overlap); reading rule fixed in Addendum 10a before any premium was read
+WHAT: the two new tables events_ratio_g7_arm0 and events_ratio_g7_arm1 and their functions were created and filled from scripts/sql/g7_premium_build_arm*_2026-10-30.sql (committed in ada443c before any run): ARM 0 5,892 + 6,342 + 7,818 = 20,052 rows, ARM 1 5,891 + 6,337 + 7,817 = 20,045 (7 fewer, the 7 rows with an exclude row); the stored events_ratio has 16,993. QUERY 1 (stored versus ARM 0) returned only_in_stored 0, common_rows_that_differ 1, only_in_arm0 120 and arm0_in_both 19,932, which exceeds the stored row count: QUERY 1 counts pairs and double-counts repeated keys, a flaw in my design. DIAGNOSTICS (descriptive, no premium read): the stored table has 16,993 distinct keys; ARM 0 has 17,112 keys and 2,940 repeated rows; the cause is that 4,968 of the 4,971 rows of reactions_view_only are now also in event_market_reactions_corrected (by design they should not be) while the function takes the UNION ALL of the two; the repeated rows agree to 1e-8 in scaled in 2,939 of 2,940 groups and ONE group conflicts (0.0914); the 119 new keys are 2 in 2019, 1 in 2026-06 and 116 in 2026-08 and 2026-09, which have no baseline in mm_matched (last month 2026-07-01). So after de-duplication a rebuild is the stored table plus 3 keys. ADDENDUM 10a (appended by scripts/audit/patch_prereg_addendum10a_1030.py, hash-checked) fixes the reading rule BEFORE any premium was read: the builds stay as committed, the premium is read on one row per event and ticker (the mean of repeated rows) with the raw ARM 0 and ARM 1 reported beside it, via the amended query scripts/sql/g7_premium_compare_amended_2026-10-30.sql; tripwires restated. DATA-INTEGRITY ITEM for the notes: reactions_view_only is almost entirely redundant with event_market_reactions_corrected, so any query that unions them double-counts; other consumers are unknown. Misses in my chat calls: the ARM 0 counts (total 16,000 to 17,600; block 2 called 5,100 to 6,200 was 6,342; block 3 called 5,400 to 6,700 was 7,818), the repeated rows not identical (called 0 to 5; 2,819 by exact comparison, in fact floating-point dust), the maximum difference between repeated rows (called below 1e-6; 0.0914 for one group), the keys present in both sources (called 2,500 to 3,300; 4,968), and the PRE-RUN claim that the QUERY 1 counts would be one row per key.
 
 <!-- entry: 2026-10-30-28 | date: 2026-10-30 | label: documents | source-line: new | approx: no -->
 ### 2026-10-30-28 — G7: Addendum 10 (event_premium_20d rebuild procedure) and its SQL committed before the build; scoring for the rule's hole fixed in advance
