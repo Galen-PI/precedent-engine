@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-30-01 | 2026-10-30 | documents | G7 Addendum 4: band_edge_calibration_90 procedure registered (pinned worktree, Arm 0 repro |
 | 2026-10-29-15 | 2026-10-29 | checkpoint | CHECKPOINT 2026-10-29 16:22 (stopping point 2026-10-29: G7 controls and the by-type flags  |
 | 2026-10-29-14 | 2026-10-29 | checkpoint | CHECKPOINT 2026-10-29 16:18 (evening stopping point 2026-10-29: G7 controls reproduced, by |
 | 2026-10-29-13 | 2026-10-29 | documents | G7 controls reproduced (one stated deviation); Addenda 2 and 3 registered; by-type burst p |
@@ -229,6 +230,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-30-01 | date: 2026-10-30 | label: documents | source-line: new | approx: no -->
+### 2026-10-30-01 — G7 Addendum 4: band_edge_calibration_90 procedure registered (pinned worktree, Arm 0 reproduction, Arm 1 filter at ev_ent)
+WHAT: Addendum 4 appended to results/PREREG_g7_proven_rerun_2026-10-29.md by scripts/audit/patch_prereg_addendum4_1030.py (hash-gated, text only, no prediction edited) BEFORE the run. Findings that shaped it: band_calibrate.py is read-only on the database but WRITES models/band_calibration.json, so it runs only in a git worktree pinned to 22a26ff (its only commit), where its ROOT (computed from __file__) keeps the write inside the worktree; its recorded event days come from the table ev_ent (event_id, entity_id, d, ptype) through event_width_test.load_event_info, and none of band_calibrate.py, event_width_test.py or day_card.py mentions event_exclusions. ARM 0 must reproduce the original printout (results/2026-10-19/band_calibrate.out); ARM 1 applies scripts/audit/g7_patch_arm1_event_width.py, which edits only the worktree copy of event_width_test.py (rows of ev_ent whose event has an exclude row are skipped, and the run prints how many; the patch refuses a second application and any path outside /tmp). The five thin cells of the original (earnings day +1 88.14 in 2013-2019, earnings + event 88.46, earnings day 0 88.53, earnings + event 88.57, recorded event 88.72) are named in advance. Registered rows p30 to p32 are unchanged.
 
 <!-- entry: 2026-10-29-15 | date: 2026-10-29 | label: checkpoint | source-line: new | approx: no -->
 ### 2026-10-29-15 — CHECKPOINT 2026-10-29 16:22 (stopping point 2026-10-29: G7 controls and the by-type flags done on the cleaned data (all five meet their rules, 16 of 16 registered rows hit); next the remaining proven flags)
