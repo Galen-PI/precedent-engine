@@ -1,0 +1,54 @@
+   p1       pct   point 89.63 range [89.55, 89.71] (80%) actual 89.63 | INSIDE | no se | 
+   p2       pct   point 91.08 range [91, 91.16] (80%) actual 91.08 | INSIDE | no se | 
+   p3       ratio point 0.983 range [0.981, 0.985] (80%) actual 0.9834 | INSIDE | no se | 
+   p4       prob 0.97 -> outcome 1  (Brier term 0.001)  band_stress_scale_median reproduces within tolerance and sti
+   p5       ratio point 1.14 range [1.138, 1.142] (80%) actual 1.14 | INSIDE | no se | 
+   p6       ratio point 1.112 range [1.11, 1.114] (80%) actual 1.112 | INSIDE | no se | 
+   p7       prob 0.97 -> outcome 1  (Brier term 0.001)  fomc_announcement_day_market_move reproduces within toleranc
+   p8       ratio point 1.293 range [1.29, 1.296] (80%) actual 1.293 | INSIDE | no se | 
+   p9       ratio point 1.319 range [1.316, 1.322] (80%) actual 1.324 | OUTSIDE | no se | 
+   p10      prob 0.97 -> outcome 0  (Brier term 0.941)  macro_oil_shock_energy_same_day reproduces within tolerance 
+   p11      ratio point 0.869 range [0.855, 0.883] (80%) actual 0.869 | INSIDE | no se | 
+   p12      ratio point 0.857 range [0.843, 0.871] (80%) actual 0.857 | INSIDE | no se | 
+   p13      pct   point 88.5 range [88.3, 88.9] (80%) actual 88.5 | INSIDE | no se | 
+   p14      prob 0.90 -> outcome 1  (Brier term 0.010)  earnings_role_bands_walk_forward still passes its registered
+   p15      diff  point 2.01 range [1.96, 2.06] (80%) actual 2.0071 | INSIDE | no se | 
+   p16      ratio point 2.72 range [2.69, 2.75] (80%) actual 2.72 | INSIDE | no se | 
+   p17      prob 0.99 -> outcome 1  (Brier term 0.000)  event_earnings_window_width still passes its registered rule
+   p18      ratio point 1.31 range [1.29, 1.34] (80%) actual 1.298 se 0.018 | INSIDE | -0.7 SE from the point | overlap
+   p19      ratio point 1.335 range [1.31, 1.36] (80%) actual 1.331 se 0.022 | INSIDE | -0.2 SE from the point | overlap
+   p20      prob 0.99 -> outcome 1  (Brier term 0.000)  event_burst_day0_1 still passes its registered rule
+   p21      diff  point 6.8 range [6, 7.6] (80%) actual 6.71 | INSIDE | no se | 
+   p22      diff  point 9.3 range [8.3, 10.3] (80%) actual 9.22 | INSIDE | no se | 
+   p23      prob 0.97 -> outcome 1  (Brier term 0.001)  event_daily_range_coverage still passes its registered rule
+   p24      ratio point 1.6 range [1.57, 1.63] (80%) actual 1.6 | INSIDE | no se | 
+   p25      diff  point 0.541 range [0.51, 0.57] (80%) actual 0.541 | INSIDE | no se | 
+   p26      prob 0.99 -> outcome 1  (Brier term 0.000)  event_day_width_own_events still passes its registered rule
+   p27      pct   point 57.5 range [56.6, 58.5] (80%) actual 57.7 | INSIDE | no se | 
+   p28      pct   point 57.6 range [56, 59.2] (80%) actual 57.8 | INSIDE | no se | 
+   p29      prob 0.94 -> outcome 1  (Brier term 0.004)  event_label_direction_sign still passes its registered rule 
+   p30      pct   point 88.4 range [88.1, 88.8] (80%) actual 88.47 | INSIDE | no se | 
+   p31      pct   point 88.1 range [87.95, 88.3] (80%) actual 88.14 | INSIDE | no se | 
+   p32      prob 0.85 -> outcome 1  (Brier term 0.023)  band_edge_calibration_90 still passes in every group and eve
+   p33      diff  point 0.054 range [0.04, 0.068] (80%) actual 0.0433 se 0.0067 | INSIDE | -1.6 SE from the point | overlap
+   p34      diff  point 0.035 range [0.015, 0.055] (80%) actual 0.0368 se 0.0104 | INSIDE | 0.2 SE from the point | overlap
+   p35      prob 0.85 -> outcome 1  (Brier term 0.023)  event_premium_20d still passes its registered rule
+   p36      prob 0.70 -> outcome 1  (Brier term 0.090)  event_premium_20d keeps the same rule category (consistent, 
+   p37      ratio point 1.03 range [0.98, 1.09] (80%) actual 1.03 se 0.04 | INSIDE | 0.0 SE from the point | overlap
+   p38      ratio point 1.1 range [1.03, 1.17] (80%) actual 1.098 se 0.072 | INSIDE | -0.0 SE from the point | overlap
+   p39      diff  point -3.2 range [-4, -2.4] (80%) actual -3.24 | INSIDE | no se | 
+   p40      prob 0.90 -> outcome 1  (Brier term 0.010)  event_type_capital_raise_no_burst still differs from pooled 
+   p41      ratio point 1.28 range [1.24, 1.32] (80%) actual 1.272 se 0.031 | INSIDE | -0.3 SE from the point | overlap
+   p42      ratio point 1.32 range [1.28, 1.36] (80%) actual 1.333 se 0.043 | INSIDE | 0.3 SE from the point | overlap
+   p43      prob 0.97 -> outcome 1  (Brier term 0.001)  event_type_acquisition still uses the pooled number
+   p44      ratio point 1.25 range [1.21, 1.29] (80%) actual 1.24 se 0.031 | INSIDE | -0.3 SE from the point | overlap
+   p45      ratio point 1.28 range [1.24, 1.32] (80%) actual 1.262 se 0.03 | INSIDE | -0.6 SE from the point | overlap
+   p46      prob 0.96 -> outcome 1  (Brier term 0.002)  event_type_leadership_change still uses the pooled number
+   p47      ratio point 1.25 range [1.17, 1.33] (80%) actual 1.237 se 0.076 | INSIDE | -0.2 SE from the point | overlap
+   p48      ratio point 1.38 range [1.27, 1.49] (80%) actual 1.381 se 0.108 | INSIDE | 0.0 SE from the point | overlap
+   p49      prob 0.98 -> outcome 1  (Brier term 0.000)  event_type_strategic_partnership still uses the pooled numbe
+   p50      prob 0.43 -> outcome 1  (Brier term 0.325)  all 15 proven flags pass their registered rules
+   p51      prob 0.09 -> outcome 1  (Brier term 0.828)  at least one control misses its tolerance and the re-run sto
+   p52      prob 0.25 -> outcome 0  (Brier term 0.062)  at least 10 of the 33 numeric rows land outside their 80 per
+CALIBRATION at the nominal 80%: 32 of 33 ranges contain the actual (97%)  <- too narrow if well below 80%
+BRIER (probability rows): 19 rows, mean 0.122 (0.25 = always saying 50%)

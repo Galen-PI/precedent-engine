@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-30-34 | 2026-10-30 | documents | G7 complete: Addendum 12 and the ACTUAL-TABLE (52 rows) appended to the proven-flags regis |
 | 2026-10-30-33 | 2026-10-30 | database | G7: event_daily_range_coverage re-run (the last flag): stored lists reproduced exactly, AR |
 | 2026-10-30-32 | 2026-10-30 | documents | G7: Addendum 11 (event_daily_range_coverage rebuild procedure, method check and reading ru |
 | 2026-10-30-31 | 2026-10-30 | checkpoint | CHECKPOINT 2026-10-30 17:44 (third checkpoint of 2026-10-30: direction and premium re-runs |
@@ -262,6 +263,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-30-34 | date: 2026-10-30 | label: documents | source-line: new | approx: no -->
+### 2026-10-30-34 — G7 complete: Addendum 12 and the ACTUAL-TABLE (52 rows) appended to the proven-flags registration; scorer run
+WHAT: scripts/audit/patch_prereg_actual_table_1030.py (hash-gated on the version after Addendum 11) appended Addendum 12 and the ACTUAL-TABLE block of all 52 registered rows to results/PREREG_g7_proven_rerun_2026-10-29.md, and scripts/ops/score_predictions.py was run on it (output in results/g7_rerun/score_report_2026-10-30.txt). All 15 flags re-run and all 15 pass their registered rules (p50 = 1). Numeric rows: 33, of which 32 inside their 80 percent intervals and 1 outside (p9, the energy amplification 2019-2026, 1.324 against 1.316 to 1.322, two months added to sector_day_z after the ledger window); the widen-if-10-miss trigger did not fire (p52 = 0). Probability rows: 19, of which 17 true; p10 (the oil control's registered tolerance) and p52 are 0; p51 (a control misses and the run stops) happened. Recorded plainly: event_premium_20d came back weaker (+0.0433 against +0.0550; category B by the naive SE, A by the clustered SE). SOURCES: Addendum 2 (controls), the by-type results file (ARM 1 values, checked), the actuals files of 2026-10-30. NOT DONE: the flag_ledger update (needs the user's approval of the wording), README and PROJECT_STATUS refresh, G4, G8, G9, G10, the January checks. Miss in my chat calls: I expected at least 30 of the 52 actuals to be machine-readable in the repo (19 were).
 
 <!-- entry: 2026-10-30-33 | date: 2026-10-30 | label: database | source-line: new | approx: no -->
 ### 2026-10-30-33 — G7: event_daily_range_coverage re-run (the last flag): stored lists reproduced exactly, ARM 1 +0.02 point; shortfalls 6.71 and 9.22; p21 to p23 hit; G7 is 15 of 15
