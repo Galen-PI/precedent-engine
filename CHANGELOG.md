@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-30-11 | 2026-10-30 | documents | G7: lag-split test of the pre-window candidate registered before any run (decision rule fi |
 | 2026-10-30-10 | 2026-10-30 | database | sec_8k_report_dates created and loaded: report date and acceptance time for 155,969 8-Ks |
 | 2026-10-30-09 | 2026-10-30 | database | 8-K lag measured for the first time: 45 percent of 8-Ks are filed a day or more after the  |
 | 2026-10-30-08 | 2026-10-30 | database | G7 Tier 1: event_pre_days_m4_m1 meets its registered rule on the larger and the cleaned sa |
@@ -239,6 +240,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-30-11 | date: 2026-10-30 | label: documents | source-line: new | approx: no -->
+### 2026-10-30-11 — G7: lag-split test of the pre-window candidate registered before any run (decision rule fixed); event lag mix and the day -5 data limit recorded
+WHAT: results/PREREG_g7_pre_window_lag_split_2026-10-30.md registered BEFORE any result, in the repo's template (17 predictions: 11 numeric at 80 percent, 6 probabilities). FACTS FOUND FIRST: every one of the 155,141 filings in sec_8k_filings has a row in sec_8k_report_dates; the daily event data (event_daily_abn) runs only from day -5 to +39, so a window re-centered on the true event day exists only for lags up to 1; of 22,436 source-linked events (the join duplicates some two-security entities) 39.7 percent were filed on the same trading day as the event, 25.3 percent one trading day later, 11.1, 9.2, 9.9 and 4.8 percent two, three, four and five or more (events are dated at the filing date in all but a handful of rows). So 60 percent of our events have their real event at least one trading day before day 0, a much higher share than for filings overall because routine earnings releases are mostly not events. THE TEST: the pre-window (days -4 to -1), burst (days 0 to 1) and placebo (days 21 to 24) ratios of the cleaned sample cut by trading-day lag bucket (0, 1, 2, 3, 4, 5 or more) and by all, non-sealed and sealed companies. PREDICTIONS come from a small model fitted to the pooled burst (1.31) and pre-window (1.050) numbers: an event-day elevation (ratio about 1.4 to 1.6) decaying by a factor of 0.3 to 0.7 a day, and a share of about 0.5 of late filings whose news became public only at the filing (a pure lag model overshoots: it predicts a pre-window near 1.10); the split by lag was not used in the fit. Predicted pre-window ratios: about 1.00 (lag 0), 1.06, 1.09, 1.11, 1.12 (lag 4), 1.03 (lag 5 or more); predicted burst at the filing date: about 1.38 (lag 0) against 1.2 to 1.3 for late filings. DECISION RULE fixed in advance: SUPPORTED if lag 0 has t below 2 against 1, the lag 1 to 4 pooled ratio exceeds lag 0 by at least 0.04 with t of at least 2, and the ordering holds in both the non-sealed and sealed sets; NOT SUPPORTED if lag 0 is 1.04 or more with t of 2 or more; otherwise MIXED. Probabilities: supported 0.50, not supported 0.15. The test creates no flag; it can only explain or leave open the Tier 1 candidate (event_pre_days_m4_m1). Misses in my chat calls before it: the daily data start (I called -8 to -15; it is -5) and the same-trading-day share of events (I called 58 to 70 percent; it is 39.7).
 
 <!-- entry: 2026-10-30-10 | date: 2026-10-30 | label: database | source-line: new | approx: no -->
 ### 2026-10-30-10 — sec_8k_report_dates created and loaded: report date and acceptance time for 155,969 8-Ks
