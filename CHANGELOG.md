@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-30-08 | 2026-10-30 | database | G7 Tier 1: event_pre_days_m4_m1 meets its registered rule on the larger and the cleaned sa |
 | 2026-10-30-07 | 2026-10-30 | documents | G7 Tier 1: window nulls (event_pre_days_m4_m1, event_lasting_days_6_20) registered; Addend |
 | 2026-10-30-06 | 2026-10-30 | database | G7 finding: the day-level tests were insulated from the exclusions by construction (ev_ent |
 | 2026-10-30-05 | 2026-10-30 | database | G7: event_day_width_own_events re-run: Arm 0 reproduces the 10-20 log exactly; Arm 1 chang |
@@ -236,6 +237,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-30-08 | date: 2026-10-30 | label: database | source-line: new | approx: no -->
+### 2026-10-30-08 — G7 Tier 1: event_pre_days_m4_m1 meets its registered rule on the larger and the cleaned sample (a CANDIDATE, not a flip); event_lasting_days_6_20 stays null
+WHAT: the two window nulls were re-run on the by-type view (ARM 0), its inline rebuild with an empty exclusion list (ARM 1-NULL, identical to ARM 0 in all 18 rows: the gate passed) and the cleaned rebuild (ARM 1), each cut into all, non-sealed and sealed companies (results/g7_rerun/tier1_window_nulls_2026-10-30.out). event_pre_days_m4_m1 (days -4 to -1 over days 25 to 39): ARM 1 gives 1.054 (n 7,192, z 4.95) in 2004-2018 and 1.043 (n 3,982, z 3.23) in 2019-2026: the registered rule (positive with z above 2 in both eras) is MET, also in ARM 0 (z 4.85 and 2.98), so the cleaning did not cause it (ARM 1 minus ARM 0: +0.000 and +0.003). The flip conditions registered in advance hold (ratio 1.043 against the 1.03 minimum; same sign in the non-sealed 1.059 and 1.042 and in the sealed 1.044 and 1.046 sets), but the forward check on the January 2027 data is PENDING: the ledger status stays null and this is a CANDIDATE only. The events added since the ledger's first run imply about 1.068 in 2019-2026, and the old fade between eras (z 1.60) looks like sampling noise (today z 0.82). The ledger note's hypothesis (mis-dated bundled events) is NOT supported: the cleaning leaves the ratio unchanged; an untested alternative is the 8-K filing lag, which would need its own registration. event_lasting_days_6_20 stays null: 0.982 (z -2.83) and 0.990 (z -1.30), negative, while its rule needs a positive effect. The placebo (days 21 to 24) is 1.003 and 1.004. Scored as registered: p1 to p16 actual values saved in the file; 8 of 8 numeric rows inside their 80 percent intervals; probability rows true except p5 (the bundles hypothesis, 0.65) and p9 (0.02, correctly not met); p4 (the rule met, 0.35) and p16 (0.36) happened. Misses and cautions: my intervals look too wide again; the original query for these two flags was never recovered, so Arm 0 could not be checked against the ledger.
 
 <!-- entry: 2026-10-30-07 | date: 2026-10-30 | label: documents | source-line: new | approx: no -->
 ### 2026-10-30-07 — G7 Tier 1: window nulls (event_pre_days_m4_m1, event_lasting_days_6_20) registered; Addendum 6 corrects the universe statement (sealed tickers were part of the original tests)

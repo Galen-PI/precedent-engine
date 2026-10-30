@@ -1,0 +1,68 @@
+# G7 Tier 1 window nulls (results/PREREG_g7_tier1_window_nulls_2026-10-30.md). Pasted UNEDITED from the SQL editor by Galen Pike on 2026-10-30 (about 13:50 UTC); the assistant added only these '#' lines. Queries: the three in the registration file, in the order ARM 0, ARM 1-NULL, ARM 1.
+# GATE: ARM 1-NULL equals ARM 0 in all 18 rows (n, ratio, se, z), so the inline rebuild is faithful and ARM 1 was read.
+
+# STEP 1, ARM 0
+| win                  | era         | part       | n    | ratio | se    | z_vs_1 |
+| -------------------- | ----------- | ---------- | ---- | ----- | ----- | ------ |
+| 1_pre_days_m4_m1     | A_2004_2018 | all        | 6913 | 1.054 | 0.011 | 4.85   |
+| 1_pre_days_m4_m1     | A_2004_2018 | non_sealed | 4560 | 1.059 | 0.013 | 4.41   |
+| 1_pre_days_m4_m1     | A_2004_2018 | sealed     | 2353 | 1.044 | 0.020 | 2.24   |
+| 1_pre_days_m4_m1     | B_2019_2026 | all        | 3846 | 1.040 | 0.013 | 2.98   |
+| 1_pre_days_m4_m1     | B_2019_2026 | non_sealed | 2553 | 1.037 | 0.016 | 2.35   |
+| 1_pre_days_m4_m1     | B_2019_2026 | sealed     | 1293 | 1.046 | 0.025 | 1.84   |
+| 2_lasting_days_6_20  | A_2004_2018 | all        | 6914 | 0.981 | 0.007 | -2.84  |
+| 2_lasting_days_6_20  | A_2004_2018 | non_sealed | 4561 | 0.981 | 0.008 | -2.35  |
+| 2_lasting_days_6_20  | A_2004_2018 | sealed     | 2353 | 0.981 | 0.012 | -1.60  |
+| 2_lasting_days_6_20  | B_2019_2026 | all        | 3846 | 0.989 | 0.008 | -1.39  |
+| 2_lasting_days_6_20  | B_2019_2026 | non_sealed | 2553 | 0.991 | 0.010 | -0.93  |
+| 2_lasting_days_6_20  | B_2019_2026 | sealed     | 1293 | 0.985 | 0.015 | -1.06  |
+| 3_placebo_days_21_24 | A_2004_2018 | all        | 6914 | 0.998 | 0.009 | -0.23  |
+| 3_placebo_days_21_24 | A_2004_2018 | non_sealed | 4561 | 0.995 | 0.011 | -0.46  |
+| 3_placebo_days_21_24 | A_2004_2018 | sealed     | 2353 | 1.004 | 0.015 | 0.24   |
+| 3_placebo_days_21_24 | B_2019_2026 | all        | 3846 | 1.003 | 0.011 | 0.28   |
+| 3_placebo_days_21_24 | B_2019_2026 | non_sealed | 2553 | 1.011 | 0.013 | 0.88   |
+| 3_placebo_days_21_24 | B_2019_2026 | sealed     | 1293 | 0.987 | 0.019 | -0.68  |
+
+# STEP 3, ARM 1 (excluded events removed from the sample and from the isolation test). STEP 2 (ARM 1-NULL) printed the same 18 rows as STEP 1 and is not repeated.
+| win                  | era         | part       | n    | ratio | se    | z_vs_1 |
+| -------------------- | ----------- | ---------- | ---- | ----- | ----- | ------ |
+| 1_pre_days_m4_m1     | A_2004_2018 | all        | 7192 | 1.054 | 0.011 | 4.95   |
+| 1_pre_days_m4_m1     | A_2004_2018 | non_sealed | 4770 | 1.059 | 0.013 | 4.48   |
+| 1_pre_days_m4_m1     | A_2004_2018 | sealed     | 2422 | 1.044 | 0.019 | 2.28   |
+| 1_pre_days_m4_m1     | B_2019_2026 | all        | 3982 | 1.043 | 0.013 | 3.23   |
+| 1_pre_days_m4_m1     | B_2019_2026 | non_sealed | 2645 | 1.042 | 0.016 | 2.68   |
+| 1_pre_days_m4_m1     | B_2019_2026 | sealed     | 1337 | 1.046 | 0.025 | 1.84   |
+| 2_lasting_days_6_20  | A_2004_2018 | all        | 7193 | 0.982 | 0.006 | -2.83  |
+| 2_lasting_days_6_20  | A_2004_2018 | non_sealed | 4771 | 0.983 | 0.008 | -2.24  |
+| 2_lasting_days_6_20  | A_2004_2018 | sealed     | 2422 | 0.980 | 0.011 | -1.74  |
+| 2_lasting_days_6_20  | B_2019_2026 | all        | 3982 | 0.990 | 0.008 | -1.30  |
+| 2_lasting_days_6_20  | B_2019_2026 | non_sealed | 2645 | 0.992 | 0.010 | -0.84  |
+| 2_lasting_days_6_20  | B_2019_2026 | sealed     | 1337 | 0.985 | 0.014 | -1.03  |
+| 3_placebo_days_21_24 | A_2004_2018 | all        | 7193 | 1.003 | 0.010 | 0.30   |
+| 3_placebo_days_21_24 | A_2004_2018 | non_sealed | 4771 | 1.003 | 0.013 | 0.22   |
+| 3_placebo_days_21_24 | A_2004_2018 | sealed     | 2422 | 1.003 | 0.015 | 0.22   |
+| 3_placebo_days_21_24 | B_2019_2026 | all        | 3982 | 1.004 | 0.011 | 0.39   |
+| 3_placebo_days_21_24 | B_2019_2026 | non_sealed | 2645 | 1.014 | 0.013 | 1.10   |
+| 3_placebo_days_21_24 | B_2019_2026 | sealed     | 1337 | 0.985 | 0.019 | -0.78  |
+
+# DERIVED, computed by the assistant. ARM 1 minus ARM 0 (all companies): pre-window A +0.000, B +0.003; days 6-20 A +0.001, B +0.001; isolated n A +279, B +136.
+# The 1,758 (A) and 1,165 (B) events added since the ledger's first run imply a pre-window ratio of about 1.031 (SE 0.024) in A and about 1.068 (SE 0.024) in B; the old difference between the eras (1.062 against 1.028, z 1.60) is 0.014 today (z 0.82): the old fade looks like sampling noise.
+# VERDICT: event_pre_days_m4_m1 MEETS its registered rule in ARM 1 (z 4.95 and 3.23; also in ARM 0: 4.85 and 2.98, so the cleaning did not cause it). Flip conditions: rule met; 2019-2026 ratio 1.043 against the 1.03 minimum; same sign in the non-sealed and sealed sets in both eras; the forward check on the January 2027 data is PENDING, so the ledger status stays null (a CANDIDATE only). event_lasting_days_6_20 does NOT meet its rule (negative: 0.982 and 0.990). The mis-dated bundles hypothesis (the ledger note) is NOT supported: the cleaning leaves the pre-window ratio unchanged. An untested alternative: the 8-K filing lag (the news precedes the filing date by up to four business days).
+
+# ACTUAL VALUES for the registered rows p1 to p16 of results/PREREG_g7_tier1_window_nulls_2026-10-30.md (id | actual | se; prob rows 1 or 0), to be appended as the ACTUAL-TABLE at the end:
+p1 | 1.054 | 0.011
+p2 | 1.043 | 0.013
+p3 | 3.23 |
+p4 | 1 |
+p5 | 0 |
+p6 | 0.000 |
+p7 | 0.982 | 0.006
+p8 | 0.990 | 0.008
+p9 | 0 |
+p10 | 1 |
+p11 | 1.003 | 0.010
+p12 | 1.004 | 0.011
+p13 | 1 |
+p14 | 1 |
+p15 | 1 |
+p16 | 1 |
