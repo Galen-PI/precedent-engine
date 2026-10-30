@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-30-26 | 2026-10-30 | documents | G7: Addendum 9 (event_label_direction_sign procedure) and the direction ARM 1 patch commit |
 | 2026-10-30-25 | 2026-10-30 | checkpoint | CHECKPOINT 2026-10-30 15:58 (second checkpoint of 2026-10-30: the timing thread's conclusi |
 | 2026-10-30-24 | 2026-10-30 | database | G7: event_earnings_window_width re-run: ARM 0 reproduces the original exactly, ARM 1 moves |
 | 2026-10-30-23 | 2026-10-30 | documents | G7: Addendum 8 (event_earnings_window_width procedure) committed before the run |
@@ -254,6 +255,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-30-26 | date: 2026-10-30 | label: documents | source-line: new | approx: no -->
+### 2026-10-30-26 — G7: Addendum 9 (event_label_direction_sign procedure) and the direction ARM 1 patch committed before the run
+WHAT: Addendum 9 of results/PREREG_g7_proven_rerun_2026-10-29.md (appended by scripts/audit/patch_prereg_addendum9_1030.py, which refuses unless the registration is exactly the version after Addendum 8 and checks that no registered prediction changed) fixes the procedure for event_label_direction_sign (scripts/card/direction_test.py, 232 lines, read-only) BEFORE it runs, with a new ARM 1 patch scripts/audit/g7_patch_arm1_direction_v1.py (the script imports no local module, so the earlier patches do not apply; the new one removes labels whose event has an exclude row before the sample is built and thinned; tested on a faithful copy: excluded events dropped, a note row kept, a second application, a path outside /tmp and a changed target refused). FACTS: three commits (5f85f42, 9299f41, ea2a09f 2026-10-19 19:07:30); the pin is ea2a09f, the version that reads the frozen reaction table event_market_reactions_v2_snapshot_20261019 (23,348 rows, taken 2026-10-19); the saved printout results/2026-10-19/direction_test.out was committed separately on 2026-10-20 (29c8cd6, 'Baseline logs regenerated') after the script's last commit; the permutation test is seeded (random.Random(11)), so ARM 0 should be identical, line by line, with no normalization; the label table is unchanged since the original run (22,283 labels, 3,147 good, 2,700 bad, latest event date 2026-09-11). PRE-CHECK: 217 labeled good or bad events carry an exclude row, only 2 with usable closes in the frozen table, and 217 equals the original printout's 'unusable closes', so ARM 1 should remove at most 2 usable events. Registered rows p27 to p29 describe ARM 1; no cell of the rule is thin (the lowest margin is the Wilson lower end of 55.1 percent against 50). Not reported: sealed versus non-sealed (no company-set split). No prediction edited. Misses in my chat calls for this flag so far: the number of commits of the script (called two, there are three) and where the output was committed (called the latest commit; it was a separate regenerating commit).
 
 <!-- entry: 2026-10-30-25 | date: 2026-10-30 | label: checkpoint | source-line: new | approx: no -->
 ### 2026-10-30-25 — CHECKPOINT 2026-10-30 15:58 (second checkpoint of 2026-10-30: the timing thread's conclusion, the day-0 decision, G7 at 12 of 15, the remaining three flags and the working procedure)
