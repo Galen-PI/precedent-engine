@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-30-15 | 2026-10-30 | documents | G7: reaction-day profile test registered before any run (peak day by filing lag and accept |
 | 2026-10-30-14 | 2026-10-30 | checkpoint | CHECKPOINT 2026-10-30 14:41 (orientation after the 8-K timing work and a context compactio |
 | 2026-10-30-13 | 2026-10-30 | database | event_timing created: report date, trading-day lag and acceptance window for 22,385 events |
 | 2026-10-30-12 | 2026-10-30 | database | G7: the 8-K filing lag explains most of the pre-window rise (SUPPORTED by the registered r |
@@ -243,6 +244,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-30-15 | date: 2026-10-30 | label: documents | source-line: new | approx: no -->
+### 2026-10-30-15 — G7: reaction-day profile test registered before any run (peak day by filing lag and acceptance time; decision rule fixed)
+WHAT: results/PREREG_g7_reaction_day_profile_2026-10-30.md registered BEFORE any result, in the repo's template (22 predictions: 13 numeric at 80 percent, 9 probabilities). It follows the lag-split result, where lag 1 broke its prediction, and the event_timing counts (49 percent of event 8-Ks accepted after 16:00 ET; the 5:30 PM rollover real but only 14 percent of lag 1). INSTRUMENT: the day-by-day ratio (days -5 to +5 over days 25 to 39) of the cleaned sample by group: lag 0 by acceptance window, lag 1 by acceptance window and rolled, lags 2, 3 and 4, and all linked events, for all, non-sealed and sealed companies (66 rows, one column per day). A POWER WARNING is written into it: the window-average difference expected inside lag 1 is about 0.03 against an SE of about 0.03, and the per-day SE is about 0.1 for the two small lag-1 groups. PREDICTIONS: lag-0 groups peak on day 0 (pre-open 0.90, intraday 0.65) or on day +1 (after the close, 0.90); lag-1 rolled and pre-open peak on day 0 (0.85 and 0.80), lag-1 after-close on day +1 (0.60); at lags 2 to 4 a bump at the true event day -k of about 1.2 to 1.3 in at least two of three (0.75); the group profiles are scaled to average back to the observed bursts. DECISION RULE fixed in advance: reaction-day alignment is CONFIRMED if the lag-0 after-close peak is day +1 and the lag-0 pre-open peak is day 0, both lag-1 peaks (rolled, pre-open) are day 0, and at least two of the lag 2 to 4 bumps reach 1.10 with z of 2 or more; NOT CONFIRMED if the lag-0 after-close peak is not day +1 (no time-based correction then); otherwise PARTIAL. Probability of CONFIRMED 0.55. Consequence: if CONFIRMED, item 2 may use a time-only rule (reaction day = filing day before 16:00 ET, the next trading day after) plus the report date for lags 2 to 4; otherwise day 0 stays the filing date. The test creates no flag.
 
 <!-- entry: 2026-10-30-14 | date: 2026-10-30 | label: checkpoint | source-line: new | approx: no -->
 ### 2026-10-30-14 — CHECKPOINT 2026-10-30 14:41 (orientation after the 8-K timing work and a context compaction; replaces the stale 2026-10-29-15 checkpoint)
