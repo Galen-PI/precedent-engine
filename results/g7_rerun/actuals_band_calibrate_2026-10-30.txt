@@ -1,0 +1,5 @@
+# ACTUAL VALUES for the registered rows p30 to p32 of results/PREREG_g7_proven_rerun_2026-10-29.md (ARM 1, pinned worktree at 22a26ff; id | actual | se; prob rows 1 or 0), to be appended as the ACTUAL-TABLE at the end.
+# Arm 0 reproduced the original printout (results/2026-10-19/band_calibrate.out) line for line; Arm 1 removed 716 of 22,338 ev_ent rows (the pre-check's number) and changed 14 stock-days of about two million.
+p30 | 88.47 |
+p31 | 88.14 |
+p32 | 1 |

@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-30-03 | 2026-10-30 | database | G7: band_edge_calibration_90 re-run: Arm 0 reproduces the 10-20 printout exactly, Arm 1 (7 |
 | 2026-10-30-02 | 2026-10-30 | correction | G7 Addendum 4a: first band_calibrate Arm 0 attempt failed on a missing model file; cause,  |
 | 2026-10-30-01 | 2026-10-30 | documents | G7 Addendum 4: band_edge_calibration_90 procedure registered (pinned worktree, Arm 0 repro |
 | 2026-10-29-15 | 2026-10-29 | checkpoint | CHECKPOINT 2026-10-29 16:22 (stopping point 2026-10-29: G7 controls and the by-type flags  |
@@ -231,6 +232,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-30-03 | date: 2026-10-30 | label: database | source-line: new | approx: no -->
+### 2026-10-30-03 — G7: band_edge_calibration_90 re-run: Arm 0 reproduces the 10-20 printout exactly, Arm 1 (716 ev_ent rows removed) changes 14 stock-days; all six groups still CALIBRATED
+WHAT: scripts/card/band_calibrate.py run in a git worktree pinned to 22a26ff (Addendum 4; the first attempt failed on a missing model file and is recorded in Addendum 4a: models/earnings_band_model.json supplied from 4e06a3c after its sha256 matched the disk file, 7f9c9ab11a52e197). ARM 0 reproduced results/2026-10-19/band_calibrate.out line for line (group sizes, coverage in every era, stress bins, all ten edges). ARM 1 applied scripts/audit/g7_patch_arm1_event_width.py (worktree copy only; the run printed 1527 excluded events and 716 of 22338 ev_ent rows removed, equal to the pre-check): ordinary 1,912,198 to 1,912,203 days, recorded event 25,485 to 25,478, earnings plus event unchanged at 3,044, Regulation FD 28,575 to 28,577; coverage changed by at most 0.01 points (recorded event 2013-2019 88.72 to 88.71); edges identical to three decimals; all six groups CALIBRATED. Scored as registered: p30 88.47 (hit), p31 88.14 (hit), p32 true. Misses in my chat calls: the group sizes (I expected recorded event near 25,050, earnings plus event to shrink, ordinary to rise by 100 to 1,500). The filter's reach is small, probably because most excluded events fall before the scored test years (2009 on): a guess, not verified. Files: results/g7_rerun/band_calibrate_arm0_2026-10-30.out, band_calibrate_arm1_2026-10-30.out, the two model-file copies, the Arm 1 patch diff, and actuals_band_calibrate_2026-10-30.txt.
 
 <!-- entry: 2026-10-30-02 | date: 2026-10-30 | label: correction | source-line: new | approx: no -->
 ### 2026-10-30-02 — G7 Addendum 4a: first band_calibrate Arm 0 attempt failed on a missing model file; cause, fix and a new rule recorded before the retry

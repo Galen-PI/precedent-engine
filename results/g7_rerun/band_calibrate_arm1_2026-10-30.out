@@ -1,0 +1,32 @@
+G7 ARM 1: 1527 excluded events; 716 of 22338 ev_ent rows removed from the recorded event days
+matrices: 496 stocks x 8250 days | 39s
+
+OUT-OF-SAMPLE COVERAGE AFTER CALIBRATION (each year scored with the 90th percentile of the years before it; target 90%)
+  group                                        days  coverage | 2009-2012  2013-2019  2020-2026  | verdict
+  ordinary                                  1912203    90.21% |   90.58%     90.53%     89.72%   | CALIBRATED
+  recorded event, no earnings                 25478    89.14% |   89.65%     88.71%     89.29%   | CALIBRATED
+  earnings window, day 0 (no event)           31766    89.49% |   89.60%     88.53%     90.35%   | CALIBRATED
+  earnings window, day +1 (no event)          31571    88.70% |   89.03%     88.14%     89.06%   | CALIBRATED
+  earnings window + recorded event             3044    88.47% |    n/a       88.57%     88.46%   | CALIBRATED
+  Regulation FD (7.01) only                   28577    89.83% |   89.85%     90.36%     89.22%   | CALIBRATED
+
+  ordinary days by market-stress bin (all test years pooled):
+    calm           439326 days   89.95%
+    normal        1109539 days   90.20%
+    elevated       260992 days   90.43%
+    high           102346 days   90.99%
+
+EDGES FITTED ON ALL YEARS (band units; the old fixed edge is 1.645):
+  ordinary, all stress levels: 1.432 (scale 0.870)
+    ordinary, calm      stress: 1.527 (scale 0.928)
+    ordinary, normal    stress: 1.441 (scale 0.876)
+    ordinary, elevated  stress: 1.289 (scale 0.784)
+    ordinary, high      stress: 1.290 (scale 0.784)
+  recorded event, no earnings            1.337 (scale 0.813)
+  earnings window, day 0 (no event)      1.506 (scale 0.916)
+  earnings window, day +1 (no event)     1.384 (scale 0.842)
+  earnings window + recorded event       1.433 (scale 0.871)
+  Regulation FD (7.01) only              1.319 (scale 0.802)
+
+saved /tmp/g7_pin_band/models/band_calibration.json
+total 41s

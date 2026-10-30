@@ -1,0 +1,17 @@
+diff --git a/scripts/card/event_width_test.py b/scripts/card/event_width_test.py
+index 58b13fe..e4fc034 100644
+--- a/scripts/card/event_width_test.py
++++ b/scripts/card/event_width_test.py
+@@ -80,7 +80,11 @@ def load_event_info(sb, master, cache_ids):
+         print("no event_direction_labels (%s); label fields skipped" % str(e)[:60], flush=True)
+     use_labels = len(labels) >= 1000
+     cand = defaultdict(lambda: defaultdict(list))
+-    for r in paged(sb, "ev_ent", "event_id,entity_id,d,ptype", ["event_id", "entity_id"]):
++    _g7_ex = {r["event_id"] for r in paged(sb, "event_exclusions", "event_id,severity", ["event_id"]) if r.get("severity") == "exclude"}
++    _g7_rows = paged(sb, "ev_ent", "event_id,entity_id,d,ptype", ["event_id", "entity_id"])
++    _g7_keep = [r for r in _g7_rows if r["event_id"] not in _g7_ex]
++    print("G7 ARM 1: %d excluded events; %d of %d ev_ent rows removed from the recorded event days" % (len(_g7_ex), len(_g7_rows) - len(_g7_keep), len(_g7_rows)), flush=True)
++    for r in _g7_keep:
+         i = bisect.bisect_left(master, str(r["d"])[:10])
+         if i >= len(master):
+             continue

@@ -1,0 +1,54 @@
+{
+ "what": "Empirical 90th percentile of |miss / (slow spread x sqrt(q) x multiplier)| per group, in band units. Use as the band edge instead of 1.645. Walk-forward verified in band_calibrate.py.",
+ "nominal_edge_replaced": 1.645,
+ "edge_90": {
+  "recorded event, no earnings": 1.3369939125471586,
+  "earnings window, day 0 (no event)": 1.5061851178424372,
+  "earnings window, day +1 (no event)": 1.384364509602128,
+  "earnings window + recorded event": 1.4329096202992537,
+  "Regulation FD (7.01) only": 1.3192258975060025,
+  "ordinary_all": 1.4315498006293321
+ },
+ "ordinary_by_stress_bin": {
+  "calm": 1.5272605099377214,
+  "normal": 1.4413548204557483,
+  "elevated": 1.2890772507006512,
+  "high": 1.2900331029006407
+ },
+ "stress_bins": [
+  {
+   "name": "calm",
+   "from": 0.0,
+   "to": 0.8
+  },
+  {
+   "name": "normal",
+   "from": 0.8,
+   "to": 1.2
+  },
+  {
+   "name": "elevated",
+   "from": 1.2,
+   "to": 1.5
+  },
+  {
+   "name": "high",
+   "from": 1.5,
+   "to": 99.0
+  }
+ ],
+ "fit_years": "all years 2006 on in the matrices",
+ "verdicts": {
+  "ordinary": "CALIBRATED",
+  "recorded event, no earnings": "CALIBRATED",
+  "earnings window, day 0 (no event)": "CALIBRATED",
+  "earnings window, day +1 (no event)": "CALIBRATED",
+  "earnings window + recorded event": "CALIBRATED",
+  "Regulation FD (7.01) only": "CALIBRATED"
+ },
+ "caveats": [
+  "An explanation band: it is scored with the same day's market-wide stress.",
+  "Fitted on all years: the walk-forward coverage above is the honest check.",
+  "The slow spread includes each stock's own earnings and event jumps; a spread computed without them would be the cleaner fix."
+ ]
+}
