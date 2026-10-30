@@ -1,0 +1,55 @@
+# G7 event_daily_range_coverage (procedure: Addendum 11 of results/PREREG_g7_proven_rerun_2026-10-29.md, committed in 53fea35 before the builds). Run on 2026-10-30 in the SQL editor (the outputs below are transcribed from the paste; shape checked, not every digit machine-compared); statements: scripts/sql/g7_range_build_arm0_2026-10-30.sql, g7_range_build_arm1_2026-10-30.sql and g7_range_compare_2026-10-30.sql. The new tables flag_days_g7_arm0, flag_days_g7_arm1, ctrl_days_g7_arm0 and ctrl_days_g7_arm1 are additive and are to be dropped after 2026-11-28.
+# RESULT: the flag still PASSES its registered rule (shortfall versus the matched control of 5 points or more in both eras): ARM 1 (excluded events left out of both day-lists; the arm the registered rows describe) 6.71 points in 2004-2018 and 9.22 in 2019-2026. ARM 0 (the original procedure rebuilt on today's inputs) reproduces the STORED day-lists and readout EXACTLY (no row differs). Parts (1) and (2) of the ledger's three-part rule (shortfall versus ordinary days; held-out multipliers) were NOT rebuilt and stand as recorded; the frozen forward test is untouched (evaluated once after 2027-01-05).
+#
+# PRE-CHECK (read-only), stored objects: flag_days_rows 51239 | flagged_day0_or_p1 34508 | flag_first_day 2003-12-31 | flag_last_day 2026-08-03 | ctrl_days_rows 218904 | ctrl_last_day 2026-07-27 | z_raw_rows 31425 | z_abn_rows 29590 | z_rawc_rows 8810 | z_last_year 2026 | spy_cal_rows 8250 | spy_last_day 2026-10-13 | days_in_both_flag_and_ctrl 0
+# PRE-CHECK, the control readout recomputed on the stored z_hist (it equals the 2026-10-16 print):
+| era | grp | n_days | coverage_at_kref |
+| A_2004_2018 | 1_unflagged_all_days | 1540356 | 0.8026 |
+| A_2004_2018 | 2_flagged_day0_or_p1 | 22410 | 0.7388 |
+| A_2004_2018 | 3_control_days_25_to_39 | 140533 | 0.8061 |
+| B_2019_2026 | 1_unflagged_all_days | 899115 | 0.8085 |
+| B_2019_2026 | 2_flagged_day0_or_p1 | 10827 | 0.7230 |
+| B_2019_2026 | 3_control_days_25_to_39 | 71031 | 0.8152 |
+# PRE-CHECK, the live definitions of build_z_hist and build_z_ctrl equal the 2026-10-16 text (programmatic). Ledger row: proven, tested 2026-10-16, multiplier 1.25, a three-part rule; evidence rows (naive SE, fractions): 2004-2018 22410 0.0638 0.0029; 2004-2018_vs_control 22410 0.0673 0.0031; 2019-2026 10827 0.0855 0.0043; 2019-2026_vs_control 10827 0.0922 0.0045.
+#
+# QUERY M (the METHOD CHECK: the directly computed readout on the STORED day-lists; it reproduced all six cells of the stored z_hist exactly, in n and in coverage, so the direct readout was used):
+| arm | era | grp | n_days | coverage_at_kref |
+| 1_stored | A_2004_2018 | 1_flag_day0_or_p1 | 22410 | 0.7388 |
+| 1_stored | A_2004_2018 | 2_flag_p1_only | 10854 | 0.7547 |
+| 1_stored | A_2004_2018 | 3_control_25_to_39 | 140533 | 0.8061 |
+| 1_stored | B_2019_2026 | 1_flag_day0_or_p1 | 10827 | 0.7230 |
+| 1_stored | B_2019_2026 | 2_flag_p1_only | 5268 | 0.7325 |
+| 1_stored | B_2019_2026 | 3_control_25_to_39 | 71031 | 0.8152 |
+#
+# QUERY D (the rebuilt day-lists against the stored ones):
+| flag_stored | flag_stored_keys | flag_arm0 | flag_arm0_keys | flag_arm1 | flag_arm1_keys | flag_only_arm0 | flag_only_stored | flag_flags_differ | flag_in_arm0_not_arm1 | ctrl_stored | ctrl_stored_keys | ctrl_arm0 | ctrl_arm0_keys | ctrl_arm1 | ctrl_only_arm0 | ctrl_only_stored | ctrl_in_arm0_not_arm1 |
+| 51239 | 51239 | 51239 | 51239 | 49954 | 49954 | 0 | 0 | 0 | 1285 | 218904 | 218904 | 218904 | 218904 | 213850 | 0 | 0 | 5054 |
+#
+# QUERY 0 (ARM 0):
+| arm | era | grp | n_days | coverage_at_kref |
+| 2_arm0 | A_2004_2018 | 1_flag_day0_or_p1 | 22410 | 0.7388 |
+| 2_arm0 | A_2004_2018 | 2_flag_p1_only | 10854 | 0.7547 |
+| 2_arm0 | A_2004_2018 | 3_control_25_to_39 | 140533 | 0.8061 |
+| 2_arm0 | B_2019_2026 | 1_flag_day0_or_p1 | 10827 | 0.7230 |
+| 2_arm0 | B_2019_2026 | 2_flag_p1_only | 5268 | 0.7325 |
+| 2_arm0 | B_2019_2026 | 3_control_25_to_39 | 71031 | 0.8152 |
+#
+# QUERY 1 (ARM 1):
+| arm | era | grp | n_days | coverage_at_kref |
+| 3_arm1 | A_2004_2018 | 1_flag_day0_or_p1 | 22402 | 0.7390 |
+| 3_arm1 | A_2004_2018 | 2_flag_p1_only | 10850 | 0.7548 |
+| 3_arm1 | A_2004_2018 | 3_control_25_to_39 | 140486 | 0.8061 |
+| 3_arm1 | B_2019_2026 | 1_flag_day0_or_p1 | 10827 | 0.7230 |
+| 3_arm1 | B_2019_2026 | 2_flag_p1_only | 5268 | 0.7325 |
+| 3_arm1 | B_2019_2026 | 3_control_25_to_39 | 71031 | 0.8152 |
+#
+# THE READING (as fixed in Addendum 11). Tripwires: (1) the method check reproduced all six cells: MET. (2) distinct keys equal rows in every day-list (51239, 51239, 49954 flagged; 218904, 218904, 213850 control): MET. (3) ARM 1's flag list is contained in ARM 0's: 49954 - 51239 + 1285 = 0: MET. (4) the stored tables are unchanged (QUERY M re-read them, QUERY D shows 0 differences): MET. (5) ARM 0 differs from the stored lists in no row, so there was nothing to attribute: the 2026-10-29 date corrections and the candidate_review_log changes did not alter a single flagged or control day.
+# SHORTFALLS (control coverage minus flagged day 0 or +1 coverage, points; naive SE sqrt(p(1-p)/n) added over the two groups; the 4-decimal outputs leave about 0.01 point of rounding): stored and ARM 0: 2004-2018 6.73 (SE 0.31; margin to 5.0 is 1.73 points, 5.5 SE) and 2019-2026 9.22 (SE 0.45; margin 4.22 points, 9.3 SE). ARM 1: 2004-2018 6.71 (6.70 to 6.72 allowing for rounding; SE 0.31; margin 1.71 points) and 2019-2026 9.22 (identical to ARM 0 in every cell). Day +1 only (descriptive): 5.14 and 8.27 points in ARM 0, 5.13 in ARM 1 for 2004-2018 (SE 0.43 and 0.63), matching the ledger's 5.1 and 8.3.
+# THE REGISTERED ROWS (ARM 1): p21 shortfall 2004-2018 6.7 (registered 6.8, interval 6.0 to 7.6): inside. p22 shortfall 2019-2026 9.2 (registered 9.3, interval 8.3 to 10.3): inside. p23 still passes (both 5.0 points or more): true.
+# ACTUAL VALUES for the registered rows p21 to p23 (they describe ARM 1; shortfalls in points; p23 1 = true; id | actual):
+p21 | 6.71
+p22 | 9.22
+p23 | 1
+# WHY ARM 1 MOVED ALMOST NOTHING (this time looked at before calling): ARM 1 removed 1,285 flag rows and 5,054 control rows, but only 8 flagged days (4 of them day +1 only) and 47 control days WITH PRICES in 2004-2018 and none in 2019-2026; the rest belong to excluded events with no price history, which have day-list rows but no price rows. Removing the 8 flagged days raised the 2004-2018 flagged coverage by 0.0002 (they were mostly not covered), which is the whole effect (0.02 point on the shortfall).
+# NOT REPORTED: sealed versus non-sealed (no company-set split); a clustered SE (events and weeks cluster, so the true SE is larger than the naive 0.31 and 0.45; the margins of 5.5 and 9.3 naive SEs are therefore overstated, by an amount not measured here); the ledger's parts (1) and (2).
+# SCORE of the assistant's chat calls on this flag: hit: the stored object sizes and dates; the stored readout equals the 2026-10-16 print; the live definitions equal the transcript text; the six cells of the method check; the tripwires of QUERY D (keys equal rows, ARM 1 contained in ARM 0, the size of the differences); ARM 0 equal to the stored readout; the ARM 1 flagged n ranges; the shortfall changing by less than 0.15 points; p21 to p23. Missed: the split of z_hist rows between raw and abn (called about 30,500 each; 31,425 and 29,590); ctrl_arm1 within 1 percent of ctrl_arm0 (2.3 percent lower); the number of control days with prices removed by ARM 1 (called 500 to 3,500 in total, point 1,500; it is 47); I also over-predicted that the stored and rebuilt lists would differ a little (they are identical).

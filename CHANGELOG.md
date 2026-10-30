@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-30-33 | 2026-10-30 | database | G7: event_daily_range_coverage re-run (the last flag): stored lists reproduced exactly, AR |
 | 2026-10-30-32 | 2026-10-30 | documents | G7: Addendum 11 (event_daily_range_coverage rebuild procedure, method check and reading ru |
 | 2026-10-30-31 | 2026-10-30 | checkpoint | CHECKPOINT 2026-10-30 17:44 (third checkpoint of 2026-10-30: direction and premium re-runs |
 | 2026-10-30-30 | 2026-10-30 | database | G7: event_premium_20d re-run: the stored premium reproduces the ledger; with four price-ar |
@@ -261,6 +262,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-30-33 | date: 2026-10-30 | label: database | source-line: new | approx: no -->
+### 2026-10-30-33 — G7: event_daily_range_coverage re-run (the last flag): stored lists reproduced exactly, ARM 1 +0.02 point; shortfalls 6.71 and 9.22; p21 to p23 hit; G7 is 15 of 15
+WHAT: the re-run of event_daily_range_coverage as a rebuild of its two day-lists into new tables (Addendum 11, committed in 53fea35 before the builds; raw outputs and the reading in results/g7_rerun/actuals_range_2026-10-30.txt). The registration's earlier note that the procedure was not located was wrong and is corrected by Addendum 11. METHOD CHECK passed: a directly computed readout reproduced all six stored cells exactly (n and coverage). ARM 0 (the original procedure on today's inputs) reproduces the stored day-lists in every row (0 differences; 51,239 flag rows, 218,904 control rows, keys equal rows) and the stored readout exactly. ARM 1 (excluded events left out; the arm the registered rows describe) removes 1,285 flag rows and 5,054 control rows, but only 8 flagged days and 47 control days with prices in 2004-2018 (none in 2019-2026), because the rest belong to events with no price history; the 2004-2018 shortfall moves 6.73 to 6.71 points, 2019-2026 stays 9.22. RESULT: shortfall versus the matched control 6.71 points (SE 0.31) in 2004-2018 and 9.22 (SE 0.45) in 2019-2026, rule 5 points or more in both eras: PASS; margins 1.71 and 4.22 points (5.5 and 9.3 naive SEs; a clustered SE would be larger and is not computed). REGISTERED ROWS: p21 6.71 inside [6.0, 7.6]; p22 9.22 inside [8.3, 10.3]; p23 true. NOT REBUILT: parts (1) and (2) of the ledger's three-part rule (stand as recorded); the frozen forward test is untouched (evaluated once after 2027-01-05). TO DROP AFTER 2026-11-28: flag_days_g7_arm0, flag_days_g7_arm1, ctrl_days_g7_arm0, ctrl_days_g7_arm1. G7 IS NOW 15 OF 15 FLAGS RE-RUN by my count, all passing their registered rules. Misses in my chat calls: the raw and abn split of z_hist rows, ctrl_arm1 within 1 percent of ctrl_arm0, the control days with prices removed by ARM 1 (called 500 to 3,500; 47), and expecting small differences between the stored and the rebuilt lists (there are none).
 
 <!-- entry: 2026-10-30-32 | date: 2026-10-30 | label: documents | source-line: new | approx: no -->
 ### 2026-10-30-32 — G7: Addendum 11 (event_daily_range_coverage rebuild procedure, method check and reading rule) and its SQL committed before the build; the registration's not located is corrected
