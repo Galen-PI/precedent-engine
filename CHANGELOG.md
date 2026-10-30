@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-30-02 | 2026-10-30 | correction | G7 Addendum 4a: first band_calibrate Arm 0 attempt failed on a missing model file; cause,  |
 | 2026-10-30-01 | 2026-10-30 | documents | G7 Addendum 4: band_edge_calibration_90 procedure registered (pinned worktree, Arm 0 repro |
 | 2026-10-29-15 | 2026-10-29 | checkpoint | CHECKPOINT 2026-10-29 16:22 (stopping point 2026-10-29: G7 controls and the by-type flags  |
 | 2026-10-29-14 | 2026-10-29 | checkpoint | CHECKPOINT 2026-10-29 16:18 (evening stopping point 2026-10-29: G7 controls reproduced, by |
@@ -230,6 +231,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-30-02 | date: 2026-10-30 | label: correction | source-line: new | approx: no -->
+### 2026-10-30-02 — G7 Addendum 4a: first band_calibrate Arm 0 attempt failed on a missing model file; cause, fix and a new rule recorded before the retry
+WHAT: the first Arm 0 attempt of band_calibrate.py in a worktree pinned to 22a26ff stopped at its first input check (models/earnings_band_model.json not found): nothing was computed. Cause (mine): Addendum 4 said the model files come as at the pin without checking that both are tracked there; earnings_band_model.json was first committed in 4e06a3c (2026-10-20 18:17:06), after the pin (16:22:44), although the copy on disk was written at 15:26, before the original printout (16:20:25). Fix: take the file from git (4e06a3c) and use it only after its sha256 equals the sha256 of the file on disk. New rule: every procedure addendum lists every input the procedure reads (code, modules, models, caches, tables) and states from git or the file system that each exists at the pin or how it is supplied and verified, before the registration is committed. Recorded in Addendum 4a by scripts/audit/patch_prereg_addendum4a_1030.py (hash-gated, text only). The failed attempt's console output is kept as results/g7_rerun/band_calibrate_arm0_attempt1_FAILED_missing_model_2026-10-30.out. Also recorded: the pre-check (ev_ent 22,338 rows, 716 removed by Arm 1, latest day 2026-09-11, latest 8-K 2026-09-18).
 
 <!-- entry: 2026-10-30-01 | date: 2026-10-30 | label: documents | source-line: new | approx: no -->
 ### 2026-10-30-01 — G7 Addendum 4: band_edge_calibration_90 procedure registered (pinned worktree, Arm 0 reproduction, Arm 1 filter at ev_ent)
