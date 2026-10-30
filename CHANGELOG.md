@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-30-18 | 2026-10-30 | database | G7: wider-isolation robustness result saved: the early-day reaction at filing lags 2 to 4  |
 | 2026-10-30-17 | 2026-10-30 | documents | G7: wider-isolation robustness test of the lag 2 to 4 early-day reactions registered befor |
 | 2026-10-30-16 | 2026-10-30 | database | G7: reaction-day profile result saved (alignment CONFIRMED, condition iii on the edge): th |
 | 2026-10-30-15 | 2026-10-30 | documents | G7: reaction-day profile test registered before any run (peak day by filing lag and accept |
@@ -246,6 +247,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-30-18 | date: 2026-10-30 | label: database | source-line: new | approx: no -->
+### 2026-10-30-18 — G7: wider-isolation robustness result saved: the early-day reaction at filing lags 2 to 4 is ROBUST (4 of 4 conditions)
+WHAT: the registered wider-isolation test (results/PREREG_g7_reaction_day_isolation_2026-10-30.md; output results/g7_rerun/reaction_day_isolation_results_2026-10-30.out, 18 rows; isolation 14 calendar days before the filing to 39 after). DECISION RULE: ROBUST, 4 of 4 conditions hold (needed 3): L4 day -4 1.202 (z 2.97), L4 day -3 1.154 (z 3.50), L3 day -2 1.169 (z 3.52), L2 day -1 1.270 (z 4.58). Events kept: L2 1,251 of 1,355 (92.3 percent), L3 1,049 of 1,132 (92.7), L4 1,082 of 1,204 (89.9); smallest group 1,049 (threshold 700). Changes from the earlier isolation were small (L4 day -4 1.210 to 1.202; L4 day -3 1.177 to 1.154; L3 day -2 1.171 to 1.169; L2 day -1 1.285 to 1.270), so neighbouring events do not produce the early reactions; the description of lags 2 to 4 in the reaction-day profile result stands and the lag-split result needs no extra check. Non-sealed and sealed sets agree in direction (all four bumps above 1.10 in both; not independent confirmation). SCORED: numeric 9 of 9 inside their 80 percent intervals; probabilities p10 to p14 all true. Tally of numeric 80 percent intervals across the four registrations of 2026-10-30: 36 of 41 (88 percent), a little wide; intervals to be tightened slightly.
 
 <!-- entry: 2026-10-30-17 | date: 2026-10-30 | label: documents | source-line: new | approx: no -->
 ### 2026-10-30-17 — G7: wider-isolation robustness test of the lag 2 to 4 early-day reactions registered before any run (timing thread, item 2)
