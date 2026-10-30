@@ -1,0 +1,114 @@
+companies read from the importer: 499 | User-Agent: Stock Research Project contact@example.com
+  20/499 companies, 6144 filings, 15s
+  40/499 companies, 11625 filings, 28s
+  60/499 companies, 17593 filings, 44s
+  80/499 companies, 24349 filings, 84s
+  100/499 companies, 29127 filings, 100s
+  120/499 companies, 35985 filings, 116s
+  140/499 companies, 43155 filings, 131s
+  160/499 companies, 49201 filings, 150s
+  180/499 companies, 56429 filings, 169s
+  200/499 companies, 61289 filings, 187s
+  220/499 companies, 67785 filings, 202s
+  240/499 companies, 73595 filings, 219s
+  260/499 companies, 79716 filings, 234s
+  280/499 companies, 86458 filings, 251s
+  300/499 companies, 91736 filings, 265s
+  320/499 companies, 98013 filings, 279s
+  340/499 companies, 104229 filings, 294s
+  360/499 companies, 110278 filings, 308s
+  380/499 companies, 114849 filings, 321s
+  400/499 companies, 119080 filings, 335s
+  420/499 companies, 125637 filings, 351s
+  440/499 companies, 131137 filings, 364s
+  460/499 companies, 138399 filings, 385s
+  480/499 companies, 146388 filings, 433s
+  499/499 companies, 155969 filings, 489s
+wrote 155969 rows to /workspaces/stock-research1/data_cache/8k_report_dates.csv
+
+8-K filings: 155969 | companies: 498 | filing dates 1994-01-05 to 2026-10-30
+
+ALL (n 155969)
+  lag 0 days                          85798   55.0%
+  lag 1 day                           23997   15.4%
+  lag 2 days                           8871    5.7%
+  lag 3 days                           8878    5.7%
+  lag 4 days                           7081    4.5%
+  lag 5-7 days                        16973   10.9%
+  lag 8-30 days                        3103    2.0%
+  lag over 30 days                     1181    0.8%
+  negative (report after filing)         87    0.1%
+  share with lag of 1 day or more among filings with a report date: 45.0% (n 155882)
+
+ITEM GROUP: earnings (2.02) (n 41769)
+  lag 0 days                          36240   86.8%
+  lag 1 day                            3214    7.7%
+  lag 2 days                            475    1.1%
+  lag 3 days                            294    0.7%
+  lag 4 days                            192    0.5%
+  lag 5-7 days                          551    1.3%
+  lag 8-30 days                         487    1.2%
+  lag over 30 days                      316    0.8%
+  share with lag of 1 day or more among filings with a report date: 13.2% (n 41769)
+
+ITEM GROUP: other required items (n 51044)
+  lag 0 days                          12155   23.8%
+  lag 1 day                            9446   18.5%
+  lag 2 days                           5631   11.0%
+  lag 3 days                           5515   10.8%
+  lag 4 days                           5020    9.8%
+  lag 5-7 days                        12874   25.2%
+  lag 8-30 days                         254    0.5%
+  lag over 30 days                      149    0.3%
+  share with lag of 1 day or more among filings with a report date: 76.2% (n 51044)
+
+ITEM GROUP: voluntary only (7.01, 8.01, 9.01) (n 63156)
+  lag 0 days                          37403   59.2%
+  lag 1 day                           11337   18.0%
+  lag 2 days                           2765    4.4%
+  lag 3 days                           3069    4.9%
+  lag 4 days                           1869    3.0%
+  lag 5-7 days                         3548    5.6%
+  lag 8-30 days                        2362    3.7%
+  lag over 30 days                      716    1.1%
+  negative (report after filing)         87    0.1%
+  share with lag of 1 day or more among filings with a report date: 40.7% (n 63069)
+
+BY FILING YEAR: share with lag of 1 day or more among filings with a report date | share with report date missing
+  1994  n    344 | late  68.6% | missing   0.0%
+  1995  n    470 | late  69.1% | missing   0.0%
+  1996  n    661 | late  66.7% | missing   0.0%
+  1997  n    930 | late  65.2% | missing   0.0%
+  1998  n   1143 | late  70.0% | missing   0.0%
+  1999  n   1122 | late  67.4% | missing   0.0%
+  2000  n   1379 | late  66.5% | missing   0.0%
+  2001  n   1756 | late  54.5% | missing   0.0%
+  2002  n   2489 | late  50.9% | missing   0.0%
+  2003  n   3497 | late  43.7% | missing   0.0%
+  2004  n   4566 | late  45.6% | missing   0.0%
+  2005  n   6106 | late  56.0% | missing   0.0%
+  2006  n   6089 | late  54.6% | missing   0.0%
+  2007  n   6169 | late  53.0% | missing   0.0%
+  2008  n   6101 | late  52.7% | missing   0.0%
+  2009  n   5786 | late  46.8% | missing   0.0%
+  2010  n   5834 | late  47.8% | missing   0.0%
+  2011  n   6158 | late  44.8% | missing   0.0%
+  2012  n   6245 | late  43.0% | missing   0.0%
+  2013  n   6051 | late  41.7% | missing   0.0%
+  2014  n   6185 | late  41.8% | missing   0.0%
+  2015  n   6525 | late  40.5% | missing   0.0%
+  2016  n   6523 | late  37.6% | missing   0.0%
+  2017  n   6315 | late  36.7% | missing   0.0%
+  2018  n   6303 | late  36.0% | missing   0.0%
+  2019  n   6422 | late  36.7% | missing   0.0%
+  2020  n   7029 | late  40.1% | missing   0.0%
+  2021  n   6603 | late  40.0% | missing   0.0%
+  2022  n   6310 | late  43.3% | missing   0.0%
+  2023  n   6300 | late  43.9% | missing   0.0%
+  2024  n   6385 | late  43.3% | missing   0.0%
+  2025  n   6593 | late  43.0% | missing   0.0%
+  2026  n   5580 | late  42.1% | missing   0.0%
+
+filings with an acceptance time: 155969 of 155969
+
+(dry: nothing was written to the database; add --from-csv --apply to load /workspaces/stock-research1/data_cache/8k_report_dates.csv)

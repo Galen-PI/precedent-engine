@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-30-09 | 2026-10-30 | database | 8-K lag measured for the first time: 45 percent of 8-Ks are filed a day or more after the  |
 | 2026-10-30-08 | 2026-10-30 | database | G7 Tier 1: event_pre_days_m4_m1 meets its registered rule on the larger and the cleaned sa |
 | 2026-10-30-07 | 2026-10-30 | documents | G7 Tier 1: window nulls (event_pre_days_m4_m1, event_lasting_days_6_20) registered; Addend |
 | 2026-10-30-06 | 2026-10-30 | database | G7 finding: the day-level tests were insulated from the exclusions by construction (ev_ent |
@@ -237,6 +238,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-30-09 | date: 2026-10-30 | label: database | source-line: new | approx: no -->
+### 2026-10-30-09 — 8-K lag measured for the first time: 45 percent of 8-Ks are filed a day or more after the event; new script pull_8k_report_dates.py
+WHAT: new script scripts/ingestion/pull_8k_report_dates.py (tested on mocked responses; smoke test on ADBE: 233 filings in 1 second; full run 489 seconds) reads reportDate and acceptanceDateTime from the SEC submissions feed: import_8k_filings.py keeps filingDate and items only, although both fields were in every response. It reads the company list from the importer's text, writes data_cache/8k_report_dates.csv (untracked) and touches no database table unless run with --from-csv --apply into the new table sec_8k_report_dates (not created yet). RESULT, 155,969 8-K filings from 498 companies (filing dates 1994-01-05 to 2026-10-30; the database holds 155,141 through 2026-09-18): the lag between the event reported and the filing is 0 days for 55.0 percent, 1 day 15.4, 2 days 5.7, 3 days 5.7, 4 days 4.5, 5 to 7 days 10.9, 8 to 30 days 2.0, over 30 days 0.8, negative 0.1 percent (87 filings); 45.0 percent are filed a day or more late. By item group: earnings (2.02, n 41,769) 13.2 percent late; other required items (n 51,044) 76.2 percent late; voluntary only (7.01, 8.01, 9.01; n 63,156) 40.7 percent late. By filing year the late share was about 65 to 70 percent in the 1990s, 44 to 56 percent in the 2000s, 36 to 37 percent in 2016 to 2019 and 42 to 44 percent since 2022. Every filing has a report date and an acceptance time. IMPLICATION, UNTESTED: our event date is the filing date, so for most non-earnings events the real event day precedes day 0 by one to four business days; the days 0 to 1 burst may be understated and days -4 to -1 contain true event days, which may explain event_pre_days_m4_m1; a registered test split by lag follows. Caution: the report date is the earliest event reported, not necessarily the day the news became public. Full printout: results/g7_rerun/8k_lag_distribution_2026-10-30.out. Calls missed: my overall same-day expectation (84 percent, carried over from the hand-picked curated events; the archive says 55.0), the earnings same-day share (86.8, I said 88 to 96) and more missing report dates in old years (none missing in any year).
 
 <!-- entry: 2026-10-30-08 | date: 2026-10-30 | label: database | source-line: new | approx: no -->
 ### 2026-10-30-08 — G7 Tier 1: event_pre_days_m4_m1 meets its registered rule on the larger and the cleaned sample (a CANDIDATE, not a flip); event_lasting_days_6_20 stays null
