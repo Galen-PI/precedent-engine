@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-30-30 | 2026-10-30 | database | G7: event_premium_20d re-run: the stored premium reproduces the ledger; with four price-ar |
 | 2026-10-30-29 | 2026-10-30 | database | G7: event_premium_20d builds done; 2,940 repeated rows found (reaction sources overlap); r |
 | 2026-10-30-28 | 2026-10-30 | documents | G7: Addendum 10 (event_premium_20d rebuild procedure) and its SQL committed before the bui |
 | 2026-10-30-27 | 2026-10-30 | database | G7: event_label_direction_sign re-run: ARM 0 reproduces the original exactly, ARM 1 remove |
@@ -258,6 +259,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-30-30 | date: 2026-10-30 | label: database | source-line: new | approx: no -->
+### 2026-10-30-30 — G7: event_premium_20d re-run: the stored premium reproduces the ledger; with four price-artifact events removed it is +0.0433 (not +0.0550); p33 to p36 hit
+WHAT: the re-run of event_premium_20d as a rebuild into the new tables events_ratio_g7_arm0 and events_ratio_g7_arm1 (Addendum 10 and 10a of results/PREREG_g7_proven_rerun_2026-10-29.md; raw outputs and reading in results/g7_rerun/actuals_premium_2026-10-30.txt). RESULT: the stored table reproduces the ledger exactly (pooled 2004-2018 +0.0550, n 9,412, naive SE 0.0091); ARM 0 de-duplicated equals it plus 2 rows in 2019-2026; ARM 1 de-duplicated (excluded events removed, the arm the registered rows describe) gives pooled 2004-2018 +0.0433 (naive SE 0.0067, clustered by month 0.0072), 2013-18 +0.0521 (was +0.0794), 2004-07 +0.0242 (was +0.0292), 2008-12 +0.0490, 2019-26 older +0.0368, wave 1 +0.0896, wave 2 +0.1243. CAUSE: four price-artifact events carrying an exclude row (three Keurig Dr Pepper events of 2018, scaled 42.50 and 30.04 twice, the stored series steps by x0.330 inside the window; one Tyco International event of 2007 under JCI, scaled 13.79) inflated the ledger's +0.0550 by about 21 percent; the largest unflagged moves are 5.4 to 8.8. REGISTERED ROWS: p33 +0.0433 inside [0.040, 0.068]; p34 +0.0368 inside [0.015, 0.055]; category by the convention fixed in Addendum 10 (naive SE): B (above the registered range) by a margin of 0.0004; p35 1; p36 1; under the clustered SE the category is A. The premium stays positive in every era; ledger note wording prepared for the end-of-G7 batch, for approval. BUILD FINDINGS: ARM 0 had 20,052 rows against 16,993 stored because 4,968 of the 4,971 rows of reactions_view_only are now also in event_market_reactions_corrected and the function unions both (2,940 repeated rows; repeats equal within 1e-8 except one key group, 0.0914); 116 new keys dated 2026-08 and 2026-09 have no baseline; QUERY 1 as committed counts pairs (a design flaw, recorded in Addendum 10a). TO DROP AFTER 2026-11-28: tables events_ratio_g7_arm0 and events_ratio_g7_arm1, functions ratio_period_g7_arm0 and ratio_period_g7_arm1. Misses in my chat calls: ARM 1 de-duplicated within 0.0003 of ARM 0 (it is 0.0117 lower; an anchoring on five other flags whose excluded events had no price history), the extra rows' size and cause, the repeats being identical, the keys in both sources, the size of the unflagged tail; the full list is in the file. G7: 14 of 15 flags re-run by my count; 1 remains (event_daily_range_coverage).
 
 <!-- entry: 2026-10-30-29 | date: 2026-10-30 | label: database | source-line: new | approx: no -->
 ### 2026-10-30-29 — G7: event_premium_20d builds done; 2,940 repeated rows found (reaction sources overlap); reading rule fixed in Addendum 10a before any premium was read

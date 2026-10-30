@@ -1,0 +1,132 @@
+# G7 event_premium_20d (procedure: Addendum 10 and 10a of results/PREREG_g7_proven_rerun_2026-10-29.md). Built and read on 2026-10-30 between about 16:19 and 17:00 UTC in the database; statements: scripts/sql/g7_premium_build_arm0_2026-10-30.sql, g7_premium_build_arm1_2026-10-30.sql, g7_premium_compare_2026-10-30.sql and g7_premium_compare_amended_2026-10-30.sql. The new tables events_ratio_g7_arm0 and events_ratio_g7_arm1 and the functions ratio_period_g7_arm0 and ratio_period_g7_arm1 are additive and are to be dropped after 2026-11-28.
+# This file holds the raw outputs as pasted from the SQL editor (transcribed by the assistant; shape checked, not every digit machine-compared) and then the reading.
+#
+# BUILDS: ARM 0 returned 5892, 6342 and 7818 rows for 2004-2011, 2011-2019 and 2019-2026-10-01 (20,052); ARM 1 returned 5891, 6337 and 7817 (20,045). The stored events_ratio has 16,993 rows.
+#
+# QUERY 1 (stored versus ARM 0; NOTE it counts matched PAIRS, so it double-counts repeated keys; see Addendum 10a):
+| stored_rows | arm0_rows | arm1_rows | arm0_in_both | only_in_arm0 | only_in_stored | common_rows_that_differ | arm0_rows_with_exclude_row | in_arm0_not_arm1 |
+| 16993 | 20052 | 20045 | 19932 | 120 | 0 | 1 | 7 | 7 |
+#
+# D1 (distinct keys, repeats, source overlaps):
+| what | n | distinct_keys | repeated_rows |
+| 1 stored | 16993 | 16993 | 0 |
+| 2 arm0 | 20052 | 17112 | 2940 |
+| 3 arm1 | 20045 | 17106 | 2939 |
+| 4 arm0 keys repeated whose rows are NOT identical | 2819 | null | null |
+| 5 source: keys present in BOTH corrected and view_only | 4968 | null | null |
+| 6 source: repeated keys inside corrected | 0 | null | null |
+| 7 source: repeated keys inside reactions_view_only | 0 | null | null |
+| 8 source: entity and ticker pairs that occur twice in securities | 0 | null | null |
+| 9 source: event_id occurring twice in event_realized_vol | 46 | null | null |
+#
+# D3 (how different the repeated rows are):
+| repeated_keys | max_abs_scaled_difference | scaled_above_1e6 | scaled_above_1e8 | ratio_above_1e6 | month_differs | bucket_differs |
+| 2940 | 0.0914154714119828 | 1 | 1 | 0 | 0 | 0 |
+#
+# D4 (the 120 rows that are new relative to the stored table):
+| m | month_has_baseline | new_keys | new_rows |
+| 2019-01-01 | true | 2 | 3 |
+| 2026-06-01 | true | 1 | 1 |
+| 2026-08-01 | false | 93 | 93 |
+| 2026-09-01 | false | 23 | 23 |
+#
+# D2 (by year: stored rows and keys, ARM 0 rows and keys, keys only in ARM 0):
+| yr | stored_rows | stored_keys | arm0_rows | arm0_keys | only_in_arm0 |
+| 2004 | 395 | 395 | 481 | 395 | 0 |
+| 2005 | 832 | 832 | 913 | 832 | 0 |
+| 2006 | 887 | 887 | 966 | 887 | 0 |
+| 2007 | 868 | 868 | 958 | 868 | 0 |
+| 2008 | 838 | 838 | 918 | 838 | 0 |
+| 2009 | 786 | 786 | 862 | 786 | 0 |
+| 2010 | 713 | 713 | 794 | 713 | 0 |
+| 2011 | 734 | 734 | 809 | 734 | 0 |
+| 2012 | 743 | 743 | 838 | 743 | 0 |
+| 2013 | 608 | 608 | 692 | 608 | 0 |
+| 2014 | 702 | 702 | 800 | 702 | 0 |
+| 2015 | 717 | 717 | 804 | 717 | 0 |
+| 2016 | 716 | 716 | 801 | 716 | 0 |
+| 2017 | 642 | 642 | 716 | 642 | 0 |
+| 2018 | 776 | 776 | 882 | 776 | 0 |
+| 2019 | 833 | 833 | 1040 | 835 | 3 |
+| 2020 | 898 | 898 | 1187 | 898 | 0 |
+| 2021 | 868 | 868 | 1115 | 868 | 0 |
+| 2022 | 674 | 674 | 856 | 674 | 0 |
+| 2023 | 677 | 677 | 834 | 677 | 0 |
+| 2024 | 767 | 767 | 1003 | 767 | 0 |
+| 2025 | 868 | 868 | 1098 | 868 | 0 |
+| 2026 | 451 | 451 | 685 | 568 | 117 |
+#
+# AMENDED QUERY 2 (Addendum 10a): the matched excess of the ordinary types by era and cohort. Arms 1 to 3 are read on one row per event and ticker (the mean of repeated rows); arms 4 and 5 are the raw ARM 0 and ARM 1 with repeats included (their naive SE is understated).
+| arm | era | cohort | n | excess_matched | se_naive | se_clustered_by_month |
+| 1_stored | 2004-07 | older | 2626 | 0.0292 | 0.0142 | 0.0132 |
+| 1_stored | 2008-12 | older | 3225 | 0.0490 | 0.0104 | 0.0112 |
+| 1_stored | 2013-18 | older | 3561 | 0.0794 | 0.0195 | 0.0211 |
+| 1_stored | 2019-26 | older | 4371 | 0.0367 | 0.0104 | 0.0107 |
+| 1_stored | 2019-26 | wave 1 | 499 | 0.0877 | 0.0339 | 0.0334 |
+| 1_stored | 2019-26 | wave 2 | 310 | 0.1243 | 0.0491 | 0.0524 |
+| 1_stored | pooled 2004-18 | older | 9412 | 0.0550 | 0.0091 | 0.0097 |
+| 2_arm0 | 2004-07 | older | 2626 | 0.0292 | 0.0142 | 0.0132 |
+| 2_arm0 | 2008-12 | older | 3225 | 0.0490 | 0.0104 | 0.0112 |
+| 2_arm0 | 2013-18 | older | 3561 | 0.0794 | 0.0195 | 0.0211 |
+| 2_arm0 | 2019-26 | older | 4372 | 0.0368 | 0.0104 | 0.0107 |
+| 2_arm0 | 2019-26 | wave 1 | 500 | 0.0896 | 0.0339 | 0.0333 |
+| 2_arm0 | 2019-26 | wave 2 | 310 | 0.1243 | 0.0491 | 0.0524 |
+| 2_arm0 | pooled 2004-18 | older | 9412 | 0.0550 | 0.0091 | 0.0097 |
+| 3_arm1 | 2004-07 | older | 2625 | 0.0242 | 0.0133 | 0.0126 |
+| 3_arm1 | 2008-12 | older | 3225 | 0.0490 | 0.0104 | 0.0112 |
+| 3_arm1 | 2013-18 | older | 3558 | 0.0521 | 0.0113 | 0.0130 |
+| 3_arm1 | 2019-26 | older | 4372 | 0.0368 | 0.0104 | 0.0107 |
+| 3_arm1 | 2019-26 | wave 1 | 500 | 0.0896 | 0.0339 | 0.0333 |
+| 3_arm1 | 2019-26 | wave 2 | 310 | 0.1243 | 0.0491 | 0.0524 |
+| 3_arm1 | pooled 2004-18 | older | 9408 | 0.0433 | 0.0067 | 0.0072 |
+| 4_arm0_raw | 2004-07 | older | 2857 | 0.0290 | 0.0136 | 0.0135 |
+| 4_arm0_raw | 2008-12 | older | 3453 | 0.0516 | 0.0101 | 0.0114 |
+| 4_arm0_raw | 2013-18 | older | 3873 | 0.0825 | 0.0183 | 0.0201 |
+| 4_arm0_raw | 2019-26 | older | 4827 | 0.0416 | 0.0100 | 0.0109 |
+| 4_arm0_raw | 2019-26 | wave 1 | 999 | 0.0903 | 0.0240 | 0.0333 |
+| 4_arm0_raw | 2019-26 | wave 2 | 620 | 0.1243 | 0.0347 | 0.0524 |
+| 4_arm0_raw | pooled 2004-18 | older | 10183 | 0.0570 | 0.0086 | 0.0095 |
+| 5_arm1_raw | 2004-07 | older | 2856 | 0.0245 | 0.0128 | 0.0130 |
+| 5_arm1_raw | 2008-12 | older | 3453 | 0.0516 | 0.0101 | 0.0114 |
+| 5_arm1_raw | 2013-18 | older | 3870 | 0.0574 | 0.0109 | 0.0134 |
+| 5_arm1_raw | 2019-26 | older | 4827 | 0.0416 | 0.0100 | 0.0109 |
+| 5_arm1_raw | 2019-26 | wave 1 | 999 | 0.0903 | 0.0240 | 0.0333 |
+| 5_arm1_raw | 2019-26 | wave 2 | 620 | 0.1243 | 0.0347 | 0.0524 |
+| 5_arm1_raw | pooled 2004-18 | older | 10179 | 0.0462 | 0.0065 | 0.0074 |
+#
+# E1 (the excluded events present in ARM 0; read after the premium; descriptive):
+| reason | severity | note | title | event_date | ticker | bucket | scaled | ratio |
+| price_step_in_window | exclude | stored price series steps by x0.330 on 2018-07-10 inside the | Dr Pepper Snapple Group Announces Executive Leadership Changes in Connection wit | 2018-06-26 | KDP | a_all_other_types | 42.50 | 0.225 |
+| price_step_in_window | exclude | stored price series steps by x0.330 on 2018-07-10 inside the | Keurig Dr Pepper Completes Merger with JAB Holdings' Maple Parent Holdings; Decl | 2018-07-09 | KDP | a_all_other_types | 30.04 | 0.313 |
+| price_step_in_window | exclude | stored price series steps by x0.330 on 2018-07-10 inside the | Keurig Dr Pepper Completes Keurig Green Mountain Merger, Assumes $8.0 Billion Se | 2018-07-09 | KDP | a_all_other_types | 30.04 | 0.313 |
+| price_step_in_window | exclude | stored price series steps by x2.368 on 2014-11-26 inside the | KLA-Tencor Declares Special Dividend of $16.50 Per Share and Redeems $750 Millio | 2014-11-20 | KLAC | c_corporate_action | 18.10 | 1.219 |
+| price_step_in_window | exclude | stored price series steps by x2.368 on 2014-11-26 inside the | KLA-Tencor Declares Special Dividend of $16.50 Per Share and Redeems $750 Millio | 2014-11-20 | KLAC | c_corporate_action | 18.10 | 1.219 |
+| price_step_in_window | exclude | price step read 2026-10-29: JCI (the old Tyco International | Tyco International Authorizes Divestiture of Power Systems Business, Records $50 | 2007-06-13 | JCI | a_all_other_types | 13.79 | 1.015 |
+| rollup_no_source | exclude | multi-year summary event with no source filing | Southern Company's real 2024-2026 activity: THE HISTORIC VOGTLE UNIT 4 COMMERCIA | 2024-04-29 | SO | c_corporate_action | 0.53 | 0.974 |
+#
+# E2 (the 12 largest scaled moves among the 2004-2018 ordinary events, with exclusion status; post-seen robustness look):
+| title | event_date | ticker | scaled | has_exclude_row | reasons |
+| Dr Pepper Snapple Group Announces Executive Leadership Changes in Conn | 2018-06-26 | KDP | 42.50 | true | price_step_in_window |
+| Keurig Dr Pepper Completes Merger with JAB Holdings' Maple Parent Hold | 2018-07-09 | KDP | 30.04 | true | price_step_in_window |
+| Keurig Dr Pepper Completes Keurig Green Mountain Merger, Assumes $8.0 | 2018-07-09 | KDP | 30.04 | true | price_step_in_window |
+| Tyco International Authorizes Divestiture of Power Systems Business, R | 2007-06-13 | JCI | 13.79 | true | price_step_in_window |
+| Federal Circuit Court of Appeals Invalidates Claims in Align Technolog | 2006-08-31 | ALGN | 8.77 | false | null |
+| Builders FirstSource Agrees to Acquire ProBuild Holdings for $1.63 Bil | 2015-04-13 | BLDR | 7.55 | false | null |
+| Align Technology Settles Litigation with OrthoClear; Acquires IP Right | 2006-09-28 | ALGN | 7.04 | false | null |
+| MGM Mirage Amends Credit Facility to Permit Additional $200 Million Ci | 2009-04-01 | MGM | 6.04 | false | null |
+| Equifax Cybersecurity Incident Disclosure | 2017-09-07 | EFX | 5.93 | false | null |
+| Agilent Announces Exit from NMR Product Line with ~300-Person Workforc | 2014-10-14 | A | 5.63 | false | null |
+| Berkshire Hathaway's General Re Settles DOJ and SEC Investigations int | 2010-01-20 | BRK-B | 5.51 | false | null |
+| Autodesk Announces Restructuring Plan Including 13% Workforce Reductio | 2017-11-28 | ADSK | 5.39 | false | null |
+
+
+# RESULT (read as fixed in Addendum 10 and 10a before any premium was seen).
+# 1. The stored table, recomputed with the recovered comparison query, reproduces the ledger's repaired evidence exactly (2004-07 +0.0292, 2008-12 +0.0490, 2013-18 +0.0794, 2019-26 older +0.0367, wave 1 +0.0877, wave 2 +0.1243; pooled 2004-2018 +0.0550, naive SE 0.0091, n 9,412). ARM 0 de-duplicated equals it except 2 more rows in 2019-2026 (older 4,371 to 4,372; wave 1 499 to 500, its estimate +0.0877 to +0.0896); nothing changes in 2004-2018.
+# 2. ARM 1 de-duplicated (the arm the registered rows describe) removes 4 events from the 2004-2018 ordinary sample (1 in 2004-07, 3 in 2013-18) and changes the premium materially: 2004-07 +0.0292 to +0.0242 (n 2,626 to 2,625), 2013-18 +0.0794 to +0.0521 (n 3,561 to 3,558; naive SE 0.0195 to 0.0113), pooled 2004-2018 +0.0550 to +0.0433 (n 9,412 to 9,408; naive SE 0.0091 to 0.0067; SE clustered by month 0.0097 to 0.0072). 2008-12 and 2019-26 do not move (+0.0490; +0.0368 older, +0.0896 wave 1, +0.1243 wave 2).
+# 3. THE CAUSE (E1): the four removed ordinary events are price-series artifacts carrying an exclude row: three Keurig Dr Pepper events of 2018-06-26 and 2018-07-09 (scaled 42.50, 30.04, 30.04; the stored series steps by x0.330 on 2018-07-10 inside the window) and one Tyco International event of 2007-06-13 under the JCI ticker (scaled 13.79; price step read 2026-10-29). The other excluded rows (a KLA-Tencor special dividend, price stepped x2.368, in corporate_action; a Southern Company roll-up with no source, in corporate_action) never enter the ordinary premium. The largest unflagged 2004-2018 moves are 8.77 and 7.55 down to 5.39 in the twelfth place (E2).
+# 4. THE REGISTERED ROWS (ARM 1 de-duplicated): p33 pooled 2004-2018 premium +0.0433 (registered +0.054, interval 0.040 to 0.068: inside, near its lower edge); p34 2019-2026 older-events premium +0.0368 (registered +0.035, interval 0.015 to 0.055: inside).
+# 5. THE CATEGORY, by the convention of Addendum 10 (naive SE, z = estimate over SE): estimate +0.0433, SE 0.0067, z 6.5, interval 0.0299 to 0.0567; it lies wholly above +0.0295, so B (above the registered range), by a margin of 0.0004 (0.00025 at the least, allowing for the rounding of the printed values). p35 (still passes its registered rule): 1. p36 (keeps the category of the stored result today, which is B): 1. UNDER THE CLUSTERED SE (0.0072) the interval is 0.0289 to 0.0577, which contains +0.0295: category A (consistent). Against the pre-repair reference (+0.0470, interval 0.0289 to 0.0651, category A by 0.0006) the ARM 1 category B is a change; the registered p36 is scored against the stored result today (B), as fixed in Addendum 10, and both readings are recorded. The registered verdict stays on the naive rule, as the addendum said.
+# 6. WHAT IT SAYS: the premium is real, positive in every era and still above its in-sample figure, but its size is about 21 percent smaller than the ledger's +0.0550 once four price-artifact events are removed, and the category sits on the edge (flips under the clustered SE). The ledger note is to be written at the end of G7 (wording for approval): stored premium +0.0550 (2004-2018 pooled); excluding the 6 events with exclude rows (price steps and a roll-up; 4 of them in the ordinary sample with scaled moves of 14 to 43): +0.0433, naive SE 0.0067, clustered 0.0072; eras 2004-07 +0.0242, 2008-12 +0.0490, 2013-18 +0.0521, 2019-26 older +0.0368, wave 1 +0.0896, wave 2 +0.1243; category B by the naive rule (margin 0.0004), A by the clustered SE.
+# 7. DATA-INTEGRITY ITEMS FOR THE NOTES: (a) reactions_view_only (4,971 rows) is now almost entirely redundant with event_market_reactions_corrected (4,968 rows in both); the function ratio_period unions them, so a rebuild repeats those events (2,940 repeated rows in ARM 0); the stored table has none; other consumers of the two tables are unknown. (b) One repeated key group conflicts (scaled differs by 0.0914), not identified. (c) 116 events dated 2026-08 and 2026-09 have a premium row in ARM 0 but no baseline (mm_matched ends 2026-07-01).
+# NOT REPORTED: sealed versus non-sealed (the table has no company-set split). LIMITS (the ledger's own): a current-index universe (survivorship), weak older events mixed in, naive SEs by the registered rule.
+# SCORE of the assistant's chat calls on this flag: hit: the stored arm equals the ledger exactly; the object inventory; the state of the tables (16,993; 4,971; 2,106); the builds' shape (ARM 1 seven fewer rows in total, each block 0 to 6 fewer); ARM 0 de-duplicated differing from the stored by at most 3 rows; ARM 1 de-duplicated at most 7 fewer rows (4); the raw estimate within 0.003 and its SE 5 to 8 percent smaller; p33, p34, the category B, p35, p36; E1 (7 rows, 6 events, reasons, one value above 30, non-ordinary others); E2 (the top four flagged). Missed: the number of stored rows with an exclude row (called 20 to 300; 6); the ARM 0 counts (total called 16,000 to 17,600, 20,052; two blocks outside their ranges); the cause and size of the extra rows; the repeated rows being identical (called 0 to 5 non-identical, 2,819 by exact comparison; floating-point dust except one group); the maximum difference of repeats (called below 1e-6; 0.0914); the keys in both sources (called 2,500 to 3,300; 4,968); QUERY 1's pairs; ARM 1 de-duplicated pooled within 0.0003 of ARM 0 (it is 0.0117 lower: the biggest miss, an anchoring on five other flags whose excluded events had no price history); the raw pooled n (called 10,800 to 11,000; 10,183); the clustered SE range (0.0097 against 0.010 to 0.022); the size of the unflagged tail (called 8 to 25; 5.4 to 8.8); the wave 1 estimate within 0.0005 (it moved 0.0019 with one new event).
