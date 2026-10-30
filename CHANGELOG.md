@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-30-42 | 2026-10-30 | documents | docs/START_HERE.md: opener, pre-flight, dated Monday section and the working rules carried |
 | 2026-10-30-41 | 2026-10-30 | checkpoint | CHECKPOINT 2026-10-30 20:07 (fifth checkpoint of 2026-10-30: G4 scan, review and Part B2 d |
 | 2026-10-30-40 | 2026-10-30 | documents | G4 results and review record saved: 9 confirmed artifact stock-days, 31 Needs Evidence, 3  |
 | 2026-10-30-39 | 2026-10-30 | documents | G4: recall check, the volatility-table gap and Part B2 registered (Addendum 1) before B2 w |
@@ -270,6 +271,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-30-42 | date: 2026-10-30 | label: documents | source-line: new | approx: no -->
+### 2026-10-30-42 — docs/START_HERE.md: opener, pre-flight, dated Monday section and the working rules carried by the 10-30 checkpoints
+WHAT: docs/START_HERE.md (new), a short layer on top of docs/START_NEW_DAY.md for a fresh chat: an opening message, a read-only pre-flight with the recorded values (terminal and SQL editor), a dated Monday 2026-11-02 section (the October sentiment top-up, runbook step 8, whose script nobody has read in the record, then the G4 items in order), the list of what waits on Galen, and the working rules, reusable procedure and lessons of the checkpoints of 2026-10-30 quoted verbatim (the later bodies only say unchanged, and START_NEW_DAY.md keeps only the latest block). No database or code change. NOTES: checkpoint bodies 2 to 4 of 2026-10-30 were recovered from the transcripts and each matched the hash recorded by its own block; the file data_cache/share/checkpoint_body_2026-10-30_afternoon.txt is the SECOND body of the day (the 14:41 first body was not found in the transcripts); the Project files PROJECT_HANDOFF, SCRIPTS and the Roadmap are older background (roadmap newest date 2026-09-08; the other two carry no dates).
 
 <!-- entry: 2026-10-30-41 | date: 2026-10-30 | label: checkpoint | source-line: new | approx: no -->
 ### 2026-10-30-41 — CHECKPOINT 2026-10-30 20:07 (fifth checkpoint of 2026-10-30: G4 scan, review and Part B2 done, 9 artifact stock-days confirmed, 3 events excluded, G4 not yet passed; the docs update is next)
