@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-30-39 | 2026-10-30 | documents | G4: recall check, the volatility-table gap and Part B2 registered (Addendum 1) before B2 w |
 | 2026-10-30-38 | 2026-10-30 | documents | G4 price-artifact detection: registration, base-rate counts and the scan SQL committed bef |
 | 2026-10-30-37 | 2026-10-30 | checkpoint | CHECKPOINT 2026-10-30 18:28 (fourth checkpoint of 2026-10-30: G7 of the 15 proven flags co |
 | 2026-10-30-36 | 2026-10-30 | documents | README and PROJECT_STATUS (v1.4) updated after the G7 re-runs of the 15 proven flags; tabl |
@@ -267,6 +268,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-30-39 | date: 2026-10-30 | label: documents | source-line: new | approx: no -->
+### 2026-10-30-39 — G4: recall check, the volatility-table gap and Part B2 registered (Addendum 1) before B2 was listed; review decisions recorded
+WHAT: Addendum 1 of results/PREREG_g4_price_artifacts_2026-10-30.md (patch scripts/audit/patch_g4_addendum1_1030.py, hash-gated on the committed registration) and scripts/sql/g4_scan_b2_2026-10-30.sql, committed BEFORE the B2 lists were read. FINDINGS: (1) the registered Part B was NOT a superset of the 2026-10-28 scan: HIG 2008-12-05 (+102.4 percent, z 5.97 against a cutoff of 6), ROK 2001-07-02 (-61.4), HUBB 1994-10-31 (+886) and TSCO 1994-02-18 (+225) are missed (one by 0.03 of z, three for lack of v64); the three registered positive controls were caught (p7 true). (2) vol_estimators has NO rows for 1994 or for 1998 to 2003 (400,277 non-sealed price rows, 17.6 percent), 97 to 98 percent in 1995 to 1997, 98 to 99.9 percent in 2004 to 2025, 89.3 percent in 2026: a data limitation recorded for G8, not repaired. (3) Of 253 non-sealed days with a move of 30 percent or more, Part B holds 93, 95 have no v64 and 65 have v64 with z below 6. PART B2 registered: B2a all moves of 60 percent or more that Part B missed (7), B2b a seeded sample of 40 of the 153 moves of 30 to 60 percent, escalating at 3 artifacts. REVIEW DECISIONS (Galen): 9 confirmed artifacts (KDP, KLAC, HPQ, A, MO, CAH, JCI, DD 2019-06-03, GEN 2020-02-03); 26 in Needs Evidence (WY, EXPE, MAS, GIS, MGM 2004, the 3 lean ones, the 18 uncertain); the real groups accepted. SENSITIVITY: 5 of the 9 confirmed days touch events already excluded (8 events); 4 days touch 9 events still in the analysis set (A x3, CAH x2, DD x3, GEN x1; 20-day abnormal returns +26 to +34 percent for A, -21 and -26 for CAH, +8 to +10 for DD, +3 for GEN), PROPOSED for event_exclusions reason price_step_in_window, NOT applied; GIS, MGM 2004 and WY touch no event. No exclusion was applied and no data changed. Misses in my chat calls: the share of B2-band days invisible to Part B in the 60 to 100 percent band (4 of 11, called at least 8), the v64 coverage (six years at 0 percent, called one year under 95), HIG (neither of my two scenarios), ROK (called under 30 percent).
 
 <!-- entry: 2026-10-30-38 | date: 2026-10-30 | label: documents | source-line: new | approx: no -->
 ### 2026-10-30-38 — G4 price-artifact detection: registration, base-rate counts and the scan SQL committed before any candidate was listed
