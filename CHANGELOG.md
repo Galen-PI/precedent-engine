@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-30-35 | 2026-10-30 | database | G7 ledger update applied: 16 dated notes appended and 5 premium evidence rows added; verif |
 | 2026-10-30-34 | 2026-10-30 | documents | G7 complete: Addendum 12 and the ACTUAL-TABLE (52 rows) appended to the proven-flags regis |
 | 2026-10-30-33 | 2026-10-30 | database | G7: event_daily_range_coverage re-run (the last flag): stored lists reproduced exactly, AR |
 | 2026-10-30-32 | 2026-10-30 | documents | G7: Addendum 11 (event_daily_range_coverage rebuild procedure, method check and reading ru |
@@ -263,6 +264,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-30-35 | date: 2026-10-30 | label: database | source-line: new | approx: no -->
+### 2026-10-30-35 — G7 ledger update applied: 16 dated notes appended and 5 premium evidence rows added; verified against the database
+WHAT: the approved G7 ledger update was run in the SQL editor as one transaction (script sha256 7c53a50032a9ee6a16adbbd5e96aa6daeca5e4e3da170a8c26bd0ec57548efe8, 11,393 bytes, 24 statements, reproduced in the chat of 2026-10-30): append-only dated notes on the 15 re-run flags and the Tier 1 candidate event_pre_days_m4_m1, and five evidence rows for event_premium_20d (cleaned eras 2004-2007, 2008-2012, 2013-2018, pooled 2004-2018 with the naive and the clustered SE). No status, tested_on, multiplier or rule was changed. VERIFICATION ROW from the editor: flag_ledger 112 rows (backup 112), 0 rows with a changed non-notes column, 16 rows with changed notes, 0 rows whose old notes are not a prefix of the new, evidence rows 368 to 373. The stored notes were then read back from the database over REST by scripts/audit/ledger_snapshot_g7_1030.py (read-only; refuses unless the 16 markers, the 15 proven statuses and the five evidence rows are all present) into results/g7_rerun/ledger_notes_after_2026-10-30.txt. BACKUPS, to drop after 2026-11-28 with the earlier list: flag_ledger_backup_20261030 and flag_ledger_evidence_backup_20261030 (the older flag_ledger_backup_20261029 is already on the list). The premium note says to read the earlier +0.055 as about +0.043; the Tier 1 note says the pre-window rise is largely explained by the 8-K filing lag, the candidate stays null and its January forward check is dropped. G7 batch status: ledger done, ACTUAL-TABLE and scorer done, README and PROJECT_STATUS refresh pending.
 
 <!-- entry: 2026-10-30-34 | date: 2026-10-30 | label: documents | source-line: new | approx: no -->
 ### 2026-10-30-34 — G7 complete: Addendum 12 and the ACTUAL-TABLE (52 rows) appended to the proven-flags registration; scorer run

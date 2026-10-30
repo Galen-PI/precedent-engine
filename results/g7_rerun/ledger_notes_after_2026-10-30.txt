@@ -1,0 +1,57 @@
+# Ledger notes after the G7 update of 2026-10-30, read from the database over REST at 2026-10-30 18:16:04 UTC (backups: flag_ledger_backup_20261030 and flag_ledger_evidence_backup_20261030; the SQL was run in the SQL editor as one transaction).
+# Per flag: key | status | tested_on | length of the whole notes field; then the text appended on 2026-10-30 (from the marker to the end of the field).
+
+band_edge_calibration_90 | proven | 2026-10-20 | 1119
+G7 RE-RUN 2026-10-30 (results/PREREG_g7_proven_rerun_2026-10-29.md, Addendum 12; raw outputs in results/g7_rerun/): coverage 88.47 percent for the earnings plus event group and 88.14 percent for the earnings day +1 group in 2013-2019; the flag still passes. Status unchanged.
+
+band_stress_scale_median | proven | 2026-10-20 | 1413
+G7 RE-RUN 2026-10-30 (results/PREREG_g7_proven_rerun_2026-10-29.md, Addendum 12; raw outputs in results/g7_rerun/): control reproduced on the cleaned data: the twelve era-by-bin coverage cells run 89.63 to 91.08 percent and the interval score ratio C over B in 2020-2026 is 0.9834; the flag still passes. Status unchanged.
+
+earnings_role_bands_walk_forward | proven | 2026-10-21 | 1853
+G7 RE-RUN 2026-10-30 (results/PREREG_g7_proven_rerun_2026-10-29.md, Addendum 12; raw outputs in results/g7_rerun/): interval score ratio role over pooled 0.869 in 2013-2019 and 0.857 in 2020-2026; coverage cells 88.5 to 91.9 percent; the script reproduces the original printout exactly on the original data, and removing excluded events leaves the printed values unchanged; the flag still passes. Status unchanged.
+
+event_burst_day0_1 | proven | 2026-10-16 | 483
+G7 RE-RUN 2026-10-30 (results/PREREG_g7_proven_rerun_2026-10-29.md, Addendum 12; raw outputs in results/g7_rerun/): days 0 to 1 ratio 1.298 in 2004-2018 (n 7,193, SE 0.018) and 1.331 in 2019-2026 (n 3,982, SE 0.022) with excluded events removed (earlier values 1.306 and 1.331); the flag still passes. Status unchanged.
+
+event_daily_range_coverage | proven | 2026-10-16 | 2050
+G7 RE-RUN 2026-10-30 (results/PREREG_g7_proven_rerun_2026-10-29.md, Addendum 12; raw outputs in results/g7_rerun/): shortfall versus the matched control 6.71 points in 2004-2018 and 9.22 in 2019-2026 (rule: 5 points or more in both eras; naive SE 0.31 and 0.45). The rebuilt day-lists reproduce the stored lists exactly, and removing excluded events moves the 2004-2018 figure by 0.02 point. Only part 3 of the three-part rule was rebuilt; parts 1 and 2 stand as recorded. The frozen forward test (events after 2026-07-31) is untouched and is evaluated once after 2027-01-05. The flag still passes. Status unchanged.
+
+event_day_width_own_events | proven | 2026-10-19 | 1689
+G7 RE-RUN 2026-10-30 (results/PREREG_g7_proven_rerun_2026-10-29.md, Addendum 12; raw outputs in results/g7_rerun/): band multiplier versus an ordinary day 1.60 and gain per event stock-day (E3-W2, 2013-2019) 0.5410 nats on the cleaned data; the flag still passes. Status unchanged.
+
+event_earnings_window_width | proven | 2026-10-20 | 1565
+G7 RE-RUN 2026-10-30 (results/PREREG_g7_proven_rerun_2026-10-29.md, Addendum 12; raw outputs in results/g7_rerun/): gain per earnings stock-day in 2013-2019 2.0071 nats (units are nats), day 0 band multiplier 2.72, positive in 21 of 21 years; the script reproduces the original printout exactly, and removing excluded events moves the recorded event days from 41,579 to 41,569 and the gain from 2.0072 to 2.0071; the flag still passes. Status unchanged.
+
+event_label_direction_sign | proven | 2026-10-19 | 2377
+G7 RE-RUN 2026-10-30 (results/PREREG_g7_proven_rerun_2026-10-29.md, Addendum 12; raw outputs in results/g7_rerun/): hit rate 57.7 percent in 2004-2018 (n 4,210) and 57.8 percent in 2019-2026 (n 1,311), permutation p 0.000 and 0.001; removing excluded events removed only 2 usable events (the test reads a frozen copy of the reaction table of 2026-10-19, so later reaction repairs are not part of it); the flag still passes. Status unchanged.
+
+event_pre_days_m4_m1 | null | 2026-10-16 | 896
+G7 RE-RUN 2026-10-30 (results/PREREG_g7_proven_rerun_2026-10-29.md, Addendum 12; raw outputs in results/g7_rerun/): the pre-window rise (days -4 to -1) is largely explained by the 8-K filing lag: SEC acceptance data show 45 percent of all 8-Ks in the feed were filed a day or more after the event date; same-day filings show a pre-window ratio of 1.024 (z 1.81) against 1.068 for lags 1 to 4 pooled, and the lag mix accounts for about 53 percent of the overall 1.051 rise; the residual +0.024 is not distinguishable from zero. The candidate stays null, no claim, and the January forward check is dropped. Day 0 stays the filing date for every flag (docs/DECISION_day0_filing_date_2026-10-30.md); sec_8k_report_dates and event_timing are diagnostic only. Status unchanged (null).
+
+event_premium_20d | proven | 2026-10-16 | 1910
+G7 RE-RUN 2026-10-30 (results/PREREG_g7_proven_rerun_2026-10-29.md, Addendum 12; raw outputs in results/g7_rerun/): the stored table reproduces the earlier figure exactly (pooled 2004-2018 +0.0550, n 9,412), but four price-artifact events carrying an exclude row inflated it: three Keurig Dr Pepper events of 2018 (scaled moves 42.5, 30.0 and 30.0; the stored series steps by x0.330 inside the window) and one Tyco International event of 2007 under the JCI ticker (scaled 13.8). Cleaned: pooled 2004-2018 +0.0433 (n 9,408, naive SE 0.0067, SE clustered by month 0.0072); eras 2004-2007 +0.0242, 2008-2012 +0.0490, 2013-2018 +0.0521, 2019-2026 older events +0.0368; positive in every era. Read the earlier +0.055 as about +0.043. Rule category by the naive SE: above the registered range (the interval 0.0299 to 0.0567 lies above +0.0295, margin 0.0004); by the clustered SE the interval contains +0.0295 (consistent). Evidence rows added (matched_excess_scaled_move naive and clustered SE). The flag still passes. Status unchanged.
+
+event_type_acquisition | proven | 2026-10-16 | 740
+G7 RE-RUN 2026-10-30 (results/PREREG_g7_proven_rerun_2026-10-29.md, Addendum 12; raw outputs in results/g7_rerun/): burst ratio 1.272 in 2004-2018 and 1.333 in 2019-2026 (z versus pooled -0.84 and +0.05); still uses the pooled number; the flag still passes. Status unchanged.
+
+event_type_capital_raise_no_burst | proven | 2026-10-16 | 575
+G7 RE-RUN 2026-10-30 (results/PREREG_g7_proven_rerun_2026-10-29.md, Addendum 12; raw outputs in results/g7_rerun/): burst ratio 1.030 in 2004-2018 (n 515) and 1.098 in 2019-2026 (n 355); z versus the pooled (1.298 and 1.331) -6.70 and -3.24, still beyond 2.5 in both eras (2019-2026 by 0.74); the flag still passes. Status unchanged.
+
+event_type_leadership_change | proven | 2026-10-16 | 826
+G7 RE-RUN 2026-10-30 (results/PREREG_g7_proven_rerun_2026-10-29.md, Addendum 12; raw outputs in results/g7_rerun/): burst ratio 1.240 in 2004-2018 and 1.262 in 2019-2026 (z versus pooled -1.87 and -2.30; closest to a line is 2019-2026 against 2.5, and the rule needs both eras); still uses the pooled number; the flag still passes. Status unchanged.
+
+event_type_strategic_partnership | proven | 2026-10-16 | 699
+G7 RE-RUN 2026-10-30 (results/PREREG_g7_proven_rerun_2026-10-29.md, Addendum 12; raw outputs in results/g7_rerun/): burst ratio 1.237 in 2004-2018 and 1.381 in 2019-2026 (z versus pooled -0.80 and +0.46); still uses the pooled number; the flag still passes. Status unchanged.
+
+fomc_announcement_day_market_move | proven | 2026-10-23 | 1599
+G7 RE-RUN 2026-10-30 (results/PREREG_g7_proven_rerun_2026-10-29.md, Addendum 12; raw outputs in results/g7_rerun/): control reproduced: day 0 ratio 1.140 in 2004-2014 (n 88, t +3.90) and 1.112 in 2015-2026 (n 92, t +3.27); placebos 0.974 and 0.945 (n 85 without 2020); the flag still passes. Status unchanged.
+
+macro_oil_shock_energy_same_day | proven | 2026-10-16 | 1708
+G7 RE-RUN 2026-10-30 (results/PREREG_g7_proven_rerun_2026-10-29.md, Addendum 12; raw outputs in results/g7_rerun/): the rule is met: Energy amplification 1.293 in 2004-2018 (t 9.2, 115 months) and 1.324 in 2019-2026 (t 8.5, 66 months). The earlier 1.319 was on 64 months; two months (2026-08 and 2026-09) were added to sector_day_z after that window (the original window reproduces: 1.319 through 2026-07), so the tolerance registered for this control was missed while the rule itself is met. Status unchanged.
+
+# Evidence rows added for event_premium_20d (flag_key | era | n | estimate | se | unit):
+event_premium_20d | g7 rerun ARM 1 2004-2007 | 2625 | 0.0242 | 0.0133 | matched_excess_scaled_move_naive_se
+event_premium_20d | g7 rerun ARM 1 2008-2012 | 3225 | 0.049 | 0.0104 | matched_excess_scaled_move_naive_se
+event_premium_20d | g7 rerun ARM 1 2013-2018 | 3558 | 0.0521 | 0.0113 | matched_excess_scaled_move_naive_se
+event_premium_20d | g7 rerun ARM 1 pooled 2004-2018 | 9408 | 0.0433 | 0.0067 | matched_excess_scaled_move_naive_se
+event_premium_20d | g7 rerun ARM 1 pooled 2004-2018 clustered | 9408 | 0.0433 | 0.0072 | matched_excess_scaled_move_clustered_se_by_month
