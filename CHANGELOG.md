@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-30-12 | 2026-10-30 | database | G7: the 8-K filing lag explains most of the pre-window rise (SUPPORTED by the registered r |
 | 2026-10-30-11 | 2026-10-30 | documents | G7: lag-split test of the pre-window candidate registered before any run (decision rule fi |
 | 2026-10-30-10 | 2026-10-30 | database | sec_8k_report_dates created and loaded: report date and acceptance time for 155,969 8-Ks |
 | 2026-10-30-09 | 2026-10-30 | database | 8-K lag measured for the first time: 45 percent of 8-Ks are filed a day or more after the  |
@@ -240,6 +241,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-30-12 | date: 2026-10-30 | label: database | source-line: new | approx: no -->
+### 2026-10-30-12 — G7: the 8-K filing lag explains most of the pre-window rise (SUPPORTED by the registered rule); the burst falls with the lag; lag 1 breaks my prediction
+WHAT: the registered lag-split test (results/PREREG_g7_pre_window_lag_split_2026-10-30.md; output results/g7_rerun/lag_split_results_2026-10-30.out) on 11,150 linked events (lag 0: 4,505). DECISION RULE, fixed in advance: SUPPORTED. (a) same-day filings: pre-window 1.024, z 1.81 (not significant); (b) pooled lags 1 to 4 1.068 against 1.024: +0.044, t 2.55 (thin margin on the 0.04 bar); (c) the ordering holds in both the non-sealed (+0.056, t 2.7) and the sealed (+0.022, t 0.7) sets; the not-supported trigger was not met. Descriptive: pre-window by lag 1.024, 1.015, 1.102, 1.091, 1.129, 1.075 (lags 0 to 5 or more); the burst at the filing date falls with the lag, 1.405, 1.351, 1.269, 1.179, 1.099, 1.115; lags 2 to 4 pooled 1.107 (+0.083, t 4.1 against lag 0, an after-the-fact grouping); the lag mix accounts for about 53 percent of the overall rise (1.051), leaving +0.024 (z 1.81) in same-day filings, which is not distinguishable from zero. CONSEQUENCES as registered: the Tier 1 candidate event_pre_days_m4_m1 stays null, its ledger note is to read 'largely explained by the 8-K filing lag; residual +0.024 not distinguishable from zero', and its January forward check is dropped; the dating of events becomes the next item (event dates are filing dates, 60 percent of events precede them by a trading day or more, so the headline burst of 1.31 blends 1.405 for same-day filings with 1.1 to 1.35 for late ones). SCORED: numeric 9 of 11 inside their 80 percent intervals (misses p2, lag 1 pre-window 1.015 against 1.032 to 1.098; p9, lag 4 burst 1.099 against 1.15 to 1.29); probabilities p12 true, p13 false, p14 true, p15 false, p16 true, p17 false. LAG 1 is the surprise: no pre-window rise (1.015) and a high burst (1.351); untested explanation: news after the close on the report date, filed the next morning, so the reaction falls on the filing day (the acceptance time can test it; a new registration first). Misses in my chat calls: the linked sample (11,150 against my 9,500 to 10,800). An arithmetic bug in my first pass (tuple order) was caught before anything was quoted.
 
 <!-- entry: 2026-10-30-11 | date: 2026-10-30 | label: documents | source-line: new | approx: no -->
 ### 2026-10-30-11 — G7: lag-split test of the pre-window candidate registered before any run (decision rule fixed); event lag mix and the day -5 data limit recorded
