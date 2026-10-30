@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-30-07 | 2026-10-30 | documents | G7 Tier 1: window nulls (event_pre_days_m4_m1, event_lasting_days_6_20) registered; Addend |
 | 2026-10-30-06 | 2026-10-30 | database | G7 finding: the day-level tests were insulated from the exclusions by construction (ev_ent |
 | 2026-10-30-05 | 2026-10-30 | database | G7: event_day_width_own_events re-run: Arm 0 reproduces the 10-20 log exactly; Arm 1 chang |
 | 2026-10-30-04 | 2026-10-30 | documents | G7 Addendum 5: event_day_width_own_events procedure registered (pin 798e1e7f, same Arm 1 f |
@@ -235,6 +236,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-30-07 | date: 2026-10-30 | label: documents | source-line: new | approx: no -->
+### 2026-10-30-07 — G7 Tier 1: window nulls (event_pre_days_m4_m1, event_lasting_days_6_20) registered; Addendum 6 corrects the universe statement (sealed tickers were part of the original tests)
+WHAT: results/PREREG_g7_tier1_window_nulls_2026-10-30.md registered BEFORE any result, in the repo's template (16 predictions: 8 numeric at 80 percent, 8 probabilities): the ledger's old numbers (pre-window 1.062 on n 5,155 and 1.028 on n 2,681; days 6 to 20 0.986 and 0.981), the registered rules (positive with z above 2 in both eras), three queries (ARM 0 on the view, ARM 1-NULL, ARM 1 with excluded events removed from the sample and the isolation test), each cut into all, non-sealed and sealed companies, a placebo window (days 21 to 24), and a strict flip rule (rule met, ratio of 1.03 or more in 2019-2026, same sign in both company sets, forward check in January 2027). Probabilities: event_pre_days_m4_m1 meets its rule 35 percent, event_lasting_days_6_20 2 percent. Limits stated: the original query is not recovered (the ledger n is about 27 percent below today's sample), the SEs are naive, and the three other Tier 1 nulls (direction_overreaction_reversal, tag_specific_ranges, time_to_threshold_asymmetry) cannot be re-run because their registered rule is recorded only as 'earlier session'. event_type_financial_result and event_type_regulatory were observed in the by-type run before any registration and are recorded as descriptive only (unchanged: financial_result still flips across eras, regulatory still not distinct from pooled). ADDENDUM 6 (scripts/audit/patch_prereg_addendum6_1030.py, hash-gated, text only) corrects the proven-flags registration: the claim that the re-runs use the exploration tickers only and leave the 160 sealed tickers untouched is WRONG (the by-type SQL has no sealed filter and reproduced the ledger counts on all companies; the day-level scripts read all 498 securities; the original tests used all companies), so the sealed set is not an independent confirmation for any of these flags; confirmation of any flip is forward data, and sealed against non-sealed is a consistency check between two disjoint company sets.
 
 <!-- entry: 2026-10-30-06 | date: 2026-10-30 | label: database | source-line: new | approx: no -->
 ### 2026-10-30-06 — G7 finding: the day-level tests were insulated from the exclusions by construction (ev_ent); event_premium_20d runs through ratio_period, which writes to events_ratio
