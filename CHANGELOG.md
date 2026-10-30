@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-30-23 | 2026-10-30 | documents | G7: Addendum 8 (event_earnings_window_width procedure) committed before the run |
 | 2026-10-30-22 | 2026-10-30 | database | G7: earnings_role_bands_walk_forward re-run: ARM 0 reproduces the original exactly, ARM 1  |
 | 2026-10-30-21 | 2026-10-30 | documents | G7: Addendum 7a corrects the description of the earlier ARM 1 patch: the committed copy re |
 | 2026-10-30-20 | 2026-10-30 | documents | G7: Addendum 7 (earnings_role_bands_walk_forward procedure) committed before the run; ARM  |
@@ -251,6 +252,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-30-23 | date: 2026-10-30 | label: documents | source-line: new | approx: no -->
+### 2026-10-30-23 — G7: Addendum 8 (event_earnings_window_width procedure) committed before the run
+WHAT: Addendum 8 of results/PREREG_g7_proven_rerun_2026-10-29.md (appended by scripts/audit/patch_prereg_addendum8_1030.py, which refuses unless the registration is exactly the version after Addendum 7a and checks that no registered prediction changed) fixes the procedure for event_earnings_window_width (scripts/card/earnings_thread_test.py, 196 lines, read-only) BEFORE it runs. FACTS: the script has one commit (10cd146, 2026-10-20 14:34:17) which also holds its original printout (results/2026-10-19/earnings_thread_full.out, 26 lines; the folder name is not the date of the run); the pin is that commit; its only local import is event_width_test.py (one commit, ea2a09f), so the existing ARM 1 patch v2 applies; inputs: audit_matrices.npz (sha256 7bd617a4...63e6, written 18 minutes before the commit), sec_8k_filings (41,459 item-2.02 filings, 41,046 distinct stock-dates, the same as the printout), securities, event_direction_labels (unused), ev_ent (22,338 rows) and event_exclusions for ARM 1; no price cache, model file or random generator. UNITS CHECKED: the gain is in nats (+1.33, +2.01, +1.77 per earnings stock-day) and consistent with a multiplier near 2.7; my earlier suspicion that the registration's unit was mislabeled was wrong. ARM 0 must reproduce the printout line by line (first line: 41,459 filings, 41,046 stock-dates, 40,157 and 39,872 flagged days, 41,579 recorded event days); ARM 1 must print 716 skipped rows and show fewer recorded event days than ARM 0. Registered rows p15 to p17 describe ARM 1. Baseline: multipliers 2.72 (day 0), 2.47 (day +1); PRIMARY gains +1.3260, +2.0072, +1.7741 nats, 21 of 21 years positive; verdict EARNS ITS PLACE. Not reported: sealed versus non-sealed (no company-set split in the script). No prediction edited.
 
 <!-- entry: 2026-10-30-22 | date: 2026-10-30 | label: database | source-line: new | approx: no -->
 ### 2026-10-30-22 — G7: earnings_role_bands_walk_forward re-run: ARM 0 reproduces the original exactly, ARM 1 is identical, the flag still passes; p11 to p14 hit
