@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-30-28 | 2026-10-30 | documents | G7: Addendum 10 (event_premium_20d rebuild procedure) and its SQL committed before the bui |
 | 2026-10-30-27 | 2026-10-30 | database | G7: event_label_direction_sign re-run: ARM 0 reproduces the original exactly, ARM 1 remove |
 | 2026-10-30-26 | 2026-10-30 | documents | G7: Addendum 9 (event_label_direction_sign procedure) and the direction ARM 1 patch commit |
 | 2026-10-30-25 | 2026-10-30 | checkpoint | CHECKPOINT 2026-10-30 15:58 (second checkpoint of 2026-10-30: the timing thread's conclusi |
@@ -256,6 +257,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-30-28 | date: 2026-10-30 | label: documents | source-line: new | approx: no -->
+### 2026-10-30-28 — G7: Addendum 10 (event_premium_20d rebuild procedure) and its SQL committed before the build; scoring for the rule's hole fixed in advance
+WHAT: Addendum 10 of results/PREREG_g7_proven_rerun_2026-10-29.md (appended by scripts/audit/patch_prereg_addendum10_1030.py, which refuses unless the registration is exactly the version after Addendum 9 and checks that no registered prediction changed) fixes the procedure for event_premium_20d BEFORE any build, with scripts/sql/g7_premium_build_arm0_2026-10-30.sql, g7_premium_build_arm1_2026-10-30.sql and g7_premium_compare_2026-10-30.sql. PRE-CHECK RESULTS (2026-10-30): all 17 objects exist; events_ratio holds 16,993 rows (14,592 ordinary, months 2004-01-01 to 2026-07-01), reactions_view_only 4,971 rows, wave 1 2,106 and wave 2 1,556 events; the stored table recomputed with the recovered comparison query REPRODUCES the ledger's repaired values (2004-07 +0.0292, 2008-12 +0.0490, 2013-18 +0.0794, 2019-26 older +0.0367, wave 1 +0.0877, wave 2 +0.1243; pooled 2004-2018 +0.0550, SE 0.0091, n 9,412); only 6 of the stored rows belong to excluded events; the live definition of ratio_period equals the 2026-10-16 text (checked); the view event_component_dates is built on candidate_review_log (verdict real_event), which the 2026-10-29 review touched. PROCEDURE: a rebuild into two new empty tables (ARM 0 the original function body on today's inputs, ARM 1 with excluded events left out), verified programmatically against the live body (identical apart from names and one added clause), filled in three calls as in the original session, then a diagnostic query (stored versus ARM 0, ARM 0 versus ARM 1) and a results query with a naive SE and an SE clustered by month. SCORING FIXED IN ADVANCE for the rule's hole (the ledger says the rule had no category above +0.0295): categories A consistent, B above the registered range, C replicated lower, D not replicated; p35 passes for A, B or C; p36 is scored against the stored result's category today (B) and also reported against the pre-repair evidence (+0.0470, interval 0.0289 to 0.0651, A by 0.0006). Thin margin recorded: the stored interval's lower end is 0.80 SE above +0.0295. Not reported: sealed versus non-sealed. No prediction edited. Misses in my chat calls on this flag so far: the number of ledger evidence rows (11, called 4 to 10, and no pooled row) and the stored rows with an exclude row (6, called 20 to 300).
 
 <!-- entry: 2026-10-30-27 | date: 2026-10-30 | label: database | source-line: new | approx: no -->
 ### 2026-10-30-27 — G7: event_label_direction_sign re-run: ARM 0 reproduces the original exactly, ARM 1 removes 2 usable events, the flag still passes; p27 to p29 hit
