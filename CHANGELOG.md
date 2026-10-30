@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-30-40 | 2026-10-30 | documents | G4 results and review record saved: 9 confirmed artifact stock-days, 31 Needs Evidence, 3  |
 | 2026-10-30-39 | 2026-10-30 | documents | G4: recall check, the volatility-table gap and Part B2 registered (Addendum 1) before B2 w |
 | 2026-10-30-38 | 2026-10-30 | documents | G4 price-artifact detection: registration, base-rate counts and the scan SQL committed bef |
 | 2026-10-30-37 | 2026-10-30 | checkpoint | CHECKPOINT 2026-10-30 18:28 (fourth checkpoint of 2026-10-30: G7 of the 15 proven flags co |
@@ -268,6 +269,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-30-40 | date: 2026-10-30 | label: documents | source-line: new | approx: no -->
+### 2026-10-30-40 — G4 results and review record saved: 9 confirmed artifact stock-days, 31 Needs Evidence, 3 exclusions applied; G4 not yet passed
+WHAT: results/g4_price_artifacts/g4_results_2026-10-30.txt, the record of the G4 scan (S0 to S5, Part B2, the recall check, the volatility-table gap, Galen's decisions, the sensitivity step, the scoring of p1 to p13 and of the assistant's chat calls). DATABASE CHANGE (SQL editor, one transaction, approved by Galen): 3 rows added to event_exclusions (A 2014-10-06, 2014-10-14 and 2014-11-03; reason price_step_in_window, severity exclude); backup table event_exclusions_backup_20261030 (drop after 2026-11-28; add it to the drop list in the status section 8). Verification row: event_exclusions 2,166 to 2,169, price_step_in_window exclude rows 7 to 10, event_analysis_set 21,670 to 21,667, 0 existing rows changed. RESULTS: 9 confirmed artifact stock-days (KDP, KLAC, HPQ, A, MO, CAH, JCI, DD 2019-06-03, GEN 2020-02-03); 31 stock-days in Needs Evidence plus 4 in B2a awaiting Galen; B2a 3 proposed artifacts (HUBB, TSCO, ROK); B2b 0 of 40; tier 2 sample 1 of 60. Registered predictions: p1, p2 and p5 outside their intervals, p3, p4, p6 and p13 inside. G4 is NOT YET PASSED: open items are the 5 non-trading-day rows of Part A, the 31 Needs Evidence stock-days, the B2a confirmation, the 6 held events (CAH x2, DD x3, GEN x1), the 457 unreviewed tier 2 candidates and the application to the sealed tickers. Corrections made while writing the record: 7 (not 8) already-excluded events behind the 5 confirmed days; 5 (not 3) Needs Evidence items in B2b; 17 (not about 19) real-lean rows in B2b.
 
 <!-- entry: 2026-10-30-39 | date: 2026-10-30 | label: documents | source-line: new | approx: no -->
 ### 2026-10-30-39 — G4: recall check, the volatility-table gap and Part B2 registered (Addendum 1) before B2 was listed; review decisions recorded
