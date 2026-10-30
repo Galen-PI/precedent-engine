@@ -13,6 +13,7 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 <!-- INDEX-START -->
 | ID | date | old label | title |
 |---|---|---|---|
+| 2026-10-30-04 | 2026-10-30 | documents | G7 Addendum 5: event_day_width_own_events procedure registered (pin 798e1e7f, same Arm 1 f |
 | 2026-10-30-03 | 2026-10-30 | database | G7: band_edge_calibration_90 re-run: Arm 0 reproduces the 10-20 printout exactly, Arm 1 (7 |
 | 2026-10-30-02 | 2026-10-30 | correction | G7 Addendum 4a: first band_calibrate Arm 0 attempt failed on a missing model file; cause,  |
 | 2026-10-30-01 | 2026-10-30 | documents | G7 Addendum 4: band_edge_calibration_90 procedure registered (pinned worktree, Arm 0 repro |
@@ -232,6 +233,10 @@ Add an entry:  python3 scripts/audit/changelog_tools.py add --title "..." [--lab
 ## Entries
 
 <!-- ENTRIES-START -->
+
+<!-- entry: 2026-10-30-04 | date: 2026-10-30 | label: documents | source-line: new | approx: no -->
+### 2026-10-30-04 — G7 Addendum 5: event_day_width_own_events procedure registered (pin 798e1e7f, same Arm 1 filter, every input listed)
+WHAT: Addendum 5 appended to results/PREREG_g7_proven_rerun_2026-10-29.md by scripts/audit/patch_prereg_addendum5_1030.py (hash-gated, text only, no prediction edited) BEFORE the run. Every input is listed as Addendum 4a requires: event_width_test.py and decomp_validation.py as at 798e1e7f (the last commit before the original run, stamped 2026-10-20 16:11; both modules unchanged since ea2a09f; standard library only, no models), data_cache/returns (500 files, none newer than the original run; relative path, so the run starts at the worktree root), the tables securities, event_direction_labels and ev_ent; nothing is written. Original log results/2026-10-19/event_width_full.log (57 lines, 108 seconds). ARM 0 must reproduce it (three gains within 0.005 nats, verdicts identical); ARM 1 uses the same hash-checked patch as band_calibrate.py. Registered rows p24 to p26 describe ARM 1. Also recorded: the ledger's tested_on (10-19) is a day earlier than the run's file time (10-20 16:11), so the pin follows the time of the run.
 
 <!-- entry: 2026-10-30-03 | date: 2026-10-30 | label: database | source-line: new | approx: no -->
 ### 2026-10-30-03 — G7: band_edge_calibration_90 re-run: Arm 0 reproduces the 10-20 printout exactly, Arm 1 (716 ev_ent rows removed) changes 14 stock-days; all six groups still CALIBRATED
